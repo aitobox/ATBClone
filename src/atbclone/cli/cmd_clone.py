@@ -78,6 +78,7 @@ def clone(
             created_at=datetime.now(timezone.utc).isoformat(),
             proxy_enabled=task.recipe.proxy.enabled,
             proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",
+            new_bundle_id=new_bundle_id,
         )
         StateManager().add(record)
 

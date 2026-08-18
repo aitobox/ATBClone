@@ -14,3 +14,4 @@ def test_cli_help():
     assert "doctor" in result.output
     assert "list" in result.output
     assert "remove" in result.output
+    assert "update" in result.output

@@ -63,6 +63,7 @@ def test_add_and_load(tmp_path):
         created_at="2026-08-18T14:00:00+00:00",
         proxy_enabled=True,
         proxy_summary="http://127.0.0.1:1080",
+        new_bundle_id="com.tencent.xinWeChat.atb2",
     )
     mgr.add(rec)
 
@@ -79,6 +80,7 @@ def test_add_and_load(tmp_path):
     assert loaded_rec.created_at == "2026-08-18T14:00:00+00:00"
     assert loaded_rec.proxy_enabled is True
     assert loaded_rec.proxy_summary == "http://127.0.0.1:1080"
+    assert loaded_rec.new_bundle_id == "com.tencent.xinWeChat.atb2"
 
 
 def test_add_defaults(tmp_path):
@@ -97,12 +99,14 @@ def test_add_defaults(tmp_path):
     )
     assert rec.proxy_enabled is False
     assert rec.proxy_summary == ""
+    assert rec.new_bundle_id == ""
 
     mgr.add(rec)
     loaded = mgr.load()
     assert len(loaded) == 1
     assert loaded[0].proxy_enabled is False
     assert loaded[0].proxy_summary == ""
+    assert loaded[0].new_bundle_id == ""
 
 
 def test_add_existing_updates_record(tmp_path):

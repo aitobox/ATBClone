@@ -18,6 +18,7 @@ class CloneRecord:
     created_at: str
     proxy_enabled: bool = False
     proxy_summary: str = ""
+    new_bundle_id: str = ""
 
 
 class StateManager:

@@ -5,6 +5,7 @@ from .cmd_clone import clone
 from .cmd_doctor import doctor
 from .cmd_list import list_clones
 from .cmd_remove import remove
+from .cmd_update import update
 
 console = Console()
 
@@ -18,6 +19,7 @@ cli.add_command(clone)
 cli.add_command(doctor)
 cli.add_command(list_clones)
 cli.add_command(remove)
+cli.add_command(update)
 
 
 if __name__ == "__main__":

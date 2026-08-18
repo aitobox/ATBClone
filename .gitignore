@@ -35,6 +35,7 @@ lib/
 # Application bundle for Mac OS
 *.app/
 .DS_Store
+__MACOS
 *.pyc
 .agents
 __pycache__
@@ -53,3 +54,7 @@ build/
 tests/.test_config
 scripts/upload_store.sh
 .atb_env
+.appclone
+*.egg-info/
+.pytest_cache/
+.ruff_cache/

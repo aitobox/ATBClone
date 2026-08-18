@@ -10,3 +10,6 @@ def test_cli_help():
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
     assert "ATBClone" in result.output
+    assert "clone" in result.output
+    assert "doctor" in result.output
+    assert "list" in result.output

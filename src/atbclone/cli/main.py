@@ -7,6 +7,7 @@ from .cmd_list import list_clones
 from .cmd_recipe import recipe
 from .cmd_remove import remove
 from .cmd_update import update
+from .cmd_wizard import wizard
 
 console = Console()
 
@@ -22,6 +23,8 @@ cli.add_command(list_clones)
 cli.add_command(recipe)
 cli.add_command(remove)
 cli.add_command(update)
+cli.add_command(wizard)
+
 
 
 if __name__ == "__main__":

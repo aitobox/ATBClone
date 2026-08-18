@@ -16,3 +16,5 @@ def test_cli_help():
     assert "recipe" in result.output
     assert "remove" in result.output
     assert "update" in result.output
+    assert "wizard" in result.output
+

@@ -58,3 +58,9 @@ scripts/upload_store.sh
 *.egg-info/
 .pytest_cache/
 .ruff_cache/
+
+# Nuitka / Python packaging outputs
+dist/
+*.build/
+*.dist/
+*.onefile-build/

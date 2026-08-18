@@ -1,0 +1,5 @@
+bundle_id: com.microsoft.edgemac
+app_name: Edge
+strategy: soft_clone
+launch_args:
+  - "--user-data-dir={{ATB_DATA_DIR}}"

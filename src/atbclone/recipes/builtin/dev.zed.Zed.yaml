@@ -1,0 +1,4 @@
+bundle_id: dev.zed.Zed
+app_name: Zed
+strategy: soft_clone
+launch_args: []

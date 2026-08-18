@@ -1,0 +1,7 @@
+bundle_id: jp.naver.line.mac
+app_name: LINE
+strategy: hard_clone
+strip_sandbox: true
+environment_injection:
+  HOME: "{{ATB_DATA_DIR}}/Home"
+  TMPDIR: "{{ATB_DATA_DIR}}/Tmp"

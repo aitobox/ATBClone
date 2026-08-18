@@ -167,3 +167,80 @@ launch_args:
     assert recipe.app_name == "CustomTool"
     assert recipe.strategy == "soft_clone"
     assert recipe.launch_args == ["--debug"]
+
+
+def test_load_builtin_qq():
+    recipe = RecipeLoader.match("com.tencent.qq")
+    assert recipe is not None
+    assert recipe.bundle_id == "com.tencent.qq"
+    assert recipe.app_name == "QQ"
+    assert recipe.strategy == "hard_clone"
+    assert not recipe.strip_sandbox
+    assert "HOME" in recipe.environment_injection
+    assert "TMPDIR" in recipe.environment_injection
+
+
+def test_load_builtin_chatgpt():
+    recipe = RecipeLoader.match("com.openai.codex")
+    assert recipe is not None
+    assert recipe.bundle_id == "com.openai.codex"
+    assert recipe.app_name == "ChatGPT"
+    assert recipe.strategy == "hard_clone"
+    assert recipe.strip_sandbox is True
+    assert "HOME" in recipe.environment_injection
+    assert "TMPDIR" in recipe.environment_injection
+
+
+def test_load_builtin_edge():
+    recipe = RecipeLoader.match("com.microsoft.edgemac")
+    assert recipe is not None
+    assert recipe.bundle_id == "com.microsoft.edgemac"
+    assert recipe.app_name == "Edge"
+    assert recipe.strategy == "soft_clone"
+    assert "--user-data-dir={{ATB_DATA_DIR}}" in recipe.launch_args
+
+
+def test_load_builtin_cursor():
+    recipe = RecipeLoader.match("com.todesktop.230313mzl4w4u92")
+    assert recipe is not None
+    assert recipe.bundle_id == "com.todesktop.230313mzl4w4u92"
+    assert recipe.app_name == "Cursor"
+    assert recipe.strategy == "soft_clone"
+    assert "--user-data-dir={{ATB_DATA_DIR}}" in recipe.launch_args
+
+
+def test_all_builtin_recipes_valid():
+    builtin_dir = RecipeLoader.BUILTIN_DIR
+    assert builtin_dir.exists()
+    yaml_files = list(builtin_dir.glob("*.yaml"))
+    # Expecting at least 18 builtin recipes
+    assert len(yaml_files) >= 18
+
+    expected_recipes = {
+        "com.tencent.xinWeChat": ("微信", "hard_clone", False),
+        "com.google.Chrome": ("Chrome", "soft_clone", False),
+        "com.tencent.qq": ("QQ", "hard_clone", False),
+        "ph.telegra.Telegraph": ("Telegram", "hard_clone", False),
+        "jp.naver.line.mac": ("LINE", "hard_clone", True),
+        "com.tinyspeck.slackmacgap": ("Slack", "hard_clone", False),
+        "com.hnc.Discord": ("Discord", "hard_clone", False),
+        "com.skype.skype": ("Skype", "hard_clone", True),
+        "com.openai.codex": ("ChatGPT", "hard_clone", True),
+        "com.google.antigravity": ("Antigravity", "hard_clone", False),
+        "com.google.antigravity-ide": ("Antigravity IDE", "hard_clone", False),
+        "com.google.GeminiMacOS": ("Gemini", "hard_clone", True),
+        "com.microsoft.edgemac": ("Edge", "soft_clone", False),
+        "org.mozilla.firefox": ("Firefox", "soft_clone", False),
+        "company.thebrowser.Browser": ("Arc", "soft_clone", False),
+        "com.todesktop.230313mzl4w4u92": ("Cursor", "soft_clone", False),
+        "com.microsoft.VSCode": ("VS Code", "soft_clone", False),
+        "dev.zed.Zed": ("Zed", "soft_clone", False),
+    }
+
+    for bundle_id, (name, strategy, strip_sandbox) in expected_recipes.items():
+        recipe = RecipeLoader.match(bundle_id)
+        assert recipe.bundle_id == bundle_id
+        assert recipe.app_name == name
+        assert recipe.strategy == strategy
+        assert recipe.strip_sandbox == strip_sandbox
+

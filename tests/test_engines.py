@@ -162,8 +162,8 @@ class TestSoftCloneEngine:
             script, needs_admin = mock_run.call_args[0]
             assert needs_admin is True
             assert 'export HTTP_PROXY="http://127.0.0.1:8080"' in script
-            assert "--user-data-dir=/Users/test/Library/Application Support/TestApp2 --no-first-run" in script
-            assert "exec /Applications/TestApp.app/Contents/MacOS/TestApp --user-data-dir=/Users/test/Library/Application Support/TestApp2 --no-first-run >/dev/null 2>&1 &" in script
+            assert '--user-data-dir=/Users/test/Library/Application Support/TestApp2' in script
+            assert "exec /Applications/TestApp.app/Contents/MacOS/TestApp '--user-data-dir=/Users/test/Library/Application Support/TestApp2' --no-first-run >/dev/null 2>&1 &" in script
 
     def test_soft_clone_failure_cleans_up_and_reraises(self, sample_task):
         with patch("atbclone.executor.runner.Runner.run", side_effect=[CloneError("Permission denied"), None]) as mock_run:

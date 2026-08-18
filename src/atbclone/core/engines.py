@@ -51,7 +51,7 @@ class SoftCloneEngine(CloneEngine):
         wrapper = shlex.quote(str(task.dest_path / "Contents" / "MacOS" / bin_name))
 
         args_list = [
-            arg.replace("{{ATB_DATA_DIR}}", str(task.data_dir))
+            shlex.quote(arg.replace("{{ATB_DATA_DIR}}", str(task.data_dir)))
             for arg in task.recipe.launch_args
         ]
         args_str = f" {' '.join(args_list)}" if args_list else ""

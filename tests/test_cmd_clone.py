@@ -51,7 +51,8 @@ def test_clone_soft_success(tmp_path: Path, mock_app_info: AppInfo, mock_soft_re
          patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe) as mock_match, \
          patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)) as mock_next_name, \
          patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
-         patch("atbclone.cli.cmd_clone.HardCloneEngine.execute") as mock_hard_exec:
+         patch("atbclone.cli.cmd_clone.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
 
         result = runner.invoke(
             cli,
@@ -86,7 +87,8 @@ def test_clone_hard_success(tmp_path: Path, mock_app_info: AppInfo, mock_hard_re
          patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_hard_recipe), \
          patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
          patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
-         patch("atbclone.cli.cmd_clone.HardCloneEngine.execute") as mock_hard_exec:
+         patch("atbclone.cli.cmd_clone.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
 
         result = runner.invoke(
             cli,
@@ -143,7 +145,8 @@ def test_clone_name_override(tmp_path: Path, mock_app_info: AppInfo, mock_soft_r
     with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
          patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
          patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WorkChat2", 2)) as mock_next_name, \
-         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec:
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
 
         result = runner.invoke(
             cli,
@@ -175,7 +178,8 @@ def test_clone_output_dir_admin_detection(tmp_path: Path, mock_app_info: AppInfo
          patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
          patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
          patch("atbclone.cli.cmd_clone.Path.mkdir"), \
-         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec:
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
 
         result = runner.invoke(
             cli,
@@ -201,7 +205,8 @@ def test_clone_default_output_dir(tmp_path: Path, mock_app_info: AppInfo, mock_s
          patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
          patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)) as mock_next_name, \
          patch("atbclone.cli.cmd_clone.Path.mkdir"), \
-         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec:
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
 
         result = runner.invoke(
             cli,
@@ -221,6 +226,9 @@ def test_clone_help_command():
     assert result.exit_code == 0
     assert "--name" in result.output
     assert "--output-dir" in result.output
+    assert "--proxy-host" in result.output
+    assert "--proxy-port" in result.output
+    assert "--proxy-type" in result.output
     assert "APP_PATH" in result.output
 
 
@@ -229,4 +237,127 @@ def test_clone_nonexistent_app_fails():
     result = runner.invoke(cli, ["clone", "/nonexistent/path/App.app"])
     assert result.exit_code != 0
     assert "does not exist" in result.output or "Error" in result.output
+
+
+def test_clone_with_proxy_options(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add") as mock_state_add:
+
+        result = runner.invoke(
+            cli,
+            [
+                "clone",
+                str(mock_app_info.path),
+                "--output-dir",
+                str(output_dir),
+                "--proxy-host",
+                "127.0.0.1",
+                "--proxy-port",
+                "1080",
+                "--proxy-type",
+                "socks5",
+            ],
+        )
+
+        assert result.exit_code == 0
+        mock_soft_exec.assert_called_once()
+        task, _ = mock_soft_exec.call_args[0]
+        assert task.recipe.proxy.enabled is True
+        assert task.recipe.proxy.host == "127.0.0.1"
+        assert task.recipe.proxy.port == 1080
+        assert task.recipe.proxy.type == "socks5"
+
+        mock_state_add.assert_called_once()
+        record = mock_state_add.call_args[0][0]
+        assert record.proxy_enabled is True
+        assert record.proxy_summary == "socks5://127.0.0.1:1080"
+
+
+def test_clone_proxy_host_without_explicit_port(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add") as mock_state_add:
+
+        result = runner.invoke(
+            cli,
+            [
+                "clone",
+                str(mock_app_info.path),
+                "--output-dir",
+                str(output_dir),
+                "--proxy-host",
+                "10.0.0.1",
+            ],
+        )
+
+        assert result.exit_code == 0
+        mock_soft_exec.assert_called_once()
+        task, _ = mock_soft_exec.call_args[0]
+        assert task.recipe.proxy.enabled is True
+        assert task.recipe.proxy.host == "10.0.0.1"
+        assert task.recipe.proxy.port == 1080
+        assert task.recipe.proxy.type == "http"
+
+
+def test_clone_state_persistence_success(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    from datetime import datetime
+
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute"), \
+         patch("atbclone.cli.cmd_clone.StateManager.add") as mock_state_add:
+
+        result = runner.invoke(
+            cli,
+            ["clone", str(mock_app_info.path), "--output-dir", str(output_dir)],
+        )
+
+        assert result.exit_code == 0
+        mock_state_add.assert_called_once()
+        record = mock_state_add.call_args[0][0]
+        assert record.clone_name == "WeChat2"
+        assert record.source_app == "WeChat"
+        assert record.source_path == str(mock_app_info.path)
+        assert record.bundle_id == "com.tencent.xinWeChat"
+        assert record.strategy == "soft_clone"
+        assert record.dest_path == str(output_dir / "WeChat2.app")
+        assert record.data_dir == str(Path.home() / ".AIToBox" / "Data" / "WeChat2")
+        assert datetime.fromisoformat(record.created_at) is not None
+        assert record.proxy_enabled is False
+        assert record.proxy_summary == ""
+
+
+def test_clone_failure_does_not_persist_state(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute", side_effect=CloneError("fail")), \
+         patch("atbclone.cli.cmd_clone.StateManager.add") as mock_state_add:
+
+        result = runner.invoke(
+            cli,
+            ["clone", str(mock_app_info.path), "--output-dir", str(output_dir)],
+        )
+
+        assert result.exit_code == 1
+        mock_state_add.assert_not_called()
+
 

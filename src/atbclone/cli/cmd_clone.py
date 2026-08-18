@@ -20,7 +20,7 @@ console = Console()
 @click.option("--output-dir", default=str(Path.home() / "Applications"), help="输出目录")
 def clone(app_path: str, name: str | None, output_dir: str) -> None:
     """克隆应用"""
-    out_path = Path(output_dir).expanduser()
+    out_path = Path(output_dir).expanduser().resolve()
     out_path.mkdir(parents=True, exist_ok=True)
 
     info = AppInspector.inspect(app_path)

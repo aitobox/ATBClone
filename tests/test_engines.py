@@ -217,15 +217,16 @@ class TestHardCloneEngine:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert "codesign -d --entitlements :- /Applications/TestApp2.app > /tmp/atb_entitlements.plist 2>/dev/null || true" in script
-            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" /tmp/atb_entitlements.plist || true' in script
-            assert "codesign --force --deep --sign - --entitlements /tmp/atb_entitlements.plist /Applications/TestApp2.app" in script
+            assert "codesign -d --entitlements :- /Applications/TestApp2.app > /Applications/TestApp2.app/Contents/atb_entitlements.plist 2>/dev/null || true" in script
+            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" /Applications/TestApp2.app/Contents/atb_entitlements.plist || true' in script
+            assert "codesign --force --deep --sign - --entitlements /Applications/TestApp2.app/Contents/atb_entitlements.plist /Applications/TestApp2.app" in script
             assert "codesign -vv --deep --strict /Applications/TestApp2.app" in script
 
     def test_hard_clone_with_env_injection_and_proxy(self, sample_task):
         sample_task.recipe.environment_injection = {
             "APP_DATA_DIR": "{{ATB_DATA_DIR}}",
             "CUSTOM_FLAG": "1",
+            "UNSAFE_VAL": 'foo"; rm -rf /; echo "$bar`whoami`',
         }
         sample_task.recipe.proxy = ProxyConfig(
             enabled=True,
@@ -237,8 +238,9 @@ class TestHardCloneEngine:
             mock_run.assert_called_once()
             script, needs_admin = mock_run.call_args[0]
             assert needs_admin is True
-            assert 'export APP_DATA_DIR="/Users/test/Library/Application Support/TestApp2"' in script
-            assert 'export CUSTOM_FLAG="1"' in script
+            assert "export APP_DATA_DIR='/Users/test/Library/Application Support/TestApp2'" in script
+            assert "export CUSTOM_FLAG=1" in script
+            assert "export UNSAFE_VAL='foo\"; rm -rf /; echo \"$bar`whoami`'" in script
             assert 'export HTTP_PROXY="http://127.0.0.1:1080"' in script
 
     def test_hard_clone_failure_cleans_up_and_reraises(self, sample_task):

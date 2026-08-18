@@ -109,7 +109,7 @@ class HardCloneEngine(CloneEngine):
         wrapper = bin_orig
 
         env_vars = "\n".join([
-            f'export {k}="{v.replace("{{ATB_DATA_DIR}}", str(task.data_dir))}"'
+            f"export {k}={shlex.quote(v.replace('{{ATB_DATA_DIR}}', str(task.data_dir)))}"
             for k, v in task.recipe.environment_injection.items()
         ])
         proxy_env = cls._build_proxy_env(task)
@@ -123,10 +123,11 @@ class HardCloneEngine(CloneEngine):
         wrapper_body = "\n".join(wrapper_lines)
 
         if task.recipe.strip_sandbox:
+            ent_plist = shlex.quote(str(task.dest_path / "Contents" / "atb_entitlements.plist"))
             codesign_cmds = (
-                f"codesign -d --entitlements :- {dst} > /tmp/atb_entitlements.plist 2>/dev/null || true\n"
-                f'/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" /tmp/atb_entitlements.plist || true\n'
-                f"codesign --force --deep --sign - --entitlements /tmp/atb_entitlements.plist {dst}\n"
+                f"codesign -d --entitlements :- {dst} > {ent_plist} 2>/dev/null || true\n"
+                f'/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" {ent_plist} || true\n'
+                f"codesign --force --deep --sign - --entitlements {ent_plist} {dst}\n"
             )
         else:
             codesign_cmds = f"codesign --force --deep --sign - {dst}\n"

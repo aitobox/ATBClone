@@ -142,3 +142,19 @@ def test_inspect_fallback_stem_and_run_cmd(tmp_path: Path, monkeypatch):
 def test_run_cmd_error_handling():
     result = AppInspector._run_cmd(["non_existent_binary_12345"])
     assert result == ""
+
+
+def test_generate_bundle_id_default_num():
+    bundle_id = AppInspector.generate_bundle_id("com.google.Chrome")
+    assert bundle_id == "com.google.Chrome.atbclone.1"
+
+
+def test_generate_bundle_id_custom_num():
+    bundle_id = AppInspector.generate_bundle_id("com.tencent.xinWeChat", 2)
+    assert bundle_id == "com.tencent.xinWeChat.atbclone.2"
+
+
+def test_generate_bundle_id_large_num():
+    bundle_id = AppInspector.generate_bundle_id("org.mozilla.firefox", 10)
+    assert bundle_id == "org.mozilla.firefox.atbclone.10"
+

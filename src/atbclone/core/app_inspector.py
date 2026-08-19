@@ -80,3 +80,9 @@ class AppInspector:
             if not candidate.exists():
                 return f"{base_name}{n}", n
             n += 1
+
+    @staticmethod
+    def generate_bundle_id(bundle_id: str, num: int = 1) -> str:
+        """Generate standardized bundle identifier for a cloned application instance."""
+        return f"{bundle_id}.atbclone.{num}"
+

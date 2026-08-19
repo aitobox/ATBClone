@@ -6,6 +6,27 @@
 
 ---
 
+## [v0.5.0] - 2026-08-19
+
+### 🔐 蘋果官方代碼簽署與公證支援 (Code Signing & Notarization)
+- **強化執行階段 (Hardened Runtime) 與代碼簽署**：
+  - 深度整合 Apple Developer ID Application 開發者憑證簽署機制，啟用 `--options runtime` 強化執行階段、時間戳記及自訂 JIT / 執行授權檔 (`scripts/entitlements.plist`)。
+  - 新增 `scripts/notarize.sh` 自動化公證腳本，支援透過鑰匙圈憑證 (`--keychain-profile`) 呼叫 `xcrun notarytool` 一鍵完成蘋果官方公證與 Gatekeeper 安全驗證。
+  - `scripts/build_cli.sh` 與 `scripts/release.sh` 全面支援 `--sign-identity`、`--skip-sign` 及 `--notarize` 編譯與發布選項，未設定憑證時自動降級至 ad-hoc 本機簽署。
+
+### 🚀 Chromium 瀏覽器硬分身與啟動參數注入
+- **硬分身引擎支援 `launch_args` 注入**：
+  - 增強 `HardCloneEngine`，使其在環境變數隔離之外，同時支援向二進位啟動器動態注入 `--user-data-dir={{ATB_DATA_DIR}}` 等啟動參數。
+  - 將 **Google Chrome**、**Microsoft Edge**、**Arc Browser** 預設配方升級為 `hard_clone` 策略，實現完整的 App Bundle 獨立複製與 Dock/Finder 專屬識別。
+- **CLI 支援策略覆寫**：
+  - `atbclone clone` 命令列新增 `--strategy` 參數（可選 `hard_clone` 或 `soft_clone`），允許使用者手動覆寫預設策略。
+
+### ⚡ 行程管理與測試套件擴充
+- **行程轉發最佳化**：最佳化 `SoftCloneEngine` 啟動包裝腳本，使用標準 `exec "$@"` 進行參數轉發與行程接管。
+- **自動化測試擴充**：測試套件案例擴展至 199 項，全面涵蓋代碼簽署流程、公證腳本語法與硬分身參數注入。
+
+---
+
 ## [v0.4.0] - 2026-08-19
 
 ### 🌐 9 國語言全面在地化與文件體系

@@ -6,6 +6,27 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.5.0] - 2026-08-19
+
+### 🔐 Apple Code Signing & Notarization Pipeline
+- **Automated Hardened Runtime & Signing**:
+  - Integrated Apple Developer ID Application code signing with Hardened Runtime (`--options runtime`), timestamping, and custom JIT / execution entitlements (`scripts/entitlements.plist`).
+  - Added `scripts/notarize.sh` for one-command Apple Notarization (`xcrun notarytool submit --wait`) using Keychain API credentials (`--keychain-profile`).
+  - Enhanced `scripts/build_cli.sh` and `scripts/release.sh` with `--sign-identity`, `--skip-sign`, and `--notarize` flags with automatic ad-hoc signing fallback.
+
+### 🚀 Chromium Hard Clone & Launch Arguments Injection
+- **Hard Clone Engine Support for `launch_args`**:
+  - Upgraded `HardCloneEngine` to support dynamic `--user-data-dir={{ATB_DATA_DIR}}` argument injection into binary launch wrappers alongside environment variables.
+  - Upgraded built-in recipes for **Google Chrome**, **Microsoft Edge**, and **Arc Browser** to `hard_clone` for complete app bundle duplication and isolated Dock/Finder identities.
+- **CLI Strategy Override**:
+  - Added `--strategy` option to `atbclone clone` (`--strategy hard_clone` / `--strategy soft_clone`) allowing users to explicitly override default recipe strategies.
+
+### ⚡ Process Forwarding & Test Suite Expansion
+- **Process Management**: Improved `SoftCloneEngine` launcher script to use standard `exec "$@"` argument forwarding.
+- **Comprehensive Testing**: Expanded automated test suite to 199 unit tests covering code signing, notarization scripts, and strategy overrides.
+
+---
+
 ## [v0.4.0] - 2026-08-19
 
 ### 🌐 Comprehensive 9-Language CLI & Documentation Ecosystem

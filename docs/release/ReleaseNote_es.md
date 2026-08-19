@@ -6,6 +6,27 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.5.0] - 2026-08-19
+
+### 🔐 Firma de código Apple y canalización de notarización
+- **Hardened Runtime y firma certificada**:
+  - Integración completa de la firma de código con certificados Apple Developer ID Application, Hardened Runtime (`--options runtime`), marcas de tiempo y derechos JIT personalizados (`scripts/entitlements.plist`).
+  - Script `scripts/notarize.sh` para la notarización automatizada ante Apple mediante `xcrun notarytool` utilizando perfiles del llavero (`--keychain-profile`).
+  - Opciones `--sign-identity`, `--skip-sign` y `--notarize` agregadas a `scripts/build_cli.sh` y `scripts/release.sh` con respaldo ad-hoc automático.
+
+### 🚀 Clonación profunda de Chromium e inyección de argumentos de inicio
+- **Inyección de argumentos de inicio en `HardCloneEngine`**:
+  - Mejora de `HardCloneEngine` para inyectar dinámicamente argumentos como `--user-data-dir={{ATB_DATA_DIR}}` en el script ejecutable.
+  - Actualización de las recetas para **Google Chrome**, **Microsoft Edge** y **Arc Browser** a la estrategia `hard_clone` para una duplicación completa del App Bundle.
+- **Anulación de estrategia en CLI**:
+  - Nueva opción `--strategy` (`hard_clone` o `soft_clone`) en el comando `atbclone clone`.
+
+### ⚡ Redirección de procesos y conjunto de pruebas ampliado
+- **Gestión de procesos**: Optimización del script envoltorio de `SoftCloneEngine` mediante `exec "$@"`.
+- **Pruebas integrales**: Ampliación del conjunto de pruebas a 199 pruebas unitarias automatizadas.
+
+---
+
 ## [v0.4.0] - 2026-08-19
 
 ### 🌐 Soporte multilingüe integral en 9 idiomas para CLI y documentación

@@ -6,6 +6,27 @@
 
 ---
 
+## [v0.5.0] - 2026-08-19
+
+### 🔐 Apple コード署名および公証（Notarization）パイプライン
+- **Hardened Runtime と公式署名の統合**:
+  - Apple Developer ID Application 証明書によるコード署名、`--options runtime`（Hardened Runtime）、タイムスタンプ、および専用 JIT / 実行権限設定（`scripts/entitlements.plist`）を完全統合。
+  - Keychain 資格情報（`--keychain-profile`）を使用して `xcrun notarytool` 経由で Apple 公証を一括実行する `scripts/notarize.sh` を追加。
+  - `scripts/build_cli.sh` および `scripts/release.sh` において `--sign-identity`、`--skip-sign`、`--notarize` オプションをサポートし、証明書未設定時は自動的に ad-hoc 署名へフォールバック。
+
+### 🚀 Chromium ブラウザのハードクローン対応および起動引数注入
+- **`HardCloneEngine` による起動引数の注入**:
+  - 環境変数分離に加え、バイナリラッパーへ `--user-data-dir={{ATB_DATA_DIR}}` などの起動引数を動的に注入できるよう `HardCloneEngine` を強化。
+  - **Google Chrome**、**Microsoft Edge**、**Arc Browser** の組み込みレシピを `hard_clone` にアップグレードし、App Bundle の完全複製と独立した Dock/Finder アイデンティティを実現。
+- **CLI 戦略上書きオプション**:
+  - `atbclone clone` コマンドに `--strategy`（`hard_clone` または `soft_clone`）オプションを追加し、レシピ設定の手動変更に対応。
+
+### ⚡ プロセス管理およびテストスイート拡充
+- **プロセス制御の改善**: `SoftCloneEngine` のラッパースクリプトを標準の `exec "$@"` による引数転送に最適化。
+- **テストの網羅性向上**: 自動テストスイートを 199 件に拡大し、署名・公証スクリプトおよびクローン戦略の検証を強化。
+
+---
+
 ## [v0.4.0] - 2026-08-19
 
 ### 🌐 9 言語対応の包括的 CLI およびドキュメント体系

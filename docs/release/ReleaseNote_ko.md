@@ -6,6 +6,27 @@
 
 ---
 
+## [v0.5.0] - 2026-08-19
+
+### 🔐 Apple 코드 서명 및 공증(Notarization) 지원
+- **Hardened Runtime 및 공식 코드 서명**:
+  - Apple Developer ID Application 인증서 서명, Hardened Runtime(`--options runtime`), 타임스탬프 및 맞춤형 JIT 실행 권한(`scripts/entitlements.plist`)을 기본 지원합니다.
+  - 키체인 프로필(`--keychain-profile`)을 통해 Apple 공증을 자동으로 수행하는 `scripts/notarize.sh` 스크립트를 추가했습니다.
+  - `scripts/build_cli.sh` 및 `scripts/release.sh`에서 `--sign-identity`, `--skip-sign`, `--notarize` 옵션을 지원하며, 인증서가 없을 경우 ad-hoc 서명으로 자동 전환됩니다.
+
+### 🚀 Chromium 브라우저 하드 복제 및 실행 인수 주입
+- **`HardCloneEngine` 실행 인수(`launch_args`) 주입**:
+  - 환경 변수 격리 외에도 바이너리 래퍼에 `--user-data-dir={{ATB_DATA_DIR}}`와 같은 실행 인수를 주입할 수 있도록 `HardCloneEngine`을 개선했습니다.
+  - **Google Chrome**, **Microsoft Edge**, **Arc Browser**의 기본 레시피를 `hard_clone` 전략으로 업그레이드하여 완전한 App Bundle 복제 및 독립된 Dock/Finder 식별을 제공합니다.
+- **CLI 전략 재정의 지원**:
+  - `atbclone clone` 명령어에 `--strategy` 옵션(`hard_clone` 또는 `soft_clone`)을 추가하여 기본 레시피 전략을 재정의할 수 있습니다.
+
+### ⚡ 프로세스 포워딩 및 테스트 확장
+- **프로세스 제어 최적화**: `SoftCloneEngine` 래퍼 스크립트에서 표준 `exec "$@"` 프로세스 전달 방식을 적용했습니다.
+- **테스트 스위트 확장**: 전체 199개 단위 테스트를 통해 코드 서명, 공증 스크립트 및 복제 전략을 철저히 검증합니다.
+
+---
+
 ## [v0.4.0] - 2026-08-19
 
 ### 🌐 9개 언어 완전 지원 CLI 및 문서 체계

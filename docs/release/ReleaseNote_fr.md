@@ -6,6 +6,27 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.5.0] - 2026-08-19
+
+### 🔐 Signature de code Apple et pipeline de notarisation
+- **Hardened Runtime et signature certifiée**:
+  - Intégration complète de la signature avec certificat Apple Developer ID Application, Hardened Runtime (`--options runtime`), horodatage et autorisations JIT (`scripts/entitlements.plist`).
+  - Script automatisé `scripts/notarize.sh` pour la soumission directe à Apple Notary via `xcrun notarytool` avec profils Keychain (`--keychain-profile`).
+  - Prise en charge des options `--sign-identity`, `--skip-sign` et `--notarize` dans `scripts/build_cli.sh` et `scripts/release.sh` avec repli ad-hoc automatique.
+
+### 🚀 Clonage dur Chromium et injection d'arguments de lancement
+- **Injection d'arguments dans `HardCloneEngine`**:
+  - Amélioration de `HardCloneEngine` pour injecter dynamiquement des paramètres tels que `--user-data-dir={{ATB_DATA_DIR}}` dans les scripts de lancement.
+  - Mise à niveau des recettes intégrées pour **Google Chrome**, **Microsoft Edge** et **Arc Browser** vers la stratégie `hard_clone`.
+- **Surcharge de stratégie en ligne de commande**:
+  - Nouvelle option `--strategy` (`hard_clone` ou `soft_clone`) dans la commande `atbclone clone`.
+
+### ⚡ Transmission de processus et tests enrichis
+- **Gestion des processus**: Amélioration des scripts d'emballage `SoftCloneEngine` avec transmission `exec "$@"`.
+- **Suite de tests**: 199 tests automatisés couvrant la signature, la notarisation et les moteurs de clonage.
+
+---
+
 ## [v0.4.0] - 2026-08-19
 
 ### 🌐 Support multilingue complet en 9 langues pour le CLI et la documentation

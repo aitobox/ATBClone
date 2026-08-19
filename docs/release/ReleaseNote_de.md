@@ -6,6 +6,27 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.5.0] - 2026-08-19
+
+### 🔐 Apple Code-Signing & Notarisierungs-Pipeline
+- **Hardened Runtime & Offizielle Signierung**:
+  - Vollständige Integration von Apple Developer ID Application Signaturen mit Hardened Runtime (`--options runtime`), Zeitstempeln und benutzerdefinierten JIT-Berechtigungen (`scripts/entitlements.plist`).
+  - Neues Notarisierungsskript `scripts/notarize.sh` zur automatischen Einreichung via `xcrun notarytool` unter Verwendung von Keychain-Profilen (`--keychain-profile`).
+  - Erweiterung von `scripts/build_cli.sh` und `scripts/release.sh` um `--sign-identity`, `--skip-sign` und `--notarize` mit automatischem Ad-hoc-Fallback.
+
+### 🚀 Chromium Hard-Clone & Übergabe von Startargumenten
+- **Unterstützung von Startargumenten in `HardCloneEngine`**:
+  - Erweiterung der `HardCloneEngine` zur dynamischen Injektion von Argumenten wie `--user-data-dir={{ATB_DATA_DIR}}` in Start-Wrapper.
+  - Upgrade der integrierten Rezepte für **Google Chrome**, **Microsoft Edge** und **Arc Browser** auf die `hard_clone`-Strategie für vollständige App-Bundle-Duplikation und eigenständige Dock-/Finder-Identitäten.
+- **CLI-Strategieüberschreibung**:
+  - Neuer Parameter `--strategy` für `atbclone clone` (`--strategy hard_clone` / `--strategy soft_clone`).
+
+### ⚡ Prozessweiterleitung & Test-Suite-Erweiterung
+- **Prozessverwaltung**: Optimierung des `SoftCloneEngine`-Wrappers auf standardmäßige `exec "$@"`-Weiterleitung.
+- **Umfassende Tests**: Erweiterung der Test-Suite auf 199 automatisierte Tests für Signierung, Notarisierung und Klonstrategien.
+
+---
+
 ## [v0.4.0] - 2026-08-19
 
 ### 🌐 Umfassende 9-Sprachen-Lokalisierung für CLI und Dokumentation

@@ -153,7 +153,11 @@ echo "[✔] Tag ${TAG_NAME} created."
 
 # 5. Build Standalone Executable with Code Signing
 echo "==> [Step 5/6] Building standalone binary..."
-bash scripts/build_cli.sh "${BUILD_ARGS[@]}"
+if [[ ${#BUILD_ARGS[@]} -gt 0 ]]; then
+    bash scripts/build_cli.sh "${BUILD_ARGS[@]}"
+else
+    bash scripts/build_cli.sh
+fi
 
 # 6. Verify Build & Signature
 echo "==> [Step 6/6] Verifying built binary & signature..."

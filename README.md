@@ -45,7 +45,7 @@
 ## 🛠️ 环境依赖
 
 - **操作系统**：macOS 13.0+ (Apple Silicon arm64 / Intel x86_64)
-- **Python**：Python 3.10+ (推荐 Python 3.12+ / Conda)
+- **Python**：Python 3.12+（`build_cli.sh` 编译时强制要求；推荐使用 Conda）
 - **系统开发工具**：已安装 Xcode Command Line Tools（提供 `codesign`, `xcode-select`, `PlistBuddy`）
 
 ```bash

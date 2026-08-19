@@ -86,7 +86,7 @@ def test_show_versions_synced(tmp_path, capsys):
     code = mv.show_versions(root=tmp_path)
     captured = capsys.readouterr()
     assert code == 0
-    assert "All targets are synchronized at v0.1.0" in captured.out
+    assert "synchronized at v0.1.0" in captured.out
 
 
 def test_show_versions_mismatch(tmp_path, capsys):
@@ -106,4 +106,73 @@ def test_main_cli_show(capsys):
     ret = mv.main(["--show"])
     assert ret == 0
     captured = capsys.readouterr()
-    assert "All targets are synchronized" in captured.out
+    assert "All package targets and ReleaseNotes are synchronized" in captured.out
+    assert "ReleaseNote.md" in captured.out
+    assert "ReleaseNote_zh.md" in captured.out
+
+
+def test_release_note_targets_count_and_languages():
+    targets = mv.get_release_note_targets()
+    assert len(targets) == 9
+    filenames = [t.filename for t in targets]
+    assert "ReleaseNote.md" in filenames
+    assert "ReleaseNote_zh.md" in filenames
+    assert "ReleaseNote_zh_TW.md" in filenames
+    assert "ReleaseNote_ja.md" in filenames
+    assert "ReleaseNote_ko.md" in filenames
+    assert "ReleaseNote_de.md" in filenames
+    assert "ReleaseNote_fr.md" in filenames
+    assert "ReleaseNote_ru.md" in filenames
+    assert "ReleaseNote_es.md" in filenames
+
+    # All real docs/release/ files must exist and have latest version 0.3.0
+    for t in targets:
+        assert t.exists(), f"File {t.filename} should exist"
+        assert t.read_latest_version() == "0.3.0"
+        assert t.has_version("0.3.0")
+        assert t.has_version("0.2.0")
+        assert t.has_version("0.1.0")
+        assert not t.has_version("9.9.9")
+
+
+def test_check_release_notes_current():
+    synced, missing = mv.check_release_notes("0.3.0")
+    assert synced is True
+    assert missing == []
+
+
+def test_check_release_notes_missing():
+    synced, missing = mv.check_release_notes("9.9.9")
+    assert synced is False
+    assert len(missing) == 9
+
+
+def test_release_note_target_tmp_path(tmp_path):
+    rel_dir = tmp_path / "docs" / "release"
+    rel_dir.mkdir(parents=True)
+    rn_en = rel_dir / "ReleaseNote.md"
+    rn_en.write_text("# Release Notes\n\n## [v1.0.0] - 2026-08-20\n\n- Feature\n", encoding="utf-8")
+
+    target = mv.ReleaseNoteTarget("ReleaseNote.md", "English", rn_en)
+    assert target.exists() is True
+    assert target.read_latest_version() == "1.0.0"
+    assert target.has_version("1.0.0") is True
+    assert target.has_version("2.0.0") is False
+
+    target_missing = mv.ReleaseNoteTarget("NonExist.md", "English", rel_dir / "NonExist.md")
+    assert target_missing.exists() is False
+    assert target_missing.read_latest_version() is None
+    assert target_missing.has_version("1.0.0") is False
+
+
+def test_main_cli_check_notes(capsys):
+    ret = mv.main(["--check-notes", "0.3.0"])
+    assert ret == 0
+    captured = capsys.readouterr()
+    assert "All 9 ReleaseNotes in docs/release/ contain entry for v0.3.0" in captured.out
+
+    ret_fail = mv.main(["--check-notes", "9.9.9"])
+    assert ret_fail == 1
+    captured_fail = capsys.readouterr()
+    assert "Missing v9.9.9 entry in 9 ReleaseNotes file(s)" in captured_fail.out
+

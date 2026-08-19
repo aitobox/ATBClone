@@ -2,7 +2,7 @@
 """ATBClone Version Management Utility.
 
 Handles inspecting, validating, setting, and bumping semantic version (x.y.z)
-across all project configuration files.
+across all project configuration files and multilingual ReleaseNotes.
 """
 
 import argparse
@@ -14,6 +14,20 @@ from typing import NamedTuple
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 VERSION_PATTERN = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
+RELEASE_HEADER_PATTERN = re.compile(r"(?m)^##\s*\[v?(\d+\.\d+\.\d+)\]")
+
+# 9 Supported Languages for Multilingual Release Notes in docs/release/
+DOCS_RELEASE_FILES: list[tuple[str, str]] = [
+    ("ReleaseNote.md", "English"),
+    ("ReleaseNote_zh.md", "简体中文 (Simplified Chinese)"),
+    ("ReleaseNote_zh_TW.md", "繁體中文 (Traditional Chinese)"),
+    ("ReleaseNote_ja.md", "日本語 (Japanese)"),
+    ("ReleaseNote_ko.md", "한국어 (Korean)"),
+    ("ReleaseNote_de.md", "Deutsch (German)"),
+    ("ReleaseNote_fr.md", "Français (French)"),
+    ("ReleaseNote_ru.md", "Русский (Russian)"),
+    ("ReleaseNote_es.md", "Español (Spanish)"),
+]
 
 
 class VersionInfo(NamedTuple):
@@ -52,7 +66,7 @@ def bump_version(current: VersionInfo, bump_type: str) -> VersionInfo:
 
 
 class VersionTarget:
-    """Represents a file containing a version definition."""
+    """Represents a code/config file containing a version definition."""
 
     def __init__(self, path: Path, pattern: re.Pattern, replace_template: str, name: str):
         self.path = path
@@ -79,6 +93,32 @@ class VersionTarget:
         return True
 
 
+class ReleaseNoteTarget:
+    """Represents a multilingual release note file in docs/release/."""
+
+    def __init__(self, filename: str, language: str, path: Path):
+        self.filename = filename
+        self.language = language
+        self.path = path
+
+    def exists(self) -> bool:
+        return self.path.exists()
+
+    def read_latest_version(self) -> str | None:
+        if not self.path.exists():
+            return None
+        content = self.path.read_text(encoding="utf-8")
+        match = RELEASE_HEADER_PATTERN.search(content)
+        return match.group(1) if match else None
+
+    def has_version(self, version_str: str) -> bool:
+        if not self.path.exists():
+            return False
+        content = self.path.read_text(encoding="utf-8")
+        pattern = re.compile(rf"(?m)^##\s*\[v?{re.escape(version_str)}\]")
+        return bool(pattern.search(content))
+
+
 def get_version_targets(root: Path = PROJECT_ROOT) -> list[VersionTarget]:
     """Return list of files that manage the project version."""
     return [
@@ -95,6 +135,25 @@ def get_version_targets(root: Path = PROJECT_ROOT) -> list[VersionTarget]:
             name="src/atbclone/__init__.py",
         ),
     ]
+
+
+def get_release_note_targets(root: Path = PROJECT_ROOT) -> list[ReleaseNoteTarget]:
+    """Return list of 9 multilingual release notes in docs/release/."""
+    release_dir = root / "docs" / "release"
+    return [
+        ReleaseNoteTarget(filename, lang, release_dir / filename)
+        for filename, lang in DOCS_RELEASE_FILES
+    ]
+
+
+def check_release_notes(version_str: str, root: Path = PROJECT_ROOT) -> tuple[bool, list[str]]:
+    """Check if all 9 release notes files contain the specified version entry."""
+    targets = get_release_note_targets(root)
+    missing = []
+    for t in targets:
+        if not t.has_version(version_str):
+            missing.append(f"{t.filename} ({t.language})")
+    return (len(missing) == 0, missing)
 
 
 def get_current_version(root: Path = PROJECT_ROOT) -> str:
@@ -115,6 +174,7 @@ def show_versions(root: Path = PROJECT_ROOT) -> int:
         versions[target.name] = target.read_version()
 
     print("=== ATBClone Version Status ===")
+    print("Package Targets:")
     all_matched = True
     first_ver = None
     for name, ver in versions.items():
@@ -128,9 +188,27 @@ def show_versions(root: Path = PROJECT_ROOT) -> int:
         else:
             all_matched = False
 
+    rn_targets = get_release_note_targets(root)
+    rn_matched = True
+    if any(t.exists() for t in rn_targets):
+        print("\nMultilingual Release Notes (docs/release/):")
+        for rn in rn_targets:
+            rn_ver = rn.read_latest_version()
+            status = f"v{rn_ver}" if rn_ver else "[NO VERSION ENTRY]"
+            if not rn.exists():
+                status = "[FILE NOT FOUND]"
+                rn_matched = False
+            elif first_ver and rn_ver != first_ver:
+                rn_matched = False
+            print(f"  - {rn.filename:<25} ({rn.language:<30}): {status}")
+
     if all_matched and first_ver:
-        print(f"\n[✔] All targets are synchronized at v{first_ver}")
-        return 0
+        if rn_matched:
+            print(f"\n[✔] All package targets and ReleaseNotes are synchronized at v{first_ver}")
+            return 0
+        else:
+            print(f"\n[!] Package version is v{first_ver}, but some ReleaseNotes are out of sync or missing this version entry.")
+            return 1
     else:
         print("\n[✘] Version mismatch or missing definitions detected!")
         return 1
@@ -166,7 +244,7 @@ def main(argv: list[str] | None = None) -> int:
     group.add_argument(
         "--show",
         action="store_true",
-        help="Inspect and display version status across all project files.",
+        help="Inspect and display version status across all project files and ReleaseNotes.",
     )
     group.add_argument(
         "--bump",
@@ -180,12 +258,31 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     parser.add_argument(
+        "--check-notes",
+        metavar="VERSION",
+        nargs="?",
+        const="",
+        help="Verify all 9 docs/release/ ReleaseNotes files contain entry for current or specified version.",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Preview changes without modifying files.",
     )
 
     args = parser.parse_args(argv)
+
+    if args.check_notes is not None:
+        target_v = args.check_notes if args.check_notes else get_current_version()
+        synced, missing = check_release_notes(target_v)
+        if synced:
+            print(f"[✔] All 9 ReleaseNotes in docs/release/ contain entry for v{target_v}.")
+            return 0
+        else:
+            print(f"[-] Missing v{target_v} entry in {len(missing)} ReleaseNotes file(s):")
+            for m in missing:
+                print(f"  - docs/release/{m}")
+            return 1
 
     if args.show or (not args.bump and not args.version):
         return show_versions()

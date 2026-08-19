@@ -24,6 +24,7 @@ console = Console()
 @click.option("--name", help="Clone application name.")
 @click.option("--display-name", default=None, help="Display name shown in Dock/Finder (supports Unicode, defaults to --name).")
 @click.option("--icon", default=None, type=click.Path(exists=True, dir_okay=False), help="Path to custom icon file (.icns, defaults to original app icon).")
+@click.option("--strategy", default=None, type=click.Choice(["hard_clone", "soft_clone"]), help="Override cloning strategy (hard_clone or soft_clone).")
 @click.option("--output-dir", default=str(Path.home() / "Applications"), help="Target output directory for the cloned application.")
 @click.option("--proxy-host", default=None, help="Proxy host (overrides recipe)")
 @click.option("--proxy-port", default=None, type=int, help="Proxy port")
@@ -33,6 +34,7 @@ def clone(
     name: str | None,
     display_name: str | None,
     icon: str | None,
+    strategy: str | None,
     output_dir: str,
     proxy_host: str | None,
     proxy_port: int | None,
@@ -59,6 +61,10 @@ def clone(
             t("clone_probed_strategy", strategy=recipe.strategy, sandbox="Yes" if probe_result.has_sandbox else "No"),
             soft_wrap=True,
         )
+
+    if strategy:
+        recipe.strategy = strategy  # type: ignore[assignment]
+
 
     clone_name, num = AppInspector.next_available_name(name or info.app_name, out_path)
     new_bundle_id = f"{info.bundle_id}.atb{num}"

@@ -1,5 +1,6 @@
 bundle_id: com.google.Chrome
 app_name: Chrome
-strategy: soft_clone
+strategy: hard_clone
 launch_args:
   - "--user-data-dir={{ATB_DATA_DIR}}"
+

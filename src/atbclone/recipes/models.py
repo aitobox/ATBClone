@@ -1,5 +1,5 @@
 from typing import Literal
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
 
 class ProxyConfig(BaseModel):
@@ -27,10 +27,3 @@ class Recipe(BaseModel):
     symlink_whitelist: list[str] = Field(default_factory=list)
     launch_args: list[str] = Field(default_factory=list)
 
-    @field_validator("strategy", mode="before")
-    @classmethod
-    def chromium_guard(cls, v, info):
-        bid = (info.data.get("bundle_id") or "") if info and info.data else ""
-        if any(k in str(bid).lower() for k in ["chrome", "chromium", "microsoft.edge", "arc"]):
-            return "soft_clone"
-        return v

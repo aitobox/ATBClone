@@ -89,9 +89,25 @@ dist/ATBCloneCli --help    # 验证可执行且命令解析正常
 ls -lh dist/ATBCloneCli    # 显示文件大小
 ```
 
+## macOS 代码签名与公证（Code Signing & Notarization）
+
+为了使二进制在其他 macOS 设备上无阻碍运行且不被 Gatekeeper 拦截，打包流程内置了对 Apple 开发者证书与公证服务的支持：
+
+1. **Hardened Runtime 与 Entitlements**：
+   - 配置文件：`scripts/entitlements.plist`
+   - 包含 Python/CPython 运行时所需的 `allow-jit`、`allow-unsigned-executable-memory`、`disable-library-validation` 与 `allow-dyld-environment-variables`。
+
+2. **代码签名逻辑**：
+   - 自动在 Keychain 中查找 `Developer ID Application: *` 或 `Apple Development: *` 证书。
+   - 支持通过 `--sign "<identity>"` 或环境变量 `APPLE_SIGN_IDENTITY` 手动指定。
+   - 若未检测到开发者证书，自动优雅回退到 ad-hoc 签名（`--sign -`）供本地使用。
+   - 使用 `codesign --force --options runtime --timestamp --entitlements scripts/entitlements.plist` 进行强化运行时签名。
+
+3. **公证与分发脚本**：
+   - `scripts/notarize.sh`：自动使用 `ditto` 打包 zip 并通过 `xcrun notarytool` 提交 Apple 官方公证。
+
 ## 不在此次范围内
 
 - CI/CD 自动打包（可后续集成 GitHub Actions）
 - universal2 / x86_64 交叉编译
-- macOS 代码签名（codesign / notarize）
 - Homebrew tap 分发

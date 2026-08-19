@@ -57,32 +57,27 @@ def test_recipe_defaults():
     assert recipe.launch_args == []
 
 
-def test_chromium_guard():
-    # Chrome bundle ID should be forced to soft_clone even if hard_clone requested
+def test_chromium_recipes_support_hard_and_soft_clone():
     for bid in [
         "com.google.Chrome",
         "org.chromium.Chromium",
         "com.microsoft.edgemac",
-        "company.thebrowser.Arc",
-        "COM.GOOGLE.CHROME.CANARY",
-        "org.chromium.test",
-        "com.microsoft.Edge",
-        "company.thebrowser.arc.dev",
+        "company.thebrowser.Browser",
     ]:
-        recipe = Recipe(
+        recipe_hard = Recipe(
             bundle_id=bid,
             app_name="Browser",
             strategy="hard_clone",
         )
-        assert recipe.strategy == "soft_clone", f"Failed for {bid}"
+        assert recipe_hard.strategy == "hard_clone"
 
-    # Non-chromium should keep hard_clone
-    recipe = Recipe(
-        bundle_id="com.tencent.xinWeChat",
-        app_name="WeChat",
-        strategy="hard_clone",
-    )
-    assert recipe.strategy == "hard_clone"
+        recipe_soft = Recipe(
+            bundle_id=bid,
+            app_name="Browser",
+            strategy="soft_clone",
+        )
+        assert recipe_soft.strategy == "soft_clone"
+
 
 
 def test_recipe_invalid_strategy():
@@ -111,7 +106,7 @@ def test_load_builtin_chrome():
     recipe = RecipeLoader.match("com.google.Chrome")
     assert recipe is not None
     assert recipe.bundle_id == "com.google.Chrome"
-    assert recipe.strategy == "soft_clone"
+    assert recipe.strategy == "hard_clone"
     assert any("--user-data-dir" in arg for arg in recipe.launch_args)
 
 
@@ -196,7 +191,7 @@ def test_load_builtin_edge():
     assert recipe is not None
     assert recipe.bundle_id == "com.microsoft.edgemac"
     assert recipe.app_name == "Edge"
-    assert recipe.strategy == "soft_clone"
+    assert recipe.strategy == "hard_clone"
     assert "--user-data-dir={{ATB_DATA_DIR}}" in recipe.launch_args
 
 
@@ -218,7 +213,7 @@ def test_all_builtin_recipes_valid():
 
     expected_recipes = {
         "com.tencent.xinWeChat": ("微信", "hard_clone", False),
-        "com.google.Chrome": ("Chrome", "soft_clone", False),
+        "com.google.Chrome": ("Chrome", "hard_clone", False),
         "com.tencent.qq": ("QQ", "hard_clone", False),
         "ph.telegra.Telegraph": ("Telegram", "hard_clone", False),
         "jp.naver.line.mac": ("LINE", "hard_clone", True),
@@ -229,9 +224,9 @@ def test_all_builtin_recipes_valid():
         "com.google.antigravity": ("Antigravity", "hard_clone", False),
         "com.google.antigravity-ide": ("Antigravity IDE", "hard_clone", False),
         "com.google.GeminiMacOS": ("Gemini", "hard_clone", True),
-        "com.microsoft.edgemac": ("Edge", "soft_clone", False),
+        "com.microsoft.edgemac": ("Edge", "hard_clone", False),
         "org.mozilla.firefox": ("Firefox", "soft_clone", False),
-        "company.thebrowser.Browser": ("Arc", "soft_clone", False),
+        "company.thebrowser.Browser": ("Arc", "hard_clone", False),
         "com.todesktop.230313mzl4w4u92": ("Cursor", "soft_clone", False),
         "com.microsoft.VSCode": ("VS Code", "soft_clone", False),
         "dev.zed.Zed": ("Zed", "soft_clone", False),
@@ -243,4 +238,5 @@ def test_all_builtin_recipes_valid():
         assert recipe.app_name == name
         assert recipe.strategy == strategy
         assert recipe.strip_sandbox == strip_sandbox
+
 

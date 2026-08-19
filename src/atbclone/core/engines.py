@@ -71,7 +71,8 @@ class SoftCloneEngine(CloneEngine):
             for arg in task.recipe.launch_args
         ]
         args_str = f" {' '.join(args_list)}" if args_list else ""
-        exec_cmd = f"exec {src_bin}{args_str} >/dev/null 2>&1 &"
+        exec_cmd = f'exec {src_bin}{args_str} "$@"'
+
 
         proxy_env = cls._build_proxy_env(task)
         wrapper_lines = ["#!/bin/bash"]
@@ -144,13 +145,21 @@ class HardCloneEngine(CloneEngine):
         ])
         proxy_env = cls._build_proxy_env(task)
 
+        # Inject launch_args (e.g. --user-data-dir=... for Chromium apps)
+        args_list = [
+            shlex.quote(arg.replace("{{ATB_DATA_DIR}}", str(task.data_dir)))
+            for arg in task.recipe.launch_args
+        ]
+        args_str = f" {' '.join(args_list)}" if args_list else ""
+
         wrapper_lines = ["#!/bin/bash"]
         if env_vars:
             wrapper_lines.append(env_vars)
         if proxy_env:
             wrapper_lines.append(proxy_env)
-        wrapper_lines.append(f'exec "$(dirname "$0")/{orig_bin_name}.bin" "$@"')
+        wrapper_lines.append(f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"')
         wrapper_body = "\n".join(wrapper_lines)
+
 
         if task.recipe.strip_sandbox:
             ent_plist = shlex.quote(str(task.dest_path / "Contents" / "atb_entitlements.plist"))

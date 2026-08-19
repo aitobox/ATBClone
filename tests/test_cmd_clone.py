@@ -228,6 +228,7 @@ def test_clone_help_command():
     assert "--name" in result.output
     assert "--display-name" in result.output
     assert "--icon" in result.output
+    assert "--strategy" in result.output
     assert "--output-dir" in result.output
     assert "--proxy-host" in result.output
     assert "--proxy-port" in result.output
@@ -240,6 +241,32 @@ def test_clone_nonexistent_app_fails():
     result = runner.invoke(cli, ["clone", "/nonexistent/path/App.app"])
     assert result.exit_code != 0
     assert "does not exist" in result.output or "Error" in result.output
+
+
+def test_clone_strategy_override(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    """--strategy overrides the recipe strategy."""
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
+
+        result = runner.invoke(
+            cli,
+            [
+                "clone",
+                str(mock_app_info.path),
+                "--output-dir", str(output_dir),
+                "--strategy", "hard_clone",
+            ],
+        )
+
+        assert result.exit_code == 0
+        mock_hard_exec.assert_called_once()
+
 
 
 def test_clone_custom_display_name(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):

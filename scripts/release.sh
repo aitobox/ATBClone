@@ -7,8 +7,8 @@
 #   3. Update version in pyproject.toml & src/atbclone/__init__.py
 #   4. Verify multilingual ReleaseNotes in docs/release/
 #   5. Commit release to git and create annotated tag v<version>
-#   6. Compile standalone binary via scripts/build_cli.sh
-#   7. Verify binary execution and version output
+#   6. Compile standalone binary via scripts/build_cli.sh (+ Apple Code Signing)
+#   7. Verify binary execution, version output, and signature
 # ==============================================================================
 set -euo pipefail
 
@@ -17,7 +17,64 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 cd "${PROJECT_ROOT}"
 
-TARGET_VERSION="${1:-}"
+TARGET_VERSION=""
+BUILD_ARGS=()
+
+show_help() {
+    cat << EOF
+Usage: $(basename "$0") <x.y.z> [BUILD_OPTIONS]
+
+Automate complete release workflow for ATBClone.
+
+Arguments:
+  <x.y.z>                     Semantic version number (e.g. 0.2.0 or v0.2.0)
+
+Build & Signing Options (passed to build_cli.sh):
+  -s, --sign <identity>       Apple Code Signing Identity (e.g. "Developer ID Application: ...")
+  --skip-sign                 Skip code signing during binary build
+  -n, --notarize              Run Apple Notarization after build
+  -p, --profile <name>        Keychain profile for notarization
+  -h, --help                  Show this help message
+
+Examples:
+  bash scripts/release.sh 0.2.0
+  bash scripts/release.sh 0.2.0 --sign "Developer ID Application: Shanghai Tianzhi Cloud Information Technology Co., LTD (WC7C59Q92T)"
+  bash scripts/release.sh 0.2.0 --notarize --profile "notary-profile"
+EOF
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -s|--sign|-p|--profile|--keychain-profile)
+            BUILD_ARGS+=("$1" "$2")
+            shift 2
+            ;;
+        --skip-sign|-n|--notarize)
+            BUILD_ARGS+=("$1")
+            shift
+            ;;
+        -*)
+            echo "[-] Unknown option: $1" >&2
+            show_help
+            exit 1
+            ;;
+        *)
+            if [[ -z "${TARGET_VERSION}" ]]; then
+                TARGET_VERSION="$1"
+            else
+                echo "[-] Unexpected extra argument: $1" >&2
+                show_help
+                exit 1
+            fi
+            shift
+            ;;
+    esac
+done
 
 if [[ -z "${TARGET_VERSION}" ]]; then
     echo "[-] Usage: $0 <x.y.z> (e.g. $0 0.2.0)" >&2
@@ -45,7 +102,23 @@ echo "======================================================"
 echo "  🚀 Starting ATBClone Release Workflow: ${TAG_NAME}"
 echo "======================================================"
 
-PYTHON_BIN="$(which python || which python3)"
+if [[ -n "${PYTHON:-}" ]]; then
+    PYTHON_BIN="${PYTHON}"
+elif [[ -n "${CONDA_PREFIX:-}" && "${CONDA_PREFIX}" == *"ATBClone"* && -x "${CONDA_PREFIX}/bin/python" ]]; then
+    PYTHON_BIN="${CONDA_PREFIX}/bin/python"
+elif [[ -x "/opt/homebrew/anaconda3/envs/ATBClone/bin/python" ]]; then
+    PYTHON_BIN="/opt/homebrew/anaconda3/envs/ATBClone/bin/python"
+elif [[ -x "${HOME}/anaconda3/envs/ATBClone/bin/python" ]]; then
+    PYTHON_BIN="${HOME}/anaconda3/envs/ATBClone/bin/python"
+elif [[ -x "${HOME}/miniconda3/envs/ATBClone/bin/python" ]]; then
+    PYTHON_BIN="${HOME}/miniconda3/envs/ATBClone/bin/python"
+elif [[ -x "${HOME}/miniforge3/envs/ATBClone/bin/python" ]]; then
+    PYTHON_BIN="${HOME}/miniforge3/envs/ATBClone/bin/python"
+elif [[ -n "${CONDA_PREFIX:-}" && -x "${CONDA_PREFIX}/bin/python" ]]; then
+    PYTHON_BIN="${CONDA_PREFIX}/bin/python"
+else
+    PYTHON_BIN="$(which python || which python3)"
+fi
 
 # 1. Run Tests
 echo "==> [Step 1/6] Running test suite..."
@@ -78,15 +151,18 @@ fi
 git tag -a "${TAG_NAME}" -m "Release ${TAG_NAME}"
 echo "[✔] Tag ${TAG_NAME} created."
 
-# 5. Build Standalone Executable
+# 5. Build Standalone Executable with Code Signing
 echo "==> [Step 5/6] Building standalone binary..."
-bash scripts/build_cli.sh
+bash scripts/build_cli.sh "${BUILD_ARGS[@]}"
 
-# 6. Verify Build
-echo "==> [Step 6/6] Verifying built binary..."
+# 6. Verify Build & Signature
+echo "==> [Step 6/6] Verifying built binary & signature..."
 if [[ -f "dist/ATBCloneCli" ]]; then
     echo "[*] Running ./dist/ATBCloneCli version..."
     ./dist/ATBCloneCli version
+    echo ""
+    echo "[*] Verifying binary signature status..."
+    codesign -dv --verbose=2 dist/ATBCloneCli 2>&1 | grep -E "(Identifier|Authority|Timestamp|TeamIdentifier)" || true
     echo ""
     echo "======================================================"
     echo "  🎉 Successfully released ATBClone ${TAG_NAME}!"

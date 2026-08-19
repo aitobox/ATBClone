@@ -126,7 +126,7 @@ class TestSoftCloneEngine:
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.example.testapp.clone2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleName TestApp 2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert "cat << 'WRAPPER_EOF' > /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
-            assert "exec /Applications/TestApp.app/Contents/MacOS/TestApp >/dev/null 2>&1 &" in script
+            assert 'exec /Applications/TestApp.app/Contents/MacOS/TestApp "$@"' in script
             assert "chmod +x /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
 
     def test_soft_clone_with_spaces_in_path(self, mock_app_info_with_spaces, base_recipe):
@@ -144,7 +144,7 @@ class TestSoftCloneEngine:
             script, _ = mock_run.call_args[0]
             assert "mkdir -p '/Applications/Google Chrome 2.app/Contents/MacOS'" in script
             assert "cp '/Applications/Google Chrome.app/Contents/Info.plist' '/Applications/Google Chrome 2.app/Contents/Info.plist'" in script
-            assert "exec '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' >/dev/null 2>&1 &" in script
+            assert "exec '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \"$@\"" in script
 
     def test_soft_clone_with_launch_args_and_proxy(self, sample_task):
         sample_task.recipe.launch_args = [
@@ -163,7 +163,7 @@ class TestSoftCloneEngine:
             assert needs_admin is True
             assert 'export HTTP_PROXY="http://127.0.0.1:8080"' in script
             assert '--user-data-dir=/Users/test/Library/Application Support/TestApp2' in script
-            assert "exec /Applications/TestApp.app/Contents/MacOS/TestApp '--user-data-dir=/Users/test/Library/Application Support/TestApp2' --no-first-run >/dev/null 2>&1 &" in script
+            assert "exec /Applications/TestApp.app/Contents/MacOS/TestApp '--user-data-dir=/Users/test/Library/Application Support/TestApp2' --no-first-run \"$@\"" in script
 
     def test_soft_clone_failure_cleans_up_and_reraises(self, sample_task):
         with patch("atbclone.executor.runner.Runner.run", side_effect=[CloneError("Permission denied"), None]) as mock_run:
@@ -211,6 +211,7 @@ class TestHardCloneEngine:
             assert "mv '/Applications/Google Chrome 2.app/Contents/MacOS/Google Chrome' '/Applications/Google Chrome 2.app/Contents/MacOS/Google Chrome.bin'" in script
             assert 'exec "$(dirname "$0")/Google Chrome.bin" "$@"' in script
 
+
     def test_hard_clone_with_strip_sandbox(self, sample_task):
         sample_task.recipe.strip_sandbox = True
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
@@ -243,7 +244,16 @@ class TestHardCloneEngine:
             assert "export UNSAFE_VAL='foo\"; rm -rf /; echo \"$bar`whoami`'" in script
             assert 'export HTTP_PROXY="http://127.0.0.1:1080"' in script
 
+    def test_hard_clone_with_launch_args(self, sample_task):
+        sample_task.recipe.launch_args = ["--user-data-dir={{ATB_DATA_DIR}}", "--no-first-run"]
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "exec \"$(dirname \"$0\")/TestApp.bin\" '--user-data-dir=/Users/test/Library/Application Support/TestApp2' --no-first-run \"$@\"" in script
+
     def test_hard_clone_failure_cleans_up_and_reraises(self, sample_task):
+
         with patch("atbclone.executor.runner.Runner.run", side_effect=[CloneError("Disk full"), None]) as mock_run:
             with pytest.raises(CloneError) as exc_info:
                 HardCloneEngine.execute(sample_task, needs_admin=False)

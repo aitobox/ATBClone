@@ -43,3 +43,22 @@ def test_entry_point_uses_absolute_imports():
     # Must use absolute import, not relative (no leading dot)
     assert "from atbclone.cli.main import cli" in content
     assert "from .cli" not in content
+
+
+def test_release_script_exists_and_executable():
+    root = Path(__file__).parent.parent
+    script = root / "scripts" / "release.sh"
+    assert script.exists(), "scripts/release.sh does not exist"
+    assert os.access(script, os.X_OK), "scripts/release.sh is not executable"
+
+
+def test_release_script_bash_syntax():
+    root = Path(__file__).parent.parent
+    script = root / "scripts" / "release.sh"
+    result = subprocess.run(
+        ["bash", "-n", str(script)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, f"Bash syntax error: {result.stderr}"
+

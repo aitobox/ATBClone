@@ -41,7 +41,7 @@ def clone(
     clone_name, num = AppInspector.next_available_name(name or info.app_name, out_path)
     new_bundle_id = f"{info.bundle_id}.atb{num}"
     dest_path = out_path / f"{clone_name}.app"
-    data_dir = Path.home() / ".AIToBox" / "Data" / clone_name
+    data_dir = Path.home() / ".atbclone" / "Data" / clone_name
 
     task = CloneTask(
         source=info,

@@ -7,7 +7,7 @@ from atbclone.core.state import STATE_FILE, CloneRecord, StateManager
 
 
 def test_state_file_default():
-    assert STATE_FILE == Path.home() / ".AIToBox" / "clones.yaml"
+    assert STATE_FILE == Path.home() / ".atbclone" / "clones.yaml"
     assert CORE_STATE_FILE == STATE_FILE
     assert CoreCloneRecord is CloneRecord
     assert CoreStateManager is StateManager
@@ -59,7 +59,7 @@ def test_add_and_load(tmp_path):
         bundle_id="com.tencent.xinWeChat",
         strategy="hard_clone",
         dest_path=str(tmp_path / "Applications" / "微信2.app"),
-        data_dir=str(tmp_path / ".AIToBox" / "Data" / "微信2"),
+        data_dir=str(tmp_path / ".atbclone" / "Data" / "微信2"),
         created_at="2026-08-18T14:00:00+00:00",
         proxy_enabled=True,
         proxy_summary="http://127.0.0.1:1080",
@@ -76,7 +76,7 @@ def test_add_and_load(tmp_path):
     assert loaded_rec.bundle_id == "com.tencent.xinWeChat"
     assert loaded_rec.strategy == "hard_clone"
     assert loaded_rec.dest_path == str(tmp_path / "Applications" / "微信2.app")
-    assert loaded_rec.data_dir == str(tmp_path / ".AIToBox" / "Data" / "微信2")
+    assert loaded_rec.data_dir == str(tmp_path / ".atbclone" / "Data" / "微信2")
     assert loaded_rec.created_at == "2026-08-18T14:00:00+00:00"
     assert loaded_rec.proxy_enabled is True
     assert loaded_rec.proxy_summary == "http://127.0.0.1:1080"
@@ -94,7 +94,7 @@ def test_add_defaults(tmp_path):
         bundle_id="com.tencent.qq",
         strategy="soft_clone",
         dest_path=str(tmp_path / "Applications" / "QQ2.app"),
-        data_dir=str(tmp_path / ".AIToBox" / "Data" / "QQ2"),
+        data_dir=str(tmp_path / ".atbclone" / "Data" / "QQ2"),
         created_at="2026-08-18T14:00:00+00:00",
     )
     assert rec.proxy_enabled is False
@@ -120,7 +120,7 @@ def test_add_existing_updates_record(tmp_path):
         bundle_id="com.tencent.xinWeChat",
         strategy="hard_clone",
         dest_path=str(tmp_path / "Applications" / "微信2.app"),
-        data_dir=str(tmp_path / ".AIToBox" / "Data" / "微信2"),
+        data_dir=str(tmp_path / ".atbclone" / "Data" / "微信2"),
         created_at="2026-08-18T14:00:00+00:00",
     )
     mgr.add(rec1)
@@ -132,7 +132,7 @@ def test_add_existing_updates_record(tmp_path):
         bundle_id="com.tencent.xinWeChat",
         strategy="hard_clone",
         dest_path=str(tmp_path / "Applications" / "微信2.app"),
-        data_dir=str(tmp_path / ".AIToBox" / "Data" / "微信2"),
+        data_dir=str(tmp_path / ".atbclone" / "Data" / "微信2"),
         created_at="2026-08-18T15:00:00+00:00",
         proxy_enabled=True,
         proxy_summary="http://127.0.0.1:8080",

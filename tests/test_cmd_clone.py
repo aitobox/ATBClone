@@ -76,7 +76,7 @@ def test_clone_soft_success(tmp_path: Path, mock_app_info: AppInfo, mock_soft_re
         assert task.dest_path == output_dir / "WeChat2.app"
         assert task.clone_name == "WeChat2"
         assert task.new_bundle_id == "com.tencent.xinWeChat.atb2"
-        assert task.data_dir == Path.home() / ".AIToBox" / "Data" / "WeChat2"
+        assert task.data_dir == Path.home() / ".atbclone" / "Data" / "WeChat2"
 
 
 def test_clone_hard_success(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
@@ -336,7 +336,7 @@ def test_clone_state_persistence_success(tmp_path: Path, mock_app_info: AppInfo,
         assert record.bundle_id == "com.tencent.xinWeChat"
         assert record.strategy == "soft_clone"
         assert record.dest_path == str(output_dir / "WeChat2.app")
-        assert record.data_dir == str(Path.home() / ".AIToBox" / "Data" / "WeChat2")
+        assert record.data_dir == str(Path.home() / ".atbclone" / "Data" / "WeChat2")
         assert datetime.fromisoformat(record.created_at) is not None
         assert record.proxy_enabled is False
         assert record.proxy_summary == ""

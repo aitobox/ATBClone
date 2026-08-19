@@ -31,7 +31,7 @@ def version(short: bool) -> None:
     table.add_row("Platform", f"{platform.system()} {platform.release()} ({platform.machine()})")
     table.add_row("Executable", sys.executable)
     table.add_row("State Storage", str(STATE_FILE))
-    table.add_row("Data Directory", str(Path.home() / ".AIToBox" / "Data"))
+    table.add_row("Data Directory", str(Path.home() / ".atbclone" / "Data"))
 
     panel = Panel(
         table,

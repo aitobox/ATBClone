@@ -3,7 +3,7 @@ from pathlib import Path
 
 import yaml
 
-STATE_FILE = Path.home() / ".AIToBox" / "clones.yaml"
+STATE_FILE = Path.home() / ".atbclone" / "clones.yaml"
 
 
 @dataclass

@@ -10,7 +10,7 @@
   - **硬克隆 (Hard Clone)**：适用于原生与社交应用（微信、QQ、Telegram、AI 客户端等）。完整复制 App Bundle，修改 `Info.plist` 与 Bundle Identifier，通过二进制劫持脚本注入独立的 `HOME` / `TMPDIR` 数据目录，可选解除 Sandbox 限制并执行 Ad-hoc 重签名。
   - **软克隆 (Soft Clone)**：适用于 Chromium 系列应用及现代编辑器（Chrome、Edge、Arc、Cursor、VS Code 等）。创建轻量级 Wrapper 包，自动注入独立的 `--user-data-dir` / `--profile` 启动参数与代理环境变量。
 - 🌐 **独立网络代理**：支持为每个分身单独指定 HTTP 或 SOCKS5 代理（支持认证），分身流量与系统及原应用互不干扰。
-- 📑 **规则引擎 (Recipe Engine)**：内置 18+ 常用应用与 AI Agent 工具配方，支持通过 `~/.AIToBox/recipes/` 本地优先级覆盖自定义规则。
+- 📑 **规则引擎 (Recipe Engine)**：内置 18+ 常用应用与 AI Agent 工具配方，支持通过 `~/.atbclone/recipes/` 本地优先级覆盖自定义规则。
 - 🪄 **交互式向导 (Wizard)**：命令行交互式一步步引导，支持终端路径拖拽、自动识别并编号、即时配置代理。
 - 🔄 **生命周期管理**：提供分身列表查看（`list`）、原版本升级后一键重克隆且保留聊天数据（`update`）、安全删除分身及可选清理数据（`remove`）。
 - 🛡️ **安全与提权设计**：写入 `~/Applications` 无需管理员权限；写入 `/Applications` 自动使用 macOS 原生单次 `osascript` 授权；全流程使用原子脚本与 `shlex.quote` 路径防护。
@@ -163,9 +163,9 @@ atbclone recipe show com.tencent.xinWeChat
 ```
 
 #### 自定义与覆盖配方
-在 `~/.AIToBox/recipes/<bundle_id>.yaml` 放置 YAML 规则文件即可自动优先加载覆盖：
+在 `~/.atbclone/recipes/<bundle_id>.yaml` 放置 YAML 规则文件即可自动优先加载覆盖：
 ```yaml
-# 示例：~/.AIToBox/recipes/com.example.customapp.yaml
+# 示例：~/.atbclone/recipes/com.example.customapp.yaml
 bundle_id: com.example.customapp
 app_name: CustomApp
 strategy: hard_clone
@@ -177,6 +177,11 @@ proxy:
   enabled: true
   type: http
   host: 127.0.0.1
+  port: 7890
+```
+
+---
+
 ### 7. 查看版本与系统信息 (`version`)
 
 ```bash
@@ -247,7 +252,7 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/ -v
 ## 📂 目录与数据存储架构
 
 ```
-~/.AIToBox/
+~/.atbclone/
 ├── clones.yaml           # 全局分身状态追踪记录
 ├── recipes/              # 用户自定义配方存放目录 (可选覆盖)
 └── Data/                 # 各分身独立的数据隔离目录

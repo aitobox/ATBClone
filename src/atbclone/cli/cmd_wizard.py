@@ -71,7 +71,7 @@ def wizard() -> None:
 
     # 7. 执行 clone (same logic as cmd_clone.py)
     new_bundle_id = f"{info.bundle_id}.atb{num}"
-    data_dir = Path.home() / ".AIToBox" / "Data" / clone_name
+    data_dir = Path.home() / ".atbclone" / "Data" / clone_name
 
     task = CloneTask(
         source=info,

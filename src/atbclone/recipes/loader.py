@@ -11,7 +11,7 @@ class RecipeLoader:
     def get_local_dir(cls) -> Path:
         if cls.LOCAL_DIR is not None:
             return cls.LOCAL_DIR
-        return Path.home() / ".AIToBox" / "recipes"
+        return Path.home() / ".atbclone" / "recipes"
 
     @classmethod
     def match(cls, bundle_id: str) -> Recipe:

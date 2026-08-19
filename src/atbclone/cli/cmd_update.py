@@ -55,7 +55,7 @@ def update(clone_name: str) -> None:
         info = AppInspector.inspect(record.source_path)
         recipe = RecipeLoader.match(info.bundle_id)
         data_dir = Path(record.data_dir)
-        new_bundle_id = record.new_bundle_id or f"{record.bundle_id}.atb1"
+        new_bundle_id = record.new_bundle_id or AppInspector.generate_bundle_id(record.bundle_id, 1)
 
         task = CloneTask(
             source=info,

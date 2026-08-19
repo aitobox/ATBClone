@@ -28,7 +28,7 @@ def mock_record_user_dir(tmp_path: Path) -> CloneRecord:
         created_at="2026-08-18T20:00:00+00:00",
         proxy_enabled=False,
         proxy_summary="",
-        new_bundle_id="com.tencent.xinWeChat.atb2",
+        new_bundle_id="com.tencent.xinWeChat.atbclone.2",
     )
 
 
@@ -47,7 +47,7 @@ def mock_record_admin_dir(tmp_path: Path) -> CloneRecord:
         created_at="2026-08-18T20:00:00+00:00",
         proxy_enabled=False,
         proxy_summary="",
-        new_bundle_id="com.tencent.xinWeChat.atb2",
+        new_bundle_id="com.tencent.xinWeChat.atbclone.2",
     )
 
 
@@ -66,7 +66,7 @@ def mock_record_soft_clone(tmp_path: Path) -> CloneRecord:
         created_at="2026-08-18T20:00:00+00:00",
         proxy_enabled=True,
         proxy_summary="http://127.0.0.1:8080",
-        new_bundle_id="com.google.Chrome.atb2",
+        new_bundle_id="com.google.Chrome.atbclone.2",
     )
 
 
@@ -157,7 +157,7 @@ def test_update_success_hard_clone(
         assert task.dest_path == Path(mock_record_user_dir.dest_path)
         assert task.data_dir == Path(mock_record_user_dir.data_dir)
         assert task.clone_name == "WeChat2"
-        assert task.new_bundle_id == "com.tencent.xinWeChat.atb2"
+        assert task.new_bundle_id == "com.tencent.xinWeChat.atbclone.2"
         assert task_needs_admin is False
 
         # Verify state update
@@ -285,7 +285,7 @@ def test_update_fallback_bundle_id_when_empty(
         assert result.exit_code == 0
 
         task, _ = mock_hard_exec.call_args[0]
-        assert task.new_bundle_id == f"{mock_record_user_dir.bundle_id}.atb1"
+        assert task.new_bundle_id == "com.tencent.xinWeChat.atbclone.1"
 
 
 def test_update_help():

@@ -11,6 +11,7 @@ from atbclone.core.app_prober import AppProber
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.config import DEFAULT_DATA_DIR
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
+from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord, StateManager
 from atbclone.executor.runner import CloneError
 from atbclone.recipes.loader import RecipeLoader
@@ -40,7 +41,7 @@ def clone(
     """Clone a macOS application."""
     # Validate icon file extension early for a friendly error message
     if icon and not icon.lower().endswith(".icns"):
-        console.print("[bold red]Error:[/bold red] --icon must be a .icns file.", soft_wrap=True)
+        console.print(t("clone_err_icon_icns"), soft_wrap=True)
         sys.exit(1)
 
     out_path = Path(output_dir).expanduser().resolve()
@@ -50,13 +51,12 @@ def clone(
     if RecipeLoader.has_recipe(info.bundle_id):
         recipe = RecipeLoader.match(info.bundle_id)
     else:
-        console.print(f"[yellow]No pre-configured recipe found for '{info.bundle_id}'.[/yellow]", soft_wrap=True)
-        console.print("[cyan]Probing application architecture and entitlements...[/cyan]", soft_wrap=True)
+        console.print(t("clone_no_recipe_found", bundle_id=info.bundle_id), soft_wrap=True)
+        console.print(t("clone_probing"), soft_wrap=True)
         probe_result = AppProber.analyze(app_path)
         recipe = probe_result.recipe
         console.print(
-            f"[cyan]Probed Strategy:[/cyan] [bold]{recipe.strategy}[/bold] "
-            f"(Sandbox: {'Yes' if probe_result.has_sandbox else 'No'})",
+            t("clone_probed_strategy", strategy=recipe.strategy, sandbox="Yes" if probe_result.has_sandbox else "No"),
             soft_wrap=True,
         )
 
@@ -84,7 +84,7 @@ def clone(
 
     needs_admin = not dest_path.is_relative_to(Path.home())
 
-    console.print(f"[bold green]Starting clone:[/bold green] {info.app_name} -> {clone_name}", soft_wrap=True)
+    console.print(t("starting_clone", app_name=info.app_name, clone_name=clone_name), soft_wrap=True)
     try:
         if recipe.strategy == "soft_clone":
             SoftCloneEngine.execute(task, needs_admin)
@@ -106,7 +106,7 @@ def clone(
         )
         StateManager().add(record)
 
-        console.print(f"[bold green]Success![/bold green] Clone created at {dest_path}", soft_wrap=True)
+        console.print(t("clone_success", dest_path=dest_path), soft_wrap=True)
     except (CloneError, Exception) as e:
-        console.print(f"[bold red]Error:[/bold red] {e}", soft_wrap=True)
+        console.print(t("clone_error", error=e), soft_wrap=True)
         sys.exit(1)

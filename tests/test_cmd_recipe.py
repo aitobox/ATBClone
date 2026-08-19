@@ -14,9 +14,9 @@ def test_recipe_list():
     assert "com.tencent.xinWeChat" in result.output
     assert "com.google.Chrome" in result.output
     assert "Bundle ID" in result.output
-    assert "App Name" in result.output
-    assert "策略" in result.output
-    assert "Strip Sandbox" in result.output
+    assert "App Name" in result.output or "应用名称" in result.output
+    assert "Strategy" in result.output or "策略" in result.output
+    assert "Strip Sandbox" in result.output or "解除沙盒" in result.output
 
 
 def test_recipe_list_shows_all_18():

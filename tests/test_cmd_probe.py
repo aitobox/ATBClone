@@ -51,7 +51,7 @@ def test_probe_default_output(tmp_path: Path, sample_probe_result: ProbeResult):
     with patch("atbclone.cli.cmd_probe.AppProber.analyze", return_value=sample_probe_result):
         result = runner.invoke(cli, ["probe", str(app_path)])
         assert result.exit_code == 0
-        assert "ATBClone 深度应用探测" in result.output
+        assert "ATBClone Deep Application Probe" in result.output or "ATBClone 深度应用探测" in result.output
         assert "com.demo.app" in result.output
         assert "DemoApp" in result.output
         assert "hard_clone" in result.output
@@ -81,7 +81,7 @@ def test_probe_save_option(tmp_path: Path, sample_probe_result: ProbeResult):
          patch("atbclone.recipes.loader.RecipeLoader.get_local_dir", return_value=local_recipes):
         result = runner.invoke(cli, ["probe", str(app_path), "--save"])
         assert result.exit_code == 0
-        assert "已保存配方至" in result.output
+        assert "Saved recipe to" in result.output or "已保存配方至" in result.output
 
         saved_file = local_recipes / "com.demo.app.yaml"
         assert saved_file.exists()
@@ -98,7 +98,7 @@ def test_probe_output_option(tmp_path: Path, sample_probe_result: ProbeResult):
     with patch("atbclone.cli.cmd_probe.AppProber.analyze", return_value=sample_probe_result):
         result = runner.invoke(cli, ["probe", str(app_path), "-o", str(custom_out)])
         assert result.exit_code == 0
-        assert "已保存配方至" in result.output
+        assert "Saved recipe to" in result.output or "已保存配方至" in result.output
         assert custom_out.exists()
         saved_recipe = yaml.safe_load(custom_out.read_text(encoding="utf-8"))
         assert saved_recipe["bundle_id"] == "com.demo.app"

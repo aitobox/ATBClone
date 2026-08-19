@@ -10,6 +10,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from atbclone.core.app_prober import AppProber
+from atbclone.core.i18n import t
 from atbclone.recipes.loader import RecipeLoader
 
 console = Console()
@@ -24,13 +25,13 @@ def probe(app_path: str, save: bool, output: str | None, json_mode: bool) -> Non
     """Probe application architecture, entitlements, and recommended recipe."""
     target = Path(app_path).expanduser().resolve()
     if not target.exists() or not str(target).endswith(".app"):
-        console.print(f"[bold red]Error:[/bold red] '{app_path}' is not a valid macOS .app bundle.", soft_wrap=True)
+        console.print(t("probe_err_invalid_app", app_path=app_path), soft_wrap=True)
         sys.exit(1)
 
     try:
         result = AppProber.analyze(target)
     except Exception as e:
-        console.print(f"[bold red]Error during probing:[/bold red] {e}", soft_wrap=True)
+        console.print(t("probe_err_failed", error=e), soft_wrap=True)
         sys.exit(1)
 
     info = result.app_info
@@ -66,22 +67,22 @@ def probe(app_path: str, save: bool, output: str | None, json_mode: bool) -> Non
         table.add_column("Key", style="bold cyan")
         table.add_column("Value")
 
-        table.add_row("应用名称", info.app_name)
-        table.add_row("Bundle ID", info.bundle_id)
-        table.add_row("可执行文件", str(info.executable))
+        table.add_row(t("probe_row_app_name"), info.app_name)
+        table.add_row(t("probe_row_bundle_id"), info.bundle_id)
+        table.add_row(t("probe_row_executable"), str(info.executable))
         table.add_row(
-            "沙盒状态",
+            t("probe_row_sandbox"),
             "[red]Yes (com.apple.security.app-sandbox)[/red]" if result.has_sandbox else "[green]No (Non-sandboxed)[/green]",
         )
         table.add_row(
-            "检测框架",
+            t("probe_row_frameworks"),
             ", ".join(result.frameworks) if result.frameworks else "Native Cocoa / C++ / Qt",
         )
-        table.add_row("推荐策略", f"[bold green]{result.strategy}[/bold green]")
-        table.add_row("分析说明", result.reason)
+        table.add_row(t("probe_row_strategy"), f"[bold green]{result.strategy}[/bold green]")
+        table.add_row(t("probe_row_reason"), result.reason)
 
-        console.print(Panel(table, title="🔍 [bold]ATBClone 深度应用探测[/bold]", border_style="cyan"))
-        console.print("\n[bold]--- 生成的 Recipe YAML ---[/bold]")
+        console.print(Panel(table, title=t("probe_title"), border_style="cyan"))
+        console.print(f"{t('probe_yaml_header')}")
         console.print(yaml_str.strip())
         console.print("[bold]-------------------------[/bold]\n")
 
@@ -90,9 +91,9 @@ def probe(app_path: str, save: bool, output: str | None, json_mode: bool) -> Non
         target_dir.mkdir(parents=True, exist_ok=True)
         target_file = target_dir / f"{info.bundle_id}.yaml"
         target_file.write_text(yaml_str, encoding="utf-8")
-        console.print(f"[bold green]✔ 已保存配方至:[/bold green] {target_file}", soft_wrap=True)
+        console.print(t("probe_saved_to", path=target_file), soft_wrap=True)
     elif output:
         out_file = Path(output).expanduser().resolve()
         out_file.parent.mkdir(parents=True, exist_ok=True)
         out_file.write_text(yaml_str, encoding="utf-8")
-        console.print(f"[bold green]✔ 已保存配方至:[/bold green] {out_file}", soft_wrap=True)
+        console.print(t("probe_saved_to", path=out_file), soft_wrap=True)

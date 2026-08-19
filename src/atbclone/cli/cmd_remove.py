@@ -6,6 +6,7 @@ from pathlib import Path
 import click
 from rich.console import Console
 
+from atbclone.core.i18n import t
 from atbclone.core.state import StateManager
 from atbclone.executor.runner import CloneError, Runner
 
@@ -24,7 +25,7 @@ def remove(clone_name: str, with_data: bool) -> None:
     sm = StateManager()
     record = sm.get(clone_name)
     if record is None:
-        console.print(f"[red]Error:[/red] Clone '{clone_name}' not found.")
+        console.print(t("remove_err_not_found", clone_name=clone_name))
         sys.exit(1)
 
     needs_admin = not Path(record.dest_path).is_relative_to(Path.home())
@@ -37,7 +38,7 @@ def remove(clone_name: str, with_data: bool) -> None:
 
     if with_data:
         click.confirm(
-            f"Also delete data directory {record.data_dir}? This is irreversible.",
+            t("remove_confirm_data", data_dir=record.data_dir),
             abort=True,
         )
         lines.append(f"rm -rf {shlex.quote(record.data_dir)}")
@@ -51,4 +52,4 @@ def remove(clone_name: str, with_data: bool) -> None:
         sys.exit(1)
 
     sm.remove(clone_name)
-    console.print(f"[bold green]Success![/bold green] Removed clone '{clone_name}'")
+    console.print(t("remove_success", clone_name=clone_name))

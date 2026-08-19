@@ -48,7 +48,7 @@ echo "[+] Building ATBCloneCli v${VERSION}..."
 
 # 5. Run Nuitka Build
 echo "[*] Running Nuitka compiler..."
-PYTHONPATH=src "${PYTHON_BIN}" -m nuitka \
+PYTHONNOUSERSITE=1 PYTHONPATH=src "${PYTHON_BIN}" -m nuitka \
     --onefile \
     --output-filename=ATBCloneCli \
     --output-dir=dist \

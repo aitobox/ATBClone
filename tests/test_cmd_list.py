@@ -39,7 +39,7 @@ def test_list_one_record():
         assert "com.tencent.xinWeChat" in result.output
         assert "hard_clone" in result.output
         assert "2026-08-18" in result.output
-        assert "未开启" in result.output
+        assert "Disabled" in result.output or "未开启" in result.output
 
 
 def test_list_multiple_records():
@@ -102,6 +102,7 @@ def test_list_proxy_shown():
         assert "WeChat3" in result.output
         assert "socks5://127.0.0.1:1080" in result.output
         assert "未开启" not in result.output
+        assert "Disabled" not in result.output
 
 
 def test_list_no_proxy():
@@ -123,7 +124,7 @@ def test_list_no_proxy():
     with patch("atbclone.cli.cmd_list.StateManager.load", return_value=mock_records):
         result = runner.invoke(cli, ["list"])
         assert result.exit_code == 0
-        assert "未开启" in result.output
+        assert "Disabled" in result.output or "未开启" in result.output
 
 
 def test_list_help():

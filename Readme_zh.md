@@ -1,6 +1,6 @@
-# ATBClone (macOS 应用多开引擎)
+[中文版](Readme_zh.md)  [English](Readme.md)
 
-[English](README.md) | [简体中文](Readme_zh.md)
+# ATBClone (macOS 应用多开引擎)
 
 > 🚀 **ATBClone** 是一个专为 macOS 设计的现代化应用程序多开（Multi-Instancing）与分身管理引擎。支持独立数据隔离、独立网络代理（HTTP / SOCKS5）、自动化配方匹配、重签名与沙盒解除。
 
@@ -335,6 +335,8 @@ src/atbclone/
 
 ---
 
-## 📄 License
+## 📄 License 与 Release Notes
 
-MIT License.
+- **开源协议**: MIT License.
+- **更新日志 (Release Notes)**: [English](docs/release/ReleaseNote.md) | [简体中文](docs/release/ReleaseNote_zh.md) | [繁體中文](docs/release/ReleaseNote_zh_TW.md) | [日本語](docs/release/ReleaseNote_ja.md) | [한국어](docs/release/ReleaseNote_ko.md) | [Deutsch](docs/release/ReleaseNote_de.md) | [Français](docs/release/ReleaseNote_fr.md) | [Русский](docs/release/ReleaseNote_ru.md) | [Español](docs/release/ReleaseNote_es.md)
+

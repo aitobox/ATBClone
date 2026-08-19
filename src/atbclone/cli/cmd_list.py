@@ -5,6 +5,7 @@ import click
 from rich.console import Console
 from rich.table import Table
 
+from atbclone.core.i18n import t
 from atbclone.core.state import StateManager
 
 console = Console()
@@ -30,19 +31,19 @@ def list_clones() -> None:
     """List all cloned applications."""
     records = StateManager().load()
     if not records:
-        console.print("[yellow]No clones found.[/yellow]")
+        console.print(t("list_no_clones"))
         return
 
     table = Table()
-    table.add_column("名称")
-    table.add_column("原 APP")
-    table.add_column("Bundle ID")
-    table.add_column("策略")
-    table.add_column("创建时间")
-    table.add_column("代理")
+    table.add_column(t("list_col_name"))
+    table.add_column(t("list_col_source_app"))
+    table.add_column(t("list_col_bundle_id"))
+    table.add_column(t("list_col_strategy"))
+    table.add_column(t("list_col_created_at"))
+    table.add_column(t("list_col_proxy"))
 
     for r in records:
-        proxy_display = r.proxy_summary if r.proxy_enabled else "未开启"
+        proxy_display = r.proxy_summary if r.proxy_enabled else t("list_proxy_disabled")
         table.add_row(
             r.clone_name,
             r.source_app,

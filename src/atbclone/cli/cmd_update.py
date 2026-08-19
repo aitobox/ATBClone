@@ -11,6 +11,7 @@ from rich.console import Console
 from atbclone.core.app_inspector import AppInspector
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
+from atbclone.core.i18n import t
 from atbclone.core.state import StateManager
 from atbclone.executor.runner import CloneError, Runner
 from atbclone.recipes.loader import RecipeLoader
@@ -25,17 +26,17 @@ def update(clone_name: str) -> None:
     sm = StateManager()
     record = sm.get(clone_name)
     if record is None:
-        console.print(f"[red]Error:[/red] Clone '{clone_name}' not found.")
+        console.print(t("update_err_not_found", clone_name=clone_name))
         sys.exit(1)
 
     if not Path(record.source_path).exists():
-        console.print(f"[bold red]Error:[/bold red] Source app not found at '{record.source_path}'")
+        console.print(t("update_err_source_not_found", source_path=record.source_path))
         sys.exit(1)
 
     dest_path = Path(record.dest_path)
     needs_admin = not dest_path.is_relative_to(Path.home())
 
-    console.print(f"[bold]Updating {clone_name}...[/bold]")
+    console.print(t("update_starting", clone_name=clone_name))
 
     lines = [
         "#!/bin/bash",
@@ -87,7 +88,7 @@ def update(clone_name: str) -> None:
         record.created_at = datetime.now(timezone.utc).isoformat()
         sm.add(record)
 
-        console.print(f"[bold green]Success![/bold green] Updated {clone_name}")
+        console.print(t("update_success", clone_name=clone_name))
     except (CloneError, Exception) as e:
         console.print(f"[bold red]Error:[/bold red] {e}")
         sys.exit(1)

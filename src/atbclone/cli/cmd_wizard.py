@@ -10,6 +10,7 @@ from atbclone.core.app_inspector import AppInspector
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.config import DEFAULT_DATA_DIR
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
+from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord, StateManager
 from atbclone.executor.runner import CloneError
 from atbclone.recipes.loader import RecipeLoader
@@ -20,85 +21,85 @@ console = Console()
 @click.command(name="wizard")
 def wizard() -> None:
     """Interactive cloning wizard."""
-    console.print("🧙 ATBClone 小向导\n")
+    console.print(t("wizard_title"))
 
-    # 1. 请输入要分身的 .app 路径
+    # 1. App path
     while True:
-        app_path_input = click.prompt("请输入要分身的 .app 路径")
+        app_path_input = click.prompt(t("wizard_prompt_app_path"))
         app_path_str = app_path_input.strip().strip("'\"")
         app_path = Path(app_path_str).expanduser().resolve()
         if not (app_path.exists() and (app_path_str.rstrip("/").endswith(".app") or app_path.name.endswith(".app"))):
-            console.print("[bold red]错误: 路径不存在或不是 .app 应用，请重新输入。[/bold red]")
+            console.print(t("wizard_err_invalid_app_path"))
             continue
         break
 
-    # 2. 检测应用...
-    console.print("\n检测应用...")
+    # 2. Inspect app
+    console.print(t("wizard_detecting_app"))
     info = AppInspector.inspect(str(app_path))
     recipe = RecipeLoader.match(info.bundle_id)
-    console.print(f"应用: {info.app_name} ({info.bundle_id})")
-    console.print(f"策略: {recipe.strategy}\n")
+    console.print(t("wizard_app_info", app_name=info.app_name, bundle_id=info.bundle_id))
+    console.print(t("wizard_strategy_info", strategy=recipe.strategy))
 
-    # 3. 分身名称 [default: auto-numbered]
+    # 3. Clone name
     out_path = Path.home() / "Applications"
     clone_name, num = AppInspector.next_available_name(info.app_name, out_path)
-    clone_name = click.prompt("分身名称", default=clone_name)
+    clone_name = click.prompt(t("wizard_prompt_clone_name"), default=clone_name)
 
-    # 4. 显示名称（Dock/Finder）— 支持中文等 Unicode
+    # 4. Display name (Dock/Finder)
     display_name_input = click.prompt(
-        "Dock/Finder 显示名称（支持中文，留空与分身名称相同）",
+        t("wizard_prompt_display_name"),
         default="",
     )
     display_name: str | None = display_name_input.strip() or None
 
-    # 5. 自定义图标
+    # 5. Custom icon
     icon_path: Path | None = None
     while True:
-        icon_input = click.prompt("自定义图标路径（.icns，留空使用原始 app 图标）", default="")
+        icon_input = click.prompt(t("wizard_prompt_icon"), default="")
         icon_str = icon_input.strip().strip("'\"")
         if not icon_str:
             break
         icon_candidate = Path(icon_str).expanduser().resolve()
         if not icon_candidate.exists():
-            console.print("[bold red]错误: 文件不存在，请重新输入。[/bold red]")
+            console.print(t("wizard_err_icon_not_found"))
             continue
         if not icon_str.lower().endswith(".icns"):
-            console.print("[bold red]错误: 必须是 .icns 文件，请重新输入。[/bold red]")
+            console.print(t("wizard_err_icon_not_icns"))
             continue
         icon_path = icon_candidate
         break
 
-    # 6. 输出目录 [default: ~/Applications]
-    output_dir = click.prompt("输出目录", default=str(Path.home() / "Applications"))
+    # 6. Output dir
+    output_dir = click.prompt(t("wizard_prompt_output_dir"), default=str(Path.home() / "Applications"))
     out_path = Path(output_dir).expanduser().resolve()
 
-    # 7. 是否配置代理?
-    use_proxy = click.confirm("是否配置代理", default=False)
+    # 7. Proxy setup
+    use_proxy = click.confirm(t("wizard_prompt_use_proxy"), default=False)
     proxy_host = None
     proxy_port = None
     proxy_type = "http"
     if use_proxy:
-        proxy_host = click.prompt("代理地址", default="127.0.0.1")
-        proxy_port = click.prompt("代理端口", default=1080, type=int)
-        proxy_type = click.prompt("代理类型", default="http", type=click.Choice(["http", "socks5"]))
+        proxy_host = click.prompt(t("wizard_prompt_proxy_host"), default="127.0.0.1")
+        proxy_port = click.prompt(t("wizard_prompt_proxy_port"), default=1080, type=int)
+        proxy_type = click.prompt(t("wizard_prompt_proxy_type"), default="http", type=click.Choice(["http", "socks5"]))
 
-    # 8. 确认信息
+    # 8. Confirmation
     dest_path = out_path / f"{clone_name}.app"
-    proxy_status = "已配置" if use_proxy else "未配置"
-    console.print("\n即将创建分身:")
-    console.print(f"  名称: {clone_name}")
+    proxy_status = t("wizard_proxy_configured") if use_proxy else t("wizard_proxy_not_configured")
+    console.print(t("wizard_confirm_title"))
+    console.print(t("wizard_confirm_name", clone_name=clone_name))
     if display_name:
-        console.print(f"  显示名称: {display_name}")
+        console.print(t("wizard_confirm_display_name", display_name=display_name))
     if icon_path:
-        console.print(f"  图标: {icon_path}")
-    console.print(f"  目标: {dest_path}")
-    console.print(f"  策略: {recipe.strategy}")
-    console.print(f"  代理: {proxy_status}\n")
+        console.print(t("wizard_confirm_icon", icon_path=icon_path))
+    console.print(t("wizard_confirm_target", dest_path=dest_path))
+    console.print(t("wizard_confirm_strategy", strategy=recipe.strategy))
+    console.print(t("wizard_confirm_proxy", proxy_status=proxy_status))
 
-    if not click.confirm("确认执行", default=True):
+    if not click.confirm(t("wizard_prompt_confirm"), default=True):
         return
 
-    # 9. 执行 clone (same logic as cmd_clone.py)
+    # 9. Execute clone
     new_bundle_id = f"{info.bundle_id}.atb{num}"
     data_dir = DEFAULT_DATA_DIR / clone_name
 
@@ -122,7 +123,7 @@ def wizard() -> None:
     out_path.mkdir(parents=True, exist_ok=True)
     needs_admin = not dest_path.is_relative_to(Path.home())
 
-    console.print(f"[bold green]Starting clone:[/bold green] {info.app_name} -> {clone_name}", soft_wrap=True)
+    console.print(t("starting_clone", app_name=info.app_name, clone_name=clone_name), soft_wrap=True)
     try:
         if recipe.strategy == "soft_clone":
             SoftCloneEngine.execute(task, needs_admin)
@@ -144,7 +145,7 @@ def wizard() -> None:
         )
         StateManager().add(record)
 
-        console.print(f"[bold green]Success![/bold green] Clone created at {dest_path}", soft_wrap=True)
+        console.print(t("clone_success", dest_path=dest_path), soft_wrap=True)
     except (CloneError, Exception) as e:
-        console.print(f"[bold red]Error:[/bold red] {e}", soft_wrap=True)
+        console.print(t("clone_error", error=e), soft_wrap=True)
         sys.exit(1)

@@ -7,6 +7,7 @@ import yaml  # type: ignore[import-untyped]
 from rich.console import Console
 from rich.table import Table
 
+from atbclone.core.i18n import t
 from atbclone.recipes.loader import RecipeLoader
 
 console = Console()
@@ -38,10 +39,10 @@ def recipe_list() -> None:
     )
 
     table = Table()
-    table.add_column("Bundle ID")
-    table.add_column("App Name")
-    table.add_column("策略")
-    table.add_column("Strip Sandbox")
+    table.add_column(t("recipe_col_bundle_id"))
+    table.add_column(t("recipe_col_app_name"))
+    table.add_column(t("recipe_col_strategy"))
+    table.add_column(t("recipe_col_strip_sandbox"))
 
     for r in recipes_data:
         strip_sb = "✅" if r.get("strip_sandbox", False) else "✘"
@@ -63,12 +64,12 @@ def recipe_show(bundle_id: str) -> None:
     builtin_file = RecipeLoader.BUILTIN_DIR / f"{bundle_id}.yaml"
 
     if local_file.is_file():
-        console.print("[yellow](local override)[/yellow]")
+        console.print(t("recipe_local_override"))
         console.print(local_file.read_text(encoding="utf-8").rstrip())
     elif builtin_file.is_file():
         console.print(builtin_file.read_text(encoding="utf-8").rstrip())
     else:
-        console.print(f"[red]Error:[/red] Recipe for '{bundle_id}' not found.")
+        console.print(t("recipe_err_not_found", bundle_id=bundle_id))
         sys.exit(1)
 
 

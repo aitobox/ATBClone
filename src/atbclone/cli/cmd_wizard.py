@@ -19,7 +19,7 @@ console = Console()
 
 @click.command(name="wizard")
 def wizard() -> None:
-    """交互式分身向导"""
+    """Interactive cloning wizard."""
     console.print("🧙 ATBClone 小向导\n")
 
     # 1. 请输入要分身的 .app 路径
@@ -44,11 +44,35 @@ def wizard() -> None:
     clone_name, num = AppInspector.next_available_name(info.app_name, out_path)
     clone_name = click.prompt("分身名称", default=clone_name)
 
-    # 4. 输出目录 [default: ~/Applications]
+    # 4. 显示名称（Dock/Finder）— 支持中文等 Unicode
+    display_name_input = click.prompt(
+        "Dock/Finder 显示名称（支持中文，留空与分身名称相同）",
+        default="",
+    )
+    display_name: str | None = display_name_input.strip() or None
+
+    # 5. 自定义图标
+    icon_path: Path | None = None
+    while True:
+        icon_input = click.prompt("自定义图标路径（.icns，留空使用原始 app 图标）", default="")
+        icon_str = icon_input.strip().strip("'\"")
+        if not icon_str:
+            break
+        icon_candidate = Path(icon_str).expanduser().resolve()
+        if not icon_candidate.exists():
+            console.print("[bold red]错误: 文件不存在，请重新输入。[/bold red]")
+            continue
+        if not icon_str.lower().endswith(".icns"):
+            console.print("[bold red]错误: 必须是 .icns 文件，请重新输入。[/bold red]")
+            continue
+        icon_path = icon_candidate
+        break
+
+    # 6. 输出目录 [default: ~/Applications]
     output_dir = click.prompt("输出目录", default=str(Path.home() / "Applications"))
     out_path = Path(output_dir).expanduser().resolve()
 
-    # 5. 是否配置代理?
+    # 7. 是否配置代理?
     use_proxy = click.confirm("是否配置代理", default=False)
     proxy_host = None
     proxy_port = None
@@ -58,11 +82,15 @@ def wizard() -> None:
         proxy_port = click.prompt("代理端口", default=1080, type=int)
         proxy_type = click.prompt("代理类型", default="http", type=click.Choice(["http", "socks5"]))
 
-    # 6. 确认信息
+    # 8. 确认信息
     dest_path = out_path / f"{clone_name}.app"
     proxy_status = "已配置" if use_proxy else "未配置"
     console.print("\n即将创建分身:")
     console.print(f"  名称: {clone_name}")
+    if display_name:
+        console.print(f"  显示名称: {display_name}")
+    if icon_path:
+        console.print(f"  图标: {icon_path}")
     console.print(f"  目标: {dest_path}")
     console.print(f"  策略: {recipe.strategy}")
     console.print(f"  代理: {proxy_status}\n")
@@ -70,7 +98,7 @@ def wizard() -> None:
     if not click.confirm("确认执行", default=True):
         return
 
-    # 7. 执行 clone (same logic as cmd_clone.py)
+    # 9. 执行 clone (same logic as cmd_clone.py)
     new_bundle_id = f"{info.bundle_id}.atb{num}"
     data_dir = DEFAULT_DATA_DIR / clone_name
 
@@ -81,6 +109,8 @@ def wizard() -> None:
         recipe=recipe,
         clone_name=clone_name,
         new_bundle_id=new_bundle_id,
+        display_name=display_name,
+        icon_path=icon_path,
     )
 
     if use_proxy and proxy_host:

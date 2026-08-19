@@ -220,11 +220,14 @@ def test_clone_default_output_dir(tmp_path: Path, mock_app_info: AppInfo, mock_s
         assert task.dest_path == default_dir / "WeChat2.app"
 
 
+
 def test_clone_help_command():
     runner = CliRunner()
     result = runner.invoke(cli, ["clone", "--help"])
     assert result.exit_code == 0
     assert "--name" in result.output
+    assert "--display-name" in result.output
+    assert "--icon" in result.output
     assert "--output-dir" in result.output
     assert "--proxy-host" in result.output
     assert "--proxy-port" in result.output
@@ -237,6 +240,130 @@ def test_clone_nonexistent_app_fails():
     result = runner.invoke(cli, ["clone", "/nonexistent/path/App.app"])
     assert result.exit_code != 0
     assert "does not exist" in result.output or "Error" in result.output
+
+
+def test_clone_custom_display_name(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    """--display-name is passed into CloneTask.display_name (supports Unicode/Chinese)."""
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
+
+        result = runner.invoke(
+            cli,
+            [
+                "clone",
+                str(mock_app_info.path),
+                "--output-dir", str(output_dir),
+                "--display-name", "我的微信",
+            ],
+        )
+
+        assert result.exit_code == 0
+        task, _ = mock_soft_exec.call_args[0]
+        assert task.display_name == "我的微信"
+
+
+def test_clone_default_display_name_is_none(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    """When --display-name is omitted, task.display_name should be None (engine falls back to clone_name)."""
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
+
+        result = runner.invoke(
+            cli,
+            ["clone", str(mock_app_info.path), "--output-dir", str(output_dir)],
+        )
+
+        assert result.exit_code == 0
+        task, _ = mock_soft_exec.call_args[0]
+        assert task.display_name is None
+
+
+def test_clone_custom_icon(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    """--icon is resolved to Path and passed into CloneTask.icon_path."""
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+    icon_file = tmp_path / "custom.icns"
+    icon_file.touch()
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
+
+        result = runner.invoke(
+            cli,
+            [
+                "clone",
+                str(mock_app_info.path),
+                "--output-dir", str(output_dir),
+                "--icon", str(icon_file),
+            ],
+        )
+
+        assert result.exit_code == 0
+        task, _ = mock_soft_exec.call_args[0]
+        assert task.icon_path == icon_file
+
+
+def test_clone_icon_non_icns_rejected(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    """--icon with a non-.icns file should exit with an error before cloning."""
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+    bad_icon = tmp_path / "icon.png"
+    bad_icon.touch()
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec:
+
+        result = runner.invoke(
+            cli,
+            [
+                "clone",
+                str(mock_app_info.path),
+                "--output-dir", str(output_dir),
+                "--icon", str(bad_icon),
+            ],
+        )
+
+        assert result.exit_code == 1
+        assert ".icns" in result.output
+        mock_soft_exec.assert_not_called()
+
+
+def test_clone_default_icon_is_none(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    """When --icon is omitted, task.icon_path should be None."""
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
+
+        result = runner.invoke(
+            cli,
+            ["clone", str(mock_app_info.path), "--output-dir", str(output_dir)],
+        )
+
+        assert result.exit_code == 0
+        task, _ = mock_soft_exec.call_args[0]
+        assert task.icon_path is None
+
 
 
 def test_clone_with_proxy_options(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
@@ -359,5 +486,56 @@ def test_clone_failure_does_not_persist_state(tmp_path: Path, mock_app_info: App
 
         assert result.exit_code == 1
         mock_state_add.assert_not_called()
+
+
+def test_clone_unlisted_app_auto_probes(tmp_path: Path):
+    from atbclone.core.app_prober import ProbeResult
+
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+    app_dir = tmp_path / "UnlistedApp.app"
+    app_dir.mkdir(parents=True, exist_ok=True)
+
+    unlisted_info = AppInfo(
+        path=app_dir,
+        bundle_id="com.unlisted.app",
+        app_name="UnlistedApp",
+        executable=app_dir / "Contents" / "MacOS" / "UnlistedApp",
+        has_sandbox=False,
+    )
+    probed_recipe = Recipe(
+        bundle_id="com.unlisted.app",
+        app_name="UnlistedApp",
+        strategy="hard_clone",
+        strip_sandbox=False,
+        environment_injection={"HOME": "{{ATB_DATA_DIR}}/Home"},
+    )
+    probe_result = ProbeResult(
+        app_info=unlisted_info,
+        has_sandbox=False,
+        frameworks=[],
+        strategy="hard_clone",
+        reason="Native macOS application (Non-sandboxed)",
+        recipe=probed_recipe,
+    )
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=unlisted_info), \
+         patch("atbclone.cli.cmd_clone.AppProber.analyze", return_value=probe_result) as mock_analyze, \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("UnlistedApp2", 2)), \
+         patch("atbclone.cli.cmd_clone.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add"):
+
+        result = runner.invoke(
+            cli,
+            ["clone", str(app_dir), "--output-dir", str(output_dir)],
+        )
+
+        assert result.exit_code == 0
+        assert "No pre-configured recipe found for 'com.unlisted.app'" in result.output
+        assert "Probing application architecture and entitlements" in result.output
+        assert "Probed Strategy:" in result.output
+        mock_analyze.assert_called_once_with(str(app_dir))
+        mock_hard_exec.assert_called_once()
+
 
 

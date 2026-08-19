@@ -10,7 +10,7 @@ console = Console()
 
 @click.command()
 def doctor():
-    """环境检测 (xcode-select, codesign)"""
+    """Check environment prerequisites (xcode-select, codesign, PlistBuddy)."""
     checks = {
         "codesign": "which codesign",
         "xcode-select": "xcode-select -p",

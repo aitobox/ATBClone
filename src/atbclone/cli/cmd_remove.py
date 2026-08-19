@@ -17,10 +17,10 @@ console = Console()
 @click.option(
     "--with-data/--no-with-data",
     default=False,
-    help="同时删除数据目录",
+    help="Also delete the data directory.",
 )
 def remove(clone_name: str, with_data: bool) -> None:
-    """删除已克隆的应用"""
+    """Remove a cloned application."""
     sm = StateManager()
     record = sm.get(clone_name)
     if record is None:

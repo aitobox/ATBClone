@@ -18,15 +18,34 @@ class RecipeLoader:
         return DEFAULT_RECIPES_DIR
 
     @classmethod
-    def match(cls, bundle_id: str) -> Recipe:
-        local_dir = cls.get_local_dir()
-        local_file = local_dir / f"{bundle_id}.yaml"
+    def has_recipe(cls, bundle_id: str) -> bool:
+        local_file = cls.get_local_dir() / f"{bundle_id}.yaml"
         builtin_file = cls.BUILTIN_DIR / f"{bundle_id}.yaml"
+        return local_file.is_file() or builtin_file.is_file()
 
+    @classmethod
+    def get(cls, bundle_id: str) -> Recipe | None:
+        local_file = cls.get_local_dir() / f"{bundle_id}.yaml"
+        builtin_file = cls.BUILTIN_DIR / f"{bundle_id}.yaml"
         if local_file.is_file():
             return cls._load_file(local_file)
         if builtin_file.is_file():
             return cls._load_file(builtin_file)
+        return None
+
+    @classmethod
+    def match(cls, bundle_id: str, app_path: Path | str | None = None) -> Recipe:
+        recipe = cls.get(bundle_id)
+        if recipe is not None:
+            return recipe
+
+        if app_path is not None:
+            from atbclone.core.app_prober import AppProber
+
+            try:
+                return AppProber.probe(app_path)
+            except Exception:
+                pass
 
         return Recipe(
             bundle_id=bundle_id,

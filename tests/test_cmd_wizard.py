@@ -1,7 +1,7 @@
 """Unit tests for the `wizard` CLI interactive command."""
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 
@@ -46,12 +46,14 @@ def mock_hard_recipe() -> Recipe:
 def test_wizard_complete_hard_clone(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
     runner = CliRunner()
     # Prompts:
-    # 1. app path: str(mock_app_info.path)
+    # 1. app path
     # 2. clone name: default (\n)
-    # 3. output dir: default (\n)
-    # 4. proxy: default n (\n)
-    # 5. confirm: default y (\n)
-    inputs = f"{mock_app_info.path}\n\n\n\n\n"
+    # 3. display_name: default/empty (\n)  ← new
+    # 4. icon_path: default/empty (\n)     ← new
+    # 5. output dir: default (\n)
+    # 6. proxy: default n (\n)
+    # 7. confirm: default y (\n)
+    inputs = f"{mock_app_info.path}\n\n\n\n\n\n\n"
 
     with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info) as mock_inspect, \
          patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe) as mock_match, \
@@ -84,6 +86,8 @@ def test_wizard_complete_hard_clone(tmp_path: Path, mock_app_info: AppInfo, mock
         assert task.clone_name == "WeChat2"
         assert task.dest_path == Path.home() / "Applications" / "WeChat2.app"
         assert task.new_bundle_id == "com.tencent.xinWeChat.atb2"
+        assert task.display_name is None
+        assert task.icon_path is None
         assert needs_admin is False
 
         record = mock_state_add.call_args[0][0]
@@ -94,10 +98,10 @@ def test_wizard_complete_hard_clone(tmp_path: Path, mock_app_info: AppInfo, mock
 
 def test_wizard_complete_soft_clone(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
     runner = CliRunner()
-    inputs = f"{mock_app_info.path}\n\n\n\n\n"
+    inputs = f"{mock_app_info.path}\n\n\n\n\n\n\n"
 
-    with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info) as mock_inspect, \
-         patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_soft_recipe) as mock_match, \
+    with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_soft_recipe), \
          patch("atbclone.cli.cmd_wizard.AppInspector.next_available_name", return_value=("Chrome2", 2)), \
          patch("atbclone.cli.cmd_wizard.SoftCloneEngine.execute") as mock_soft_exec, \
          patch("atbclone.cli.cmd_wizard.HardCloneEngine.execute") as mock_hard_exec, \
@@ -115,15 +119,17 @@ def test_wizard_complete_soft_clone(tmp_path: Path, mock_app_info: AppInfo, mock
 def test_wizard_with_proxy(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
     runner = CliRunner()
     # Prompts:
-    # 1. app path: mock_app_info.path
-    # 2. clone name: WeChat2 (\n)
-    # 3. output dir: default (\n)
-    # 4. proxy: y
-    # 5. proxy host: 192.168.1.100
-    # 6. proxy port: 7890
-    # 7. proxy type: socks5
-    # 8. confirm: y (\n)
-    inputs = f"{mock_app_info.path}\n\n\ny\n192.168.1.100\n7890\nsocks5\n\n"
+    # 1. app path
+    # 2. clone name: default (\n)
+    # 3. display_name: empty (\n)   ← new
+    # 4. icon_path: empty (\n)      ← new
+    # 5. output dir: default (\n)
+    # 6. proxy: y
+    # 7. proxy host: 192.168.1.100
+    # 8. proxy port: 7890
+    # 9. proxy type: socks5
+    # 10. confirm: y (\n)
+    inputs = f"{mock_app_info.path}\n\n\n\n\ny\n192.168.1.100\n7890\nsocks5\n\n"
 
     with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
          patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
@@ -150,13 +156,8 @@ def test_wizard_with_proxy(tmp_path: Path, mock_app_info: AppInfo, mock_hard_rec
 
 def test_wizard_cancel(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
     runner = CliRunner()
-    # Prompts:
-    # 1. app path: mock_app_info.path
-    # 2. clone name: WeChat2 (\n)
-    # 3. output dir: default (\n)
-    # 4. proxy: n (\n)
-    # 5. confirm: n
-    inputs = f"{mock_app_info.path}\n\n\n\nn\n"
+    # Prompts: path, name, display_name, icon, output, proxy, confirm=n
+    inputs = f"{mock_app_info.path}\n\n\n\n\n\nn\n"
 
     with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
          patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
@@ -177,15 +178,8 @@ def test_wizard_invalid_path_then_valid(tmp_path: Path, mock_app_info: AppInfo, 
     not_app = tmp_path / "SomeFile.txt"
     not_app.touch()
 
-    # Inputs:
-    # 1st try: nonexistent path
-    # 2nd try: not a .app path
-    # 3rd try: valid path
-    # 4. clone name: default
-    # 5. output dir: default
-    # 6. proxy: default
-    # 7. confirm: default
-    inputs = f"{nonexistent}\n{not_app}\n{mock_app_info.path}\n\n\n\n\n"
+    # Inputs: bad, bad, valid path, name, display_name, icon, output, proxy, confirm
+    inputs = f"{nonexistent}\n{not_app}\n{mock_app_info.path}\n\n\n\n\n\n\n"
 
     with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
          patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
@@ -203,7 +197,8 @@ def test_wizard_invalid_path_then_valid(tmp_path: Path, mock_app_info: AppInfo, 
 def test_wizard_custom_output_dir_and_admin(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
     runner = CliRunner()
     admin_output = Path("/Applications")
-    inputs = f"{mock_app_info.path}\nCustomWeChat\n{admin_output}\n\n\n"
+    # Prompts: path, name=CustomWeChat, display_name=empty, icon=empty, output=/Applications, proxy=n, confirm=y
+    inputs = f"{mock_app_info.path}\nCustomWeChat\n\n\n{admin_output}\n\n\n"
 
     with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
          patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
@@ -224,7 +219,7 @@ def test_wizard_custom_output_dir_and_admin(tmp_path: Path, mock_app_info: AppIn
 
 def test_wizard_error_handling(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
     runner = CliRunner()
-    inputs = f"{mock_app_info.path}\n\n\n\n\n"
+    inputs = f"{mock_app_info.path}\n\n\n\n\n\n\n"
 
     with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
          patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
@@ -244,3 +239,70 @@ def test_wizard_help():
     result = runner.invoke(cli, ["wizard", "--help"])
     assert result.exit_code == 0
     assert "向导" in result.output or "wizard" in result.output.lower()
+
+
+def test_wizard_custom_display_name(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
+    """Wizard: explicit display_name is passed into CloneTask and shown in confirmation."""
+    runner = CliRunner()
+    # Prompts: path, name, display_name="我的微信", icon=empty, output, proxy, confirm
+    inputs = f"{mock_app_info.path}\n\n我的微信\n\n\n\n\n"
+
+    with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
+         patch("atbclone.cli.cmd_wizard.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_wizard.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_wizard.StateManager.add"):
+
+        result = runner.invoke(cli, ["wizard"], input=inputs)
+
+        assert result.exit_code == 0
+        assert "显示名称: 我的微信" in result.output
+        task, _ = mock_hard_exec.call_args[0]
+        assert task.display_name == "我的微信"
+
+
+def test_wizard_custom_icon(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
+    """Wizard: valid .icns path is accepted and passed into CloneTask."""
+    runner = CliRunner()
+    icon_file = tmp_path / "custom.icns"
+    icon_file.touch()
+
+    # Prompts: path, name, display_name=empty, icon=custom.icns, output, proxy, confirm
+    inputs = f"{mock_app_info.path}\n\n\n{icon_file}\n\n\n\n"
+
+    with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
+         patch("atbclone.cli.cmd_wizard.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_wizard.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_wizard.StateManager.add"):
+
+        result = runner.invoke(cli, ["wizard"], input=inputs)
+
+        assert result.exit_code == 0
+        assert "图标:" in result.output
+        task, _ = mock_hard_exec.call_args[0]
+        assert task.icon_path == icon_file
+
+
+def test_wizard_invalid_icon_then_valid(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
+    """Wizard: non-.icns file rejected, then empty accepted (fallback to original)."""
+    runner = CliRunner()
+    bad_icon = tmp_path / "icon.png"
+    bad_icon.touch()
+
+    # Prompts: path, name, display_name=empty, icon=bad(.png), icon=empty (retry), output, proxy, confirm
+    inputs = f"{mock_app_info.path}\n\n\n{bad_icon}\n\n\n\n\n"
+
+    with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
+         patch("atbclone.cli.cmd_wizard.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_wizard.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_wizard.StateManager.add"):
+
+        result = runner.invoke(cli, ["wizard"], input=inputs)
+
+        assert result.exit_code == 0
+        assert "必须是 .icns 文件" in result.output
+        task, _ = mock_hard_exec.call_args[0]
+        assert task.icon_path is None
+

@@ -25,6 +25,22 @@ class CloneEngine:
             export no_proxy="$NO_PROXY"
         """).strip()
 
+    @staticmethod
+    def _build_icon_cmd(task: CloneTask, dst_resources: str, dst_plist: str) -> str:
+        """Return a shell snippet that applies icon customisation after Resources are in place.
+
+        When task.icon_path is set, the custom .icns is copied over the file named by
+        CFBundleIconFile in the destination plist.  Falls back silently if the plist key
+        is missing (uncommon but possible).  Returns empty string when icon_path is None.
+        """
+        if task.icon_path is None:
+            return ""
+        custom_icon = shlex.quote(str(task.icon_path))
+        return (
+            f"ICON_FILE=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleIconFile\" {dst_plist} 2>/dev/null || true)\n"
+            f"[ -n \"$ICON_FILE\" ] && cp {custom_icon} {dst_resources}/\"$ICON_FILE\" || true\n"
+        )
+
 
 class SoftCloneEngine(CloneEngine):
     """Creates a lightweight wrapper app that launches the original binary with custom args and environment."""
@@ -64,12 +80,25 @@ class SoftCloneEngine(CloneEngine):
         wrapper_lines.append(exec_cmd)
         wrapper_body = "\n".join(wrapper_lines)
 
+        src_resources = shlex.quote(str(task.source.path / "Contents" / "Resources"))
+        dst_resources = shlex.quote(str(task.dest_path / "Contents" / "Resources"))
+
+        # Effective display name: explicit override > clone_name
+        effective_display_name = task.display_name if task.display_name else task.clone_name
+        icon_cmd = cls._build_icon_cmd(task, dst_resources, dst_plist)
+
         script = f"""set -e
 mkdir -p {dst_mac}
+# Copy Resources dir so the app icon (.icns) and other assets are available
+if [ -d {src_resources} ]; then
+    cp -R {src_resources} {dst_resources}
+fi
 cp {src_plist} {dst_plist}
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
 /usr/libexec/PlistBuddy -c "Set :CFBundleName {task.clone_name}" {dst_plist}
-cat << 'WRAPPER_EOF' > {wrapper}
+/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName {effective_display_name}" {dst_plist} 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string {effective_display_name}" {dst_plist}
+/usr/libexec/PlistBuddy -c "Delete :LSHasLocalizedDisplayName" {dst_plist} 2>/dev/null || true
+{icon_cmd}cat << 'WRAPPER_EOF' > {wrapper}
 {wrapper_body}
 WRAPPER_EOF
 chmod +x {wrapper}
@@ -98,6 +127,7 @@ class HardCloneEngine(CloneEngine):
         src = shlex.quote(str(task.source.path))
         dst = shlex.quote(str(task.dest_path))
         dst_plist = shlex.quote(str(task.dest_path / "Contents" / "Info.plist"))
+        dst_resources = shlex.quote(str(task.dest_path / "Contents" / "Resources"))
 
         orig_bin_name = (
             task.source.executable.name
@@ -132,11 +162,17 @@ class HardCloneEngine(CloneEngine):
         else:
             codesign_cmds = f"codesign --force --deep --sign - {dst}\n"
 
+        # Effective display name: explicit override > clone_name
+        effective_display_name = task.display_name if task.display_name else task.clone_name
+        icon_cmd = cls._build_icon_cmd(task, dst_resources, dst_plist)
+
         script = f"""set -e
 cp -R {src} {dst}
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
 /usr/libexec/PlistBuddy -c "Set :CFBundleName {task.clone_name}" {dst_plist}
-mv {bin_orig} {bin_bak}
+/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName {effective_display_name}" {dst_plist} 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string {effective_display_name}" {dst_plist}
+/usr/libexec/PlistBuddy -c "Delete :LSHasLocalizedDisplayName" {dst_plist} 2>/dev/null || true
+{icon_cmd}mv {bin_orig} {bin_bak}
 cat << 'WRAPPER_EOF' > {wrapper}
 {wrapper_body}
 WRAPPER_EOF

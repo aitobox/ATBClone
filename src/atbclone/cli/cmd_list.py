@@ -27,7 +27,7 @@ def _format_created_at(created_at: str) -> str:
 
 @click.command(name="list")
 def list_clones() -> None:
-    """查看已克隆的应用列表"""
+    """List all cloned applications."""
     records = StateManager().load()
     if not records:
         console.print("[yellow]No clones found.[/yellow]")

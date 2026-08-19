@@ -17,7 +17,7 @@ console = Console()
 @click.command()
 @click.option("--short", "-s", is_flag=True, help="Only output the version number.")
 def version(short: bool) -> None:
-    """显示 ATBClone 版本及运行环境信息"""
+    """Display ATBClone version and environment information."""
     if short:
         console.print(__version__)
         return

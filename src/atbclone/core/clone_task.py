@@ -18,3 +18,5 @@ class CloneTask:
     recipe: Recipe
     clone_name: str
     new_bundle_id: str
+    display_name: str | None = None  # Dock/Finder label; defaults to clone_name when None
+    icon_path: Path | None = None    # Custom .icns; defaults to copying src Resources when None

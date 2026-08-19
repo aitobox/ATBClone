@@ -13,31 +13,18 @@ from pathlib import Path
 import yaml
 
 from atbclone.core.app_inspector import AppInspector
+from atbclone.core.app_prober import AppProber
 from atbclone.recipes.loader import RecipeLoader
 
 
 def inspect_entitlements(app_path: Path) -> dict:
     """Extract code signing entitlements as a dictionary."""
-    try:
-        res = subprocess.run(
-            ["codesign", "-d", "--entitlements", ":-", str(app_path)],
-            capture_output=True,
-            check=False,
-        )
-        if res.returncode == 0 and res.stdout:
-            # Parse XML/binary plist from stdout
-            return plistlib.loads(res.stdout)
-    except Exception:
-        pass
-    return {}
+    return AppProber.inspect_entitlements(app_path)
 
 
 def detect_frameworks(app_path: Path) -> list[str]:
     """Detect notable frameworks inside Contents/Frameworks/."""
-    frameworks_dir = app_path / "Contents" / "Frameworks"
-    if not frameworks_dir.is_dir():
-        return []
-    return [p.name for p in frameworks_dir.iterdir() if p.name.endswith(".framework") or p.name.endswith(".dylib")]
+    return AppProber.detect_frameworks(app_path)
 
 
 def analyze_app(app_path: Path) -> dict:
@@ -45,57 +32,28 @@ def analyze_app(app_path: Path) -> dict:
     app_info = AppInspector.inspect(app_path)
     entitlements = inspect_entitlements(app_path)
     frameworks = detect_frameworks(app_path)
-
-    has_sandbox = bool(entitlements.get("com.apple.security.app-sandbox", False))
-    bid_lower = app_info.bundle_id.lower()
-
-    # Chromium / Electron detection
-    is_chromium = any(k in bid_lower for k in ["chrome", "chromium", "edge", "arc"])
-    is_electron = any("Electron" in fw or "Chromium" in fw for fw in frameworks) or "electron" in bid_lower
-    is_firefox = "firefox" in bid_lower
-
-    if is_chromium or is_electron:
-        strategy = "soft_clone"
-        strip_sandbox = False
-        launch_args = ["--user-data-dir={{ATB_DATA_DIR}}"]
-        env_injection = {}
-        reason = "Chromium/Electron framework detected; supports --user-data-dir."
-    elif is_firefox:
-        strategy = "soft_clone"
-        strip_sandbox = False
-        launch_args = ["-profile", "{{ATB_DATA_DIR}}"]
-        env_injection = {}
-        reason = "Firefox/Gecko detected; supports -profile launch argument."
-    else:
-        strategy = "hard_clone"
-        strip_sandbox = has_sandbox
-        launch_args = []
-        env_injection = {
-            "HOME": "{{ATB_DATA_DIR}}/Home",
-            "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
-        }
-        reason = (
-            f"Native macOS application ({'Sandboxed' if has_sandbox else 'Non-sandboxed'}); "
-            f"requires binary wrapper hijack with HOME/TMPDIR isolation."
-        )
-
+    result = AppProber.analyze(
+        app_path,
+        app_info=app_info,
+        entitlements=entitlements,
+        frameworks=frameworks,
+    )
     recipe_data = {
-        "bundle_id": app_info.bundle_id,
-        "app_name": app_info.app_name,
-        "strategy": strategy,
-        "strip_sandbox": strip_sandbox,
+        "bundle_id": result.recipe.bundle_id,
+        "app_name": result.recipe.app_name,
+        "strategy": result.recipe.strategy,
+        "strip_sandbox": result.recipe.strip_sandbox,
     }
-
-    if env_injection:
-        recipe_data["environment_injection"] = env_injection
-    if launch_args:
-        recipe_data["launch_args"] = launch_args
+    if result.recipe.environment_injection:
+        recipe_data["environment_injection"] = result.recipe.environment_injection
+    if result.recipe.launch_args:
+        recipe_data["launch_args"] = result.recipe.launch_args
 
     return {
-        "app_info": app_info,
-        "has_sandbox": has_sandbox,
-        "frameworks": frameworks,
-        "reason": reason,
+        "app_info": result.app_info,
+        "has_sandbox": result.has_sandbox,
+        "frameworks": result.frameworks,
+        "reason": result.reason,
         "recipe": recipe_data,
     }
 

@@ -14,12 +14,12 @@ console = Console()
 
 @click.group(name="recipe")
 def recipe() -> None:
-    """管理和查看应用克隆配方"""
+    """Manage and inspect application clone recipes."""
 
 
 @recipe.command(name="list")
 def recipe_list() -> None:
-    """列出所有内置配方"""
+    """List all built-in recipes."""
     builtin_dir = RecipeLoader.BUILTIN_DIR
     yaml_files = sorted(builtin_dir.glob("*.yaml"))
 
@@ -58,7 +58,7 @@ def recipe_list() -> None:
 @recipe.command(name="show")
 @click.argument("bundle_id")
 def recipe_show(bundle_id: str) -> None:
-    """查看指定应用的配方详情"""
+    """Show recipe details for a specific bundle ID."""
     local_file = RecipeLoader.get_local_dir() / f"{bundle_id}.yaml"
     builtin_file = RecipeLoader.BUILTIN_DIR / f"{bundle_id}.yaml"
 
@@ -70,3 +70,8 @@ def recipe_show(bundle_id: str) -> None:
     else:
         console.print(f"[red]Error:[/red] Recipe for '{bundle_id}' not found.")
         sys.exit(1)
+
+
+from .cmd_probe import probe as probe_cmd
+
+recipe.add_command(probe_cmd, name="probe")

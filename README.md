@@ -1,119 +1,136 @@
-# ATBClone (macOS 应用多开引擎)
+# ATBClone (macOS Application Cloning Engine)
 
-> 🚀 **ATBClone** 是一个专为 macOS 设计的现代化应用程序多开（Multi-Instancing）与分身管理引擎。支持独立数据隔离、独立网络代理（HTTP / SOCKS5）、自动化配方匹配、重签名与沙盒解除。
+[English](README.md) | [简体中文](Readme_zh.md)
 
----
-
-## ✨ 核心特性
-
-- 📦 **双引擎克隆机制**：
-  - **硬克隆 (Hard Clone)**：适用于原生与社交应用（微信、QQ、Telegram、AI 客户端等）。完整复制 App Bundle，修改 `Info.plist` 与 Bundle Identifier，通过二进制劫持脚本注入独立的 `HOME` / `TMPDIR` 数据目录，可选解除 Sandbox 限制并执行 Ad-hoc 重签名。
-  - **软克隆 (Soft Clone)**：适用于 Chromium 系列应用及现代编辑器（Chrome、Edge、Arc、Cursor、VS Code 等）。创建轻量级 Wrapper 包，自动注入独立的 `--user-data-dir` / `--profile` 启动参数与代理环境变量。
-- 🌐 **独立网络代理**：支持为每个分身单独指定 HTTP 或 SOCKS5 代理（支持认证），分身流量与系统及原应用互不干扰。
-- 📑 **规则引擎 (Recipe Engine)**：内置 18+ 常用应用与 AI Agent 工具配方，支持通过 `~/.atbclone/recipes/` 本地优先级覆盖自定义规则。
-- 🪄 **交互式向导 (Wizard)**：命令行交互式一步步引导，支持终端路径拖拽、自动识别并编号、即时配置代理。
-- 🔄 **生命周期管理**：提供分身列表查看（`list`）、原版本升级后一键重克隆且保留聊天数据（`update`）、安全删除分身及可选清理数据（`remove`）。
-- 🛡️ **安全与提权设计**：写入 `~/Applications` 无需管理员权限；写入 `/Applications` 自动使用 macOS 原生单次 `osascript` 授权；全流程使用原子脚本与 `shlex.quote` 路径防护。
+> 🚀 **ATBClone** is a modern application multi-instancing and clone management engine designed for macOS. It supports isolated user data directories, independent network proxies (HTTP / SOCKS5), automated recipe matching, ad-hoc code re-signing, and sandbox removal.
 
 ---
 
-## 📋 内置配方支持 (Built-in Recipes)
+## ✨ Key Features
 
-| 类别 | 应用名称 | Bundle Identifier | 克隆策略 | 沙盒解除 (Strip Sandbox) |
+- 📦 **Dual-Engine Cloning Mechanism**:
+  - **Hard Clone**: Designed for native and social applications (WeChat, QQ, Telegram, AI clients, etc.). Duplicates the entire App Bundle, modifies `Info.plist` and Bundle Identifier, injects isolated `HOME` / `TMPDIR` data directories via binary launcher script hijack, optionally strips App Sandbox restrictions, and performs ad-hoc code re-signing.
+  - **Soft Clone**: Designed for Chromium-based applications and modern code editors (Chrome, Edge, Arc, Cursor, VS Code, etc.). Generates a lightweight wrapper bundle, automatically injecting isolated `--user-data-dir` / `--profile` launch arguments and proxy environment variables.
+- 🔍 **Intelligent App Prober**: Automatically inspects Mach-O architectures, frameworks, and code signing sandbox entitlements for any application without a pre-configured recipe, dynamically determining the optimal soft/hard clone strategy and generating recommended recipes.
+- 🌐 **Isolated Network Proxies**: Configure dedicated HTTP or SOCKS5 proxies (with authentication support) per cloned application without interfering with host system or primary application traffic.
+- 📑 **Recipe Engine**: 18+ built-in recipes for popular apps and AI Agent tools, with local override support via `~/.atbclone/recipes/`.
+- 🪄 **Interactive Wizard**: Step-by-step interactive CLI guide supporting terminal drag-and-drop application paths, automatic name incrementing, and on-the-fly proxy configuration.
+- 🔄 **Lifecycle Management**: View cloned apps (`list`), re-clone after primary app updates while preserving user and chat data (`update`), and safely remove clones with optional data cleanup (`remove`).
+- 🛡️ **Security & Privilege Elevation**: Writing to `~/Applications` requires no admin privileges; writing to `/Applications` uses native single-prompt macOS `osascript` authorization; robust path escaping via `shlex.quote` throughout.
+
+---
+
+## 📋 Built-in Recipes
+
+| Category | Application | Bundle Identifier | Strategy | Strip Sandbox |
 | :--- | :--- | :--- | :--- | :---: |
-| **即时通讯** | 微信 (WeChat) | `com.tencent.xinWeChat` | Hard Clone | ✘ |
+| **Instant Messaging** | WeChat | `com.tencent.xinWeChat` | Hard Clone | ✘ |
 | | QQ | `com.tencent.qq` | Hard Clone | ✘ |
 | | Telegram | `ph.telegra.Telegraph` | Hard Clone | ✘ |
 | | LINE | `jp.naver.line.mac` | Hard Clone | ✅ |
 | | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | ✘ |
 | | Discord | `com.hnc.Discord` | Hard Clone | ✘ |
 | | Skype | `com.skype.skype` | Hard Clone | ✅ |
-| **AI 客户端** | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
+| **AI Clients** | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
 | | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
 | | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |
 | | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | ✘ |
-| **浏览器** | Google Chrome | `com.google.Chrome` | Soft Clone | — |
+| **Browsers** | Google Chrome | `com.google.Chrome` | Soft Clone | — |
 | | Microsoft Edge | `com.microsoft.edgemac` | Soft Clone | — |
 | | Firefox | `org.mozilla.firefox` | Soft Clone | — |
 | | Arc Browser | `company.thebrowser.Browser` | Soft Clone | — |
-| **开发工具** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | — |
+| **Developer Tools** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | — |
 | | VS Code | `com.microsoft.VSCode` | Soft Clone | — |
 | | Zed | `dev.zed.Zed` | Soft Clone | — |
 
 ---
 
-## 🛠️ 环境依赖
+## 🛠️ Prerequisites
 
-- **操作系统**：macOS 13.0+ (Apple Silicon arm64 / Intel x86_64)
-- **Python**：Python 3.12+（`build_cli.sh` 编译时强制要求；推荐使用 Conda）
-- **系统开发工具**：已安装 Xcode Command Line Tools（提供 `codesign`, `xcode-select`, `PlistBuddy`）
+- **Operating System**: macOS 13.0+ (Apple Silicon arm64 / Intel x86_64)
+- **Python**: Python 3.12+ (strictly required for `build_cli.sh` compilation; Conda recommended)
+- **System Tools**: Xcode Command Line Tools installed (provides `codesign`, `xcode-select`, `PlistBuddy`)
 
 ```bash
-# 安装 Xcode Command Line Tools (若尚未安装)
+# Install Xcode Command Line Tools (if not already installed)
 xcode-select --install
 ```
 
 ---
 
-## 📦 安装与配置
+## 📦 Installation & Setup
 
-### 1. 从源码安装（开发模式）
+### 1. Install from Source (Development Mode)
 
 ```bash
-# 1. 切换到项目目录并激活环境 (如 Conda)
+# 1. Navigate to the project directory and activate your environment (e.g. Conda)
 conda activate ATBClone
 
-# 2. 安装项目及其开发依赖
+# 2. Install the package and development dependencies
 pip install -e ".[dev]"
 
-# 3. 运行环境自检
+# 3. Run environment self-check
 atbclone doctor
 ```
 
 ---
 
-## 🚀 快速上手与使用指南
+## 🚀 Quick Start & CLI Usage
 
-### 1. 交互式向导（推荐新手使用）
+### 1. Interactive Wizard (Recommended for Beginners)
 
-无需记忆参数，根据终端提示一步步操作：
+No need to memorize CLI options—follow the interactive prompts in your terminal:
 ```bash
 atbclone wizard
 ```
-*流程包括：拖入 `.app` 路径 ➔ 自动匹配配方 ➔ 设置分身名称 ➔ 选择输出路径 ➔ 可选配置代理 ➔ 确认生成。*
+*Workflow: Drag and drop `.app` path ➔ Auto-match recipe ➔ Set clone name ➔ Select destination directory ➔ Optional proxy setup ➔ Confirm and create.*
 
 ---
 
-### 2. 命令行快速克隆 (`clone`)
+### 2. Command Line Quick Clone (`clone`)
 
-#### 基础克隆（自动递增编号，默认输出至 `~/Applications`）
+#### Basic Clone (Auto-incremented name, defaults to `~/Applications`)
 ```bash
 atbclone clone /Applications/WeChat.app
 ```
 
-#### 指定分身名称与输出目录
+#### Specify Clone Name and Output Directory
 ```bash
-atbclone clone /Applications/WeChat.app --name "微信工作版" --output-dir ~/Applications
+atbclone clone /Applications/WeChat.app --name "WeChat-Work" --output-dir ~/Applications
 ```
 
-#### 为分身配置专属独立网络代理 (HTTP / SOCKS5)
+#### Clone Applications without Pre-configured Recipes (Auto-triggers Prober)
+When cloning an app without a built-in recipe, ATBClone automatically runs App Prober to inspect the architecture and sandbox entitlements, dynamically generates the optimal recipe, and executes the clone:
 ```bash
-# 配置 HTTP 代理
-atbclone clone /Applications/Telegram.app   --name "Telegram-Proxy"   --proxy-host 127.0.0.1   --proxy-port 7890   --proxy-type http
+atbclone clone /Applications/ATBCmder.app --name "ATBCmder-Work"
+```
 
-# 配置 SOCKS5 代理
-atbclone clone /Applications/ChatGPT.app   --name "ChatGPT-US"   --proxy-host 127.0.0.1   --proxy-port 1080   --proxy-type socks5
+#### Configure Dedicated Network Proxies (HTTP / SOCKS5)
+```bash
+# Configure HTTP proxy
+atbclone clone /Applications/Telegram.app \
+  --name "Telegram-Proxy" \
+  --proxy-host 127.0.0.1 \
+  --proxy-port 7890 \
+  --proxy-type http
+
+# Configure SOCKS5 proxy
+atbclone clone /Applications/ChatGPT.app \
+  --name "ChatGPT-US" \
+  --proxy-host 127.0.0.1 \
+  --proxy-port 1080 \
+  --proxy-type socks5
 ```
 
 ---
 
-### 3. 查看分身列表 (`list`)
+### 3. List Cloned Applications (`list`)
 
-通过漂亮的 Rich 表格查看所有由 ATBClone 管理的分身状态：
+View all clones managed by ATBClone in a Rich-formatted table:
 ```bash
 atbclone list
 ```
-输出示例：
+Example output:
 ```
 ┏━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ 名称     ┃ 原 APP  ┃ Bundle ID            ┃ 策略       ┃ 创建时间         ┃ 代理                   ┃
@@ -126,46 +143,46 @@ atbclone list
 
 ---
 
-### 4. 更新原应用后的分身同步 (`update`)
+### 4. Synchronize Clones After Primary App Updates (`update`)
 
-当 App Store 或官网更新了主应用版本时，一键更新分身，**保留所有聊天记录与登录状态（数据目录不丢失）**：
+When the primary application is updated via the Mac App Store or website, update your clone with a single command while **preserving all chat history, logins, and data**:
 ```bash
-atbclone update 微信2
+atbclone update WeChat2
 ```
 
 ---
 
-### 5. 删除分身 (`remove`)
+### 5. Remove Clones (`remove`)
 
-#### 仅删除分身应用本体（默认保留历史数据）
+#### Remove Clone Application Only (Preserves data directory by default)
 ```bash
-atbclone remove 微信2
+atbclone remove WeChat2
 ```
 
-#### 同时彻底删除分身应用及数据目录
+#### Completely Remove Clone Application and Data Directory
 ```bash
-atbclone remove 微信2 --with-data
+atbclone remove WeChat2 --with-data
 ```
-*注：删除数据目录为不可逆操作，系统会要求用户二次键入 `y` 确认。*
+*Note: Deleting the data directory is irreversible. You will be prompted to confirm with `y`.*
 
 ---
 
-### 6. 配方管理与自定义扩展 (`recipe`)
+### 6. Recipe Management & Custom Extensions (`recipe`)
 
-#### 列出所有内置应用配方
+#### List All Built-in Recipes
 ```bash
 atbclone recipe list
 ```
 
-#### 查看特定应用的配方 YAML
+#### View Recipe Details for a Specific Bundle ID
 ```bash
 atbclone recipe show com.tencent.xinWeChat
 ```
 
-#### 自定义与覆盖配方
-在 `~/.atbclone/recipes/<bundle_id>.yaml` 放置 YAML 规则文件即可自动优先加载覆盖：
+#### Custom & Override Recipes
+Place a custom YAML recipe in `~/.atbclone/recipes/<bundle_id>.yaml` to automatically take precedence:
 ```yaml
-# 示例：~/.atbclone/recipes/com.example.customapp.yaml
+# Example: ~/.atbclone/recipes/com.example.customapp.yaml
 bundle_id: com.example.customapp
 app_name: CustomApp
 strategy: hard_clone
@@ -182,66 +199,93 @@ proxy:
 
 ---
 
-### 7. 查看版本与系统信息 (`version`)
+### 7. Deep Application Probing & Recipe Generation (`probe`)
+
+Perform deep architecture and code signing inspection on any local `.app` bundle, analyze its engine (Chromium / Electron / Gecko / Native) and sandbox status, and output a recommended ATBClone Recipe YAML:
+
+#### Basic Probing with Terminal Summary
+```bash
+atbclone probe /Applications/ATBCmder.app
+```
+
+#### Probe and Save Directly to Local Repository (`~/.atbclone/recipes/<bundle_id>.yaml`)
+```bash
+atbclone probe /Applications/ATBCmder.app --save
+```
+
+#### Export Generated Recipe to a Specific Path
+```bash
+atbclone probe /Applications/ATBCmder.app -o /path/to/recipe.yaml
+```
+
+#### Output in Machine-Readable JSON
+```bash
+atbclone probe /Applications/ATBCmder.app --json
+```
+
+---
+
+### 8. View Version & System Information (`version`)
 
 ```bash
-# 查看详细系统与运行环境信息
+# View detailed system and runtime environment information
 atbclone version
 
-# 仅输出版本号
+# Output version number only
 atbclone version --short
-# 或
+# or
 atbclone --version
 ```
 
 ---
 
-## 🏷️ 语义化版本管理 (Version Management)
+## 🏷️ Semantic Version Management
 
-项目采用标准的语义化版本号格式 `x.y.z`（当前版本：`0.1.0`），并提供了专用的版本管理脚本 `scripts/manage_version.py`：
+The project adheres to semantic versioning `x.y.z` (current version: `0.1.0`) and provides a dedicated version management script at `scripts/manage_version.py`:
 
 ```bash
-# 1. 检查各配置文件版本是否一致
+# 1. Check version consistency across configuration files
 python scripts/manage_version.py --show
 
-# 2. 语义化升级版本 (patch: 0.1.0 -> 0.1.1, minor: 0.1.0 -> 0.2.0, major: 0.1.0 -> 1.0.0)
+# 2. Bump semantic version (patch: 0.1.0 -> 0.1.1, minor: 0.1.0 -> 0.2.0, major: 0.1.0 -> 1.0.0)
 python scripts/manage_version.py --bump patch
 python scripts/manage_version.py --bump minor
 python scripts/manage_version.py --bump major
 
-# 3. 指定显式版本
+# 3. Set an explicit version
 python scripts/manage_version.py 0.2.0
 
-# 4. 预览变更（不实际写入文件）
+# 4. Preview changes without writing to disk
 python scripts/manage_version.py --bump patch --dry-run
 ```
 
-*脚本会自动同步更新 `pyproject.toml`、`src/atbclone/__init__.py` 等目标文件的版本定义。*
+*The script automatically updates version declarations in `pyproject.toml`, `src/atbclone/__init__.py`, and other configuration files.*
 
 ---
 
-## 🏗️ 构建与打包为独立二进制 (Build)
+## 🏗️ Standalone Binary Packaging (Build)
 
-项目提供了基于 [Nuitka](https://nuitka.net/) 的全自动单文件二进制构建脚本，可将整个 CLI 打包为无需 Python 环境依赖的独立可执行文件：
+The project includes an automated [Nuitka](https://nuitka.net/)-based single-file build script to package the CLI into a standalone binary with zero Python runtime dependency:
 
 ```bash
-# 执行打包脚本
+# Run build script
 bash scripts/build_cli.sh
 ```
 
-构建完成后将在 `dist/` 目录生成独立二进制文件：
+The resulting standalone binary will be generated under `dist/`:
 ```bash
-# 验证打包产物
+# Verify the built binary
 ./dist/ATBCloneCli --help
 ./dist/ATBCloneCli version
 ./dist/ATBCloneCli doctor
+./dist/ATBCloneCli probe /Applications/ATBCmder.app
 ```
 
 ---
 
-## 🧪 运行测试
+## 🧪 Running Tests
 
-本项目严格遵循 TDD 与自动化验证规范，包含完整的单元测试与集成测试：
+This project follows TDD and automated test verification practices, with full unit and integration test suites:
 
 ```bash
 PYTHONPATH=src conda run -n ATBClone python -m pytest tests/ -v
@@ -249,42 +293,44 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/ -v
 
 ---
 
-## 📂 目录与数据存储架构
+## 📂 Directory & Storage Architecture
 
 ```
 ~/.atbclone/
-├── clones.yaml           # 全局分身状态追踪记录
-├── recipes/              # 用户自定义配方存放目录 (可选覆盖)
-└── Data/                 # 各分身独立的数据隔离目录
-    ├── 微信2/
-    │   ├── Home/         # 隔离的独立用户主目录
-    │   └── Tmp/          # 隔离的临时目录
-    └── Chrome2/          # Chrome 独立 User Data 目录
+├── clones.yaml           # Global clone state tracking registry
+├── recipes/              # User custom recipe directory (optional overrides)
+└── Data/                 # Isolated data directories per clone
+    ├── WeChat2/
+    │   ├── Home/         # Isolated user home directory
+    │   └── Tmp/          # Isolated temporary directory
+    └── Chrome2/          # Isolated Chrome User Data directory
 ```
 
 ```
 src/atbclone/
-├── cli/                  # CLI 命令行层 (Click + Rich)
-│   ├── cmd_clone.py      # 克隆主命令
-│   ├── cmd_doctor.py     # 环境检测
-│   ├── cmd_list.py       # 分身列表
-│   ├── cmd_recipe.py     # 配方管理
-│   ├── cmd_remove.py     # 分身删除
-│   ├── cmd_update.py     # 分身更新
-│   ├── cmd_version.py    # 版本与系统信息展示
-│   └── cmd_wizard.py     # 交互式向导
-├── core/                 # 核心领域模型与克隆引擎
-│   ├── app_inspector.py  # App 元数据检查与自动编号
-│   ├── clone_task.py     # 克隆任务实体
-│   ├── engines.py        # Soft & Hard 克隆执行引擎
-│   ├── models.py         # 基础模型
-│   └── state.py          # YAML 状态管理
-├── executor/             # 底层执行器 (Direct Subprocess / AppleScript 提权)
+├── cli/                  # CLI command layer (Click + Rich)
+│   ├── cmd_clone.py      # Main clone command (supports auto-probing)
+│   ├── cmd_doctor.py     # Environment checks
+│   ├── cmd_list.py       # Clone listing
+│   ├── cmd_probe.py      # Deep app architecture probing & recipe generation
+│   ├── cmd_recipe.py     # Recipe management
+│   ├── cmd_remove.py     # Clone removal
+│   ├── cmd_update.py     # Clone update & sync
+│   ├── cmd_version.py    # Version & system information
+│   └── cmd_wizard.py     # Interactive wizard
+├── core/                 # Core domain models & cloning engines
+│   ├── app_inspector.py  # App metadata inspection & auto-numbering
+│   ├── app_prober.py     # Deep probing, sandbox inspection & recipe extraction
+│   ├── clone_task.py     # Clone task entity
+│   ├── engines.py        # Soft & Hard cloning execution engines
+│   ├── models.py         # Domain models
+│   └── state.py          # YAML state management
+├── executor/             # Low-level executors (Subprocess / AppleScript elevation)
 │   └── runner.py
-└── recipes/              # 配方模型、加载器与 18 个内置规则
-    ├── builtin/          # 内置 YAML 配方
-    ├── loader.py         # 规则匹配与优先级加载
-    └── models.py         # Pydantic 校验模型
+└── recipes/              # Recipe models, loaders & 18 built-in rules
+    ├── builtin/          # Built-in YAML recipes
+    ├── loader.py         # Recipe matching & priority loader
+    └── models.py         # Pydantic validation models
 ```
 
 ---

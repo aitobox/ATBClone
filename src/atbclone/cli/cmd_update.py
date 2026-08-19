@@ -21,7 +21,7 @@ console = Console()
 @click.command(name="update")
 @click.argument("clone_name")
 def update(clone_name: str) -> None:
-    """更新已克隆的应用"""
+    """Update a cloned application."""
     sm = StateManager()
     record = sm.get(clone_name)
     if record is None:

@@ -58,7 +58,7 @@ echo "[✔] Version files updated."
 
 # 3. Git Commit & Tag
 echo "==> [Step 3/5] Committing release and creating tag ${TAG_NAME}..."
-git add pyproject.toml src/atbclone/__init__.py README.md
+git add pyproject.toml src/atbclone/__init__.py README.md Readme_zh.md
 # Commit only if there are staged changes
 if ! git diff --cached --quiet; then
     git commit -m "release: ${TAG_NAME}"

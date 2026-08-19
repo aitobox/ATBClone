@@ -6,6 +6,24 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.4.0] - 2026-08-19
+
+### 🌐 Support multilingue complet en 9 langues pour le CLI et la documentation
+- **Internationalisation complète du CLI en 9 langues**:
+  - Extension du moteur `atbclone.core.i18n` avec le support complet de l'anglais, du chinois simplifié, du chinois traditionnel, du japonais, du coréen, de l'allemand, du français, du russe et de l'espagnol.
+  - Toutes les commandes CLI (`wizard`, `clone`, `probe`, `list`, `recipe`, `doctor`, `update`, `remove`, `version`) intègrent des invites, des tableaux et des diagnostics d'erreur localisés.
+- **Structure standardisée des notes de version multilingues**:
+  - Gestion unifiée des notes de version en 9 langues sous le répertoire `docs/release/`.
+
+### 🔄 Pipeline automatisé de publication et de synchronisation des versions
+- **Validation automatique des ReleaseNotes en 9 langues**:
+  - Amélioration de `scripts/manage_version.py` et `scripts/release.sh` pour vérifier automatiquement la présence de la section de version dans les 9 fichiers avant la création du tag Git.
+  - Ajout de l'option `--check-notes` pour prévenir tout oubli de documentation de version.
+- **Suite de tests enrichie**:
+  - Augmentation des tests automatisés à 191 tests couvrant l'internationalisation et le flux de publication.
+
+---
+
 ## [v0.3.0] - 2026-08-19
 
 ### 🌐 Internationalisation et support multilingue (i18n)

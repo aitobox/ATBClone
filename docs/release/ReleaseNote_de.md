@@ -6,6 +6,24 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.4.0] - 2026-08-19
+
+### 🌐 Umfassende 9-Sprachen-Lokalisierung für CLI und Dokumentation
+- **Vollständige CLI-Internationalisierung in 9 Sprachen**:
+  - Erweiterung des `atbclone.core.i18n`-Moduls um vollständige Lokalisierung für Englisch, vereinfachtes Chinesisch, traditionelles Chinesisch, Japanisch, Koreanisch, Deutsch, Französisch, Russisch und Spanisch.
+  - Alle CLI-Befehle (`wizard`, `clone`, `probe`, `list`, `recipe`, `doctor`, `update`, `remove`, `version`) unterstützen lokalisierte Dialoge, Tabellen und Fehlermeldungen.
+- **Standardisierte mehrsprachige Release Notes**:
+  - Bereitstellung und Pflege von Versionshinweisen in 9 Sprachen im Verzeichnis `docs/release/`.
+
+### 🔄 Automatisierte Release- und Versionssynchronisations-Pipeline
+- **Automatische Validierung der 9-Sprachen-Release-Notes**:
+  - Optimierung von `scripts/manage_version.py` und `scripts/release.sh` zur automatischen Überprüfung der Versionsabschnitte in allen 9 Release-Notes-Dateien vor der Tag-Erstellung.
+  - Neuer Validierungsbefehl `--check-notes` zur Vermeidung fehlender Versionsdokumentation.
+- **Erweitertes Test-Suite**:
+  - Erweiterung der automatisierten Tests auf 191 Testfälle mit vollständiger Abdeckung der Lokalisierung und des Release-Workflows.
+
+---
+
 ## [v0.3.0] - 2026-08-19
 
 ### 🌐 Internationalisierung & Mehrsprachigkeit (i18n)

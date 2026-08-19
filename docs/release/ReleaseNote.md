@@ -6,6 +6,24 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.4.0] - 2026-08-19
+
+### 🌐 Comprehensive 9-Language CLI & Documentation Ecosystem
+- **Full CLI Internationalization Across 9 Languages**:
+  - Expanded `atbclone.core.i18n` with full localization support for English, Simplified Chinese, Traditional Chinese, Japanese, Korean, German, French, Russian, and Spanish.
+  - All interactive commands (`wizard`, `clone`, `probe`, `list`, `recipe`, `doctor`, `update`, `remove`, `version`) seamlessly render localized prompts, tables, and error diagnostics.
+- **Multilingual Release Notes Architecture**:
+  - Standardized release note documentation across all 9 supported languages under `docs/release/`.
+
+### 🔄 Automated Release & Version Synchronization Pipeline
+- **Automated 9-Language Release Notes Validation**:
+  - Enhanced `scripts/manage_version.py` and `scripts/release.sh` with automated checks ensuring all 9 `docs/release/ReleaseNote*.md` files are synchronized and validated before creating release tags.
+  - Added `--check-notes` validation flag in version manager to prevent missing release documentation.
+- **Enhanced Test Suite**:
+  - Upgraded automated test suite to 191 unit tests with full multi-language and release workflow coverage.
+
+---
+
 ## [v0.3.0] - 2026-08-19
 
 ### 🌐 Internationalization & Multilingual Support

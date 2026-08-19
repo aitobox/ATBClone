@@ -14,9 +14,10 @@
 - 🔍 **Intelligent App Prober**: Automatically inspects Mach-O architectures, frameworks, and code signing sandbox entitlements for any application without a pre-configured recipe, dynamically determining the optimal soft/hard clone strategy and generating recommended recipes.
 - 🌐 **Isolated Network Proxies**: Configure dedicated HTTP or SOCKS5 proxies (with authentication support) per cloned application without interfering with host system or primary application traffic.
 - 📑 **Recipe Engine**: 18+ built-in recipes for popular apps and AI Agent tools, with local override support via `~/.atbclone/recipes/`.
-- 🪄 **Interactive Wizard**: Step-by-step interactive CLI guide supporting terminal drag-and-drop application paths, automatic name incrementing, and on-the-fly proxy configuration.
-- 🔄 **Lifecycle Management**: View cloned apps (`list`), re-clone after primary app updates while preserving user and chat data (`update`), and safely remove clones with optional data cleanup (`remove`).
+- 🪄 **Interactive Wizard**: Step-by-step interactive CLI guide supporting terminal drag-and-drop application paths, automatic name incrementing, custom data directory configuration, and on-the-fly proxy setup.
+- 🔄 **Lifecycle Management**: View cloned apps (`list`), re-clone after primary app updates while preserving user and chat data (`update`), and safely remove clones with interactive prompts or flag controls (`remove` with `--with-data` / `--keep-data`).
 - 🛡️ **Security & Privilege Elevation**: Writing to `~/Applications` requires no admin privileges; writing to `/Applications` uses native single-prompt macOS `osascript` authorization; robust path escaping via `shlex.quote` throughout.
+
 
 ---
 
@@ -83,7 +84,7 @@ No need to memorize CLI options—follow the interactive prompts in your termina
 ```bash
 atbclone wizard
 ```
-*Workflow: Drag and drop `.app` path ➔ Auto-match recipe ➔ Set clone name ➔ Select destination directory ➔ Optional proxy setup ➔ Confirm and create.*
+*Workflow: Drag and drop `.app` path ➔ Auto-match recipe ➔ Set clone name ➔ Set display name and icon ➔ Select destination directory ➔ Custom data directory (if supported) ➔ Optional proxy setup ➔ Confirm and create.*
 
 ---
 
@@ -98,6 +99,14 @@ atbclone clone /Applications/WeChat.app
 ```bash
 atbclone clone /Applications/WeChat.app --name "WeChat-Work" --output-dir ~/Applications
 ```
+
+#### Custom Data Storage Directory (`--data-dir`)
+For applications that support data isolation (Chromium series, Firefox, WeChat, etc.), you can specify a custom data storage directory (e.g. on an external SSD or dedicated workspace):
+```bash
+atbclone clone /Applications/Chrome.app --name "Chrome-Custom" --data-dir /Volumes/ExternalSSD/ChromeData
+```
+*Note: The prober automatically detects if the application supports data isolation; attempting to set `--data-dir` on unsupported applications (e.g. Zed) will fail with a friendly error.*
+
 
 #### Clone Applications without Pre-configured Recipes (Auto-triggers Prober)
 When cloning an app without a built-in recipe, ATBClone automatically runs App Prober to inspect the architecture and sandbox entitlements, dynamically generates the optimal recipe, and executes the clone:
@@ -154,16 +163,24 @@ atbclone update WeChat2
 
 ### 5. Remove Clones (`remove`)
 
-#### Remove Clone Application Only (Preserves data directory by default)
+#### Interactive Removal (Recommended)
+When executing remove in an interactive terminal, ATBClone prompts whether to also delete the data directory:
 ```bash
 atbclone remove WeChat2
+# Interactive prompt: Also delete data directory /Users/.../.atbclone/Data/WeChat2? [y/N]
 ```
 
-#### Completely Remove Clone Application and Data Directory
+#### Explicitly Remove Application and Data Directory (`--with-data`)
 ```bash
 atbclone remove WeChat2 --with-data
 ```
-*Note: Deleting the data directory is irreversible. You will be prompted to confirm with `y`.*
+
+#### Explicitly Remove Application Only and Keep Data (`--keep-data`)
+```bash
+atbclone remove WeChat2 --keep-data
+```
+*Note: If the application or data directory is located in a root/admin path (e.g. `/Applications`), privilege escalation will be requested automatically once to clean up safely.*
+
 
 ---
 

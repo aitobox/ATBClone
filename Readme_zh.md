@@ -14,9 +14,10 @@
 - 🔍 **智能应用探测 (App Prober)**：遇到未预设配方的任意 macOS 应用程序时，自动分析其 Mach-O 架构、Frameworks 与代码签名沙盒权限，动态决定软/硬克隆策略并提取推荐配方。
 - 🌐 **独立网络代理**：支持为每个分身单独指定 HTTP 或 SOCKS5 代理（支持认证），分身流量与系统及原应用互不干扰。
 - 📑 **规则引擎 (Recipe Engine)**：内置 18+ 常用应用与 AI Agent 工具配方，支持通过 `~/.atbclone/recipes/` 本地优先级覆盖自定义规则。
-- 🪄 **交互式向导 (Wizard)**：命令行交互式一步步引导，支持终端路径拖拽、自动识别并编号、即时配置代理。
-- 🔄 **生命周期管理**：提供分身列表查看（`list`）、原版本升级后一键重克隆且保留聊天数据（`update`）、安全删除分身及可选清理数据（`remove`）。
+- 🪄 **交互式向导 (Wizard)**：命令行交互式一步步引导，支持终端路径拖拽、自动识别并编号、自定义数据目录配置、即时配置代理。
+- 🔄 **生命周期管理**：提供分身列表查看（`list`）、原版本升级后一键重克隆且保留聊天数据（`update`）、安全删除分身（`remove` 支持交互式询问清理数据目录及 `--with-data` / `--keep-data` 参数控制）。
 - 🛡️ **安全与提权设计**：写入 `~/Applications` 无需管理员权限；写入 `/Applications` 自动使用 macOS 原生单次 `osascript` 授权；全流程使用原子脚本与 `shlex.quote` 路径防护。
+
 
 ---
 
@@ -83,7 +84,7 @@ atbclone doctor
 ```bash
 atbclone wizard
 ```
-*流程包括：拖入 `.app` 路径 ➔ 自动匹配配方 ➔ 设置分身名称 ➔ 选择输出路径 ➔ 可选配置代理 ➔ 确认生成。*
+*流程包括：拖入 `.app` 路径 ➔ 自动匹配配方 ➔ 设置分身名称 ➔ 设置显示名称与图标 ➔ 选择输出路径 ➔ 自定义数据目录（若支持） ➔ 可选配置代理 ➔ 确认生成。*
 
 ---
 
@@ -98,6 +99,13 @@ atbclone clone /Applications/WeChat.app
 ```bash
 atbclone clone /Applications/WeChat.app --name "微信工作版" --output-dir ~/Applications
 ```
+
+#### 自定义数据存储目录 (`--data-dir`)
+对于支持数据隔离的应用（如 Chromium 系列、Firefox、微信等），可指定自定义数据存储路径（例如放置于外部 SSD 或专属工作区）：
+```bash
+atbclone clone /Applications/Chrome.app --name "Chrome-Custom" --data-dir /Volumes/ExternalSSD/ChromeData
+```
+*注：系统会自动探测应用是否支持数据隔离；若目标应用无数据隔离规则（如 Zed），将自动拦截并提示错误。*
 
 #### 未预设配方应用克隆（自动触发深度探测）
 克隆未内置规则的应用时，ATBClone 会自动触发 App Prober 探测架构与沙盒权限，动态生成最佳配方后执行克隆：
@@ -154,16 +162,24 @@ atbclone update 微信2
 
 ### 5. 删除分身 (`remove`)
 
-#### 仅删除分身应用本体（默认保留历史数据）
+#### 交互式删除（推荐）
+在终端中直接执行删除时，系统会交互式询问是否同时清理数据目录：
 ```bash
 atbclone remove 微信2
+# 交互提示：是否同时删除数据目录 /Users/.../.atbclone/Data/微信2？[y/N]
 ```
 
-#### 同时彻底删除分身应用及数据目录
+#### 显式同时删除分身应用及数据目录 (`--with-data`)
 ```bash
 atbclone remove 微信2 --with-data
 ```
-*注：删除数据目录为不可逆操作，系统会要求用户二次键入 `y` 确认。*
+
+#### 显式仅删除应用本体并保留数据 (`--keep-data`)
+```bash
+atbclone remove 微信2 --keep-data
+```
+*注：若分身应用或数据目录位于需要管理员权限的系统目录（如 `/Applications`），系统会自动通过一次提权安全清理。*
+
 
 ---
 

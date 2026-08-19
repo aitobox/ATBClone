@@ -85,7 +85,7 @@ def test_wizard_complete_hard_clone(tmp_path: Path, mock_app_info: AppInfo, mock
         assert task.source == mock_app_info
         assert task.clone_name == "WeChat2"
         assert task.dest_path == Path.home() / "Applications" / "WeChat2.app"
-        assert task.new_bundle_id == "com.tencent.xinWeChat.atb2"
+        assert task.new_bundle_id == "com.tencent.xinWeChat.atbclone.2"
         assert task.display_name is None
         assert task.icon_path is None
         assert needs_admin is False

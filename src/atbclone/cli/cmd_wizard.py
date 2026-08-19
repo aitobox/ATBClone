@@ -100,7 +100,7 @@ def wizard() -> None:
         return
 
     # 9. Execute clone
-    new_bundle_id = f"{info.bundle_id}.atb{num}"
+    new_bundle_id = AppInspector.generate_bundle_id(info.bundle_id, num)
     data_dir = DEFAULT_DATA_DIR / clone_name
 
     task = CloneTask(

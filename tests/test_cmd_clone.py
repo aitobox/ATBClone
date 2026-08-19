@@ -75,7 +75,7 @@ def test_clone_soft_success(tmp_path: Path, mock_app_info: AppInfo, mock_soft_re
         assert task.source == mock_app_info
         assert task.dest_path == output_dir / "WeChat2.app"
         assert task.clone_name == "WeChat2"
-        assert task.new_bundle_id == "com.tencent.xinWeChat.atb2"
+        assert task.new_bundle_id == "com.tencent.xinWeChat.atbclone.2"
         assert task.data_dir == Path.home() / ".atbclone" / "Data" / "WeChat2"
 
 
@@ -167,7 +167,7 @@ def test_clone_name_override(tmp_path: Path, mock_app_info: AppInfo, mock_soft_r
 
         task, _ = mock_soft_exec.call_args[0]
         assert task.clone_name == "WorkChat2"
-        assert task.new_bundle_id == "com.tencent.xinWeChat.atb2"
+        assert task.new_bundle_id == "com.tencent.xinWeChat.atbclone.2"
 
 
 def test_clone_output_dir_admin_detection(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):

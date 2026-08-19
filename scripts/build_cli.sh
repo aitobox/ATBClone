@@ -58,7 +58,7 @@ PYTHONPATH=src "${PYTHON_BIN}" -m nuitka \
     --include-package=rich \
     --include-package=pydantic \
     --include-package=pydantic_core \
-    --include-package=yaml \  # PyYAML distribution; importable name is 'yaml'
+    --include-package=yaml \
     --python-flag=no_site \
     --assume-yes-for-downloads \
     src/atbclone/cli/main.py

@@ -177,8 +177,41 @@ proxy:
   enabled: true
   type: http
   host: 127.0.0.1
-  port: 7890
+### 7. 查看版本与系统信息 (`version`)
+
+```bash
+# 查看详细系统与运行环境信息
+atbclone version
+
+# 仅输出版本号
+atbclone version --short
+# 或
+atbclone --version
 ```
+
+---
+
+## 🏷️ 语义化版本管理 (Version Management)
+
+项目采用标准的语义化版本号格式 `x.y.z`（当前版本：`0.1.0`），并提供了专用的版本管理脚本 `scripts/manage_version.py`：
+
+```bash
+# 1. 检查各配置文件版本是否一致
+python scripts/manage_version.py --show
+
+# 2. 语义化升级版本 (patch: 0.1.0 -> 0.1.1, minor: 0.1.0 -> 0.2.0, major: 0.1.0 -> 1.0.0)
+python scripts/manage_version.py --bump patch
+python scripts/manage_version.py --bump minor
+python scripts/manage_version.py --bump major
+
+# 3. 指定显式版本
+python scripts/manage_version.py 0.2.0
+
+# 4. 预览变更（不实际写入文件）
+python scripts/manage_version.py --bump patch --dry-run
+```
+
+*脚本会自动同步更新 `pyproject.toml`、`src/atbclone/__init__.py` 等目标文件的版本定义。*
 
 ---
 
@@ -195,6 +228,7 @@ bash scripts/build_cli.sh
 ```bash
 # 验证打包产物
 ./dist/ATBCloneCli --help
+./dist/ATBCloneCli version
 ./dist/ATBCloneCli doctor
 ```
 
@@ -232,6 +266,7 @@ src/atbclone/
 │   ├── cmd_recipe.py     # 配方管理
 │   ├── cmd_remove.py     # 分身删除
 │   ├── cmd_update.py     # 分身更新
+│   ├── cmd_version.py    # 版本与系统信息展示
 │   └── cmd_wizard.py     # 交互式向导
 ├── core/                 # 核心领域模型与克隆引擎
 │   ├── app_inspector.py  # App 元数据检查与自动编号

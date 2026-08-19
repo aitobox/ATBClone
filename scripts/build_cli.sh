@@ -59,6 +59,7 @@ PYTHONPATH=src "${PYTHON_BIN}" -m nuitka \
     --include-package=pydantic \
     --include-package=pydantic_core \
     --include-package=yaml \
+    --product-version="${VERSION}" \
     --python-flag=no_site \
     --assume-yes-for-downloads \
     src/atbclone_entry.py

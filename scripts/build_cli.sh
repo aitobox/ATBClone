@@ -61,7 +61,7 @@ PYTHONPATH=src "${PYTHON_BIN}" -m nuitka \
     --include-package=yaml \
     --python-flag=no_site \
     --assume-yes-for-downloads \
-    src/atbclone/cli/main.py
+    src/atbclone_entry.py
 
 # 6. Ensure executable permissions
 chmod +x dist/ATBCloneCli

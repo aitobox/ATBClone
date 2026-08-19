@@ -31,5 +31,15 @@ def test_build_script_contains_required_flags():
     assert "ATBCloneCli" in content
     assert "--include-package=atbclone" in content
     assert "--include-package-data=atbclone" in content
-    assert "src/atbclone/cli/main.py" in content
+    assert "src/atbclone_entry.py" in content
     assert "--include-package=pydantic_core" in content
+
+
+def test_entry_point_uses_absolute_imports():
+    root = Path(__file__).parent.parent
+    entry = root / "src" / "atbclone_entry.py"
+    assert entry.exists(), "src/atbclone_entry.py does not exist"
+    content = entry.read_text(encoding="utf-8")
+    # Must use absolute import, not relative (no leading dot)
+    assert "from atbclone.cli.main import cli" in content
+    assert "from .cli" not in content

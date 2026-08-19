@@ -11,7 +11,7 @@ import scripts.manage_version as mv
 def test_atbclone_version_semver_format():
     """Verify package __version__ strictly follows x.y.z format."""
     assert re.match(r"^\d+\.\d+\.\d+$", __version__)
-    assert __version__ == "0.1.0"
+    assert __version__ == mv.get_current_version()
 
 
 def test_parse_version_valid():

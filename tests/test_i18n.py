@@ -38,7 +38,9 @@ def mock_hard_recipe() -> Recipe:
         bundle_id="com.tencent.xinWeChat",
         app_name="WeChat",
         strategy="hard_clone",
+        environment_injection={"HOME": "{{ATB_DATA_DIR}}/Home"},
     )
+
 
 
 @pytest.fixture(autouse=True)
@@ -171,7 +173,7 @@ def test_wizard_all_languages(tmp_path, mock_app_info: AppInfo, mock_hard_recipe
 
     for lang, expected_title, expected_prompt in test_cases:
         runner = CliRunner(env={"ATBCLONE_LANG": lang})
-        inputs = f"{mock_app_info.path}\n\n\n\n\n\n\n"
+        inputs = f"{mock_app_info.path}\n\n\n\n\n\n\n\n"
 
         with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
              patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
@@ -183,3 +185,14 @@ def test_wizard_all_languages(tmp_path, mock_app_info: AppInfo, mock_hard_recipe
             assert result.exit_code == 0
             assert expected_title in result.output
             assert expected_prompt in result.output
+
+
+def test_new_data_dir_i18n_keys():
+    for lang in ("en", "zh", "zh_TW", "ja", "ko", "de", "fr", "ru", "es"):
+        set_language(lang)
+        msg = t("clone_err_data_dir_not_supported", app_name="Zed")
+        assert "Zed" in msg
+        assert t("wizard_prompt_data_dir") != ""
+        assert "/tmp/test" in t("wizard_confirm_data_dir", data_dir="/tmp/test")
+        assert "/tmp/test" in t("remove_prompt_delete_data", data_dir="/tmp/test")
+

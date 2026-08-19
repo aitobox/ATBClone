@@ -240,3 +240,41 @@ def test_all_builtin_recipes_valid():
         assert recipe.strip_sandbox == strip_sandbox
 
 
+def test_supports_data_dir_with_launch_args():
+    from atbclone.recipes.models import Recipe, supports_data_dir
+
+    recipe = Recipe(
+        bundle_id="com.google.Chrome",
+        app_name="Chrome",
+        strategy="hard_clone",
+        launch_args=["--user-data-dir={{ATB_DATA_DIR}}"],
+    )
+    assert supports_data_dir(recipe) is True
+
+
+def test_supports_data_dir_with_env_injection():
+    from atbclone.recipes.models import Recipe, supports_data_dir
+
+    recipe = Recipe(
+        bundle_id="com.tencent.xinWeChat",
+        app_name="WeChat",
+        strategy="hard_clone",
+        environment_injection={"HOME": "{{ATB_DATA_DIR}}/Home"},
+    )
+    assert supports_data_dir(recipe) is True
+
+
+def test_supports_data_dir_unsupported():
+    from atbclone.recipes.models import Recipe, supports_data_dir
+
+    recipe = Recipe(
+        bundle_id="dev.zed.Zed",
+        app_name="Zed",
+        strategy="soft_clone",
+        launch_args=[],
+        environment_injection={},
+    )
+    assert supports_data_dir(recipe) is False
+
+
+

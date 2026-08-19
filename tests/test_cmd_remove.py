@@ -51,32 +51,13 @@ def test_remove_not_found():
         assert "Clone 'WeChat2' not found." in result.output
 
 
-def test_remove_success(mock_record_user_dir: CloneRecord):
+def test_remove_interactive_confirm_yes(mock_record_user_dir: CloneRecord):
     runner = CliRunner()
     with patch("atbclone.cli.cmd_remove.StateManager.get", return_value=mock_record_user_dir), \
          patch("atbclone.cli.cmd_remove.Runner.run") as mock_runner, \
          patch("atbclone.cli.cmd_remove.StateManager.remove") as mock_remove:
 
-        result = runner.invoke(cli, ["remove", "WeChat2"])
-        assert result.exit_code == 0
-        assert "Success! Removed clone 'WeChat2'" in result.output
-
-        mock_runner.assert_called_once()
-        script, needs_admin = mock_runner.call_args[0]
-        assert needs_admin is False
-        assert f"rm -rf {mock_record_user_dir.dest_path}" in script
-        assert mock_record_user_dir.data_dir not in script
-
-        mock_remove.assert_called_once_with("WeChat2")
-
-
-def test_remove_with_data(mock_record_user_dir: CloneRecord):
-    runner = CliRunner()
-    with patch("atbclone.cli.cmd_remove.StateManager.get", return_value=mock_record_user_dir), \
-         patch("atbclone.cli.cmd_remove.Runner.run") as mock_runner, \
-         patch("atbclone.cli.cmd_remove.StateManager.remove") as mock_remove:
-
-        result = runner.invoke(cli, ["remove", "WeChat2", "--with-data"], input="y\n")
+        result = runner.invoke(cli, ["remove", "WeChat2"], input="y\n")
         assert result.exit_code == 0
         assert f"Also delete data directory {mock_record_user_dir.data_dir}?" in result.output
         assert "Success! Removed clone 'WeChat2'" in result.output
@@ -90,18 +71,82 @@ def test_remove_with_data(mock_record_user_dir: CloneRecord):
         mock_remove.assert_called_once_with("WeChat2")
 
 
-def test_remove_with_data_abort(mock_record_user_dir: CloneRecord):
+def test_remove_interactive_confirm_no(mock_record_user_dir: CloneRecord):
     runner = CliRunner()
     with patch("atbclone.cli.cmd_remove.StateManager.get", return_value=mock_record_user_dir), \
          patch("atbclone.cli.cmd_remove.Runner.run") as mock_runner, \
          patch("atbclone.cli.cmd_remove.StateManager.remove") as mock_remove:
 
-        result = runner.invoke(cli, ["remove", "WeChat2", "--with-data"], input="n\n")
-        assert result.exit_code != 0
-        assert "Aborted" in result.output or result.exit_code == 1
+        result = runner.invoke(cli, ["remove", "WeChat2"], input="n\n")
+        assert result.exit_code == 0
+        assert f"Also delete data directory {mock_record_user_dir.data_dir}?" in result.output
+        assert "Success! Removed clone 'WeChat2'" in result.output
 
-        mock_runner.assert_not_called()
-        mock_remove.assert_not_called()
+        mock_runner.assert_called_once()
+        script, needs_admin = mock_runner.call_args[0]
+        assert needs_admin is False
+        assert f"rm -rf {mock_record_user_dir.dest_path}" in script
+        assert mock_record_user_dir.data_dir not in script
+
+        mock_remove.assert_called_once_with("WeChat2")
+
+
+def test_remove_explicit_with_data(mock_record_user_dir: CloneRecord):
+    runner = CliRunner()
+    with patch("atbclone.cli.cmd_remove.StateManager.get", return_value=mock_record_user_dir), \
+         patch("atbclone.cli.cmd_remove.Runner.run") as mock_runner, \
+         patch("atbclone.cli.cmd_remove.StateManager.remove") as mock_remove:
+
+        result = runner.invoke(cli, ["remove", "WeChat2", "--with-data"])
+        assert result.exit_code == 0
+        assert "Also delete data directory" not in result.output
+        assert "Success! Removed clone 'WeChat2'" in result.output
+
+        mock_runner.assert_called_once()
+        script, needs_admin = mock_runner.call_args[0]
+        assert needs_admin is False
+        assert f"rm -rf {mock_record_user_dir.dest_path}" in script
+        assert f"rm -rf {mock_record_user_dir.data_dir}" in script
+
+        mock_remove.assert_called_once_with("WeChat2")
+
+
+def test_remove_explicit_keep_data(mock_record_user_dir: CloneRecord):
+    runner = CliRunner()
+    with patch("atbclone.cli.cmd_remove.StateManager.get", return_value=mock_record_user_dir), \
+         patch("atbclone.cli.cmd_remove.Runner.run") as mock_runner, \
+         patch("atbclone.cli.cmd_remove.StateManager.remove") as mock_remove:
+
+        result = runner.invoke(cli, ["remove", "WeChat2", "--keep-data"])
+        assert result.exit_code == 0
+        assert "Also delete data directory" not in result.output
+        assert "Success! Removed clone 'WeChat2'" in result.output
+
+        mock_runner.assert_called_once()
+        script, needs_admin = mock_runner.call_args[0]
+        assert needs_admin is False
+        assert f"rm -rf {mock_record_user_dir.dest_path}" in script
+        assert mock_record_user_dir.data_dir not in script
+
+        mock_remove.assert_called_once_with("WeChat2")
+
+
+def test_remove_explicit_no_with_data(mock_record_user_dir: CloneRecord):
+    runner = CliRunner()
+    with patch("atbclone.cli.cmd_remove.StateManager.get", return_value=mock_record_user_dir), \
+         patch("atbclone.cli.cmd_remove.Runner.run") as mock_runner, \
+         patch("atbclone.cli.cmd_remove.StateManager.remove") as mock_remove:
+
+        result = runner.invoke(cli, ["remove", "WeChat2", "--no-with-data"])
+        assert result.exit_code == 0
+        assert "Also delete data directory" not in result.output
+
+        mock_runner.assert_called_once()
+        script, needs_admin = mock_runner.call_args[0]
+        assert f"rm -rf {mock_record_user_dir.dest_path}" in script
+        assert mock_record_user_dir.data_dir not in script
+
+        mock_remove.assert_called_once_with("WeChat2")
 
 
 def test_remove_runner_error(mock_record_user_dir: CloneRecord):
@@ -110,7 +155,7 @@ def test_remove_runner_error(mock_record_user_dir: CloneRecord):
          patch("atbclone.cli.cmd_remove.Runner.run", side_effect=CloneError("Permission denied")), \
          patch("atbclone.cli.cmd_remove.StateManager.remove") as mock_remove:
 
-        result = runner.invoke(cli, ["remove", "WeChat2"])
+        result = runner.invoke(cli, ["remove", "WeChat2", "--keep-data"])
         assert result.exit_code == 1
         assert "Error:" in result.output
         assert "Permission denied" in result.output
@@ -118,13 +163,13 @@ def test_remove_runner_error(mock_record_user_dir: CloneRecord):
         mock_remove.assert_not_called()
 
 
-def test_remove_admin_elevation(mock_record_admin_dir: CloneRecord):
+def test_remove_admin_elevation_due_to_dest(mock_record_admin_dir: CloneRecord):
     runner = CliRunner()
     with patch("atbclone.cli.cmd_remove.StateManager.get", return_value=mock_record_admin_dir), \
          patch("atbclone.cli.cmd_remove.Runner.run") as mock_runner, \
          patch("atbclone.cli.cmd_remove.StateManager.remove") as mock_remove:
 
-        result = runner.invoke(cli, ["remove", "WeChat2"])
+        result = runner.invoke(cli, ["remove", "WeChat2", "--keep-data"])
         assert result.exit_code == 0
         assert "Success! Removed clone 'WeChat2'" in result.output
 
@@ -136,9 +181,38 @@ def test_remove_admin_elevation(mock_record_admin_dir: CloneRecord):
         mock_remove.assert_called_once_with("WeChat2")
 
 
+def test_remove_admin_elevation_due_to_data_dir():
+    record = CloneRecord(
+        clone_name="WeChat2",
+        source_app="WeChat",
+        source_path="/Applications/WeChat.app",
+        bundle_id="com.tencent.xinWeChat",
+        strategy="hard_clone",
+        dest_path=str(Path.home() / "Applications" / "WeChat2.app"),
+        data_dir="/Library/Application Support/WeChat2",
+        created_at="2026-08-18T20:00:00",
+        proxy_enabled=False,
+        proxy_summary="",
+    )
+    runner = CliRunner()
+    with patch("atbclone.cli.cmd_remove.StateManager.get", return_value=record), \
+         patch("atbclone.cli.cmd_remove.Runner.run") as mock_runner, \
+         patch("atbclone.cli.cmd_remove.StateManager.remove"):
+
+        result = runner.invoke(cli, ["remove", "WeChat2", "--with-data"])
+        assert result.exit_code == 0
+        script, needs_admin = mock_runner.call_args[0]
+        assert needs_admin is True
+        assert f"rm -rf {record.dest_path}" in script
+        import shlex
+        assert f"rm -rf {shlex.quote(record.data_dir)}" in script
+
+
+
 def test_remove_help():
     runner = CliRunner()
     result = runner.invoke(cli, ["remove", "--help"])
     assert result.exit_code == 0
     assert "CLONE_NAME" in result.output
     assert "--with-data" in result.output
+    assert "--keep-data" in result.output

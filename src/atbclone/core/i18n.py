@@ -150,6 +150,18 @@ MESSAGES: dict[str, dict[str, str]] = {
         "ru": "Папка назначения",
         "es": "Directorio de destino",
     },
+    "wizard_prompt_data_dir": {
+        "en": "Data storage directory",
+        "zh": "数据存储目录",
+        "zh_TW": "資料儲存目錄",
+        "ja": "データ保存ディレクトリ",
+        "ko": "데이터 저장 디렉토리",
+        "de": "Datenspeicherverzeichnis",
+        "fr": "Dossier de stockage des données",
+        "ru": "Каталог хранения данных",
+        "es": "Directorio de almacenamiento de datos",
+    },
+
     "wizard_prompt_use_proxy": {
         "en": "Configure proxy",
         "zh": "是否配置代理",
@@ -249,6 +261,18 @@ MESSAGES: dict[str, dict[str, str]] = {
         "ru": "  Назначение: {dest_path}",
         "es": "  Destino: {dest_path}",
     },
+    "wizard_confirm_data_dir": {
+        "en": "  Data Dir: {data_dir}",
+        "zh": "  数据目录: {data_dir}",
+        "zh_TW": "  資料目錄: {data_dir}",
+        "ja": "  データディレクトリ: {data_dir}",
+        "ko": "  데이터 디렉토리: {data_dir}",
+        "de": "  Datenverzeichnis: {data_dir}",
+        "fr": "  Dossier de données : {data_dir}",
+        "ru": "  Каталог данных: {data_dir}",
+        "es": "  Directorio de datos: {data_dir}",
+    },
+
     "wizard_confirm_strategy": {
         "en": "  Strategy: {strategy}",
         "zh": "  策略: {strategy}",
@@ -350,6 +374,18 @@ MESSAGES: dict[str, dict[str, str]] = {
         "ru": "[bold red]Ошибка:[/bold red] --icon должен быть файлом .icns.",
         "es": "[bold red]Error:[/bold red] --icon debe ser un archivo .icns.",
     },
+    "clone_err_data_dir_not_supported": {
+        "en": "[bold red]Error:[/bold red] Application '{app_name}' does not support custom data directory.",
+        "zh": "[bold red]错误:[/bold red] 应用 '{app_name}' 不支持自定义数据目录。",
+        "zh_TW": "[bold red]錯誤:[/bold red] 應用程式 '{app_name}' 不支援自訂資料目錄。",
+        "ja": "[bold red]エラー:[/bold red] アプリ '{app_name}' はカスタムデータディレクトリに対応していません。",
+        "ko": "[bold red]오류:[/bold red] 앱 '{app_name}'은(는) 사용자 정의 데이터 디렉토리를 지원하지 않습니다.",
+        "de": "[bold red]Fehler:[/bold red] Anwendung '{app_name}' unterstützt kein benutzerdefiniertes Datenverzeichnis.",
+        "fr": "[bold red]Erreur :[/bold red] L'application '{app_name}' ne prend pas en charge de dossier de données personnalisé.",
+        "ru": "[bold red]Ошибка:[/bold red] Приложение '{app_name}' не поддерживает пользовательский каталог данных.",
+        "es": "[bold red]Error:[/bold red] La aplicación '{app_name}' no admite un directorio de datos personalizado.",
+    },
+
     "clone_no_recipe_found": {
         "en": "[yellow]No pre-configured recipe found for '{bundle_id}'.[/yellow]",
         "zh": "[yellow]未找到 '{bundle_id}' 的预设配方。[/yellow]",
@@ -521,6 +557,18 @@ MESSAGES: dict[str, dict[str, str]] = {
         "ru": "Также удалить каталог данных {data_dir}? Это действие необратимо.",
         "es": "¿Eliminar también el directorio de datos {data_dir}? Esta acción es irreversible.",
     },
+    "remove_prompt_delete_data": {
+        "en": "Also delete data directory {data_dir}?",
+        "zh": "是否同时删除数据目录 {data_dir}？",
+        "zh_TW": "是否同時刪除資料目錄 {data_dir}？",
+        "ja": "データディレクトリ {data_dir} も削除しますか？",
+        "ko": "데이터 디렉토리 {data_dir}도 삭제하시겠습니까?",
+        "de": "Datenverzeichnis {data_dir} ebenfalls löschen?",
+        "fr": "Supprimer également le dossier de données {data_dir} ?",
+        "ru": "Также удалить каталог данных {data_dir}?",
+        "es": "¿Eliminar también el directorio de datos {data_dir}?",
+    },
+
     "remove_success": {
         "en": "[bold green]Success![/bold green] Removed clone '{clone_name}'",
         "zh": "[bold green]成功！[/bold green] 已删除分身 '{clone_name}'",

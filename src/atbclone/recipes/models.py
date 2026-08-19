@@ -27,3 +27,11 @@ class Recipe(BaseModel):
     symlink_whitelist: list[str] = Field(default_factory=list)
     launch_args: list[str] = Field(default_factory=list)
 
+
+def supports_data_dir(recipe: Recipe) -> bool:
+    """Return True if the recipe uses {{ATB_DATA_DIR}} in launch args or environment injection."""
+    has_in_args = any("{{ATB_DATA_DIR}}" in arg for arg in recipe.launch_args)
+    has_in_env = any("{{ATB_DATA_DIR}}" in val for val in recipe.environment_injection.values())
+    return has_in_args or has_in_env
+
+

@@ -13,7 +13,7 @@ from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord, StateManager
 from atbclone.executor.runner import CloneError
-from atbclone.recipes.loader import RecipeLoader
+from atbclone.recipes import RecipeLoader, supports_data_dir
 
 console = Console()
 
@@ -73,7 +73,15 @@ def wizard() -> None:
     output_dir = click.prompt(t("wizard_prompt_output_dir"), default=str(Path.home() / "Applications"))
     out_path = Path(output_dir).expanduser().resolve()
 
-    # 7. Proxy setup
+    # 7. Data storage directory (if supported by recipe)
+    if supports_data_dir(recipe):
+        default_data_dir = str(DEFAULT_DATA_DIR / clone_name)
+        data_dir_input = click.prompt(t("wizard_prompt_data_dir"), default=default_data_dir)
+        target_data_dir = Path(data_dir_input).expanduser().resolve()
+    else:
+        target_data_dir = DEFAULT_DATA_DIR / clone_name
+
+    # 8. Proxy setup
     use_proxy = click.confirm(t("wizard_prompt_use_proxy"), default=False)
     proxy_host = None
     proxy_port = None
@@ -83,7 +91,7 @@ def wizard() -> None:
         proxy_port = click.prompt(t("wizard_prompt_proxy_port"), default=1080, type=int)
         proxy_type = click.prompt(t("wizard_prompt_proxy_type"), default="http", type=click.Choice(["http", "socks5"]))
 
-    # 8. Confirmation
+    # 9. Confirmation
     dest_path = out_path / f"{clone_name}.app"
     proxy_status = t("wizard_proxy_configured") if use_proxy else t("wizard_proxy_not_configured")
     console.print(t("wizard_confirm_title"))
@@ -93,20 +101,21 @@ def wizard() -> None:
     if icon_path:
         console.print(t("wizard_confirm_icon", icon_path=icon_path))
     console.print(t("wizard_confirm_target", dest_path=dest_path))
+    if supports_data_dir(recipe):
+        console.print(t("wizard_confirm_data_dir", data_dir=target_data_dir))
     console.print(t("wizard_confirm_strategy", strategy=recipe.strategy))
     console.print(t("wizard_confirm_proxy", proxy_status=proxy_status))
 
     if not click.confirm(t("wizard_prompt_confirm"), default=True):
         return
 
-    # 9. Execute clone
+    # 10. Execute clone
     new_bundle_id = AppInspector.generate_bundle_id(info.bundle_id, num)
-    data_dir = DEFAULT_DATA_DIR / clone_name
 
     task = CloneTask(
         source=info,
         dest_path=dest_path,
-        data_dir=data_dir,
+        data_dir=target_data_dir,
         recipe=recipe,
         clone_name=clone_name,
         new_bundle_id=new_bundle_id,
@@ -137,7 +146,7 @@ def wizard() -> None:
             bundle_id=info.bundle_id,
             strategy=recipe.strategy,
             dest_path=str(dest_path),
-            data_dir=str(data_dir),
+            data_dir=str(target_data_dir),
             created_at=datetime.now(timezone.utc).isoformat(),
             proxy_enabled=task.recipe.proxy.enabled,
             proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",

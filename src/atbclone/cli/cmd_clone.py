@@ -14,7 +14,7 @@ from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord, StateManager
 from atbclone.executor.runner import CloneError
-from atbclone.recipes.loader import RecipeLoader
+from atbclone.recipes import RecipeLoader, supports_data_dir
 
 console = Console()
 
@@ -26,6 +26,7 @@ console = Console()
 @click.option("--icon", default=None, type=click.Path(exists=True, dir_okay=False), help="Path to custom icon file (.icns, defaults to original app icon).")
 @click.option("--strategy", default=None, type=click.Choice(["hard_clone", "soft_clone"]), help="Override cloning strategy (hard_clone or soft_clone).")
 @click.option("--output-dir", default=str(Path.home() / "Applications"), help="Target output directory for the cloned application.")
+@click.option("--data-dir", default=None, help="Custom data storage directory for this clone.")
 @click.option("--proxy-host", default=None, help="Proxy host (overrides recipe)")
 @click.option("--proxy-port", default=None, type=int, help="Proxy port")
 @click.option("--proxy-type", default="http", type=click.Choice(["http", "socks5"]), help="Proxy type")
@@ -36,6 +37,7 @@ def clone(
     icon: str | None,
     strategy: str | None,
     output_dir: str,
+    data_dir: str | None,
     proxy_host: str | None,
     proxy_port: int | None,
     proxy_type: str,
@@ -65,16 +67,26 @@ def clone(
     if strategy:
         recipe.strategy = strategy  # type: ignore[assignment]
 
+    if data_dir:
+        if not supports_data_dir(recipe):
+            console.print(t("clone_err_data_dir_not_supported", app_name=info.app_name), soft_wrap=True)
+            sys.exit(1)
+        target_data_dir = Path(data_dir).expanduser().resolve()
+    else:
+        target_data_dir = DEFAULT_DATA_DIR / (name or info.app_name)
 
     clone_name, num = AppInspector.next_available_name(name or info.app_name, out_path)
     new_bundle_id = AppInspector.generate_bundle_id(info.bundle_id, num)
     dest_path = out_path / f"{clone_name}.app"
-    data_dir = DEFAULT_DATA_DIR / clone_name
+
+    # If data_dir was not specified, compute data_dir using the resolved unique clone_name
+    if not data_dir:
+        target_data_dir = DEFAULT_DATA_DIR / clone_name
 
     task = CloneTask(
         source=info,
         dest_path=dest_path,
-        data_dir=data_dir,
+        data_dir=target_data_dir,
         recipe=recipe,
         clone_name=clone_name,
         new_bundle_id=new_bundle_id,
@@ -104,7 +116,7 @@ def clone(
             bundle_id=info.bundle_id,
             strategy=recipe.strategy,
             dest_path=str(dest_path),
-            data_dir=str(data_dir),
+            data_dir=str(target_data_dir),
             created_at=datetime.now(timezone.utc).isoformat(),
             proxy_enabled=task.recipe.proxy.enabled,
             proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",

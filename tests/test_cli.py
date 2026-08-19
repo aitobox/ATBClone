@@ -32,6 +32,7 @@ def test_cli_subcommands_english_help():
     assert "Display name shown in Dock/Finder" in res.output
     assert "Path to custom icon file" in res.output
     assert "Target output directory" in res.output
+    assert "Custom data storage directory" in res.output
 
     # doctor
     res = runner.invoke(cli, ["doctor", "--help"])
@@ -70,7 +71,8 @@ def test_cli_subcommands_english_help():
     res = runner.invoke(cli, ["remove", "--help"])
     assert res.exit_code == 0
     assert "Remove a cloned application." in res.output
-    assert "Also delete the data directory." in res.output
+    assert "--with-data" in res.output
+    assert "--keep-data" in res.output
 
     # update
     res = runner.invoke(cli, ["update", "--help"])

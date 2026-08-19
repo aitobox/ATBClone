@@ -565,4 +565,61 @@ def test_clone_unlisted_app_auto_probes(tmp_path: Path):
         mock_hard_exec.assert_called_once()
 
 
+def test_clone_with_custom_data_dir_supported(tmp_path):
+    runner = CliRunner()
+    fake_app = tmp_path / "Chrome.app"
+    fake_app.mkdir()
+    custom_data = tmp_path / "custom_chrome_data"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect") as mock_inspect, \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.has_recipe", return_value=True), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match") as mock_match, \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.add") as mock_add:
+
+        from atbclone.core.models import AppInfo
+        from atbclone.recipes.models import Recipe
+        mock_inspect.return_value = AppInfo(fake_app, "com.google.Chrome", "Chrome", fake_app / "MacOS/Chrome", False)
+        mock_match.return_value = Recipe(
+            bundle_id="com.google.Chrome",
+            app_name="Chrome",
+            strategy="soft_clone",
+            launch_args=["--user-data-dir={{ATB_DATA_DIR}}"],
+        )
+
+        result = runner.invoke(cli, ["clone", str(fake_app), "--data-dir", str(custom_data)])
+        assert result.exit_code == 0
+        task = mock_exec.call_args[0][0]
+        assert task.data_dir == custom_data.resolve()
+        record = mock_add.call_args[0][0]
+        assert record.data_dir == str(custom_data.resolve())
+
+
+def test_clone_with_custom_data_dir_unsupported(tmp_path):
+    runner = CliRunner()
+    fake_app = tmp_path / "Zed.app"
+    fake_app.mkdir()
+    custom_data = tmp_path / "custom_zed_data"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect") as mock_inspect, \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.has_recipe", return_value=True), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match") as mock_match:
+
+        from atbclone.core.models import AppInfo
+        from atbclone.recipes.models import Recipe
+        mock_inspect.return_value = AppInfo(fake_app, "dev.zed.Zed", "Zed", fake_app / "MacOS/Zed", False)
+        mock_match.return_value = Recipe(
+            bundle_id="dev.zed.Zed",
+            app_name="Zed",
+            strategy="soft_clone",
+            launch_args=[],
+            environment_injection={},
+        )
+
+        result = runner.invoke(cli, ["clone", str(fake_app), "--data-dir", str(custom_data)])
+        assert result.exit_code == 1
+        assert "does not support custom data directory" in result.output
+
+
+
 

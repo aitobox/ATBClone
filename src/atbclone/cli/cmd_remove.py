@@ -16,11 +16,19 @@ console = Console()
 @click.command(name="remove")
 @click.argument("clone_name")
 @click.option(
-    "--with-data/--no-with-data",
-    default=False,
-    help="Also delete the data directory.",
+    "--with-data/--keep-data",
+    "with_data",
+    default=None,
+    help="Also delete or keep the data directory.",
 )
-def remove(clone_name: str, with_data: bool) -> None:
+@click.option(
+    "--no-with-data",
+    "no_with_data",
+    is_flag=True,
+    hidden=True,
+    help="Alias for --keep-data",
+)
+def remove(clone_name: str, with_data: bool | None, no_with_data: bool) -> None:
     """Remove a cloned application."""
     sm = StateManager()
     record = sm.get(clone_name)
@@ -28,7 +36,28 @@ def remove(clone_name: str, with_data: bool) -> None:
         console.print(t("remove_err_not_found", clone_name=clone_name))
         sys.exit(1)
 
-    needs_admin = not Path(record.dest_path).is_relative_to(Path.home())
+    if no_with_data:
+        with_data = False
+
+    delete_data = False
+    if with_data is True:
+        delete_data = True
+    elif with_data is False:
+        delete_data = False
+    else:
+        # Prompt interactively
+        try:
+            delete_data = click.confirm(
+                t("remove_prompt_delete_data", data_dir=record.data_dir),
+                default=False,
+            )
+        except click.Abort:
+            sys.exit(1)
+
+    needs_admin = (
+        not Path(record.dest_path).is_relative_to(Path.home())
+        or (delete_data and not Path(record.data_dir).is_relative_to(Path.home()))
+    )
 
     lines = [
         "#!/bin/bash",
@@ -36,11 +65,7 @@ def remove(clone_name: str, with_data: bool) -> None:
         f"rm -rf {shlex.quote(record.dest_path)}",
     ]
 
-    if with_data:
-        click.confirm(
-            t("remove_confirm_data", data_dir=record.data_dir),
-            abort=True,
-        )
+    if delete_data:
         lines.append(f"rm -rf {shlex.quote(record.data_dir)}")
 
     script = "\n".join(lines) + "\n"

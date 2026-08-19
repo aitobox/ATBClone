@@ -6,6 +6,31 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.6.0] - 2026-08-19
+
+### 📂 Custom Data Directory Support
+- **Customizable Clone Data Storage (`--data-dir`)**:
+  - Added `--data-dir` option to `atbclone clone`, allowing users to specify custom locations for cloned app user data (e.g. external SSDs or custom workspaces).
+  - Integrated custom data directory configuration into the interactive wizard (`atbclone wizard`).
+  - Enhanced Recipe data models and engines to resolve dynamic custom data directory variables.
+
+### 🗑️ Enhanced Clone Uninstallation & Cleanup (`atbclone remove`)
+- **Safe Data Purging Controls**:
+  - Added `--purge-data` flag to `atbclone remove` for automated complete deletion of clone bundle and associated user data directories.
+  - Added `--keep-data` flag to preserve isolated data while uninstalling application bundles.
+  - Interactive removal confirmation prompts now offer clear choices between preserving or purging data with safety warnings.
+  - Enhanced handling of orphan data directories and permission diagnostics during removal.
+
+### 🆔 Bundle ID Standardization & i18n
+- **Standardized Bundle Identifier Generation**:
+  - Added `AppInspector.generate_bundle_id` helper, standardizing clone bundle ID formatting across `clone`, `wizard`, and `update` commands.
+- **Multilingual Support**:
+  - Added full translation coverage for data directory prompts, remove confirmation dialogs, and purge status logs across all 9 supported languages.
+- **Testing**:
+  - Expanded automated test suite to 213 unit tests.
+
+---
+
 ## [v0.5.0] - 2026-08-19
 
 ### 🔐 Apple Code Signing & Notarization Pipeline

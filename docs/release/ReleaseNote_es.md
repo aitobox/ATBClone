@@ -6,6 +6,31 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.6.0] - 2026-08-19
+
+### 📂 Soporte para directorio de datos personalizado
+- **Ubicación de almacenamiento configurable (`--data-dir`)**:
+  - Añadida la opción `--data-dir` en `atbclone clone` para personalizar la ruta de datos del clon (ej. discos SSD externos o carpetas de trabajo).
+  - Configuración del directorio de datos integrada en el asistente interactivo (`atbclone wizard`).
+  - Soporte para variables dinámicas de directorio de datos en modelos de recetas y motores de clonación.
+
+### 🗑️ Desinstalación y limpieza de clones mejorada (`atbclone remove`)
+- **Control seguro de eliminación de datos**:
+  - Añadido el parámetro `--purge-data` en `atbclone remove` para la eliminación completa y automatizada del clon y sus datos asociados.
+  - Añadido el parámetro `--keep-data` para desinstalar únicamente la aplicación conservando los datos de usuario.
+  - Diálogos interactivos de confirmación con opciones claras entre conservar o purgar datos.
+  - Diagnóstico y manejo de errores optimizado para directorios huérfanos y permisos.
+
+### 🆔 Estandarización de Bundle ID y soporte multilingüe
+- **Generación estandarizada de identificadores de paquete**:
+  - Integración de `AppInspector.generate_bundle_id` para garantizar formatos coherentes de Bundle ID en `clone`, `wizard` y `update`.
+- **Localización**:
+  - Traducción completa de diálogos de directorios, confirmaciones de eliminación y registros de estado en los 9 idiomas.
+- **Pruebas integrales**:
+  - Ampliación del conjunto de pruebas a 213 pruebas unitarias automatizadas.
+
+---
+
 ## [v0.5.0] - 2026-08-19
 
 ### 🔐 Firma de código Apple y canalización de notarización

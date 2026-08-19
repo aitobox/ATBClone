@@ -6,6 +6,31 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.6.0] - 2026-08-19
+
+### 📂 Unterstützung benutzerdefinierter Datenverzeichnisse
+- **Anpassbarer Datenspeicherort (`--data-dir`)**:
+  - Neuer Parameter `--data-dir` für `atbclone clone` zur flexiblen Festlegung des Datenspeicherorts (z. B. auf externen SSDs oder spezifischen Arbeitsverzeichnissen).
+  - Integration der Verzeichniskonfiguration in den interaktiven Assistenten (`atbclone wizard`).
+  - Erweiterung der Recipe-Modelle und Klon-Engines zur dynamischen Auflösung von Datenverzeichnisvariablen.
+
+### 🗑️ Verbesserte Klon-Deinstallation & Datenbereinigung (`atbclone remove`)
+- **Sichere Steuerungsoptionen für Datenbereinigung**:
+  - Option `--purge-data` für `atbclone remove` zum automatisierten, vollständigen Löschen von App-Bundles und zugehörigen Datenverzeichnissen.
+  - Option `--keep-data` zum Beibehalten isolierter Benutzerdaten bei der Deinstallation.
+  - Interaktive Bestätigungsdialoge mit klarer Auswahl zwischen Datenbeibehaltung und Datenbereinigung.
+  - Optimierte Diagnose und Fehlerbehandlung für verwaiste Verzeichnisse und Berechtigungskonflikte.
+
+### 🆔 Standardisierung der Bundle-ID & Mehrsprachigkeit
+- **Standardisierte Bundle-ID-Generierung**:
+  - Neuer `AppInspector.generate_bundle_id`-Standard für konsistente Bundle-IDs über `clone`, `wizard` und `update`.
+- **Lokalisierung**:
+  - Vollständige Übersetzung aller neuen Dialoge, Abfragen und Protokollmeldungen in alle 9 unterstützten Sprachen.
+- **Test-Suite**:
+  - Erweiterung auf 213 automatisierte Tests zur Überprüfung benutzerdefinierter Pfade und Löschroutinen.
+
+---
+
 ## [v0.5.0] - 2026-08-19
 
 ### 🔐 Apple Code-Signing & Notarisierungs-Pipeline

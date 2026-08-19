@@ -6,6 +6,31 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.6.0] - 2026-08-19
+
+### 📂 Support des répertoires de données personnalisés
+- **Personnalisation de l'emplacement des données (`--data-dir`)**:
+  - Ajout de l'option `--data-dir` à la commande `atbclone clone` pour choisir l'emplacement de stockage des données (SSD externe, dossier de travail personnalisé, etc.).
+  - Intégration de la configuration du répertoire de données dans l'assistant interactif (`atbclone wizard`).
+  - Prise en charge des variables dynamiques de répertoire de données dans les modèles de recettes et les moteurs de clonage.
+
+### 🗑️ Désinstallation et nettoyage des clones améliorés (`atbclone remove`)
+- **Contrôle sécurisé de la suppression des données**:
+  - Ajout de l'option `--purge-data` à `atbclone remove` pour supprimer complètement l'application et les dossiers de données associés.
+  - Ajout de l'option `--keep-data` pour désinstaller l'application tout en conservant les données utilisateur.
+  - Boîtes de dialogue interactives de confirmation permettant de choisir entre conservation et purge des données.
+  - Gestion améliorée des dossiers orphelins et des avertissements de permissions.
+
+### 🆔 Standardisation des identifiants Bundle & Multilinguisme
+- **Génération standardisée des Bundle ID**:
+  - Ajout de `AppInspector.generate_bundle_id` pour uniformiser la création des identifiants entre `clone`, `wizard` et `update`.
+- **Localisation complète**:
+  - Traduction intégrale des invites de répertoire, des confirmations de suppression et des statuts de purge dans les 9 langues.
+- **Tests**:
+  - Augmentation de la suite de tests à 213 tests unitaires automatisés.
+
+---
+
 ## [v0.5.0] - 2026-08-19
 
 ### 🔐 Signature de code Apple et pipeline de notarisation

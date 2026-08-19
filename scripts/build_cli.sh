@@ -12,12 +12,23 @@ cd "${PROJECT_ROOT}"
 echo "==> Building ATBCloneCli standalone executable..."
 
 # 1. Check Python environment
-PYTHON_BIN="$(which python || which python3)"
+PYTHON_BIN="${PYTHON:-$(which python || which python3)}"
 if [[ -z "${PYTHON_BIN}" ]]; then
     echo "[-] Error: Python is not found in PATH." >&2
     exit 1
 fi
 echo "[+] Using Python: ${PYTHON_BIN}"
+
+# Verify Python version is 3.12+
+PY_VERSION=$("${PYTHON_BIN}" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+PY_MAJOR=$(echo "${PY_VERSION}" | cut -d. -f1)
+PY_MINOR=$(echo "${PY_VERSION}" | cut -d. -f2)
+if [[ "${PY_MAJOR}" -lt 3 ]] || [[ "${PY_MAJOR}" -eq 3 && "${PY_MINOR}" -lt 12 ]]; then
+    echo "[-] Error: Python 3.12+ required, found ${PY_VERSION}." >&2
+    echo "    Tip: Run: conda activate ATBClone" >&2
+    exit 1
+fi
+echo "[+] Python version: ${PY_VERSION}"
 
 # 2. Check / Install Nuitka
 if ! "${PYTHON_BIN}" -c "import nuitka" 2>/dev/null; then
@@ -28,7 +39,8 @@ echo "[+] Nuitka is available."
 
 # 3. Clean previous build artifacts
 echo "[*] Cleaning previous build outputs..."
-rm -rf dist/ATBCloneCli dist/ATBCloneCli.build dist/ATBCloneCli.dist dist/ATBCloneCli.onefile-build
+rm -rf dist/
+mkdir -p dist/
 
 # 4. Extract version from pyproject.toml
 VERSION=$(grep -m 1 '^version =' pyproject.toml | cut -d '"' -f 2 || echo "0.1.0")
@@ -47,8 +59,8 @@ PYTHONPATH=src "${PYTHON_BIN}" -m nuitka \
     --include-package=pydantic \
     --include-package=pydantic_core \
     --include-package=yaml \
+    --python-flag=no_site \
     --assume-yes-for-downloads \
-    --remove-output \
     src/atbclone/cli/main.py
 
 # 6. Ensure executable permissions

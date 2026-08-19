@@ -32,3 +32,4 @@ def test_build_script_contains_required_flags():
     assert "--include-package=atbclone" in content
     assert "--include-package-data=atbclone" in content
     assert "src/atbclone/cli/main.py" in content
+    assert "--include-package=pydantic_core" in content

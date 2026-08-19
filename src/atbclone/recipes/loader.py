@@ -1,5 +1,9 @@
-import yaml  # type: ignore[import-untyped]
 from pathlib import Path
+
+import yaml  # type: ignore[import-untyped]
+
+from atbclone.core.config import DEFAULT_RECIPES_DIR
+
 from .models import Recipe
 
 
@@ -11,7 +15,7 @@ class RecipeLoader:
     def get_local_dir(cls) -> Path:
         if cls.LOCAL_DIR is not None:
             return cls.LOCAL_DIR
-        return Path.home() / ".atbclone" / "recipes"
+        return DEFAULT_RECIPES_DIR
 
     @classmethod
     def match(cls, bundle_id: str) -> Recipe:

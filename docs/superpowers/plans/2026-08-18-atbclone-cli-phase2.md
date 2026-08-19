@@ -8,7 +8,7 @@
 
 | 问题 | 决策 |
 |------|------|
-| 状态存储格式 | YAML（`~/.AIToBox/clones.yaml`） |
+| 状态存储格式 | YAML（`~/.atbclone/clones.yaml`） |
 | 代理配置入口 | `clone` 命令增加 `--proxy-host/port/type` 选项 |
 | 新命令 | `list` + `remove` + `update` |
 | `update` 策略 | 删除 .app → 重新 clone → 保留 data_dir |
@@ -23,7 +23,7 @@
 
 - Python 3.10+, `conda run -n ATBClone` for Python env
 - Test command: `PYTHONPATH=src conda run -n ATBClone python -m pytest tests/ -v`
-- 状态文件: `~/.AIToBox/clones.yaml`
+- 状态文件: `~/.atbclone/clones.yaml`
 - 不破坏现有 61 个测试
 
 ---
@@ -64,7 +64,7 @@ class CloneRecord:
     bundle_id: str        # e.g. "com.tencent.xinWeChat"
     strategy: str         # "hard_clone" | "soft_clone"
     dest_path: str        # e.g. "/Users/.../Applications/微信2.app"
-    data_dir: str         # e.g. "/Users/.../.AIToBox/Data/微信2"
+    data_dir: str         # e.g. "/Users/.../.atbclone/Data/微信2"
     created_at: str       # ISO 8601
     proxy_enabled: bool
     proxy_summary: str    # e.g. "" or "http://127.0.0.1:1080"

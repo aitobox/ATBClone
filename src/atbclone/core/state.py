@@ -3,7 +3,9 @@ from pathlib import Path
 
 import yaml
 
-STATE_FILE = Path.home() / ".atbclone" / "clones.yaml"
+from atbclone.core.config import DEFAULT_STATE_FILE
+
+STATE_FILE = DEFAULT_STATE_FILE
 
 
 @dataclass

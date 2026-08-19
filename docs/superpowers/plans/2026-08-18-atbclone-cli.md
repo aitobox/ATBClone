@@ -322,7 +322,7 @@ class RecipeLoader:
     @classmethod
     def match(cls, bundle_id: str) -> Recipe:
         # Priority: Local > Builtin
-        local_dir = Path.home() / ".AIToBox" / "recipes"
+        local_dir = Path.home() / ".atbclone" / "recipes"
         local_file = local_dir / f"{bundle_id}.yaml"
         builtin_file = cls.BUILTIN_DIR / f"{bundle_id}.yaml"
         
@@ -567,7 +567,7 @@ def clone(app_path, name, output_dir):
     clone_name, num = AppInspector.next_available_name(name or info.app_name, out_path)
     new_bundle_id = f"{info.bundle_id}.atb{num}"
     dest_path = out_path / f"{clone_name}.app"
-    data_dir = Path.home() / ".AIToBox" / "Data" / clone_name
+    data_dir = Path.home() / ".atbclone" / "Data" / clone_name
     
     task = CloneTask(info, dest_path, data_dir, recipe, clone_name, new_bundle_id)
     needs_admin = not dest_path.is_relative_to(Path.home())

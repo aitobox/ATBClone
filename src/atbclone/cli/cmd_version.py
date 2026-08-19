@@ -2,14 +2,14 @@
 
 import platform
 import sys
-from pathlib import Path
+
 import click
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
 from atbclone import __version__
-from atbclone.core.state import STATE_FILE
+from atbclone.core.config import DEFAULT_DATA_DIR, DEFAULT_STATE_FILE
 
 console = Console()
 
@@ -30,8 +30,8 @@ def version(short: bool) -> None:
     table.add_row("Python Runtime", f"{platform.python_implementation()} {platform.python_version()}")
     table.add_row("Platform", f"{platform.system()} {platform.release()} ({platform.machine()})")
     table.add_row("Executable", sys.executable)
-    table.add_row("State Storage", str(STATE_FILE))
-    table.add_row("Data Directory", str(Path.home() / ".atbclone" / "Data"))
+    table.add_row("State Storage", str(DEFAULT_STATE_FILE))
+    table.add_row("Data Directory", str(DEFAULT_DATA_DIR))
 
     panel = Panel(
         table,

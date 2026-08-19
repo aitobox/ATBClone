@@ -8,6 +8,7 @@ from rich.console import Console
 
 from atbclone.core.app_inspector import AppInspector
 from atbclone.core.clone_task import CloneTask
+from atbclone.core.config import DEFAULT_DATA_DIR
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.state import CloneRecord, StateManager
 from atbclone.executor.runner import CloneError
@@ -41,7 +42,7 @@ def clone(
     clone_name, num = AppInspector.next_available_name(name or info.app_name, out_path)
     new_bundle_id = f"{info.bundle_id}.atb{num}"
     dest_path = out_path / f"{clone_name}.app"
-    data_dir = Path.home() / ".atbclone" / "Data" / clone_name
+    data_dir = DEFAULT_DATA_DIR / clone_name
 
     task = CloneTask(
         source=info,

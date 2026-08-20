@@ -58,3 +58,44 @@ def test_build_app_has_icon():
     app = build_app()
     assert app.icon is not None
 
+
+def test_app_tray_service_initialized_and_enabled(tmp_path, monkeypatch):
+    from atbclone.core import config
+    from atbclone.core.config import set_config_value
+
+    test_cfg_file = tmp_path / "config.json"
+    monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", test_cfg_file)
+    monkeypatch.setattr(config, "DEFAULT_ATB_DIR", tmp_path)
+
+    set_config_value("minimize_to_tray", True)
+    with patch("atbclone.gui.services.tray_service.TrayService.enable") as mock_enable:
+        app = ATBCloneApp("ATBClone", "com.atbclone.app")
+        app.startup()
+        assert hasattr(app, "tray_service")
+        assert app.tray_service is not None
+        mock_enable.assert_called_once()
+
+
+def test_app_show_main_window_and_exit():
+    app = ATBCloneApp("ATBClone", "com.atbclone.app")
+    app.startup()
+
+    # show_main_window should not raise
+    app.show_main_window()
+    assert app.main_window.visible
+
+    with patch.object(app.tray_service, "disable") as mock_disable, \
+         patch.object(app, "exit") as mock_exit:
+        app.exit_application()
+        mock_disable.assert_called_once()
+        mock_exit.assert_called_once()
+
+
+def test_app_retranslate_ui_updates_tray():
+    app = ATBCloneApp("ATBClone", "com.atbclone.app")
+    app.startup()
+    with patch.object(app.tray_service, "retranslate") as mock_retrans:
+        app.retranslate_ui()
+        mock_retrans.assert_called_once()
+
+

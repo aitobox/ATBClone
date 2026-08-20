@@ -7,11 +7,13 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 
+from atbclone.core.config import get_config_value
 from atbclone.core.resources import get_app_icon_path
 from atbclone.gui.services.clone_service import CloneService
 from atbclone.gui.services.doctor_service import DoctorService
 from atbclone.gui.services.probe_service import ProbeService
 from atbclone.gui.services.recipe_service import RecipeService
+from atbclone.gui.services.tray_service import TrayService
 from atbclone.gui.components.sidebar import SidebarNav
 from atbclone.gui.views.clone_list import CloneListView
 from atbclone.gui.views.recipe_list import RecipeListView
@@ -21,6 +23,7 @@ from atbclone.gui.views.logs_view import LogsView
 from atbclone.gui.views.settings_view import SettingsView
 from atbclone.gui.windows.wizard import WizardWindow
 from atbclone.gui.theme import Theme
+from atbclone.gui.patch_cocoa import patch_cocoa_widgets
 
 
 def set_macos_dock_icon(icon_path: Optional[Path] = None) -> bool:
@@ -45,11 +48,13 @@ class ATBCloneApp(toga.App):
     """Main BeeWare Toga application entry point and view coordinator."""
 
     def __init__(self, formal_name: str = "ATBClone", app_id: str = "com.atbclone.app", **kwargs):
+        patch_cocoa_widgets()
         if "icon" not in kwargs or kwargs["icon"] is None:
             icon_path = get_app_icon_path("png")
             if icon_path:
                 kwargs["icon"] = icon_path
         super().__init__(formal_name, app_id, **kwargs)
+
 
     def safe_create_task(self, coro):
         """Safely schedule a coroutine if an event loop is running."""
@@ -101,10 +106,50 @@ class ATBCloneApp(toga.App):
         self.root_box.add(self.content_container)
 
         self.main_window.content = self.root_box
+        self.main_window.on_hide = self._on_window_hide
         self.main_window.show()
+
+        # Initialize native system tray service
+        self.tray_service = TrayService(app=self)
+        if bool(get_config_value("minimize_to_tray", False)):
+            self.tray_service.enable()
 
         # Initial refresh
         self.safe_create_task(self.clone_view.refresh_clones())
+
+    def _on_window_hide(self, window: Any) -> None:
+        """Handle window minimize/hide event when tray mode is active."""
+        if hasattr(self, "tray_service") and self.tray_service and self.tray_service.is_enabled:
+            try:
+                native_win = getattr(getattr(window, "_impl", None), "native", None)
+                if native_win and hasattr(native_win, "orderOut_"):
+                    native_win.orderOut_(None)
+            except Exception:
+                pass
+
+    def show_main_window(self) -> None:
+        """Bring main window to front and activate application."""
+        try:
+            if hasattr(self, "main_window") and self.main_window:
+                self.main_window.show()
+                if sys.platform == "darwin":
+                    from toga_cocoa.libs.appkit import NSApplication
+                    native_win = getattr(getattr(self.main_window, "_impl", None), "native", None)
+                    if native_win:
+                        if hasattr(native_win, "deminiaturize_"):
+                            native_win.deminiaturize_(None)
+                        if hasattr(native_win, "makeKeyAndOrderFront_"):
+                            native_win.makeKeyAndOrderFront_(None)
+                    if NSApplication is not None:
+                        NSApplication.sharedApplication.activateIgnoringOtherApps_(True)
+        except Exception:
+            pass
+
+    def exit_application(self) -> None:
+        """Cleanly terminate the application and remove status tray icon."""
+        if hasattr(self, "tray_service") and self.tray_service:
+            self.tray_service.disable()
+        self.exit()
 
     def switch_view(self, view_name: str):
         """Switch right content area between feature views."""
@@ -155,6 +200,9 @@ class ATBCloneApp(toga.App):
         """Dynamically refresh all UI components and views after language change."""
         if hasattr(self, "sidebar") and self.sidebar:
             self.sidebar.retranslate()
+
+        if hasattr(self, "tray_service") and self.tray_service:
+            self.tray_service.retranslate()
 
         # Re-initialize views with updated localized strings
         self.clone_view = CloneListView(clone_service=self.clone_service, app=self)

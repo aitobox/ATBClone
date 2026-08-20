@@ -223,6 +223,7 @@ def test_all_builtin_recipes_valid():
         "com.skype.skype": ("Skype", "hard_clone", True),
         "com.openai.codex": ("ChatGPT", "hard_clone", True),
         "com.openai.chat": ("ChatGPT", "hard_clone", True),
+        "com.anthropic.claudefordesktop": ("Claude", "hard_clone", False),
         "com.google.antigravity": ("Antigravity", "hard_clone", False),
         "com.google.antigravity-ide": ("Antigravity IDE", "hard_clone", False),
         "com.google.GeminiMacOS": ("Gemini", "hard_clone", True),

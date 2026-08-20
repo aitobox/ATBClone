@@ -35,7 +35,8 @@
 | | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | ✘ |
 | | Discord | `com.hnc.Discord` | Hard Clone | ✘ |
 | | Skype | `com.skype.skype` | Hard Clone | ✅ |
-| **AI Clients** | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
+| **AI Clients** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | ✘ |
+| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
 | | ChatGPT (Standard) | `com.openai.chat` | Hard Clone | ✅ |
 | | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
 | | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |

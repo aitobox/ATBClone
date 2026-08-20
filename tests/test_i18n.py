@@ -213,7 +213,7 @@ def test_configured_language_persistence(tmp_path, monkeypatch):
     from atbclone.core.i18n import get_configured_language, save_configured_language, detect_system_language
     from atbclone.core import config
     
-    test_cfg_file = tmp_path / "config.json"
+    test_cfg_file = tmp_path / "config.yaml"
     monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", test_cfg_file)
     monkeypatch.setattr(config, "DEFAULT_ATB_DIR", tmp_path)
     monkeypatch.delenv("ATBCLONE_LANG", raising=False)
@@ -247,6 +247,46 @@ def test_tray_i18n_keys():
             val = t(k)
             assert val != k, f"Missing translation for key '{k}' in language '{lang}'"
             assert len(val) > 0
+
+
+def test_no_duplicate_i18n_keys():
+    """Ensure MESSAGES dictionary definition in i18n.py has no duplicate dictionary keys."""
+    import ast
+    from pathlib import Path
+
+    i18n_path = Path(__file__).parent.parent / "src" / "atbclone" / "core" / "i18n.py"
+    tree = ast.parse(i18n_path.read_text(encoding="utf-8"))
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.AnnAssign) and getattr(node.target, "id", None) == "MESSAGES":
+            keys = [k.value for k in node.value.keys if isinstance(k, ast.Constant)]
+            seen = set()
+            dups = []
+            for k in keys:
+                if k in seen:
+                    dups.append(k)
+                seen.add(k)
+            assert not dups, f"Found duplicate keys in MESSAGES: {dups}"
+
+
+def test_settings_storage_labels_all_languages():
+    """Verify settings storage labels format properly with both path and dir arguments."""
+    from atbclone.core.i18n import t, set_language, SUPPORTED_LANGUAGES
+
+    test_path = "/Users/testuser/.atbclone"
+    for lang in SUPPORTED_LANGUAGES:
+        set_language(lang)
+        root_txt = t("settings_label_root_dir", path=test_path)
+        apps_txt = t("settings_label_apps_dir", path=test_path + "/apps")
+        data_txt = t("settings_label_data_dir", path=test_path + "/data")
+
+        assert test_path in root_txt
+        assert "{path}" not in root_txt and "{dir}" not in root_txt
+        assert f"{test_path}/apps" in apps_txt
+        assert "{path}" not in apps_txt and "{dir}" not in apps_txt
+        assert f"{test_path}/data" in data_txt
+        assert "{path}" not in data_txt and "{dir}" not in data_txt
+
 
 
 

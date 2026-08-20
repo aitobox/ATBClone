@@ -142,9 +142,9 @@ class SettingsView(toga.Box):
         # ── Card 6: System Info ────────────────────────────────────────────── #
         card_info = toga.Box(style=Pack(direction=COLUMN, margin=10, background_color=Theme.BG_CARD))
         card_info.add(toga.Label(t("settings_card_about"), style=Pack(font_weight="bold", font_size=14, margin_bottom=6, color=Theme.TEXT_PRIMARY)))
-        card_info.add(toga.Label(t("settings_label_version", version=__version__), style=Pack(font_size=12, color=Theme.TEXT_MUTED, margin_bottom=2)))
-        card_info.add(toga.Label(t("settings_label_python", version=platform.python_version(), arch=platform.machine()), style=Pack(font_size=12, color=Theme.TEXT_MUTED, margin_bottom=2)))
-        card_info.add(toga.Label(t("settings_label_os", os_ver=platform.mac_ver()[0] or 'macOS'), style=Pack(font_size=12, color=Theme.TEXT_MUTED, margin_bottom=8)))
+        card_info.add(toga.Label(t("settings_label_version", ver=__version__), style=Pack(font_size=12, color=Theme.TEXT_MUTED, margin_bottom=2)))
+        card_info.add(toga.Label(t("settings_label_python", ver=platform.python_version(), arch=platform.machine()), style=Pack(font_size=12, color=Theme.TEXT_MUTED, margin_bottom=2)))
+        card_info.add(toga.Label(t("settings_label_os", ver=platform.mac_ver()[0] or 'macOS'), style=Pack(font_size=12, color=Theme.TEXT_MUTED, margin_bottom=8)))
 
         self.btn_release_notes = toga.Button(
             t("settings_btn_release_notes"),

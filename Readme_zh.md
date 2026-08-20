@@ -313,6 +313,7 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/ -v
 
 ```
 ~/.atbclone/
+├── config.yaml           # 用户配置与偏好设置 (语言、托盘等)
 ├── clones.yaml           # 全局分身状态追踪记录
 ├── recipes/              # 用户自定义分身规则存放目录 (可选覆盖)
 └── Data/                 # 各分身独立的数据隔离目录

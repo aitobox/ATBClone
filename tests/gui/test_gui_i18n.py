@@ -71,7 +71,7 @@ def test_views_i18n_multi_language():
 
 def test_app_retranslate_ui(tmp_path, monkeypatch):
     from atbclone.core import config
-    monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", tmp_path / "config.json")
+    monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", tmp_path / "config.yaml")
     monkeypatch.setattr(config, "DEFAULT_ATB_DIR", tmp_path)
 
     app = ATBCloneApp(formal_name="ATBCloneTest", app_id="com.test.atbclone")

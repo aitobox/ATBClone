@@ -314,6 +314,7 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/ -v
 
 ```
 ~/.atbclone/
+├── config.yaml           # User configuration & preferences (language, tray, etc.)
 ├── clones.yaml           # Global clone state tracking registry
 ├── recipes/              # User custom recipe directory (optional overrides)
 └── Data/                 # Isolated data directories per clone

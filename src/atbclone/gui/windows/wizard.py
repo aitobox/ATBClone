@@ -413,7 +413,7 @@ class WizardWindow(toga.Window):
         try:
             await self.clone_service.create_clone(task)
             self.progress_bar.stop()
-            self.label_status.text = t("win_wizard_status_success", path=str(dest_path))
+            self.label_status.text = t("win_wizard_status_success", dest=str(dest_path))
             logger.info(f"Wizard finished successfully for clone '{clone_name}'")
             if self.on_complete_callback:
                 await self.on_complete_callback()

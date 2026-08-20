@@ -59,7 +59,7 @@ def test_settings_minimize_to_tray_switch(tmp_path, monkeypatch):
     from atbclone.core import config
     from atbclone.core.config import set_config_value, get_config_value
 
-    test_cfg_file = tmp_path / "config.json"
+    test_cfg_file = tmp_path / "config.yaml"
     monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", test_cfg_file)
     monkeypatch.setattr(config, "DEFAULT_ATB_DIR", tmp_path)
 
@@ -79,5 +79,43 @@ def test_settings_minimize_to_tray_switch(tmp_path, monkeypatch):
     view.switch_minimize_to_tray.value = True
     assert get_config_value("minimize_to_tray") is True
     mock_app.tray_service.enable.assert_called_once()
+
+
+def test_settings_view_labels_rendered_correctly():
+    """Verify that settings view labels render real paths without placeholder literals like {dir} or {path}."""
+    from atbclone.core.config import DEFAULT_ATB_DIR, DEFAULT_APPS_DIR, DEFAULT_DATA_DIR
+    from atbclone.core.i18n import set_language
+
+    for lang in ("zh", "en", "zh_TW", "ja", "ko", "de", "fr", "ru", "es"):
+        set_language(lang)
+        view = SettingsView()
+
+        # Find all label widgets in view hierarchy
+        labels = []
+
+        def _collect_labels(widget):
+            if isinstance(widget, toga.Label):
+                labels.append(widget.text)
+            if hasattr(widget, "children"):
+                for c in widget.children:
+                    _collect_labels(c)
+            if hasattr(widget, "content") and widget.content and widget.content is not widget:
+                _collect_labels(widget.content)
+
+        _collect_labels(view)
+
+        # Ensure no label has unresolved placeholders
+        for text in labels:
+            assert "{dir}" not in text, f"Found unformatted {{dir}} in '{text}' ({lang})"
+            assert "{path}" not in text, f"Found unformatted {{path}} in '{text}' ({lang})"
+            assert "{ver}" not in text, f"Found unformatted {{ver}} in '{text}' ({lang})"
+            assert "{version}" not in text, f"Found unformatted {{version}} in '{text}' ({lang})"
+
+        # Ensure directory paths are present
+        joined_texts = "\n".join(labels)
+        assert str(DEFAULT_ATB_DIR) in joined_texts
+        assert str(DEFAULT_APPS_DIR) in joined_texts
+        assert str(DEFAULT_DATA_DIR) in joined_texts
+
 
 

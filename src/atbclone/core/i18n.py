@@ -546,6 +546,17 @@ MESSAGES: dict[str, dict[str, str]] = {
         "ru": "Путь назначения",
         "es": "Ruta de destino",
     },
+    "list_proxy_enabled": {
+        "en": "Enabled",
+        "zh": "已启用",
+        "zh_TW": "已啟用",
+        "ja": "有効",
+        "ko": "활성화됨",
+        "de": "Aktiviert",
+        "fr": "Activé",
+        "ru": "Включено",
+        "es": "Habilitado",
+    },
     "list_proxy_disabled": {
         "en": "Disabled",
         "zh": "未开启",
@@ -1957,6 +1968,175 @@ MESSAGES: dict[str, dict[str, str]] = {
         "ru": "❌ Отсутствует",
         "es": "❌ Falta",
     },
+    "doctor_btn_recheck": {
+        "en": "🔄 Recheck",
+        "zh": "🔄 重新检测",
+        "zh_TW": "🔄 重新檢測",
+        "ja": "🔄 再検査",
+        "ko": "🔄 재검사",
+        "de": "🔄 Erneut prüfen",
+        "fr": "🔄 Revérifier",
+        "ru": "🔄 Перепроверить",
+        "es": "🔄 Volver a comprobar",
+    },
+    "doctor_summary_initial": {
+        "en": "⏳ Click Recheck to start diagnostics",
+        "zh": "⏳ 点击右上角“重新检测”按钮开始检测",
+        "zh_TW": "⏳ 點擊右上角「重新檢測」按鈕開始檢測",
+        "ja": "⏳ 右上の「再検査」ボタンをクリックして診断を開始",
+        "ko": "⏳ 오른쪽 상단의 '재검사' 버튼을 클릭하여 진단을 시작하세요",
+        "de": "⏳ Klicken Sie auf 'Erneut prüfen', um die Diagnose zu starten",
+        "fr": "⏳ Cliquez sur 'Revérifier' pour lancer le diagnostic",
+        "ru": "⏳ Нажмите «Перепроверить», чтобы начать диагностику",
+        "es": "⏳ Haga clic en 'Volver a comprobar' para iniciar el diagnóstico",
+    },
+    "doctor_status_ok": {
+        "en": "✅ Passed",
+        "zh": "✅ 正常",
+        "zh_TW": "✅ 正常",
+        "ja": "✅ 正常",
+        "ko": "✅ 정상",
+        "de": "✅ OK",
+        "fr": "✅ OK",
+        "ru": "✅ Норма",
+        "es": "✅ Correcto",
+    },
+    "doctor_status_missing": {
+        "en": "❌ Missing",
+        "zh": "❌ 缺失",
+        "zh_TW": "❌ 缺失",
+        "ja": "❌ 未検出",
+        "ko": "❌ 누락됨",
+        "de": "❌ Fehlt",
+        "fr": "❌ Manquant",
+        "ru": "❌ Отсутствует",
+        "es": "❌ Falta",
+    },
+
+    # ── GUI: Prober View (probe_*) ─────────────────────────────────────── #
+    "probe_btn_start": {
+        "en": "🔍 Start Probe",
+        "zh": "🔍 开始探测",
+        "zh_TW": "🔍 開始探測",
+        "ja": "🔍 診断開始",
+        "ko": "🔍 진단 시작",
+        "de": "🔍 Analyse starten",
+        "fr": "🔍 Lancer l'analyse",
+        "ru": "🔍 Начать анализ",
+        "es": "🔍 Iniciar sondeo",
+    },
+    "probe_card_target": {
+        "en": "📦 Select Target Application",
+        "zh": "📦 选择目标应用",
+        "zh_TW": "📦 選擇目標應用程式",
+        "ja": "📦 対象アプリを選択",
+        "ko": "📦 대상 앱 선택",
+        "de": "📦 Zielanwendung auswählen",
+        "fr": "📦 Sélectionner l'application cible",
+        "ru": "📦 Выберите целевое приложение",
+        "es": "📦 Seleccionar aplicación de destino",
+    },
+    "probe_input_placeholder": {
+        "en": "Enter application path or browse /Applications...",
+        "zh": "请输入应用路径或浏览 /Applications...",
+        "zh_TW": "請輸入應用程式路徑或瀏覽 /Applications...",
+        "ja": "アプリのパスを入力または /Applications を参照...",
+        "ko": "앱 경로를 입력하거나 /Applications를 찾아보세요...",
+        "de": "Anwendungspfad eingeben oder in /Applications suchen...",
+        "fr": "Entrez le chemin de l'app ou parcourez /Applications...",
+        "ru": "Введите путь к приложению или выберите в /Applications...",
+        "es": "Introduzca la ruta de la app o explore /Applications...",
+    },
+    "probe_card_results": {
+        "en": "🔬 Prober Analysis Report",
+        "zh": "🔬 应用探测分析报告",
+        "zh_TW": "🔬 應用程式探測分析報告",
+        "ja": "🔬 アプリ診断レポート",
+        "ko": "🔬 앱 분석 보고서",
+        "de": "🔬 Analysebericht",
+        "fr": "🔬 Rapport d'analyse",
+        "ru": "🔬 Отчет анализа",
+        "es": "🔬 Informe de análisis",
+    },
+    "probe_btn_save_recipe": {
+        "en": "💾 Save as Custom Recipe",
+        "zh": "💾 保存为自定义 Recipe 规则",
+        "zh_TW": "💾 儲存為自訂 Recipe 規則",
+        "ja": "💾 カスタムレシピとして保存",
+        "ko": "💾 사용자 정의 레시피로 저장",
+        "de": "💾 Als benutzerdefiniertes Rezept speichern",
+        "fr": "💾 Enregistrer comme recette personnalisée",
+        "ru": "💾 Сохранить как пользовательский рецепт",
+        "es": "💾 Guardar como receta personalizada",
+    },
+    "probe_sandbox_yes": {
+        "en": "Enabled (App Sandbox)",
+        "zh": "已开启 (App Sandbox)",
+        "zh_TW": "已啟用 (App Sandbox)",
+        "ja": "有効 (App Sandbox)",
+        "ko": "활성화됨 (App Sandbox)",
+        "de": "Aktiviert (App Sandbox)",
+        "fr": "Activé (App Sandbox)",
+        "ru": "Включено (App Sandbox)",
+        "es": "Habilitado (App Sandbox)",
+    },
+    "probe_sandbox_no": {
+        "en": "Disabled / Not sandboxed",
+        "zh": "未启用 / 无沙盒",
+        "zh_TW": "未啟用 / 無沙箱",
+        "ja": "無効 / サンドボックスなし",
+        "ko": "비활성 / 샌드박스 없음",
+        "de": "Deaktiviert / Keine Sandbox",
+        "fr": "Désactivé / Sans bac à sable",
+        "ru": "Отключено / Без песочницы",
+        "es": "Desactivado / Sin sandbox",
+    },
+    "probe_saved_success": {
+        "en": "✅ Saved to ~/.atbclone/recipes",
+        "zh": "✅ 已保存到 ~/.atbclone/recipes",
+        "zh_TW": "✅ 已儲存至 ~/.atbclone/recipes",
+        "ja": "✅ ~/.atbclone/recipes に保存完了",
+        "ko": "✅ ~/.atbclone/recipes에 저장되었습니다",
+        "de": "✅ Gespeichert unter ~/.atbclone/recipes",
+        "fr": "✅ Enregistré dans ~/.atbclone/recipes",
+        "ru": "✅ Сохранено в ~/.atbclone/recipes",
+        "es": "✅ Guardado en ~/.atbclone/recipes",
+    },
+
+    # ── GUI: Recipe List View (view_recipes_*) ─────────────────────────── #
+    "view_recipes_col_origin": {
+        "en": "Origin",
+        "zh": "规则来源",
+        "zh_TW": "規則來源",
+        "ja": "ソース",
+        "ko": "소스",
+        "de": "Quelle",
+        "fr": "Source",
+        "ru": "Источник",
+        "es": "Origen",
+    },
+    "view_recipes_origin_builtin": {
+        "en": "Built-in",
+        "zh": "内置规则",
+        "zh_TW": "內建規則",
+        "ja": "組み込み",
+        "ko": "내장",
+        "de": "Integriert",
+        "fr": "Intégré",
+        "ru": "Встроенный",
+        "es": "Integrado",
+    },
+    "view_recipes_origin_custom": {
+        "en": "Custom",
+        "zh": "自定义",
+        "zh_TW": "自訂",
+        "ja": "カスタム",
+        "ko": "사용자 정의",
+        "de": "Benutzerdefiniert",
+        "fr": "Personnalisé",
+        "ru": "Пользовательский",
+        "es": "Personalizado",
+    },
 
     # ── GUI: Logs View (view_logs_*) ───────────────────────────────────── #
     "logs_title": {
@@ -2013,196 +2193,6 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "🗑️ Effacer les journaux",
         "ru": "🗑️ Очистить журнал",
         "es": "🗑️ Limpiar registros",
-    },
-
-
-    # ── GUI: Settings View (view_settings_*) ────────────────────────────── #
-    "settings_title": {
-        "en": "Settings",
-        "zh": "全局设置",
-        "zh_TW": "全域設定",
-        "ja": "設定",
-        "ko": "설정",
-        "de": "Einstellungen",
-        "fr": "Paramètres",
-        "ru": "Настройки",
-        "es": "Ajustes",
-    },
-    "settings_card_storage": {
-        "en": "📁 Storage & Data Management",
-        "zh": "📁 数据与存储管理",
-        "zh_TW": "📁 資料與儲存管理",
-        "ja": "📁 データとストレージ管理",
-        "ko": "📁 데이터 및 스토리지 관리",
-        "de": "📁 Speicher- & Datenverwaltung",
-        "fr": "📁 Gestion du stockage et des données",
-        "ru": "📁 Управление данными и хранилищем",
-        "es": "📁 Gestión de datos y almacenamiento",
-    },
-    "settings_label_root_dir": {
-        "en": "ATBClone Root Workspace: {dir}",
-        "zh": "ATBClone 根工作目录: {dir}",
-        "zh_TW": "ATBClone 根工作目錄: {dir}",
-        "ja": "ATBClone ルート作業ディレクトリ: {dir}",
-        "ko": "ATBClone 루트 작업 디렉토리: {dir}",
-        "de": "ATBClone-Stammverzeichnis: {dir}",
-        "fr": "Répertoire racine ATBClone : {dir}",
-        "ru": "Корневой каталог ATBClone: {dir}",
-        "es": "Directorio raíz de ATBClone: {dir}",
-    },
-    "settings_label_apps_dir": {
-        "en": "Cloned Apps Directory: {dir}",
-        "zh": "分身应用存放目录: {dir}",
-        "zh_TW": "分身應用程式存放目錄: {dir}",
-        "ja": "クローンアプリ保存先: {dir}",
-        "ko": "클론 앱 저장 디렉토리: {dir}",
-        "de": "Verzeichnis für geklonte Apps: {dir}",
-        "fr": "Répertoire des apps clonées : {dir}",
-        "ru": "Папка клонированных приложений: {dir}",
-        "es": "Directorio de apps clonadas: {dir}",
-    },
-    "settings_label_data_dir": {
-        "en": "Isolated Data Directory: {dir}",
-        "zh": "数据隔离存放目录: {dir}",
-        "zh_TW": "資料隔離存放目錄: {dir}",
-        "ja": "データ隔離保存先: {dir}",
-        "ko": "데이터 격리 저장 디렉토리: {dir}",
-        "de": "Verzeichnis für isolierte Daten: {dir}",
-        "fr": "Répertoire des données isolées : {dir}",
-        "ru": "Каталог изолированных данных: {dir}",
-        "es": "Directorio de datos aislados: {dir}",
-    },
-    "settings_btn_open_finder": {
-        "en": "📂 Reveal in Finder (~/.atbclone)",
-        "zh": "📂 在 Finder 中打开数据目录 (~/.atbclone)",
-        "zh_TW": "📂 在 Finder 中打開資料目錄 (~/.atbclone)",
-        "ja": "📂 Finder で開く (~/.atbclone)",
-        "ko": "📂 Finder에서 열기 (~/.atbclone)",
-        "de": "📂 Im Finder anzeigen (~/.atbclone)",
-        "fr": "📂 Afficher dans le Finder (~/.atbclone)",
-        "ru": "📂 Открыть в Finder (~/.atbclone)",
-        "es": "📂 Mostrar en Finder (~/.atbclone)",
-    },
-    "settings_card_paths": {
-        "en": "⚙️ Default Path Preferences",
-        "zh": "⚙️ 默认路径偏好",
-        "zh_TW": "⚙️ 預設路徑偏好",
-        "ja": "⚙️ デフォルトパス設定",
-        "ko": "⚙️ 기본 경로 설정",
-        "de": "⚙️ Standardpfade",
-        "fr": "⚙️ Préférences de chemin par défaut",
-        "ru": "⚙️ Пути по умолчанию",
-        "es": "⚙️ Preferencias de rutas por defecto",
-    },
-    "settings_label_base_dir": {
-        "en": "Root Workspace:",
-        "zh": "根工作目录:",
-        "zh_TW": "根工作目錄:",
-        "ja": "ルート作業ディレクトリ:",
-        "ko": "루트 작업 디렉토리:",
-        "de": "Stamm-Arbeitsverzeichnis:",
-        "fr": "Répertoire racine :",
-        "ru": "Корневой каталог:",
-        "es": "Directorio raíz:",
-    },
-    "settings_hint_base_dir": {
-        "en": "(Cloned apps, isolated data, and recipes will be stored under this directory)",
-        "zh": "（分身应用、隔离数据及分身规则将自动归档在该根工作目录下）",
-        "zh_TW": "（分身應用程式、隔離資料及分身規則將自動歸檔在該根工作目錄下）",
-        "ja": "（クローンアプリ、隔離データ、レシピはこのディレクトリ配下に保存されます）",
-        "ko": "(클론 앱, 격리된 데이터 및 레시피가 이 디렉토리에 저장됩니다)",
-        "de": "(Geklonte Apps, Daten und Rezepte werden hier gespeichert)",
-        "fr": "(Les apps clonées, données et recettes seront stockées sous ce répertoire)",
-        "ru": "(Клоны, изолированные данные и рецепты сохраняются в этой папке)",
-        "es": "(Las apps clonadas, datos aislados y recetas se guardarán en este directorio)",
-    },
-    "settings_card_proxy": {
-        "en": "🌐 Default Proxy Configuration (Optional)",
-        "zh": "🌐 默认代理配置 (可选)",
-        "zh_TW": "🌐 預設代理伺服器設定 (選用)",
-        "ja": "🌐 デフォルトプロキシ設定 (任意)",
-        "ko": "🌐 기본 프록시 설정 (선택 사항)",
-        "de": "🌐 Standard-Proxy-Konfiguration (Optional)",
-        "fr": "🌐 Configuration de proxy par défaut (Facultatif)",
-        "ru": "🌐 Прокси по умолчанию (Необязательно)",
-        "es": "🌐 Configuración de proxy por defecto (Opcional)",
-    },
-    "settings_switch_proxy": {
-        "en": "Enable proxy by default when creating clones",
-        "zh": "创建分身时默认启用代理",
-        "zh_TW": "建立分身時預設啟用代理伺服器",
-        "ja": "クローン作成時にデフォルトでプロキシを有効にする",
-        "ko": "클론 생성 시 기본적으로 프록시 활성화",
-        "de": "Proxy standardmäßig beim Erstellen von Klonen aktivieren",
-        "fr": "Activer le proxy par défaut lors de la création de clones",
-        "ru": "Включать прокси по умолчанию при создании клонов",
-        "es": "Habilitar proxy por defecto al crear clones",
-    },
-    "settings_card_language": {
-        "en": "🌐 Interface Language",
-        "zh": "🌐 界面语言",
-        "zh_TW": "🌐 介面語言",
-        "ja": "🌐 インターフェース言語",
-        "ko": "🌐 인터페이스 언어",
-        "de": "🌐 Sprache der Benutzeroberfläche",
-        "fr": "🌐 Langue de l'interface",
-        "ru": "🌐 Язык интерфейса",
-        "es": "🌐 Idioma de la interfaz",
-    },
-    "settings_label_language": {
-        "en": "Language:",
-        "zh": "界面语言:",
-        "zh_TW": "介面語言:",
-        "ja": "表示言語:",
-        "ko": "표시 언어:",
-        "de": "Sprache:",
-        "fr": "Langue :",
-        "ru": "Язык:",
-        "es": "Idioma:",
-    },
-    "settings_card_about": {
-        "en": "ℹ️ About ATBClone",
-        "zh": "ℹ️ 关于 ATBClone",
-        "zh_TW": "ℹ️ 關於 ATBClone",
-        "ja": "ℹ️ ATBClone について",
-        "ko": "ℹ️ ATBClone 정보",
-        "de": "ℹ️ Über ATBClone",
-        "fr": "ℹ️ À propos d'ATBClone",
-        "ru": "ℹ️ О программе ATBClone",
-        "es": "ℹ️ Acerca de ATBClone",
-    },
-    "settings_label_app_ver": {
-        "en": "ATBClone Version: v{ver}",
-        "zh": "ATBClone 版本: v{ver}",
-        "zh_TW": "ATBClone 版本: v{ver}",
-        "ja": "ATBClone バージョン: v{ver}",
-        "ko": "ATBClone 버전: v{ver}",
-        "de": "ATBClone-Version: v{ver}",
-        "fr": "Version d'ATBClone : v{ver}",
-        "ru": "Версия ATBClone: v{ver}",
-        "es": "Versión de ATBClone: v{ver}",
-    },
-    "settings_label_python_ver": {
-        "en": "Python Runtime: {ver} ({arch})",
-        "zh": "Python 核心: {ver} ({arch})",
-        "zh_TW": "Python 核心: {ver} ({arch})",
-        "ja": "Python ランタイム: {ver} ({arch})",
-        "ko": "Python 런타임: {ver} ({arch})",
-        "de": "Python-Laufzeit: {ver} ({arch})",
-        "fr": "Runtime Python : {ver} ({arch})",
-        "ru": "Среда Python: {ver} ({arch})",
-        "es": "Entorno Python: {ver} ({arch})",
-    },
-    "settings_label_os_ver": {
-        "en": "macOS Architecture: {ver}",
-        "zh": "macOS 系统架构: {ver}",
-        "zh_TW": "macOS 系統架構: {ver}",
-        "ja": "macOS アーキテクチャ: {ver}",
-        "ko": "macOS 시스템 아키텍처: {ver}",
-        "de": "macOS-Architektur: {ver}",
-        "fr": "Architecture macOS : {ver}",
-        "ru": "Архитектура macOS: {ver}",
-        "es": "Arquitectura macOS: {ver}"
     },
 
     # ── GUI: Common Interactive Dialogs (dialog_*) ─────────────────────── #
@@ -3223,7 +3213,7 @@ def detect_system_language() -> str:
     if override:
         return normalize_lang_code(override)
 
-    # 2. Persisted user configuration in ~/.atbclone/config.json
+    # 2. Persisted user configuration in ~/.atbclone/config.yaml
     cfg_lang = get_configured_language()
     if cfg_lang and cfg_lang != "auto":
         return normalize_lang_code(cfg_lang)
@@ -3314,8 +3304,29 @@ def t(key: str, **kwargs: Any) -> str:
         or key
     )
     if kwargs:
+        fmt_kwargs = dict(kwargs)
+        if "path" in kwargs and "dir" not in fmt_kwargs:
+            fmt_kwargs["dir"] = kwargs["path"]
+        if "dir" in kwargs and "path" not in fmt_kwargs:
+            fmt_kwargs["path"] = kwargs["dir"]
+        if "dest_path" in kwargs and "dest" not in fmt_kwargs:
+            fmt_kwargs["dest"] = kwargs["dest_path"]
+        if "dest" in kwargs and "dest_path" not in fmt_kwargs:
+            fmt_kwargs["dest_path"] = kwargs["dest"]
+        if "path" in kwargs and "dest" not in fmt_kwargs:
+            fmt_kwargs["dest"] = kwargs["path"]
+        if "dest" in kwargs and "path" not in fmt_kwargs:
+            fmt_kwargs["path"] = kwargs["dest"]
+        if "version" in kwargs and "ver" not in fmt_kwargs:
+            fmt_kwargs["ver"] = kwargs["version"]
+        if "ver" in kwargs and "version" not in fmt_kwargs:
+            fmt_kwargs["version"] = kwargs["ver"]
+        if "os_ver" in kwargs and "ver" not in fmt_kwargs:
+            fmt_kwargs["ver"] = kwargs["os_ver"]
+        if "ver" in kwargs and "os_ver" not in fmt_kwargs:
+            fmt_kwargs["os_ver"] = kwargs["ver"]
         try:
-            return template.format(**kwargs)
+            return template.format(**fmt_kwargs)
         except Exception:
             return template
     return template

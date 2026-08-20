@@ -63,7 +63,7 @@ def test_app_tray_service_initialized_and_enabled(tmp_path, monkeypatch):
     from atbclone.core import config
     from atbclone.core.config import set_config_value
 
-    test_cfg_file = tmp_path / "config.json"
+    test_cfg_file = tmp_path / "config.yaml"
     monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", test_cfg_file)
     monkeypatch.setattr(config, "DEFAULT_ATB_DIR", tmp_path)
 

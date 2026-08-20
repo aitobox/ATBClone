@@ -1,8 +1,12 @@
 """ATBClone GUI Package (BeeWare Toga)."""
 
+from atbclone.core.resources import get_app_icon_path
+
+
 def build_app():
     from .app import ATBCloneApp
-    return ATBCloneApp("ATBClone", "com.atbclone.app")
+    icon_path = get_app_icon_path("png")
+    return ATBCloneApp("ATBClone", "com.atbclone.app", icon=icon_path)
 
 
 def main():

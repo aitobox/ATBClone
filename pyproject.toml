@@ -39,7 +39,9 @@ license-files = ["LICENSE"]
 [tool.briefcase.app.atbclone]
 formal_name = "ATBClone"
 description = "macOS App Cloning Engine"
+icon = "resource/images/logo"
 sources = ["src/atbclone"]
+resources = ["resource/images"]
 requires = [
     "toga>=0.4.0",
     "pydantic>=2.0",
@@ -47,6 +49,7 @@ requires = [
 ]
 
 [tool.briefcase.app.atbclone.macOS]
+icon = "resource/images/logo"
 requires = [
     "std-nslog",
 ]

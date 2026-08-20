@@ -154,6 +154,8 @@ PYTHONNOUSERSITE=1 PYTHONPATH=src "${PYTHON_BIN}" -m nuitka \
     --onefile \
     --output-filename=ATBCloneCli \
     --output-dir=dist \
+    --macos-app-icon=resource/images/logo.icns \
+    --include-data-dir=resource=resource \
     --include-package=atbclone \
     --include-package-data=atbclone \
     --include-package=click \

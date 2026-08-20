@@ -5,6 +5,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER
 from atbclone import __version__
+from atbclone.core.resources import get_app_icon_path
 from atbclone.gui.theme import Theme
 
 
@@ -29,12 +30,24 @@ class SidebarNav(toga.Box):
         self.active_key = active_key
         self.buttons: Dict[str, toga.Button] = {}
 
-        # Brand header
-        header_box = toga.Box(style=Pack(direction=COLUMN, margin=(16, 12, 12, 12)))
-        title_label = toga.Label("🚀 ATBClone", style=Pack(font_weight="bold", font_size=16, color=Theme.TEXT_PRIMARY))
+        # Brand header with logo icon
+        header_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(16, 12, 12, 12)))
+
+        logo_path = get_app_icon_path("png")
+        if logo_path and logo_path.exists():
+            try:
+                logo_img = toga.Image(logo_path)
+                logo_view = toga.ImageView(logo_img, style=Pack(width=28, height=28, margin_right=8))
+                header_box.add(logo_view)
+            except Exception:
+                pass
+
+        title_box = toga.Box(style=Pack(direction=COLUMN))
+        title_label = toga.Label("ATBClone", style=Pack(font_weight="bold", font_size=16, color=Theme.TEXT_PRIMARY))
         ver_label = toga.Label(f"v{__version__} App Cloner", style=Pack(font_size=10, color=Theme.TEXT_MUTED, margin_top=2))
-        header_box.add(title_label)
-        header_box.add(ver_label)
+        title_box.add(title_label)
+        title_box.add(ver_label)
+        header_box.add(title_box)
         self.add(header_box)
 
         # Main Navigation Section

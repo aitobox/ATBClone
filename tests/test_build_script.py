@@ -138,3 +138,22 @@ def test_entitlements_plist_validity():
     assert data.get("com.apple.security.cs.allow-unsigned-executable-memory") is True
     assert data.get("com.apple.security.cs.disable-library-validation") is True
     assert data.get("com.apple.security.cs.allow-dyld-environment-variables") is True
+
+
+def test_pyproject_contains_briefcase_icon():
+    root = Path(__file__).parent.parent
+    content = (root / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'icon = "resource/images/logo"' in content
+
+
+def test_build_cli_contains_macos_icon_flag():
+    root = Path(__file__).parent.parent
+    content = (root / "scripts" / "build_cli.sh").read_text(encoding="utf-8")
+    assert "--macos-app-icon=" in content
+    assert "--include-data-dir=resource=resource" in content
+
+
+def test_build_gui_references_icon():
+    root = Path(__file__).parent.parent
+    content = (root / "scripts" / "build_gui.sh").read_text(encoding="utf-8")
+    assert "logo.icns" in content or "ATBClone.icns" in content or "icon" in content

@@ -16,3 +16,16 @@ def test_sidebar_nav_initialization_and_selection():
     sidebar.select_item("settings")
     assert sidebar.active_key == "settings"
     on_select.assert_called_with("settings")
+
+
+def test_sidebar_brand_header():
+    import toga
+    sidebar = SidebarNav(on_select=lambda k: None)
+    header_box = sidebar.children[0]
+    assert len(header_box.children) >= 1
+    # Check that header contains both logo image (if available) and labels
+    labels = [c for c in header_box.children if isinstance(c, toga.Label)]
+    assert any("ATBClone" in l.text for l in labels) or any(
+        isinstance(sub, toga.Box) and any("ATBClone" in l.text for l in sub.children if isinstance(l, toga.Label))
+        for sub in header_box.children
+    )

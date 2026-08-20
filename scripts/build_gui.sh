@@ -179,6 +179,14 @@ echo ""
 echo "==> [2/3] briefcase build macOS ..."
 PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase build macOS
 
+# Verify application icon in built app bundle
+APP_BUNDLE=$(find build/ -name "ATBClone.app" -type d 2>/dev/null | head -1 || true)
+if [[ -n "${APP_BUNDLE}" && -d "${APP_BUNDLE}" ]]; then
+    if [[ -f "${APP_BUNDLE}/Contents/Resources/ATBClone.icns" || -f "${APP_BUNDLE}/Contents/Resources/logo.icns" || -f "${APP_BUNDLE}/Contents/Resources/icon.icns" ]]; then
+        echo "[+] App bundle icon verified in: ${APP_BUNDLE}/Contents/Resources/"
+    fi
+fi
+
 # ── 8. briefcase package  (produces .dmg) ────────────────────────────────── #
 echo ""
 echo "==> [3/3] briefcase package macOS (DMG) ..."

@@ -1,11 +1,13 @@
 """ATBClone Main Application (BeeWare Toga) with Modern GUI Architecture."""
 
 import asyncio
+from pathlib import Path
 from typing import Any, Optional
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 
+from atbclone.core.resources import get_app_icon_path
 from atbclone.gui.services.clone_service import CloneService
 from atbclone.gui.services.doctor_service import DoctorService
 from atbclone.gui.services.probe_service import ProbeService
@@ -21,8 +23,33 @@ from atbclone.gui.windows.wizard import WizardWindow
 from atbclone.gui.theme import Theme
 
 
+def set_macos_dock_icon(icon_path: Optional[Path] = None) -> bool:
+    """Explicitly set application icon on macOS Dock via Cocoa AppKit."""
+    if icon_path is None:
+        icon_path = get_app_icon_path("png")
+    if not icon_path or not icon_path.exists():
+        return False
+    try:
+        from toga_cocoa.libs.appkit import NSApplication, NSImage
+        ns_img = NSImage.alloc().initWithContentsOfFile_(str(icon_path))
+        if ns_img:
+            NSApplication.sharedApplication.setApplicationIconImage_(ns_img)
+            return True
+    except Exception:
+        # Graceful fallback for non-macOS or headless test environments
+        pass
+    return False
+
+
 class ATBCloneApp(toga.App):
     """Main BeeWare Toga application entry point and view coordinator."""
+
+    def __init__(self, formal_name: str = "ATBClone", app_id: str = "com.atbclone.app", **kwargs):
+        if "icon" not in kwargs or kwargs["icon"] is None:
+            icon_path = get_app_icon_path("png")
+            if icon_path:
+                kwargs["icon"] = icon_path
+        super().__init__(formal_name, app_id, **kwargs)
 
     def safe_create_task(self, coro):
         """Safely schedule a coroutine if an event loop is running."""
@@ -36,6 +63,9 @@ class ATBCloneApp(toga.App):
             return None
 
     def startup(self):
+        # Set macOS Dock icon immediately on app launch
+        set_macos_dock_icon(get_app_icon_path("png"))
+
         # Initialize services
         self.clone_service = CloneService()
         self.recipe_service = RecipeService()

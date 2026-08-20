@@ -5,6 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "atbclone"
 version = "0.6.0"
+description = "macOS App Cloning Engine"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Brain Zhang" }
+]
 requires-python = ">=3.10"
 dependencies = [
     "click>=8.1",
@@ -18,3 +24,29 @@ atbclone = "atbclone.cli.main:cli"
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-mock", "ruff"]
+gui = ["toga>=0.4.0"]
+
+[tool.briefcase]
+project_name = "ATBClone"
+bundle = "com.atbclone"
+version = "0.6.0"
+url = "https://github.com/aitobox/ATBClone"
+author = "Brain Zhang"
+author_email = "brainzhang@example.com"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+
+[tool.briefcase.app.atbclone]
+formal_name = "ATBClone"
+description = "macOS App Cloning Engine"
+sources = ["src/atbclone"]
+requires = [
+    "toga>=0.4.0",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+]
+
+[tool.briefcase.app.atbclone.macOS]
+requires = [
+    "std-nslog",
+]

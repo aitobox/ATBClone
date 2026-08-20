@@ -83,12 +83,16 @@ class SoftCloneEngine(CloneEngine):
 
         src_resources = shlex.quote(str(task.source.path / "Contents" / "Resources"))
         dst_resources = shlex.quote(str(task.dest_path / "Contents" / "Resources"))
+        dst_parent = shlex.quote(str(task.dest_path.parent))
+        data_dir = shlex.quote(str(task.data_dir))
 
         # Effective display name: explicit override > clone_name
         effective_display_name = task.display_name if task.display_name else task.clone_name
         icon_cmd = cls._build_icon_cmd(task, dst_resources, dst_plist)
 
         script = f"""set -e
+mkdir -p {dst_parent}
+mkdir -p {data_dir}
 mkdir -p {dst_mac}
 # Copy Resources dir so the app icon (.icns) and other assets are available
 if [ -d {src_resources} ]; then
@@ -174,8 +178,12 @@ class HardCloneEngine(CloneEngine):
         # Effective display name: explicit override > clone_name
         effective_display_name = task.display_name if task.display_name else task.clone_name
         icon_cmd = cls._build_icon_cmd(task, dst_resources, dst_plist)
+        dst_parent = shlex.quote(str(task.dest_path.parent))
+        data_dir = shlex.quote(str(task.data_dir))
 
         script = f"""set -e
+mkdir -p {dst_parent}
+mkdir -p {data_dir}
 cp -R {src} {dst}
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
 /usr/libexec/PlistBuddy -c "Set :CFBundleName {task.clone_name}" {dst_plist}

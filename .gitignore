@@ -64,3 +64,5 @@ dist/
 *.build/
 *.dist/
 *.onefile-build/
+logs/
+

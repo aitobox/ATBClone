@@ -27,10 +27,16 @@ class RecipeLoader:
     def get(cls, bundle_id: str) -> Recipe | None:
         local_file = cls.get_local_dir() / f"{bundle_id}.yaml"
         builtin_file = cls.BUILTIN_DIR / f"{bundle_id}.yaml"
-        if local_file.is_file():
-            return cls._load_file(local_file)
-        if builtin_file.is_file():
-            return cls._load_file(builtin_file)
+        try:
+            if local_file.is_file():
+                return cls._load_file(local_file)
+        except (PermissionError, OSError):
+            pass
+        try:
+            if builtin_file.is_file():
+                return cls._load_file(builtin_file)
+        except (PermissionError, OSError):
+            pass
         return None
 
     @classmethod

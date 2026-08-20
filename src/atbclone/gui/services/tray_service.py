@@ -18,7 +18,7 @@ try:
         NSMenuItem,
         NSImage,
     )
-    from rubicon.objc import NSObject, objc_method, NSSize
+    from rubicon.objc import NSObject, objc_method, NSSize, SEL
 except Exception:
     NSApplication = None
     NSStatusBar = None
@@ -28,6 +28,7 @@ except Exception:
     NSObject = object
     objc_method = lambda fn: fn
     NSSize = None
+    SEL = lambda name: name
 
 
 class TrayCallbackTarget(NSObject):
@@ -92,10 +93,10 @@ class TrayService:
                     if hasattr(button, "setTarget_"):
                         button.setTarget_(self._target)
                     if hasattr(button, "setAction_"):
-                        button.setAction_("onTrayClicked:")
-                    # NSEventMaskLeftMouseUp = 1 << 2, NSEventMaskRightMouseUp = 1 << 3
+                        button.setAction_(SEL("onTrayClicked:"))
+                    # NSEventMaskLeftMouseUp = 1 << 2, NSEventMaskRightMouseDown = 1 << 3, NSEventMaskRightMouseUp = 1 << 4
                     if hasattr(button, "sendActionOn_"):
-                        button.sendActionOn_((1 << 2) | (1 << 3))
+                        button.sendActionOn_((1 << 2) | (1 << 3) | (1 << 4))
 
             self._is_enabled = True
             logger.info("System tray icon enabled successfully.")
@@ -125,8 +126,8 @@ class TrayService:
         try:
             current_event = getattr(NSApplication.sharedApplication, "currentEvent", None) if NSApplication else None
             event_type = getattr(current_event, "type", None)
-            # NSEventTypeRightMouseUp = 3, NSEventTypeRightMouseDown = 3
-            if event_type == 3 or (isinstance(event_type, int) and event_type in (3, 8)):
+            # NSEventTypeRightMouseDown = 3, NSEventTypeRightMouseUp = 4
+            if event_type in (3, 4):
                 self.show_context_menu()
             else:
                 self.on_menu_show()
@@ -145,7 +146,7 @@ class TrayService:
 
             item_show = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
                 t("tray_menu_show"),
-                "onMenuShow:",
+                SEL("onMenuShow:"),
                 "",
             )
             if self._target and hasattr(item_show, "setTarget_"):
@@ -158,7 +159,7 @@ class TrayService:
 
             item_quit = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
                 t("tray_menu_quit"),
-                "onMenuQuit:",
+                SEL("onMenuQuit:"),
                 "",
             )
             if self._target and hasattr(item_quit, "setTarget_"):

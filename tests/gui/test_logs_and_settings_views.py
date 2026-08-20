@@ -1,28 +1,40 @@
 import asyncio
-from unittest.mock import MagicMock, patch
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 import toga
+from atbclone.core.logger import get_logger, read_logs, setup_logging
 from atbclone.gui.views.logs_view import LogsView
 from atbclone.gui.views.settings_view import SettingsView
 
 
-def test_logs_view_logging_and_filtering():
+def test_logs_view_file_backed_and_live_sync(tmp_path):
+    log_file = tmp_path / "test_logsview.log"
+    setup_logging(log_file=log_file)
+    logger = get_logger("ui_test")
+    logger.info("Pre-existing log entry on disk")
+
     view = LogsView()
-    assert "initialized" in view.log_text.value
+    # Verify disk content loaded
+    assert "Pre-existing log entry on disk" in view.log_text.value
 
-    view.log_info("Created clone WeChat2")
-    view.log_error("Failed to clone QQ")
-    assert "WeChat2" in view.log_text.value
-    assert "QQ" in view.log_text.value
+    # Verify live streaming
+    logger.info("New live streamed event")
+    assert "New live streamed event" in view.log_text.value
 
-    # Filter
-    view.on_filter_logs("QQ")
-    assert "QQ" in view.log_text.value
-    assert "WeChat2" not in view.log_text.value
+    # Verify filter
+    view.on_filter_logs("live")
+    assert "New live streamed event" in view.log_text.value
+    assert "Pre-existing" not in view.log_text.value
 
-    # Clear
+    # Reset filter
+    view.on_filter_logs("")
+    assert "Pre-existing" in view.log_text.value
+
+    # Verify clear
     view.on_clear_logs(None)
-    assert view.log_text.value == ""
+    assert "Pre-existing" not in view.log_text.value
+    assert "Log file cleared by user" in view.log_text.value
+    assert "Log file cleared by user" in read_logs(log_file=log_file)
 
 
 def test_settings_view_open_finder_and_save():

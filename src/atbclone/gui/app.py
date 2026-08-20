@@ -97,6 +97,7 @@ class ATBCloneApp(toga.App):
             self.safe_create_task(self.doctor_view.run_checks())
         elif view_name == "logs":
             self.content_container.add(self.logs_view)
+            self.logs_view.reload_from_disk()
         elif view_name == "settings":
             self.content_container.add(self.settings_view)
 

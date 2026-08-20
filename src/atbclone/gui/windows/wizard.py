@@ -17,6 +17,7 @@ from atbclone.gui.services.clone_service import CloneService
 from atbclone.gui.services.probe_service import ProbeService
 from atbclone.recipes.loader import RecipeLoader
 from atbclone.recipes.models import Recipe, ProxyConfig, supports_data_dir
+from atbclone.gui.patch_cocoa import patch_cocoa_widgets, configure_cocoa_window
 
 logger = get_logger("gui.wizard")
 
@@ -30,7 +31,10 @@ class WizardWindow(toga.Window):
         probe_service: ProbeService | None = None,
         on_complete: Callable[[], Coroutine[Any, Any, None]] | None = None,
     ):
+        patch_cocoa_widgets()
         super().__init__(title=t("win_wizard_title"), size=(560, 520))
+        configure_cocoa_window(self, floating=True)
+
         self.clone_service = clone_service or CloneService()
         self.probe_service = probe_service or ProbeService()
         self.on_complete_callback = on_complete
@@ -59,6 +63,11 @@ class WizardWindow(toga.Window):
         # Build window layout
         self.content = self._build_layout()
         self._render_current_step()
+
+    def show(self):
+        super().show()
+        configure_cocoa_window(self, floating=True)
+
 
     def _init_step_widgets(self):
         # Step 1: Select App
@@ -207,43 +216,49 @@ class WizardWindow(toga.Window):
             box.add(self.progress_bar)
             self.step_container.add(box)
 
+        # Keep wizard window in front and focused during step transitions
+        configure_cocoa_window(self, floating=True)
+
     async def _on_browse_app(self, widget: toga.Button):
         """Browse for macOS application bundle (.app) in /Applications."""
-        if hasattr(self, "app") and self.app and hasattr(self.app, "main_window"):
-            try:
-                selected = await self.app.main_window.open_file_dialog(
-                    title=t("dialog_select_app_title"),
-                    file_types=["app"],
-                    initial_directory=Path("/Applications"),
-                )
-                if selected:
-                    self.input_app_path.value = str(selected)
-            except Exception:
-                pass
+        try:
+            selected = await self.open_file_dialog(
+                title=t("dialog_select_app_title"),
+                file_types=["app"],
+                initial_directory=Path("/Applications"),
+            )
+            if selected:
+                self.input_app_path.value = str(selected)
+        except Exception:
+            pass
+        finally:
+            configure_cocoa_window(self, floating=True)
 
     async def _on_browse_dest(self, widget: toga.Button):
         """Browse for destination directory (step 4)."""
-        if hasattr(self, "app") and self.app and hasattr(self.app, "main_window"):
-            try:
-                selected = await self.app.main_window.select_folder_dialog(
-                    title=t("dialog_select_dest_dir_title"),
-                )
-                if selected:
-                    self.input_dest_dir.value = str(selected)
-            except Exception:
-                pass
+        try:
+            selected = await self.select_folder_dialog(
+                title=t("dialog_select_dest_dir_title"),
+            )
+            if selected:
+                self.input_dest_dir.value = str(selected)
+        except Exception:
+            pass
+        finally:
+            configure_cocoa_window(self, floating=True)
 
     async def _on_browse_data(self, widget: toga.Button):
         """Browse for data directory (step 5)."""
-        if hasattr(self, "app") and self.app and hasattr(self.app, "main_window"):
-            try:
-                selected = await self.app.main_window.select_folder_dialog(
-                    title=t("dialog_select_data_dir_title"),
-                )
-                if selected:
-                    self.input_data_dir.value = str(selected)
-            except Exception:
-                pass
+        try:
+            selected = await self.select_folder_dialog(
+                title=t("dialog_select_data_dir_title"),
+            )
+            if selected:
+                self.input_data_dir.value = str(selected)
+        except Exception:
+            pass
+        finally:
+            configure_cocoa_window(self, floating=True)
 
     def _on_clone_name_change(self, widget: toga.TextInput):
         """Automatically mirror Clone Name into Display Name if user hasn't customized it."""
@@ -336,15 +351,17 @@ class WizardWindow(toga.Window):
             # Prepare summary for step 7
             clone_name = self.input_clone_name.value.strip()
             proxy_str = t("list_proxy_enabled") if self.switch_proxy.value else t("list_proxy_disabled")
+            data_label = t("win_wizard_step5_label").rstrip(":")
             summary_text = (
                 f"{t('card_label_source', source_app=self.app_info.app_name)} ({self.app_info.bundle_id})\n"
                 f"{t('list_col_name')}: {clone_name}\n"
                 f"{t('list_col_strategy')}: {self.recipe.strategy}\n"
-                f"{t('list_col_destination', default='Destination')}: {self.input_dest_dir.value}/{clone_name}.app\n"
-                f"{t('win_wizard_step5_label')}: {self.input_data_dir.value}\n"
+                f"{t('list_col_destination')}: {self.input_dest_dir.value}/{clone_name}.app\n"
+                f"{data_label}: {self.input_data_dir.value}\n"
                 f"{t('list_col_proxy')}: {proxy_str}"
             )
             self.label_summary.text = summary_text
+
 
         elif self.current_step == 7:
             # Execute cloning!

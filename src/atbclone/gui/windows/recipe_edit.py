@@ -7,6 +7,7 @@ from toga.style.pack import COLUMN, ROW
 
 from atbclone.core.i18n import t
 from atbclone.recipes.models import ProxyConfig, Recipe
+from atbclone.gui.patch_cocoa import configure_cocoa_window
 
 
 class RecipeEditWindow(toga.Window):
@@ -17,8 +18,10 @@ class RecipeEditWindow(toga.Window):
         on_save: Callable[[Recipe], Coroutine[Any, Any, None]] | None = None,
     ):
         super().__init__(title=title, size=(500, 520))
+        configure_cocoa_window(self, floating=True)
         self.original_recipe = recipe
         self.on_save_callback = on_save
+
 
         self.input_bundle_id = toga.TextInput(
             value=recipe.bundle_id if recipe else "",

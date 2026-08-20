@@ -25,6 +25,9 @@ LANGUAGE_DISPLAY_NAMES: list[tuple[str, str]] = [
 ]
 
 
+from atbclone.gui.patch_cocoa import configure_cocoa_window
+
+
 class ReleaseNotesWindow(toga.Window):
     """Dedicated window for browsing multilingual ATBClone Release Notes."""
 
@@ -33,8 +36,10 @@ class ReleaseNotesWindow(toga.Window):
             title=t("release_notes_window_title"),
             size=(780, 580),
         )
+        configure_cocoa_window(self, floating=True)
 
         self.current_lang = normalize_lang_code(initial_lang or get_language())
+
         self.current_path: Optional[Path] = None
 
         # Build UI Components

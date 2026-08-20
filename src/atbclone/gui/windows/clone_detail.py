@@ -6,12 +6,15 @@ from toga.style.pack import COLUMN, ROW
 
 from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord
+from atbclone.gui.patch_cocoa import configure_cocoa_window
 
 
 class CloneDetailWindow(toga.Window):
     def __init__(self, record: CloneRecord):
         super().__init__(title=t("win_detail_title", name=record.clone_name), size=(480, 420))
+        configure_cocoa_window(self, floating=True)
         self.record = record
+
 
         proxy_str = record.proxy_summary if record.proxy_enabled else t("list_proxy_disabled")
         strat_badge = t("card_strategy_soft") if record.strategy == "soft_clone" else t("card_strategy_hard")

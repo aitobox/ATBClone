@@ -67,8 +67,8 @@ def test_wizard_browse_handlers():
         mock_open = AsyncMock(return_value=Path("/Applications/Safari.app"))
         mock_folder = AsyncMock(return_value=Path("/Users/test/Applications"))
 
-        with patch.object(wizard.app.main_window, "open_file_dialog", mock_open), \
-             patch.object(wizard.app.main_window, "select_folder_dialog", mock_folder):
+        with patch.object(wizard, "open_file_dialog", mock_open), \
+             patch.object(wizard, "select_folder_dialog", mock_folder):
             await wizard._on_browse_app(None)
             assert wizard.input_app_path.value == "/Applications/Safari.app"
             mock_open.assert_called_once_with(
@@ -84,6 +84,7 @@ def test_wizard_browse_handlers():
             assert wizard.input_data_dir.value == "/Users/test/Applications"
 
     asyncio.run(_test())
+
 
 
 

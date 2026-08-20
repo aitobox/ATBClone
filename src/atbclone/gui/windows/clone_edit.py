@@ -9,6 +9,7 @@ from toga.style.pack import COLUMN, ROW
 from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord
 from atbclone.recipes.models import ProxyConfig
+from atbclone.gui.patch_cocoa import configure_cocoa_window
 
 
 class CloneEditWindow(toga.Window):
@@ -18,8 +19,10 @@ class CloneEditWindow(toga.Window):
         on_save: Callable[[CloneRecord], Coroutine[Any, Any, None]] | None = None,
     ):
         super().__init__(title=t("win_edit_title", name=record.clone_name), size=(480, 360))
+        configure_cocoa_window(self, floating=True)
         self.record = record
         self.on_save_callback = on_save
+
 
         # Proxy parsing
         proxy_type = "http"

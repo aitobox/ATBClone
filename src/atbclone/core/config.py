@@ -16,3 +16,6 @@ DEFAULT_RECIPES_DIR: Path = DEFAULT_ATB_DIR / "recipes"
 
 # Default directory for wrapper applications
 DEFAULT_APPS_DIR: Path = DEFAULT_ATB_DIR / "Apps"
+
+# Default log file for runtime and operations
+DEFAULT_LOG_FILE: Path = DEFAULT_ATB_DIR / "atbclone.log"

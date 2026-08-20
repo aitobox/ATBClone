@@ -93,6 +93,7 @@ def test_i18n_macos_apple_languages():
     ]
     for apple_langs, expected in cases:
         with patch.dict(os.environ, {"ATBCLONE_LANG": ""}), \
+             patch("atbclone.core.i18n.get_configured_language", return_value="auto"), \
              patch("subprocess.check_output") as mock_sub:
             mock_sub.return_value = apple_langs
             assert detect_system_language() == expected
@@ -112,6 +113,7 @@ def test_i18n_macos_apple_locale():
     ]
     for locale, expected in cases:
         with patch.dict(os.environ, {"ATBCLONE_LANG": ""}), \
+             patch("atbclone.core.i18n.get_configured_language", return_value="auto"), \
              patch("subprocess.check_output", side_effect=[Exception("no AppleLanguages"), locale]):
             assert detect_system_language() == expected
 
@@ -130,6 +132,7 @@ def test_i18n_env_lang_fallback():
     ]
     for env_val, expected in cases:
         with patch.dict(os.environ, {"LANG": env_val, "ATBCLONE_LANG": ""}), \
+             patch("atbclone.core.i18n.get_configured_language", return_value="auto"), \
              patch("subprocess.check_output", side_effect=Exception("no defaults")):
             assert detect_system_language() == expected
 

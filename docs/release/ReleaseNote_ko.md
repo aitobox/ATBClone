@@ -6,6 +6,35 @@
 
 ---
 
+## [v0.7.0] - 2026-08-20
+
+### 🖥️ 네이티브 BeeWare Toga GUI 데스크톱 애플리케이션
+- **모던한 Ice-Blue 그래픽 인터페이스**:
+  - BeeWare Toga 기반의 macOS 네이티브 데스크톱 앱(`atbclone-gui`)을 출시했습니다.
+  - 사이드바 내비게이션과 카드 그리드 레이아웃을 통해 클론 관리(`ClonesView`), 앱 심층 분석(`ProbeView`), 레시피 관리(`RecipesView`), 로그 뷰어(`LogsView`), 전체 설정(`SettingsView`)을 제공합니다.
+  - `.app` 드래그 앤 드롭을 지원하는 직관적인 시각적 클론 생성 마법사를 지원합니다.
+
+### 🍏 macOS 메뉴 막대 시스템 트레이 및 최소화 지원
+- **시스템 트레이 서비스 (TrayService)**:
+  - `NSStatusBar` 및 `NSStatusItem`을 통한 네이티브 메뉴 막대 트레이 아이콘과 퀵 메뉴(메인 창 열기, 클론 생성, 빠른 실행, 설정, 종료)를 통합했습니다.
+  - "시스템 트레이로 최소화" 설정을 지원하여 Cocoa Selector 및 `NSWindowDelegate`를 통한 부드러운 창 숨김 및 복원을 제공합니다.
+
+### 📖 GUI 다국어 릴리즈 노트 뷰어
+- **내장 Release Notes 창**:
+  - 환경 설정 화면에서 바로 열 수 있는 `ReleaseNotesWindow`를 구현했습니다.
+  - 9개 언어 드롭다운을 통해 번역된 Markdown 릴리즈 노트를 실시간으로 확인할 수 있습니다.
+
+### 📝 통합 작업 로그 시스템 (Unified Logger)
+- **로그 파일 영속화 및 실시간 브로드캐스트**:
+  - CLI와 GUI를 아우르는 `atbclone.core.logger`를 도입하여 파일 저장(`~/.atbclone/logs/atbclone.log`) 및 실시간 스트림(`LogBroadcastHandler`)을 지원합니다.
+  - GUI 로그 뷰어에서 실시간 스트리밍, 레벨 필터링, 검색, 로그 내보내기 및 삭제를 지원합니다.
+
+### 📦 레시피 추가 및 테스트 확장
+- **인기 앱 레시피 지원**: **Claude Desktop** (`com.anthropic.claudefordesktop`), **Telegram** (`ru.keepcoder.Telegram`), **Cursor** 레시피를 추가 및 정비했습니다.
+- **테스트 스위트 확장**: 전체 299개 단위 및 GUI 통합 테스트를 통해 안정성을 검증했습니다.
+
+---
+
 ## [v0.6.0] - 2026-08-19
 
 ### 📂 사용자 지정 데이터 디렉터리 지원

@@ -6,6 +6,35 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.7.0] - 2026-08-20
+
+### 🖥️ Native BeeWare Toga Desktop-GUI-Anwendung
+- **Moderne grafische Ice-Blue-Benutzeroberfläche**:
+  - Einführung der vollwertigen nativen macOS-Desktop-Anwendung (`atbclone-gui`) auf Basis von BeeWare Toga.
+  - Flüssige Seitenleistennavigation und Karten-Rasterlayout: Klonverwaltung (`ClonesView`), App-Analyse (`ProbeView`), Rezeptverwaltung (`RecipesView`), Protokollanzeige (`LogsView`) und Einstellungen (`SettingsView`).
+  - Interaktiver visueller Assistent mit Drag-and-Drop-Unterstützung für `.app`-Pakete.
+
+### 🍏 Natives macOS Menüleisten-Tray & Fenster-Minimierung
+- **Menüleisten-Tray-Dienst (TrayService)**:
+  - Integration von Menüleistensymbolen via `NSStatusBar` und `NSStatusItem` mit Schnellmenü (Hauptfenster öffnen, Klon erstellen, Schnellstart, Einstellungen, Beenden).
+  - Option „In Menüleiste minimieren“ mit nahtloser Cocoa-Selector-Registrierung und `NSWindowDelegate`-Unterstützung.
+
+### 📖 Mehrsprachiger Release-Notes-Betrachter in der GUI
+- **Integriertes Versionshinweise-Fenster**:
+  - Neuer Release-Notes-Dialog, direkt aufrufbar über die Einstellungen.
+  - Dynamisches Dropdown-Menü für alle 9 Sprachen mit Echtzeit-Markdown-Darstellung.
+
+### 📝 Einheitliches Betriebsprotokollsystem (Unified Logger)
+- **Dateipersistenz & Live-Stream**:
+  - Einführung von `atbclone.core.logger` zur Vereinheitlichung von CLI- und GUI-Protokollen (`~/.atbclone/logs/atbclone.log`) mit Live-Broadcast-Stream (`LogBroadcastHandler`).
+  - GUI-Protokollansicht mit Live-Aktualisierung, Level-Filterung, Suche, Export und Protokollbereinigung.
+
+### 📦 Rezept-Erweiterungen & Test-Suite
+- **Neue Rezepte**: Offizielle Rezepte für **Claude Desktop** (`com.anthropic.claudefordesktop`), **Telegram** (`ru.keepcoder.Telegram`), **Cursor** und weitere Anwendungen.
+- **Umfassende Tests**: Erweiterung der Test-Suite auf 299 automatisierte Tests für GUI- und Backend-Funktionen.
+
+---
+
 ## [v0.6.0] - 2026-08-19
 
 ### 📂 Unterstützung benutzerdefinierter Datenverzeichnisse

@@ -6,6 +6,35 @@
 
 ---
 
+## [v0.7.0] - 2026-08-20
+
+### 🖥️ ネイティブ BeeWare Toga デスクトップ GUI アプリケーション
+- **洗練された Ice-Blue デスクトップインターフェース**:
+  - BeeWare Toga をベースにした macOS ネイティブデスクトップアプリ（`atbclone-gui`）を新規リリース。
+  - 流暢なサイドバーナビゲーションとカードグリッドレイアウトを採用し、クローン管理（`ClonesView`）、アプリ詳細分析（`ProbeView`）、レシピ管理（`RecipesView`）、ログビューア（`LogsView`）、全体設定（`SettingsView`）を統合。
+  - `.app` のドラッグ＆ドロップに対応した直感的なクローン作成ウィザードを搭載。
+
+### 🍏 ネイティブ macOS メニューバートレイおよび最小化機能
+- **メニューバートレイサービス (TrayService)**:
+  - `NSStatusBar` および `NSStatusItem` を使用したネイティブメニューバーアイコンを統合。クイックメニュー（メイン画面表示、クローン作成、クイック起動、設定、終了）を提供。
+  - 「トレイに最小化」設定を追加し、Cocoa Selector および `NSWindowDelegate` によるスムーズなトレイ収納・復帰を実現。
+
+### 📖 GUI リリースノート閲覧ウィンドウ
+- **内蔵 Release Notes ビューア**:
+  - 設定画面からワンクリックで開ける `ReleaseNotesWindow` を実装。
+  - 9 言語の動的切り替えドロップダウンを備え、ローカライズされた Markdown ログをリアルタイム表示。
+
+### 📝 統合操作ログシステム (Unified Logger)
+- **ファイル永続化とリアルタイムストリーミング**:
+  - CLI と GUI で共有可能な `atbclone.core.logger` を導入。ファイル保存（`~/.atbclone/logs/atbclone.log`）とブロードキャスト（`LogBroadcastHandler`）を両立。
+  - GUI ログ画面でリアルタイム更新、ログレベル絞り込み、検索、エクスポート、ログ消去をサポート。
+
+### 📦 レシピの拡充とテストスイート
+- **公式レシピの追加**: **Claude Desktop** (`com.anthropic.claudefordesktop`)、**Telegram** (`ru.keepcoder.Telegram`)、**Cursor** などの人気ツールに対応。
+- **テストの拡充**: 自動テストスイートを 299 件に拡大し、GUI 画面およびトレイ動作を網羅。
+
+---
+
 ## [v0.6.0] - 2026-08-19
 
 ### 📂 カスタムデータディレクトリのサポート

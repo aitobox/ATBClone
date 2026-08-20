@@ -6,6 +6,35 @@
 
 ---
 
+## [v0.7.0] - 2026-08-20
+
+### 🖥️ 原生 BeeWare Toga 圖形桌面客戶端
+- **全新冰藍 (Ice-Blue) 現代桌面介面**：
+  - 正式發布基於 BeeWare Toga 構建的 macOS 原生桌面客戶端 (`atbclone-gui`)。
+  - 採用流體側邊欄導覽與卡片網格佈局，內建分身管理 (`ClonesView`)、應用深度探測 (`ProbeView`)、配方管理 (`RecipesView`)、即時記錄 (`LogsView`) 與全域設定 (`SettingsView`)。
+  - 支援拖放 `.app` 的圖形化分身建立精靈，提供即時建立狀態與動畫反饋。
+
+### 🍏 原生 macOS 狀態列系統匣與最小化支援
+- **選單列系統匣服務 (TrayService)**：
+  - 深度整合原生 `NSStatusBar` 與 `NSStatusItem` 狀態列圖示，提供快捷選單（開啟主視窗、建立分身、快速啟動、偏好設定、結束）。
+  - 支援「最小化至系統匣」偏好設定，透過 Cocoa Selector 與 `NSWindowDelegate` 實現平滑的視窗隱藏與系統匣恢復。
+
+### 📖 GUI 專屬多語言更新日誌檢視器
+- **內建 Release Notes 視窗**：
+  - 全域設定介面新增「檢視更新日誌」按鈕，可獨立開啟 `ReleaseNotesWindow`。
+  - 內建 9 種語言動態切換下拉選單，即時轉譯多語言 Markdown 更新日誌。
+
+### 📝 統一操作日誌系統 (Unified Logger)
+- **檔案保存與即時廣播流**：
+  - 引入 `atbclone.core.logger`，統一 CLI 與 GUI 日志輸出，支援檔案儲存 (`~/.atbclone/logs/atbclone.log`) 與記憶體廣播流 (`LogBroadcastHandler`)。
+  - GUI 記錄檢視支援即時串流更新、等級篩選、關鍵字搜尋、日誌匯出與磁碟清理。
+
+### 📦 配方庫擴充與測試套件升級
+- **新增主流應用配方**：新增 **Claude Desktop** (`com.anthropic.claudefordesktop`)、修正 **Telegram** (`ru.keepcoder.Telegram`)、**Cursor** 等熱門工具配方。
+- **自動化測試擴充**：測試套件案例大幅擴展至 299 項，全面涵蓋 GUI 視圖、系統匣服務與核心邏輯。
+
+---
+
 ## [v0.6.0] - 2026-08-19
 
 ### 📂 自訂資料儲存目錄支援

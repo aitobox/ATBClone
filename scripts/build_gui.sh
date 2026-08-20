@@ -82,9 +82,13 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "======================================================"
-echo "  🖥️  ATBClone GUI — macOS DMG Build"
-echo "======================================================"
+# ── Proxy sanitization (avoid httpx IPv6 parsing crash) ─────────────────── #
+if [[ -n "${NO_PROXY:-}" ]]; then
+    export NO_PROXY=$(echo "${NO_PROXY}" | sed -E 's/(::1\/128|::1)//g' | tr -s ',' | sed 's/^,//;s/,$//')
+fi
+if [[ -n "${no_proxy:-}" ]]; then
+    export no_proxy=$(echo "${no_proxy}" | sed -E 's/(::1\/128|::1)//g' | tr -s ',' | sed 's/^,//;s/,$//')
+fi
 
 # ── 1. Locate Python ──────────────────────────────────────────────────────── #
 if [[ -n "${PYTHON:-}" ]]; then
@@ -170,22 +174,44 @@ else
 fi
 
 # ── 6. briefcase create ───────────────────────────────────────────────────── #
-echo ""
-echo "==> [1/3] briefcase create macOS ..."
-PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase create macOS
+APP_DIR="build/atbclone/macos/app"
+PY_FRAMEWORK="${APP_DIR}/ATBClone.app/Contents/Frameworks/Python.framework"
+if [[ ! -d "${APP_DIR}" ]] || [[ ! -d "${PY_FRAMEWORK}" ]]; then
+    if [[ -d "${APP_DIR}" && ! -d "${PY_FRAMEWORK}" ]]; then
+        echo "[!] Incomplete scaffolding detected (Python.framework missing). Recreating..."
+        rm -rf "${APP_DIR}"
+    fi
+    echo ""
+    echo "==> [1/3] briefcase create macOS ..."
+    PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase create macOS
+else
+    echo ""
+    echo "==> [1/3] macOS app scaffolding already present (skipping create)."
+fi
 
 # ── 7. briefcase build ────────────────────────────────────────────────────── #
 echo ""
 echo "==> [2/3] briefcase build macOS ..."
-PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase build macOS
+PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase build macOS -u
 
-# Verify application icon in built app bundle
+# Verify app bundle integrity
 APP_BUNDLE=$(find build/ -name "ATBClone.app" -type d 2>/dev/null | head -1 || true)
-if [[ -n "${APP_BUNDLE}" && -d "${APP_BUNDLE}" ]]; then
-    if [[ -f "${APP_BUNDLE}/Contents/Resources/ATBClone.icns" || -f "${APP_BUNDLE}/Contents/Resources/logo.icns" || -f "${APP_BUNDLE}/Contents/Resources/icon.icns" ]]; then
-        echo "[+] App bundle icon verified in: ${APP_BUNDLE}/Contents/Resources/"
-    fi
+if [[ -z "${APP_BUNDLE}" || ! -d "${APP_BUNDLE}" ]]; then
+    echo "[-] Error: ATBClone.app bundle not found in build directory." >&2
+    exit 1
 fi
+if [[ ! -d "${APP_BUNDLE}/Contents/Frameworks/Python.framework" ]]; then
+    echo "[-] Error: Python.framework is missing from ${APP_BUNDLE}/Contents/Frameworks/." >&2
+    exit 1
+fi
+if [[ ! -f "${APP_BUNDLE}/Contents/Resources/app/atbclone/__main__.py" ]]; then
+    echo "[-] Error: __main__.py entry point is missing from ${APP_BUNDLE}/Contents/Resources/app/atbclone/." >&2
+    exit 1
+fi
+if [[ -f "${APP_BUNDLE}/Contents/Resources/ATBClone.icns" || -f "${APP_BUNDLE}/Contents/Resources/logo.icns" || -f "${APP_BUNDLE}/Contents/Resources/icon.icns" ]]; then
+    echo "[+] App bundle icon verified in: ${APP_BUNDLE}/Contents/Resources/"
+fi
+echo "[+] Bundle integrity verified: Python.framework & entrypoint present."
 
 # ── 8. briefcase package  (produces .dmg) ────────────────────────────────── #
 echo ""
@@ -222,6 +248,11 @@ if [[ -z "${DMG_PATH}" || ! -f "${DMG_PATH}" ]]; then
 fi
 
 DMG_SIZE=$(du -sh "${DMG_PATH}" | cut -f1)
+DMG_SIZE_BYTES=$(stat -f%z "${DMG_PATH}" 2>/dev/null || wc -c < "${DMG_PATH}")
+if [[ "${DMG_SIZE_BYTES}" -lt 10485760 ]]; then
+    echo "[-] Error: DMG is suspiciously small (${DMG_SIZE}), likely missing Python runtime framework." >&2
+    exit 1
+fi
 echo ""
 echo "======================================================"
 echo "  DMG ready: ${DMG_PATH}  (${DMG_SIZE})"

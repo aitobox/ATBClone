@@ -30,3 +30,20 @@ def test_codesign_wrapper_exists_and_retryable_logic():
     assert mod.BACKOFF_DELAYS == [2, 4, 8, 16, 32, 60]
 
 
+def test_atbclone_package_main_module_exists():
+    root = Path(__file__).resolve().parent.parent.parent
+    main_py = root / "src" / "atbclone" / "__main__.py"
+    assert main_py.exists(), "src/atbclone/__main__.py must exist for Briefcase and python -m atbclone"
+    
+    app_py = root / "src" / "atbclone" / "app.py"
+    assert app_py.exists(), "src/atbclone/app.py must exist"
+
+
+def test_atbclone_module_runnable_as_main():
+    import runpy
+    details = runpy._get_module_details("atbclone")
+    assert details[0] == "atbclone.__main__"
+    assert details[1].origin.endswith("__main__.py")
+
+
+

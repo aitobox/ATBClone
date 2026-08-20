@@ -157,3 +157,12 @@ def test_build_gui_references_icon():
     root = Path(__file__).parent.parent
     content = (root / "scripts" / "build_gui.sh").read_text(encoding="utf-8")
     assert "logo.icns" in content or "ATBClone.icns" in content or "icon" in content
+
+
+def test_build_gui_bundle_integrity_checks():
+    root = Path(__file__).parent.parent
+    content = (root / "scripts" / "build_gui.sh").read_text(encoding="utf-8")
+    assert "Python.framework" in content
+    assert "__main__.py" in content
+    assert "briefcase build macOS -u" in content
+

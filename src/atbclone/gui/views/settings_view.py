@@ -11,7 +11,13 @@ from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER
 
 from atbclone import __version__
-from atbclone.core.config import DEFAULT_ATB_DIR, DEFAULT_APPS_DIR, DEFAULT_DATA_DIR
+from atbclone.core.config import (
+    DEFAULT_ATB_DIR,
+    DEFAULT_APPS_DIR,
+    DEFAULT_DATA_DIR,
+    get_config_value,
+    set_config_value,
+)
 from atbclone.core.i18n import (
     t,
     SUPPORTED_LANGUAGES_MAP,
@@ -118,7 +124,22 @@ class SettingsView(toga.Box):
         card_proxy.add(row_proxy)
         content_box.add(card_proxy)
 
-        # ── Card 5: System Info ────────────────────────────────────────────── #
+        # ── Card 5: Window & Tray Preferences ──────────────────────────────── #
+        card_tray = toga.Box(style=Pack(direction=COLUMN, margin_bottom=15, margin=10, background_color=Theme.BG_CARD))
+        card_tray.add(toga.Label(t("settings_card_tray"), style=Pack(font_weight="bold", font_size=14, margin_bottom=8, color=Theme.TEXT_PRIMARY)))
+
+        current_tray_cfg = bool(get_config_value("minimize_to_tray", False))
+        self.switch_minimize_to_tray = toga.Switch(
+            t("settings_switch_minimize_to_tray"),
+            value=current_tray_cfg,
+            on_change=self._on_minimize_to_tray_changed,
+            style=Pack(margin_bottom=4),
+        )
+        card_tray.add(self.switch_minimize_to_tray)
+        card_tray.add(toga.Label(t("settings_hint_minimize_to_tray"), style=Pack(font_size=11, color=Theme.TEXT_MUTED)))
+        content_box.add(card_tray)
+
+        # ── Card 6: System Info ────────────────────────────────────────────── #
         card_info = toga.Box(style=Pack(direction=COLUMN, margin=10, background_color=Theme.BG_CARD))
         card_info.add(toga.Label(t("settings_card_about"), style=Pack(font_weight="bold", font_size=14, margin_bottom=6, color=Theme.TEXT_PRIMARY)))
         card_info.add(toga.Label(t("settings_label_version", version=__version__), style=Pack(font_size=12, color=Theme.TEXT_MUTED, margin_bottom=2)))
@@ -160,6 +181,16 @@ class SettingsView(toga.Box):
         if self.app_instance and hasattr(self.app_instance, "retranslate_ui"):
             self.app_instance.retranslate_ui()
 
+    def _on_minimize_to_tray_changed(self, widget: toga.Switch) -> None:
+        val = bool(widget.value)
+        set_config_value("minimize_to_tray", val)
+        logger.info(f"Minimize to tray preference changed to {val}")
+        if self.app_instance and hasattr(self.app_instance, "tray_service") and self.app_instance.tray_service:
+            if val:
+                self.app_instance.tray_service.enable()
+            else:
+                self.app_instance.tray_service.disable()
+
     def on_open_data_dir_in_finder(self, widget: toga.Button):
         """Open default base directory ~/.atbclone in macOS Finder."""
         base_dir = Path(self.input_base_dir.value.strip() or str(DEFAULT_ATB_DIR))
@@ -183,10 +214,13 @@ class SettingsView(toga.Box):
     async def on_save_settings(self, widget: toga.Button):
         base_dir = self.input_base_dir.value.strip()
         proxy_enabled = self.switch_proxy.value
-        logger.info(f"Settings saved: base_dir='{base_dir}', proxy_enabled={proxy_enabled}")
+        minimize_to_tray = self.switch_minimize_to_tray.value
+        set_config_value("minimize_to_tray", bool(minimize_to_tray))
+        logger.info(f"Settings saved: base_dir='{base_dir}', proxy_enabled={proxy_enabled}, minimize_to_tray={minimize_to_tray}")
         if self.app_instance and hasattr(self.app_instance, "main_window"):
             await self.app_instance.main_window.info_dialog(
                 t("dialog_settings_saved_title"),
                 t("dialog_settings_saved_msg"),
             )
+
 

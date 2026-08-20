@@ -53,3 +53,31 @@ def test_settings_view_open_finder_and_save():
             assert args[0] == "open"
 
     asyncio.run(_test())
+
+
+def test_settings_minimize_to_tray_switch(tmp_path, monkeypatch):
+    from atbclone.core import config
+    from atbclone.core.config import set_config_value, get_config_value
+
+    test_cfg_file = tmp_path / "config.json"
+    monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", test_cfg_file)
+    monkeypatch.setattr(config, "DEFAULT_ATB_DIR", tmp_path)
+
+    set_config_value("minimize_to_tray", True)
+    mock_app = MagicMock()
+    mock_app.tray_service = MagicMock()
+    view = SettingsView(app=mock_app)
+    assert hasattr(view, "switch_minimize_to_tray")
+    assert view.switch_minimize_to_tray.value is True
+
+    # Test toggling switch to False disables tray service and updates config
+    view.switch_minimize_to_tray.value = False
+    assert get_config_value("minimize_to_tray") is False
+    mock_app.tray_service.disable.assert_called_once()
+
+    # Test toggling switch to True enables tray service and updates config
+    view.switch_minimize_to_tray.value = True
+    assert get_config_value("minimize_to_tray") is True
+    mock_app.tray_service.enable.assert_called_once()
+
+

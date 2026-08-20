@@ -12,8 +12,11 @@ from toga.style.pack import COLUMN, ROW, CENTER
 
 from atbclone import __version__
 from atbclone.core.config import DEFAULT_ATB_DIR, DEFAULT_APPS_DIR, DEFAULT_DATA_DIR
+from atbclone.core.logger import get_logger
 from atbclone.gui.components.top_bar import TopHeaderBar
 from atbclone.gui.theme import Theme
+
+logger = get_logger("gui.settings")
 
 
 class SettingsView(toga.Box):
@@ -95,6 +98,7 @@ class SettingsView(toga.Box):
     def on_open_data_dir_in_finder(self, widget: toga.Button):
         """Open default base directory ~/.atbclone in macOS Finder."""
         base_dir = Path(self.input_base_dir.value.strip() or str(DEFAULT_ATB_DIR))
+        logger.info(f"Opening data directory in Finder: '{base_dir}'")
         base_dir.mkdir(parents=True, exist_ok=True)
         loop = asyncio.get_running_loop()
         loop.run_in_executor(None, lambda: subprocess.Popen(["open", str(base_dir)]))
@@ -112,5 +116,8 @@ class SettingsView(toga.Box):
                 pass
 
     async def on_save_settings(self, widget: toga.Button):
+        base_dir = self.input_base_dir.value.strip()
+        proxy_enabled = self.switch_proxy.value
+        logger.info(f"Settings saved: base_dir='{base_dir}', proxy_enabled={proxy_enabled}")
         if self.app_instance and hasattr(self.app_instance, "main_window"):
             await self.app_instance.main_window.info_dialog("Settings Saved", "Preferences have been updated successfully.")

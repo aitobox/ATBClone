@@ -8,6 +8,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER
 
+from atbclone.core.logger import get_logger
 from atbclone.core.state import CloneRecord
 from atbclone.gui.services.clone_service import CloneService
 from atbclone.gui.components.top_bar import TopHeaderBar
@@ -15,6 +16,8 @@ from atbclone.gui.components.clone_card import CloneCard
 from atbclone.gui.windows.clone_detail import CloneDetailWindow
 from atbclone.gui.windows.clone_edit import CloneEditWindow
 from atbclone.gui.theme import Theme
+
+logger = get_logger("gui.clone_list")
 
 
 class CloneListView(toga.Box):
@@ -230,7 +233,9 @@ class CloneListView(toga.Box):
         if not record:
             return
         dest_path = Path(record.dest_path)
+        logger.info(f"Launching clone '{record.clone_name}' at '{dest_path}'")
         if not dest_path.exists():
+            logger.error(f"Cannot launch clone '{record.clone_name}': file does not exist at '{dest_path}'")
             if self.app_instance and hasattr(self.app_instance, "main_window"):
                 await self.app_instance.main_window.error_dialog(
                     "Launch Error",
@@ -241,7 +246,9 @@ class CloneListView(toga.Box):
         loop = asyncio.get_running_loop()
         try:
             await loop.run_in_executor(None, lambda: subprocess.Popen(["open", str(dest_path)]))
+            logger.info(f"Successfully triggered open for clone '{record.clone_name}'")
         except Exception as e:
+            logger.error(f"Failed to launch clone '{record.clone_name}': {e}")
             if self.app_instance and hasattr(self.app_instance, "main_window"):
                 await self.app_instance.main_window.error_dialog("Launch Error", f"Failed to open app: {e}")
 

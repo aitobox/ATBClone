@@ -1,10 +1,13 @@
-"""Doctor Service for environment diagnostic checks."""
-
 import asyncio
 from dataclasses import dataclass
+from pathlib import Path
 import shutil
 import subprocess
 import sys
+
+from atbclone.core.logger import get_logger
+
+logger = get_logger("gui.doctor_service")
 
 
 @dataclass
@@ -18,6 +21,7 @@ class DoctorCheckItem:
 class DoctorService:
     async def check_environment(self) -> list[DoctorCheckItem]:
         loop = asyncio.get_running_loop()
+        logger.info("Running GUI environment diagnostic checks")
 
         def _checks():
             items = []
@@ -86,7 +90,9 @@ class DoctorService:
                     hint="Upgrade your Python installation",
                 ))
 
+            passed_cnt = sum(1 for i in items if i.passed)
+            total_cnt = len(items)
+            logger.info(f"Environment diagnostic checks finished: {passed_cnt}/{total_cnt} passed")
             return items
 
-        from pathlib import Path
         return await loop.run_in_executor(None, _checks)

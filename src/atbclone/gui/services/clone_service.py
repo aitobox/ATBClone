@@ -10,9 +10,12 @@ from atbclone.core.app_inspector import AppInspector
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.config import DEFAULT_DATA_DIR, DEFAULT_STATE_FILE
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
+from atbclone.core.logger import get_logger
 from atbclone.core.state import CloneRecord, StateManager
 from atbclone.executor.runner import Runner
 from atbclone.recipes.loader import RecipeLoader
+
+logger = get_logger("gui.clone_service")
 
 
 class CloneService:
@@ -33,6 +36,7 @@ class CloneService:
 
         def _execute():
             dest_path = task.dest_path
+            logger.info(f"Starting clone creation: name='{task.clone_name}', source='{task.source.path}', strategy='{task.recipe.strategy}', dest='{dest_path}'")
             try:
                 dest_path.parent.mkdir(parents=True, exist_ok=True)
                 task.data_dir.mkdir(parents=True, exist_ok=True)
@@ -40,26 +44,31 @@ class CloneService:
                 pass
 
             needs_admin = not dest_path.is_relative_to(Path.home())
-            if task.recipe.strategy == "soft_clone":
-                SoftCloneEngine.execute(task, needs_admin)
-            else:
-                HardCloneEngine.execute(task, needs_admin)
+            try:
+                if task.recipe.strategy == "soft_clone":
+                    SoftCloneEngine.execute(task, needs_admin)
+                else:
+                    HardCloneEngine.execute(task, needs_admin)
 
-            record = CloneRecord(
-                clone_name=task.clone_name,
-                source_app=task.source.app_name,
-                source_path=str(task.source.path),
-                bundle_id=task.source.bundle_id,
-                strategy=task.recipe.strategy,
-                dest_path=str(task.dest_path),
-                data_dir=str(task.data_dir),
-                created_at=datetime.now(timezone.utc).isoformat(),
-                proxy_enabled=task.recipe.proxy.enabled,
-                proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",
-                new_bundle_id=task.new_bundle_id,
-            )
-            self.state_manager.add(record)
-            return record
+                record = CloneRecord(
+                    clone_name=task.clone_name,
+                    source_app=task.source.app_name,
+                    source_path=str(task.source.path),
+                    bundle_id=task.source.bundle_id,
+                    strategy=task.recipe.strategy,
+                    dest_path=str(task.dest_path),
+                    data_dir=str(task.data_dir),
+                    created_at=datetime.now(timezone.utc).isoformat(),
+                    proxy_enabled=task.recipe.proxy.enabled,
+                    proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",
+                    new_bundle_id=task.new_bundle_id,
+                )
+                self.state_manager.add(record)
+                logger.info(f"Clone '{task.clone_name}' created successfully at '{dest_path}'")
+                return record
+            except Exception as e:
+                logger.error(f"Failed to create clone '{task.clone_name}': {e}")
+                raise
 
         return await loop.run_in_executor(None, _execute)
 
@@ -67,10 +76,13 @@ class CloneService:
         loop = asyncio.get_running_loop()
 
         def _execute():
+            logger.info(f"Updating clone '{clone_name}'")
             record = self.state_manager.get(clone_name)
             if record is None:
+                logger.error(f"Clone '{clone_name}' not found for update")
                 raise ValueError(f"Clone {clone_name} not found")
             if not Path(record.source_path).exists():
+                logger.error(f"Source app not found for clone '{clone_name}': {record.source_path}")
                 raise FileNotFoundError(f"Source app not found: {record.source_path}")
 
             dest_path = Path(record.dest_path)
@@ -107,27 +119,35 @@ class CloneService:
                 if parsed.password:
                     task.recipe.proxy.password = parsed.password
 
-            if record.strategy == "soft_clone":
-                SoftCloneEngine.execute(task, needs_admin)
-            else:
-                HardCloneEngine.execute(task, needs_admin)
+            try:
+                if record.strategy == "soft_clone":
+                    SoftCloneEngine.execute(task, needs_admin)
+                else:
+                    HardCloneEngine.execute(task, needs_admin)
 
-            record.created_at = datetime.now(timezone.utc).isoformat()
-            self.state_manager.add(record)
-            return record
+                record.created_at = datetime.now(timezone.utc).isoformat()
+                self.state_manager.add(record)
+                logger.info(f"Clone '{clone_name}' updated successfully")
+                return record
+            except Exception as e:
+                logger.error(f"Failed to update clone '{clone_name}': {e}")
+                raise
 
         return await loop.run_in_executor(None, _execute)
 
     async def update_clone_record(self, record: CloneRecord) -> None:
         loop = asyncio.get_running_loop()
+        logger.info(f"Updating record for clone '{record.clone_name}'")
         await loop.run_in_executor(None, lambda: self.state_manager.add(record))
 
     async def remove_clone(self, clone_name: str, with_data: bool = False) -> bool:
         loop = asyncio.get_running_loop()
 
         def _execute():
+            logger.info(f"Removing clone '{clone_name}' (with_data={with_data})")
             record = self.state_manager.get(clone_name)
             if record is None:
+                logger.warning(f"Clone '{clone_name}' not found for removal")
                 return False
 
             needs_admin = (
@@ -144,7 +164,14 @@ class CloneService:
                 lines.append(f"rm -rf {shlex.quote(record.data_dir)}")
 
             script = "\n".join(lines) + "\n"
-            Runner.run(script, needs_admin)
-            return self.state_manager.remove(clone_name)
+            try:
+                Runner.run(script, needs_admin)
+            except Exception as e:
+                logger.error(f"Failed to remove clone files for '{clone_name}': {e}")
+                raise
+            result = self.state_manager.remove(clone_name)
+            if result:
+                logger.info(f"Successfully removed clone '{clone_name}'")
+            return result
 
         return await loop.run_in_executor(None, _execute)

@@ -5,8 +5,11 @@ from pathlib import Path
 import yaml
 
 from atbclone.core.config import DEFAULT_RECIPES_DIR
+from atbclone.core.logger import get_logger
 from atbclone.recipes.loader import RecipeLoader
 from atbclone.recipes.models import Recipe
+
+logger = get_logger("gui.recipe_service")
 
 
 class RecipeService:
@@ -78,6 +81,7 @@ class RecipeService:
             data = recipe.model_dump()
             with open(target_path, "w", encoding="utf-8") as f:
                 yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
+            logger.info(f"Saved custom recipe for '{recipe.app_name}' (bundle='{recipe.bundle_id}') at '{target_path}'")
             return target_path
 
         return await loop.run_in_executor(None, _save)
@@ -111,6 +115,7 @@ class RecipeService:
         data["bundle_id"] = new_bundle_id
         new_recipe = Recipe(**data)
 
+        logger.info(f"Duplicating recipe '{original.app_name}' -> '{new_name}' (bundle='{new_bundle_id}')")
         await self.save_custom_recipe(new_recipe)
         return new_recipe
 
@@ -121,7 +126,9 @@ class RecipeService:
             target_path = self.custom_recipes_dir / f"{bundle_id}.yaml"
             if target_path.is_file():
                 target_path.unlink()
+                logger.info(f"Deleted custom recipe for bundle='{bundle_id}'")
                 return True
+            logger.warning(f"Custom recipe for bundle='{bundle_id}' not found for deletion")
             return False
 
         return await loop.run_in_executor(None, _delete)

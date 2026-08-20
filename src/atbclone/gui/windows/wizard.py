@@ -10,11 +10,14 @@ from toga.style.pack import COLUMN, ROW
 from atbclone.core.app_inspector import AppInspector
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.config import DEFAULT_APPS_DIR, DEFAULT_DATA_DIR
+from atbclone.core.logger import get_logger
 from atbclone.core.models import AppInfo
 from atbclone.gui.services.clone_service import CloneService
 from atbclone.gui.services.probe_service import ProbeService
 from atbclone.recipes.loader import RecipeLoader
 from atbclone.recipes.models import Recipe, ProxyConfig, supports_data_dir
+
+logger = get_logger("gui.wizard")
 
 
 class WizardWindow(toga.Window):
@@ -362,6 +365,8 @@ class WizardWindow(toga.Window):
         new_bundle_id = AppInspector.generate_bundle_id(self.app_info.bundle_id, 1)
         display_name = self.input_display_name.value.strip() or None
 
+        logger.info(f"Wizard executing clone: name='{clone_name}', source='{self.app_info.path}', dest='{dest_path}', data_dir='{data_dir}'")
+
         # Build recipe copy with proxy
         port = 1080
         try:
@@ -390,6 +395,7 @@ class WizardWindow(toga.Window):
             await self.clone_service.create_clone(task)
             self.progress_bar.stop()
             self.label_status.text = f"🎉 Successfully created clone at {dest_path}!"
+            logger.info(f"Wizard finished successfully for clone '{clone_name}'")
             if self.on_complete_callback:
                 await self.on_complete_callback()
             await self.info_dialog("Success", f"Clone created successfully!\n{dest_path}")
@@ -397,6 +403,7 @@ class WizardWindow(toga.Window):
         except Exception as e:
             self.progress_bar.stop()
             self.label_status.text = f"❌ Clone failed: {e}"
+            logger.error(f"Wizard failed to create clone '{clone_name}': {e}")
             await self.error_dialog("Clone Error", str(e))
             self.btn_next.enabled = True
             self.btn_prev.enabled = True

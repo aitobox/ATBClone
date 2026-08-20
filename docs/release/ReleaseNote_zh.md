@@ -42,7 +42,7 @@
 ### 🚀 Chromium 浏览器硬克隆与启动参数注入
 - **硬克隆引擎支持 `launch_args` 注入**：
   - 增强 `HardCloneEngine`，使其在环境变量隔离之外，同时支持向二进制启动器动态注入 `--user-data-dir={{ATB_DATA_DIR}}` 等启动参数。
-  - 将 **Google Chrome**、**Microsoft Edge**、**Arc Browser** 预置配方升级为 `hard_clone` 策略，实现完整的 App Bundle 独立复制与 Dock/Finder 专属身份。
+  - 将 **Google Chrome**、**Microsoft Edge**、**Arc Browser** 预置规则升级为 `hard_clone` 策略，实现完整的 App Bundle 独立复制与 Dock/Finder 专属身份。
 - **CLI 支持策略覆盖**：
   - `atbclone clone` 命令行新增 `--strategy` 参数（可选 `hard_clone` 或 `soft_clone`），允许用户手动覆盖预设策略。
 
@@ -79,7 +79,7 @@
   - 支持通过环境变量 `ATBCLONE_LANG`（如 `ATBCLONE_LANG=zh` 或 `ATBCLONE_LANG=en`）强制指定运行语言。
 - **多语言文档体系**：
   - 默认采用英文版 `Readme.md`，中文完整文档重命名为 `Readme_zh.md`。
-  - 发布涵盖 9 种语言的 Release Notes：英文、简体中文、繁体中文、日语、韩语、德语、法语、俄语、西班牙语。
+  - 发布涵盖 9 种语言的 Release Notes：英文、简体中文、繁體中文、日语、韩语、德语、法语、俄语、西班牙语。
 
 ### 🛠️ CLI 与构建打包优化
 - **向导国际化全面接入**：`atbclone wizard` 交互提示、自定义显示名称、自定义 `.icns` 图标选择及代理设置全部支持双语。
@@ -98,8 +98,8 @@
   - 交互式配置专属网络代理（HTTP / SOCKS5），支持账号密码鉴权。
 - **智能深度应用探测器 (`atbclone probe`)**：
   - 自动分析任意 macOS 应用的 Mach-O 架构（arm64、x86_64、Universal）、开发框架（Electron、Flutter、Chromium、Qt、Cocoa）及沙盒权限（`com.apple.security.app-sandbox`）。
-  - 为未预置配方的应用动态推荐最佳分身策略（`hard_clone` / `soft_clone`）并生成标准 Recipe YAML。
-  - `atbclone clone` 支持自动触发探测引擎，无需手动指定配方即可一键分身未知应用。
+  - 为未预置规则的应用动态推荐最佳分身策略（`hard_clone` / `soft_clone`）并生成标准 Recipe YAML。
+  - `atbclone clone` 支持自动触发探测引擎，无需手动指定分身规则即可一键分身未知应用。
 - **独立二进制打包构建**：
   - 增加 `scripts/build_cli.sh` 构建脚本，基于 Nuitka 编译零外部依赖的 macOS 原生 arm64 单文件可执行文件（`dist/ATBCloneCli`）。
 
@@ -115,7 +115,7 @@
 - **双引擎克隆架构**：
   - **硬克隆引擎 (Hard Clone)**：完整复制 App Bundle，修改 `Info.plist`，劫持二进制启动脚本注入独立 `HOME` / `TMPDIR`，按需解除沙盒，重新执行 ad-hoc 签名。
   - **软克隆引擎 (Soft Clone)**：针对 Chromium 浏览器和现代编辑器生成轻量级启动器，注入独立 `--user-data-dir` 与代理环境变量。
-- **18+ 款主流应用预置配方**：
+- **18+ 款主流应用预置分身规则**：
   - 即时通讯：微信 (WeChat)、QQ、Telegram、LINE、Slack、Discord、Skype。
   - AI 客户端：ChatGPT (Codex)、Gemini、Antigravity、Antigravity IDE。
   - 浏览器与开发工具：Google Chrome、Microsoft Edge、Firefox、Arc、Cursor、VS Code、Zed。
@@ -124,5 +124,5 @@
   - `list`：Rich 表格查看已创建分身、策略类型、创建时间及代理状态。
   - `update`：主应用升级后一键同步分身，保留全部聊天记录与配置数据。
   - `remove`：安全卸载分身，支持可选清理数据目录。
-  - `recipe`：查看内置配方列表及本地自定义配方覆盖。
+  - `recipe`：查看内置规则列表及本地自定义规则覆盖。
   - `doctor`：自动化环境自检（检查 `codesign`、`xcode-select`、`PlistBuddy` 等工具链）。

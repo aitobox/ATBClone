@@ -42,7 +42,7 @@
 ### 🚀 Chromium 瀏覽器硬分身與啟動參數注入
 - **硬分身引擎支援 `launch_args` 注入**：
   - 增強 `HardCloneEngine`，使其在環境變數隔離之外，同時支援向二進位啟動器動態注入 `--user-data-dir={{ATB_DATA_DIR}}` 等啟動參數。
-  - 將 **Google Chrome**、**Microsoft Edge**、**Arc Browser** 預設配方升級為 `hard_clone` 策略，實現完整的 App Bundle 獨立複製與 Dock/Finder 專屬識別。
+  - 將 **Google Chrome**、**Microsoft Edge**、**Arc Browser** 預設規則升級為 `hard_clone` 策略，實現完整的 App Bundle 獨立複製與 Dock/Finder 專屬識別。
 - **CLI 支援策略覆寫**：
   - `atbclone clone` 命令列新增 `--strategy` 參數（可選 `hard_clone` 或 `soft_clone`），允許使用者手動覆寫預設策略。
 
@@ -98,8 +98,8 @@
   - 互動式設定專屬網路代理（HTTP / SOCKS5），支援帳號密碼鑑權。
 - **智慧深度應用程式探測器 (`atbclone probe`)**：
   - 自動分析任意 macOS 應用程式的 Mach-O 架構（arm64、x86_64、Universal）、開發框架（Electron、Flutter、Chromium、Qt、Cocoa）及沙盒權限（`com.apple.security.app-sandbox`）。
-  - 為未預設配方的應用程式動態推薦最佳分身策略（`hard_clone` / `soft_clone`）並產生標準 Recipe YAML。
-  - `atbclone clone` 支援自動觸發探測引擎，無須手動指定配方即可一鍵分身未知應用程式。
+  - 為未預設規則的應用程式動態推薦最佳分身策略（`hard_clone` / `soft_clone`）並產生標準 Recipe YAML。
+  - `atbclone clone` 支援自動觸發探測引擎，無須手動指定分身規則即可一鍵分身未知應用程式。
 - **獨立二進位檔打包建置**：
   - 新增 `scripts/build_cli.sh` 建置腳本，基於 Nuitka 編譯零外部依賴的 macOS 原生 arm64 單一執行檔（`dist/ATBCloneCli`）。
 
@@ -115,7 +115,7 @@
 - **雙引擎分身架構**：
   - **硬分身引擎 (Hard Clone)**：完整複製 App Bundle，修改 `Info.plist`，劫持二進位啟動腳本注入獨立 `HOME` / `TMPDIR`，依需求解除沙盒，重新執行 ad-hoc 簽署。
   - **軟分身引擎 (Soft Clone)**：針對 Chromium 瀏覽器與現代編輯器產生輕量化啟動器，注入獨立 `--user-data-dir` 與代理環境變數。
-- **18+ 款主流應用程式預設配方**：
+- **18+ 款主流應用程式預設分身規則**：
   - 即時通訊：微信 (WeChat)、QQ、Telegram、LINE、Slack、Discord、Skype。
   - AI 客戶端：ChatGPT (Codex)、Gemini、Antigravity、Antigravity IDE。
   - 瀏覽器與開發工具：Google Chrome、Microsoft Edge、Firefox、Arc、Cursor、VS Code、Zed。
@@ -124,5 +124,5 @@
   - `list`：Rich 表格檢視已建立分身、策略類型、建立時間及代理狀態。
   - `update`：主應用程式升級後一鍵同步分身，保留全部聊天記錄與設定資料。
   - `remove`：安全移除分身，支援可選清理資料目錄。
-  - `recipe`：檢視內建配方列表及本機自訂配方覆寫。
+  - `recipe`：檢視內建規則列表及本機自訂規則覆寫。
   - `doctor`：自動化環境自我檢查（檢查 `codesign`、`xcode-select`、`PlistBuddy` 等工具鏈）。

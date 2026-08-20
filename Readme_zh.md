@@ -2,7 +2,7 @@
 
 # ATBClone (macOS 应用多开引擎)
 
-> 🚀 **ATBClone** 是一个专为 macOS 设计的现代化应用程序多开（Multi-Instancing）与分身管理引擎。支持独立数据隔离、独立网络代理（HTTP / SOCKS5）、自动化配方匹配、重签名与沙盒解除。
+> 🚀 **ATBClone** 是一个专为 macOS 设计的现代化应用程序多开（Multi-Instancing）与分身管理引擎。支持独立数据隔离、独立网络代理（HTTP / SOCKS5）、自动化规则匹配、重签名与沙盒解除。
 
 ---
 
@@ -11,9 +11,9 @@
 - 📦 **双引擎克隆机制**：
   - **硬克隆 (Hard Clone)**：适用于原生与社交应用（微信、QQ、Telegram、AI 客户端等）。完整复制 App Bundle，修改 `Info.plist` 与 Bundle Identifier，通过二进制劫持脚本注入独立的 `HOME` / `TMPDIR` 数据目录，可选解除 Sandbox 限制并执行 Ad-hoc 重签名。
   - **软克隆 (Soft Clone)**：适用于 Chromium 系列应用及现代编辑器（Chrome、Edge、Arc、Cursor、VS Code 等）。创建轻量级 Wrapper 包，自动注入独立的 `--user-data-dir` / `--profile` 启动参数与代理环境变量。
-- 🔍 **智能应用探测 (App Prober)**：遇到未预设配方的任意 macOS 应用程序时，自动分析其 Mach-O 架构、Frameworks 与代码签名沙盒权限，动态决定软/硬克隆策略并提取推荐配方。
+- 🔍 **智能应用探测 (App Prober)**：遇到未预设规则的任意 macOS 应用程序时，自动分析其 Mach-O 架构、Frameworks 与代码签名沙盒权限，动态决定软/硬克隆策略并提取推荐规则。
 - 🌐 **独立网络代理**：支持为每个分身单独指定 HTTP 或 SOCKS5 代理（支持认证），分身流量与系统及原应用互不干扰。
-- 📑 **规则引擎 (Recipe Engine)**：内置 18+ 常用应用与 AI Agent 工具配方，支持通过 `~/.atbclone/recipes/` 本地优先级覆盖自定义规则。
+- 📑 **规则引擎 (Recipe Engine)**：内置 18+ 常用应用与 AI Agent 工具分身规则，支持通过 `~/.atbclone/recipes/` 本地优先级覆盖自定义规则。
 - 🪄 **交互式向导 (Wizard)**：命令行交互式一步步引导，支持终端路径拖拽、自动识别并编号、自定义数据目录配置、即时配置代理。
 - 🔄 **生命周期管理**：提供分身列表查看（`list`）、原版本升级后一键重克隆且保留聊天数据（`update`）、安全删除分身（`remove` 支持交互式询问清理数据目录及 `--with-data` / `--keep-data` 参数控制）。
 - 🛡️ **安全与提权设计**：写入 `~/Applications` 无需管理员权限；写入 `/Applications` 自动使用 macOS 原生单次 `osascript` 授权；全流程使用原子脚本与 `shlex.quote` 路径防护。
@@ -21,7 +21,7 @@
 
 ---
 
-## 📋 内置配方支持 (Built-in Recipes)
+## 📋 内置分身规则 (Built-in Recipes)
 
 | 类别 | 应用名称 | Bundle Identifier | 克隆策略 | 沙盒解除 (Strip Sandbox) |
 | :--- | :--- | :--- | :--- | :---: |
@@ -84,7 +84,7 @@ atbclone doctor
 ```bash
 atbclone wizard
 ```
-*流程包括：拖入 `.app` 路径 ➔ 自动匹配配方 ➔ 设置分身名称 ➔ 设置显示名称与图标 ➔ 选择输出路径 ➔ 自定义数据目录（若支持） ➔ 可选配置代理 ➔ 确认生成。*
+*流程包括：拖入 `.app` 路径 ➔ 自动匹配分身规则 ➔ 设置分身名称 ➔ 设置显示名称与图标 ➔ 选择输出路径 ➔ 自定义数据目录（若支持） ➔ 可选配置代理 ➔ 确认生成。*
 
 ---
 
@@ -107,8 +107,8 @@ atbclone clone /Applications/Chrome.app --name "Chrome-Custom" --data-dir /Volum
 ```
 *注：系统会自动探测应用是否支持数据隔离；若目标应用无数据隔离规则（如 Zed），将自动拦截并提示错误。*
 
-#### 未预设配方应用克隆（自动触发深度探测）
-克隆未内置规则的应用时，ATBClone 会自动触发 App Prober 探测架构与沙盒权限，动态生成最佳配方后执行克隆：
+#### 未预设规则应用克隆（自动触发深度探测）
+克隆未内置规则的应用时，ATBClone 会自动触发 App Prober 探测架构与沙盒权限，动态生成最佳规则后执行克隆：
 ```bash
 atbclone clone /Applications/ATBCmder.app --name "ATBCmder-Work"
 ```
@@ -183,19 +183,19 @@ atbclone remove 微信2 --keep-data
 
 ---
 
-### 6. 配方管理与自定义扩展 (`recipe`)
+### 6. 分身规则管理与自定义扩展 (`recipe`)
 
-#### 列出所有内置应用配方
+#### 列出所有内置应用分身规则
 ```bash
 atbclone recipe list
 ```
 
-#### 查看特定应用的配方 YAML
+#### 查看特定应用的分身规则 YAML
 ```bash
 atbclone recipe show com.tencent.xinWeChat
 ```
 
-#### 自定义与覆盖配方
+#### 自定义与覆盖分身规则
 在 `~/.atbclone/recipes/<bundle_id>.yaml` 放置 YAML 规则文件即可自动优先加载覆盖：
 ```yaml
 # 示例：~/.atbclone/recipes/com.example.customapp.yaml
@@ -215,7 +215,7 @@ proxy:
 
 ---
 
-### 7. 深度应用探测与配方生成 (`probe`)
+### 7. 深度应用探测与分身规则生成 (`probe`)
 
 对任意本地 `.app` 进行深度架构与代码签名权限探测，分析其运行内核（Chromium / Electron / Gecko / Native）、沙盒状态，并输出推荐的 ATBClone Recipe YAML：
 
@@ -224,12 +224,12 @@ proxy:
 atbclone probe /Applications/ATBCmder.app
 ```
 
-#### 探测并直接保存至本地配方库 (`~/.atbclone/recipes/<bundle_id>.yaml`)
+#### 探测并直接保存至本地规则库 (`~/.atbclone/recipes/<bundle_id>.yaml`)
 ```bash
 atbclone probe /Applications/ATBCmder.app --save
 ```
 
-#### 导出配方到指定文件
+#### 导出分身规则到指定文件
 ```bash
 atbclone probe /Applications/ATBCmder.app -o /path/to/recipe.yaml
 ```
@@ -314,7 +314,7 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/ -v
 ```
 ~/.atbclone/
 ├── clones.yaml           # 全局分身状态追踪记录
-├── recipes/              # 用户自定义配方存放目录 (可选覆盖)
+├── recipes/              # 用户自定义分身规则存放目录 (可选覆盖)
 └── Data/                 # 各分身独立的数据隔离目录
     ├── 微信2/
     │   ├── Home/         # 隔离的独立用户主目录
@@ -325,26 +325,26 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/ -v
 ```
 src/atbclone/
 ├── cli/                  # CLI 命令行层 (Click + Rich)
-│   ├── cmd_clone.py      # 克隆主命令 (支持未配置配方自动探测)
+│   ├── cmd_clone.py      # 克隆主命令 (支持未配置规则自动探测)
 │   ├── cmd_doctor.py     # 环境检测
 │   ├── cmd_list.py       # 分身列表
-│   ├── cmd_probe.py      # 应用深度架构探测与配方生成
-│   ├── cmd_recipe.py     # 配方管理
+│   ├── cmd_probe.py      # 应用深度架构探测与规则生成
+│   ├── cmd_recipe.py     # 分身规则管理
 │   ├── cmd_remove.py     # 分身删除
 │   ├── cmd_update.py     # 分身更新
 │   ├── cmd_version.py    # 版本与系统信息展示
 │   └── cmd_wizard.py     # 交互式向导
 ├── core/                 # 核心领域模型与克隆引擎
 │   ├── app_inspector.py  # App 元数据检查与自动编号
-│   ├── app_prober.py     # 深度架构探测、沙盒检查与动态配方生成
+│   ├── app_prober.py     # 深度架构探测、沙盒检查与动态规则生成
 │   ├── clone_task.py     # 克隆任务实体
 │   ├── engines.py        # Soft & Hard 克隆执行引擎
 │   ├── models.py         # 基础模型
 │   └── state.py          # YAML 状态管理
 ├── executor/             # 底层执行器 (Direct Subprocess / AppleScript 提权)
 │   └── runner.py
-└── recipes/              # 配方模型、加载器与 18 个内置规则
-    ├── builtin/          # 内置 YAML 配方
+└── recipes/              # 规则模型、加载器与 18 个内置规则
+    ├── builtin/          # 内置 YAML 规则
     ├── loader.py         # 规则匹配与优先级加载
     └── models.py         # Pydantic 校验模型
 ```

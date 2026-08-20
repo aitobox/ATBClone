@@ -196,3 +196,38 @@ def test_new_data_dir_i18n_keys():
         assert "/tmp/test" in t("wizard_confirm_data_dir", data_dir="/tmp/test")
         assert "/tmp/test" in t("remove_prompt_delete_data", data_dir="/tmp/test")
 
+
+def test_gui_i18n_keys_present_in_all_languages():
+    from atbclone.core.i18n import MESSAGES, SUPPORTED_LANGUAGES, SUPPORTED_LANGUAGES_MAP
+    assert len(SUPPORTED_LANGUAGES_MAP) == 10  # auto + 9 langs
+    required_prefixes = ("nav_", "topbar_", "btn_", "card_", "view_", "win_", "dialog_", "probe_", "doctor_", "logs_", "settings_")
+    gui_keys = [k for k in MESSAGES.keys() if any(k.startswith(p) for p in required_prefixes)]
+    assert len(gui_keys) >= 30, f"Expected at least 30 GUI keys, found {len(gui_keys)}"
+    for key in gui_keys:
+        for lang in SUPPORTED_LANGUAGES:
+            assert lang in MESSAGES[key], f"Key '{key}' missing translation for language '{lang}'"
+            assert len(MESSAGES[key][lang].strip()) > 0, f"Key '{key}' has empty translation for '{lang}'"
+
+
+def test_configured_language_persistence(tmp_path, monkeypatch):
+    from atbclone.core.i18n import get_configured_language, save_configured_language, detect_system_language
+    from atbclone.core import config
+    
+    test_cfg_file = tmp_path / "config.json"
+    monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", test_cfg_file)
+    monkeypatch.setattr(config, "DEFAULT_ATB_DIR", tmp_path)
+    monkeypatch.delenv("ATBCLONE_LANG", raising=False)
+    
+    # Default is auto
+    assert get_configured_language() == "auto"
+    
+    # Save Japanese
+    save_configured_language("ja")
+    assert get_configured_language() == "ja"
+    assert detect_system_language() == "ja"
+    
+    # Reset back to auto
+    save_configured_language("auto")
+    assert get_configured_language() == "auto"
+
+

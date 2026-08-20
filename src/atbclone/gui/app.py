@@ -150,3 +150,20 @@ class ATBCloneApp(toga.App):
             self.safe_create_task(self.recipe_view.refresh_recipes())
         elif self.current_view_name == "doctor":
             self.safe_create_task(self.doctor_view.run_checks())
+
+    def retranslate_ui(self):
+        """Dynamically refresh all UI components and views after language change."""
+        if hasattr(self, "sidebar") and self.sidebar:
+            self.sidebar.retranslate()
+
+        # Re-initialize views with updated localized strings
+        self.clone_view = CloneListView(clone_service=self.clone_service, app=self)
+        self.recipe_view = RecipeListView(recipe_service=self.recipe_service, app=self)
+        self.probe_view = ProbeView(probe_service=self.probe_service, recipe_service=self.recipe_service, app=self)
+        self.doctor_view = DoctorView(doctor_service=self.doctor_service, app=self)
+        self.logs_view = LogsView(app=self)
+        self.settings_view = SettingsView(app=self)
+
+        # Re-mount currently active view
+        self.switch_view(self.current_view_name)
+

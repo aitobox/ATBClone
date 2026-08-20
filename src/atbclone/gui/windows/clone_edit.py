@@ -6,6 +6,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 
+from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord
 from atbclone.recipes.models import ProxyConfig
 
@@ -16,7 +17,7 @@ class CloneEditWindow(toga.Window):
         record: CloneRecord,
         on_save: Callable[[CloneRecord], Coroutine[Any, Any, None]] | None = None,
     ):
-        super().__init__(title=f"Edit Clone: {record.clone_name}", size=(480, 360))
+        super().__init__(title=t("win_edit_title", name=record.clone_name), size=(480, 360))
         self.record = record
         self.on_save_callback = on_save
 
@@ -34,7 +35,7 @@ class CloneEditWindow(toga.Window):
                 proxy_port = str(parsed.port)
 
         self.switch_proxy = toga.Switch(
-            text="Enable Dedicated Proxy",
+            text=t("win_edit_switch_proxy"),
             value=record.proxy_enabled,
             style=Pack(margin=5),
         )
@@ -52,8 +53,8 @@ class CloneEditWindow(toga.Window):
             style=Pack(width=80),
         )
 
-        self.btn_save = toga.Button("Save Changes", on_press=self.on_save_press, style=Pack(flex=1, margin=5))
-        self.btn_cancel = toga.Button("Cancel", on_press=lambda w: self.close(), style=Pack(flex=1, margin=5))
+        self.btn_save = toga.Button(t("btn_save_changes"), on_press=self.on_save_press, style=Pack(flex=1, margin=5))
+        self.btn_cancel = toga.Button(t("btn_cancel"), on_press=lambda w: self.close(), style=Pack(flex=1, margin=5))
 
         self.content = self._build_content()
 
@@ -67,7 +68,7 @@ class CloneEditWindow(toga.Window):
         box.add(self.switch_proxy)
 
         row_proxy = toga.Box(style=Pack(direction=ROW, margin=5))
-        row_proxy.add(toga.Label("Type/Host/Port:", style=Pack(width=120)))
+        row_proxy.add(toga.Label(t("win_edit_type_host_port"), style=Pack(width=120)))
         row_proxy.add(self.select_proxy_type)
         row_proxy.add(self.input_proxy_host)
         row_proxy.add(self.input_proxy_port)

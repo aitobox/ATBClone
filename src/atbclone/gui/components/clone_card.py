@@ -6,6 +6,7 @@ from pathlib import Path
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER
+from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord
 from atbclone.gui.theme import Theme
 
@@ -31,7 +32,7 @@ class CloneCard(toga.Box):
             f"📱 {record.clone_name}",
             style=Pack(font_weight="bold", font_size=14, flex=1, color=Theme.TEXT_PRIMARY),
         )
-        strat_badge = "[Soft Clone]" if record.strategy == "soft_clone" else "[Hard Clone]"
+        strat_badge = t("card_strategy_soft") if record.strategy == "soft_clone" else t("card_strategy_hard")
         self.label_strategy = toga.Label(
             strat_badge,
             style=Pack(font_size=11, color=Theme.ACCENT_BLUE),
@@ -42,10 +43,10 @@ class CloneCard(toga.Box):
 
         # Card Body: Metadata info
         body = toga.Box(style=Pack(direction=COLUMN, margin_bottom=8))
-        body.add(toga.Label(f"源应用: {record.source_app}", style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_bottom=2)))
-        body.add(toga.Label(f"路径: {Path(record.dest_path).name}", style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_bottom=2)))
-        proxy_info = record.proxy_summary if record.proxy_enabled else "未启用代理"
-        body.add(toga.Label(f"代理: {proxy_info}", style=Pack(font_size=11, color=Theme.TEXT_MUTED)))
+        body.add(toga.Label(t("card_label_source", source_app=record.source_app), style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_bottom=2)))
+        body.add(toga.Label(t("card_label_path", path=Path(record.dest_path).name), style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_bottom=2)))
+        proxy_info = record.proxy_summary if record.proxy_enabled else t("card_proxy_disabled")
+        body.add(toga.Label(t("card_label_proxy", proxy_info=proxy_info), style=Pack(font_size=11, color=Theme.TEXT_MUTED)))
         self.add(body)
 
         # Card Footer: Action buttons
@@ -53,7 +54,7 @@ class CloneCard(toga.Box):
 
         # 1-Click Direct Launch Button
         btn_launch = toga.Button(
-            "▶️ 启动",
+            t("btn_launch"),
             on_press=lambda w: on_launch(record) if on_launch else None,
             style=Pack(font_weight="bold", margin_right=4, flex=1),
         )

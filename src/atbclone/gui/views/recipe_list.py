@@ -7,6 +7,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER
 
+from atbclone.core.i18n import t
 from atbclone.recipes.models import Recipe
 from atbclone.gui.services.recipe_service import RecipeService
 from atbclone.gui.windows.recipe_edit import RecipeEditWindow
@@ -18,8 +19,8 @@ class RecipeListView(toga.Box):
     """View managing built-in and custom clone recipes with search and dual views."""
 
     FILTER_ALL = "🏷️ 全部来源"
-    FILTER_BUILTIN = "📦 内置预设"
-    FILTER_CUSTOM = "✏️ 自定义配方"
+    FILTER_BUILTIN = "📦 内置规则"
+    FILTER_CUSTOM = "✏️ 自定义规则"
 
     SORT_NAME_ASC = "🔽 应用名称 (A-Z)"
     SORT_NAME_DESC = "🔼 应用名称 (Z-A)"
@@ -33,21 +34,31 @@ class RecipeListView(toga.Box):
         self._filtered_recipes: list[dict] = []
         self.view_mode: str = "grid"  # "grid" or "list"
         self.search_query: str = ""
-        self.selected_filter: str = self.FILTER_ALL
-        self.selected_sort: str = self.SORT_NAME_ASC
+
+        # Localized filter and sort labels
+        self.filter_all = t("view_recipes_filter_all")
+        self.filter_builtin = t("view_recipes_filter_builtin")
+        self.filter_custom = t("view_recipes_filter_custom")
+
+        self.sort_name_asc = t("view_recipes_sort_name_asc")
+        self.sort_name_desc = t("view_recipes_sort_name_desc")
+        self.sort_strategy = t("view_recipes_sort_strategy")
+
+        self.selected_filter: str = self.filter_all
+        self.selected_sort: str = self.sort_name_asc
 
         # Top Header Bar
         self.top_bar = TopHeaderBar(
-            title="预设配方 (0)",
-            action_label="+ 新建配方",
+            title=t("view_recipes_title", count=0),
+            action_label=t("btn_new_recipe"),
             on_action=self.on_new_recipe,
-            search_placeholder="🔍 搜索应用配方 / Bundle ID...",
+            search_placeholder=t("view_recipes_search_placeholder"),
             on_search=self.on_search_query_changed,
-            filter_items=[self.FILTER_ALL, self.FILTER_BUILTIN, self.FILTER_CUSTOM],
+            filter_items=[self.filter_all, self.filter_builtin, self.filter_custom],
             on_filter_change=self.on_filter_changed,
-            sort_items=[self.SORT_NAME_ASC, self.SORT_NAME_DESC, self.SORT_STRATEGY],
+            sort_items=[self.sort_name_asc, self.sort_name_desc, self.sort_strategy],
             on_sort_change=self.on_sort_changed,
-            view_modes=[TopHeaderBar.VIEW_GRID, TopHeaderBar.VIEW_LIST],
+            view_modes=[t("topbar_view_grid"), t("topbar_view_list")],
             on_view_change=self.on_view_mode_changed,
             on_refresh=lambda w: asyncio.create_task(self.refresh_recipes()),
         )
@@ -65,15 +76,20 @@ class RecipeListView(toga.Box):
         # Table view container & action bar
         self.table_box = toga.Box(style=Pack(direction=COLUMN, flex=1))
         self.table = toga.Table(
-            columns=["App Name", "Bundle ID", "Strategy", "Origin"],
+            columns=[
+                t("recipe_col_app_name"),
+                t("recipe_col_bundle_id"),
+                t("recipe_col_strategy"),
+                t("view_recipes_col_origin"),
+            ],
             on_select=self.on_table_select,
             style=Pack(flex=1),
         )
         self.table_box.add(self.table)
 
-        self.btn_edit = toga.Button("✏️ 编辑", on_press=self.on_edit_recipe, enabled=False, style=Pack(margin=4))
-        self.btn_copy = toga.Button("📋 复制为自定义", on_press=self.on_copy_recipe, enabled=False, style=Pack(margin=4))
-        self.btn_delete = toga.Button("🗑️ 删除", on_press=self.on_delete_recipe, enabled=False, style=Pack(margin=4))
+        self.btn_edit = toga.Button(t("btn_edit"), on_press=self.on_edit_recipe, enabled=False, style=Pack(margin=4))
+        self.btn_copy = toga.Button(t("btn_copy_as_custom"), on_press=self.on_copy_recipe, enabled=False, style=Pack(margin=4))
+        self.btn_delete = toga.Button(t("btn_delete"), on_press=self.on_delete_recipe, enabled=False, style=Pack(margin=4))
 
         actions_box = toga.Box(style=Pack(direction=ROW, margin_top=6))
         actions_box.add(self.btn_edit)
@@ -83,7 +99,7 @@ class RecipeListView(toga.Box):
 
         # Empty state label
         self.label_empty = toga.Label(
-            "暂无匹配的配方规则，可点击右上角「+ 新建配方」添加自定义规则。",
+            t("view_recipes_empty_hint"),
             style=Pack(margin=30, font_size=13, color=Theme.TEXT_MUTED),
         )
 
@@ -117,18 +133,22 @@ class RecipeListView(toga.Box):
             ]
 
         if hasattr(self, "selected_filter"):
-            if self.selected_filter == self.FILTER_BUILTIN:
+            filter_builtin_keys = (getattr(self, "filter_builtin", ""), self.FILTER_BUILTIN)
+            filter_custom_keys = (getattr(self, "filter_custom", ""), self.FILTER_CUSTOM)
+            if self.selected_filter in filter_builtin_keys or "builtin" in str(self.selected_filter).lower() or "内置" in str(self.selected_filter):
                 items = [r for r in items if r.get("is_builtin")]
-            elif self.selected_filter == self.FILTER_CUSTOM:
+            elif self.selected_filter in filter_custom_keys or "custom" in str(self.selected_filter).lower() or "自定义" in str(self.selected_filter):
                 items = [r for r in items if not r.get("is_builtin")]
 
         # Sort
         if hasattr(self, "selected_sort"):
-            if self.selected_sort == self.SORT_NAME_DESC:
+            sort_desc_keys = (getattr(self, "sort_name_desc", ""), self.SORT_NAME_DESC)
+            sort_strat_keys = (getattr(self, "sort_strategy", ""), self.SORT_STRATEGY)
+            if self.selected_sort in sort_desc_keys or "desc" in str(self.selected_sort).lower() or "z-a" in str(self.selected_sort).lower():
                 items.sort(key=lambda r: r["app_name"].lower(), reverse=True)
-            elif self.selected_sort == self.SORT_STRATEGY:
+            elif self.selected_sort in sort_strat_keys or "strat" in str(self.selected_sort).lower() or "策略" in str(self.selected_sort):
                 items.sort(key=lambda r: (r["strategy"], r["app_name"].lower()))
-            else:  # SORT_NAME_ASC
+            else:  # self.sort_name_asc
                 items.sort(key=lambda r: r["app_name"].lower())
         else:
             items.sort(key=lambda r: r["app_name"].lower())
@@ -142,10 +162,10 @@ class RecipeListView(toga.Box):
 
         total_count = len(self._raw_recipes)
         filter_count = len(self._filtered_recipes)
-        if self.search_query or (hasattr(self, "selected_filter") and self.selected_filter != "🏷️ 全部来源"):
-            self.top_bar.update_title(f"预设配方 (筛选 {filter_count}/{total_count})")
+        if self.search_query or (hasattr(self, "selected_filter") and self.selected_filter != self.filter_all):
+            self.top_bar.update_title(t("view_recipes_title_filtered", filter_count=filter_count, total_count=total_count))
         else:
-            self.top_bar.update_title(f"预设配方 ({total_count})")
+            self.top_bar.update_title(t("view_recipes_title", count=total_count))
 
         if not self._filtered_recipes:
             self.content_container.add(self.label_empty)
@@ -158,18 +178,17 @@ class RecipeListView(toga.Box):
             # Chunk into multi-row grid (2 cards per row)
             ROW_SIZE = 2
             for i in range(0, len(self._filtered_recipes), ROW_SIZE):
-                chunk = self._filtered_recipes[i:i + ROW_SIZE]
+                chunk = self._filtered_recipes[i : i + ROW_SIZE]
                 row_box = toga.Box(style=Pack(direction=ROW, margin_bottom=10))
                 for item in chunk:
                     card = self._create_recipe_card(item)
                     row_box.add(card)
                 self.grid_box.add(row_box)
-
             self.content_container.add(self.grid_scroll)
         else:
             table_data = []
             for r in self._filtered_recipes:
-                origin = "Built-in" if r["is_builtin"] else "Custom"
+                origin = t("view_recipes_origin_builtin") if r["is_builtin"] else t("view_recipes_origin_custom")
                 table_data.append((
                     r["app_name"],
                     r["bundle_id"],
@@ -185,11 +204,11 @@ class RecipeListView(toga.Box):
         is_builtin = item.get("is_builtin", False)
 
         card = toga.Box(style=Pack(direction=COLUMN, margin=8, width=290, background_color=Theme.BG_CARD))
-        
+
         # Header
         header = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=6))
         header.add(toga.Label(f"📖 {recipe.app_name}", style=Pack(font_weight="bold", font_size=14, flex=1, color=Theme.TEXT_PRIMARY)))
-        origin_text = "[内置]" if is_builtin else "[自定义]"
+        origin_text = f"[{t('view_recipes_origin_builtin')}]" if is_builtin else f"[{t('view_recipes_origin_custom')}]"
         origin_color = Theme.ACCENT_BLUE if is_builtin else Theme.BTN_SUCCESS
         header.add(toga.Label(origin_text, style=Pack(font_size=11, color=origin_color)))
         card.add(header)
@@ -197,13 +216,13 @@ class RecipeListView(toga.Box):
         # Body
         body = toga.Box(style=Pack(direction=COLUMN, margin_bottom=8))
         body.add(toga.Label(f"Bundle ID: {recipe.bundle_id}", style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_bottom=2)))
-        strat_badge = "物理完整克隆 (Hard)" if recipe.strategy == "hard_clone" else "软包装克隆 (Soft)"
+        strat_badge = t("card_strategy_hard") if recipe.strategy == "hard_clone" else t("card_strategy_soft")
         body.add(toga.Label(f"策略: {strat_badge}", style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_bottom=2)))
         card.add(body)
 
         # Footer
         actions = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=4))
-        btn_copy = toga.Button("📋 复制", on_press=lambda w: asyncio.create_task(self._copy_recipe_direct(recipe)), style=Pack(margin_right=4, flex=1))
+        btn_copy = toga.Button(t("btn_copy"), on_press=lambda w: asyncio.create_task(self._copy_recipe_direct(recipe)), style=Pack(margin_right=4, flex=1))
         actions.add(btn_copy)
 
         if not is_builtin:
@@ -228,9 +247,9 @@ class RecipeListView(toga.Box):
 
     def get_selected_recipe_item(self) -> Optional[dict]:
         selection = self.table.selection
-        if selection is None:
+        if not selection:
             return None
-        bundle_id = getattr(selection, "bundle_id", None) or getattr(selection, "Bundle ID", None)
+        bundle_id = getattr(selection, "bundle_id", None) or getattr(selection, t("recipe_col_bundle_id"), None)
         if not bundle_id:
             if hasattr(selection, "_raw"):
                 bundle_id = selection._raw[1]
@@ -248,7 +267,7 @@ class RecipeListView(toga.Box):
             await self.recipe_service.save_custom_recipe(recipe)
             await self.refresh_recipes()
 
-        win = RecipeEditWindow(title="新建自定义配方", recipe=None, on_save=_save_cb)
+        win = RecipeEditWindow(title=t("win_recipe_new_title"), recipe=None, on_save=_save_cb)
         win.show()
 
     def _open_edit_dialog(self, recipe: Recipe):
@@ -256,7 +275,7 @@ class RecipeListView(toga.Box):
             await self.recipe_service.save_custom_recipe(updated_recipe)
             await self.refresh_recipes()
 
-        win = RecipeEditWindow(title=f"编辑配方: {recipe.app_name}", recipe=recipe, on_save=_save_cb)
+        win = RecipeEditWindow(title=t("win_recipe_edit_title", name=recipe.app_name), recipe=recipe, on_save=_save_cb)
         win.show()
 
     async def on_edit_recipe(self, widget: toga.Button):
@@ -285,3 +304,4 @@ class RecipeListView(toga.Box):
         if not item or item.get("is_builtin"):
             return
         await self._delete_recipe_direct(item["bundle_id"])
+

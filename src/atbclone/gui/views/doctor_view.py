@@ -6,6 +6,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER
 
+from atbclone.core.i18n import t
 from atbclone.gui.services.doctor_service import DoctorService
 from atbclone.gui.components.top_bar import TopHeaderBar
 from atbclone.gui.theme import Theme
@@ -21,8 +22,8 @@ class DoctorView(toga.Box):
 
         # Top Header Bar
         self.top_bar = TopHeaderBar(
-            title="环境自检",
-            action_label="🔄 重新检测",
+            title=t("nav_doctor"),
+            action_label=t("doctor_btn_recheck"),
             on_action=lambda w: asyncio.create_task(self.run_checks()),
         )
         self.add(self.top_bar)
@@ -32,13 +33,18 @@ class DoctorView(toga.Box):
 
         # Summary badge card
         self.card_summary = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=10, margin=10, background_color=Theme.BG_CARD))
-        self.label_summary = toga.Label("诊断状态: 点击右上角「🔄 重新检测」获取最新环境状态", style=Pack(font_weight="bold", font_size=13, flex=1, color=Theme.TEXT_PRIMARY))
+        self.label_summary = toga.Label(t("doctor_summary_initial"), style=Pack(font_weight="bold", font_size=13, flex=1, color=Theme.TEXT_PRIMARY))
         self.card_summary.add(self.label_summary)
         content_box.add(self.card_summary)
 
         # Diagnostics Table
         self.table = toga.Table(
-            columns=["状态", "检测项", "当前环境详情", "修复建议 / 说明"],
+            columns=[
+                t("doctor_col_status"),
+                t("doctor_col_item"),
+                t("doctor_col_details"),
+                t("doctor_col_hint"),
+            ],
             style=Pack(flex=1),
         )
         content_box.add(self.table)
@@ -52,9 +58,9 @@ class DoctorView(toga.Box):
         for item in items:
             if item.passed:
                 passed_count += 1
-                status_icon = "✅ 正常"
+                status_icon = t("doctor_status_ok")
             else:
-                status_icon = "❌ 缺失"
+                status_icon = t("doctor_status_missing")
 
             table_data.append((
                 status_icon,
@@ -65,6 +71,7 @@ class DoctorView(toga.Box):
 
         self.table.data = table_data
         if passed_count == total_count:
-            self.label_summary.text = f"✅ 所有环境检测项全部通过 ({passed_count}/{total_count})"
+            self.label_summary.text = t("doctor_summary_all_passed", passed=passed_count, total=total_count)
         else:
-            self.label_summary.text = f"⚠️ 发现 {total_count - passed_count} 项未就绪环境组件，请参考列表修复建议"
+            self.label_summary.text = t("doctor_summary_issues_found", count=total_count - passed_count)
+

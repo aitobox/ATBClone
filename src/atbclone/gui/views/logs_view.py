@@ -5,6 +5,7 @@ from typing import Optional
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN
+from atbclone.core.i18n import t
 from atbclone.core.logger import (
     add_log_listener,
     clear_logs,
@@ -29,10 +30,10 @@ class LogsView(toga.Box):
 
         # Top Header Bar
         self.top_bar = TopHeaderBar(
-            title="运行日志",
-            search_placeholder="🔍 搜索日志关键字...",
+            title=t("nav_logs"),
+            search_placeholder=t("logs_search_placeholder"),
             on_search=self.on_filter_logs,
-            action_label="🗑️ 清空日志",
+            action_label=t("logs_btn_clear"),
             on_action=self.on_clear_logs,
             on_refresh=self.on_refresh_logs,
         )
@@ -77,9 +78,10 @@ class LogsView(toga.Box):
         count = len(filtered)
         total = len(self._raw_log_lines)
         if query:
-            self.top_bar.update_title(f"运行日志 (筛选 {count}/{total} 行)")
+            self.top_bar.update_title(t("logs_title_filtered", count=count, total=total))
         else:
-            self.top_bar.update_title(f"运行日志 ({total} 行)")
+            self.top_bar.update_title(t("logs_title", total=total))
+
 
     def on_filter_logs(self, query: str):
         self._current_filter = query

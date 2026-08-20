@@ -5,6 +5,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER
 from atbclone import __version__
+from atbclone.core.i18n import t
 from atbclone.core.resources import get_app_icon_path
 from atbclone.gui.theme import Theme
 
@@ -12,17 +13,8 @@ from atbclone.gui.theme import Theme
 class SidebarNav(toga.Box):
     """Sidebar navigation bar with branding, main sections, and bottom auxiliary items."""
 
-    MAIN_NAV_ITEMS = [
-        ("clones", "📱 我的分身"),
-        ("recipes", "📖 预设配方"),
-        ("probe", "🔍 应用探测"),
-        ("doctor", "🩺 环境自检"),
-    ]
-
-    BOTTOM_NAV_ITEMS = [
-        ("logs", "📋 运行日志"),
-        ("settings", "⚙️ 全局设置"),
-    ]
+    MAIN_NAV_KEYS = ["clones", "recipes", "probe", "doctor"]
+    BOTTOM_NAV_KEYS = ["logs", "settings"]
 
     def __init__(self, on_select: Callable[[str], None], active_key: str = "clones"):
         super().__init__(style=Pack(direction=COLUMN, width=180, margin=0, background_color=Theme.BG_SIDEBAR))
@@ -52,9 +44,9 @@ class SidebarNav(toga.Box):
 
         # Main Navigation Section
         self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=(4, 8, 4, 8)))
-        for key, title in self.MAIN_NAV_ITEMS:
+        for key in self.MAIN_NAV_KEYS:
             btn = toga.Button(
-                title,
+                t(f"nav_{key}"),
                 on_press=self._create_select_handler(key),
                 style=Pack(margin_bottom=4, height=32),
             )
@@ -67,9 +59,9 @@ class SidebarNav(toga.Box):
 
         # Bottom Fixed Navigation Section
         self.bottom_box = toga.Box(style=Pack(direction=COLUMN, margin=(4, 8, 12, 8)))
-        for key, title in self.BOTTOM_NAV_ITEMS:
+        for key in self.BOTTOM_NAV_KEYS:
             btn = toga.Button(
-                title,
+                t(f"nav_{key}"),
                 on_press=self._create_select_handler(key),
                 style=Pack(margin_bottom=4, height=30),
             )
@@ -78,6 +70,13 @@ class SidebarNav(toga.Box):
         self.add(self.bottom_box)
 
         self._update_button_styles()
+
+    def retranslate(self):
+        """Update button texts dynamically after language change."""
+        for key in self.MAIN_NAV_KEYS + self.BOTTOM_NAV_KEYS:
+            if key in self.buttons:
+                self.buttons[key].text = t(f"nav_{key}")
+
 
     def _create_select_handler(self, key: str):
         return lambda widget: self.select_item(key)

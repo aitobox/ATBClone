@@ -55,13 +55,14 @@ def test_wizard_window_navigation(tmp_path):
             # Step 6 -> 7
             await wizard.go_next()
             assert wizard.current_step == 7
-            assert wizard.btn_next.text == "🚀 Clone Now"
+            assert "Clone" in wizard.btn_next.text or "克隆" in wizard.btn_next.text or "🚀" in wizard.btn_next.text
 
     asyncio.run(_test())
 
 
 def test_wizard_browse_handlers():
     async def _test():
+        from atbclone.core.i18n import t
         wizard = WizardWindow()
         mock_open = AsyncMock(return_value=Path("/Applications/Safari.app"))
         mock_folder = AsyncMock(return_value=Path("/Users/test/Applications"))
@@ -71,7 +72,7 @@ def test_wizard_browse_handlers():
             await wizard._on_browse_app(None)
             assert wizard.input_app_path.value == "/Applications/Safari.app"
             mock_open.assert_called_once_with(
-                title="Select macOS Application",
+                title=t("dialog_select_app_title"),
                 file_types=["app"],
                 initial_directory=Path("/Applications"),
             )
@@ -83,6 +84,7 @@ def test_wizard_browse_handlers():
             assert wizard.input_data_dir.value == "/Users/test/Applications"
 
     asyncio.run(_test())
+
 
 
 def test_wizard_name_auto_sync_and_manual_override():

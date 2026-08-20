@@ -8,6 +8,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER
 
+from atbclone.core.i18n import t
 from atbclone.core.logger import get_logger
 from atbclone.core.state import CloneRecord
 from atbclone.gui.services.clone_service import CloneService
@@ -40,21 +41,32 @@ class CloneListView(toga.Box):
         self._filtered_clones: list[CloneRecord] = []
         self.view_mode: str = "grid"  # "grid" or "list"
         self.search_query: str = ""
-        self.selected_filter: str = self.FILTER_ALL
-        self.selected_sort: str = self.SORT_NEWEST
+
+        # Filter and Sort definitions
+        self.filter_all = t("view_clones_filter_all")
+        self.filter_hard = t("view_clones_filter_hard")
+        self.filter_soft = t("view_clones_filter_soft")
+        self.filter_proxy = t("view_clones_filter_proxy")
+
+        self.sort_newest = t("view_clones_sort_newest")
+        self.sort_name = t("view_clones_sort_name")
+        self.sort_oldest = t("view_clones_sort_oldest")
+
+        self.selected_filter: str = self.filter_all
+        self.selected_sort: str = self.sort_newest
 
         # Top Header Bar with big section title and compact pinned toolbar
         self.top_bar = TopHeaderBar(
-            title="我的分身 (0)",
-            action_label="+ 新建分身",
+            title=t("view_clones_title", count=0),
+            action_label=t("btn_new_clone"),
             on_action=self.on_action_new_clone,
-            search_placeholder="🔍 搜索分身 / 源应用...",
+            search_placeholder=t("view_clones_search_placeholder"),
             on_search=self.on_search_query_changed,
-            filter_items=[self.FILTER_ALL, self.FILTER_HARD, self.FILTER_SOFT, self.FILTER_PROXY],
+            filter_items=[self.filter_all, self.filter_hard, self.filter_soft, self.filter_proxy],
             on_filter_change=self.on_filter_changed,
-            sort_items=[self.SORT_NEWEST, self.SORT_NAME, self.SORT_OLDEST],
+            sort_items=[self.sort_newest, self.sort_name, self.sort_oldest],
             on_sort_change=self.on_sort_changed,
-            view_modes=[TopHeaderBar.VIEW_GRID, TopHeaderBar.VIEW_LIST],
+            view_modes=[t("topbar_view_grid"), t("topbar_view_list")],
             on_view_change=self.on_view_mode_changed,
             on_refresh=lambda w: asyncio.create_task(self.refresh_clones()),
         )
@@ -72,17 +84,23 @@ class CloneListView(toga.Box):
         # Table view & action bar
         self.table_box = toga.Box(style=Pack(direction=COLUMN, flex=1))
         self.table = toga.Table(
-            columns=["Name", "Source App", "Strategy", "Proxy", "Created At"],
+            columns=[
+                t("list_col_name"),
+                t("list_col_source_app"),
+                t("list_col_strategy"),
+                t("list_col_proxy"),
+                t("list_col_created_at"),
+            ],
             on_select=self.on_table_select,
             style=Pack(flex=1),
         )
         self.table_box.add(self.table)
 
-        self.btn_launch_table = toga.Button("▶️ 启动", on_press=lambda w: asyncio.create_task(self.on_launch_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
-        self.btn_update_table = toga.Button("🔄 更新", on_press=lambda w: asyncio.create_task(self.on_update_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
-        self.btn_edit_table = toga.Button("✏️ 编辑", on_press=lambda w: asyncio.create_task(self.on_edit_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
-        self.btn_detail_table = toga.Button("ℹ️ 详情", on_press=lambda w: asyncio.create_task(self.on_detail_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
-        self.btn_delete_table = toga.Button("🗑️ 删除", on_press=lambda w: asyncio.create_task(self.on_delete_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
+        self.btn_launch_table = toga.Button(t("btn_launch"), on_press=lambda w: asyncio.create_task(self.on_launch_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
+        self.btn_update_table = toga.Button(t("btn_update"), on_press=lambda w: asyncio.create_task(self.on_update_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
+        self.btn_edit_table = toga.Button(t("btn_edit"), on_press=lambda w: asyncio.create_task(self.on_edit_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
+        self.btn_detail_table = toga.Button(t("btn_detail"), on_press=lambda w: asyncio.create_task(self.on_detail_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
+        self.btn_delete_table = toga.Button(t("btn_delete"), on_press=lambda w: asyncio.create_task(self.on_delete_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
 
         actions_box = toga.Box(style=Pack(direction=ROW, margin_top=6))
         actions_box.add(self.btn_launch_table)
@@ -94,7 +112,7 @@ class CloneListView(toga.Box):
 
         # Empty state label
         self.label_empty = toga.Label(
-            "暂无已创建的分身应用，点击上方「+ 新建分身」立即创建！",
+            t("view_clones_empty_hint"),
             style=Pack(margin=30, font_size=13, color=Theme.TEXT_MUTED),
         )
 
@@ -134,19 +152,25 @@ class CloneListView(toga.Box):
             ]
 
         # 2. Strategy / Proxy Category Filter
-        if self.selected_filter == self.FILTER_HARD:
+        filter_hard_keys = (getattr(self, "filter_hard", ""), self.FILTER_HARD)
+        filter_soft_keys = (getattr(self, "filter_soft", ""), self.FILTER_SOFT)
+        filter_proxy_keys = (getattr(self, "filter_proxy", ""), self.FILTER_PROXY)
+
+        if self.selected_filter in filter_hard_keys or "hard" in str(self.selected_filter).lower() or "物理" in str(self.selected_filter):
             items = [r for r in items if r.strategy == "hard_clone"]
-        elif self.selected_filter == self.FILTER_SOFT:
+        elif self.selected_filter in filter_soft_keys or "soft" in str(self.selected_filter).lower() or "软" in str(self.selected_filter):
             items = [r for r in items if r.strategy == "soft_clone"]
-        elif self.selected_filter == self.FILTER_PROXY:
+        elif self.selected_filter in filter_proxy_keys or "proxy" in str(self.selected_filter).lower() or "代理" in str(self.selected_filter):
             items = [r for r in items if r.proxy_enabled]
 
         # 3. Sort
-        if self.selected_sort == self.SORT_NAME:
+        sort_name_keys = (getattr(self, "sort_name", ""), self.SORT_NAME)
+        sort_oldest_keys = (getattr(self, "sort_oldest", ""), self.SORT_OLDEST)
+        if self.selected_sort in sort_name_keys or "name" in str(self.selected_sort).lower() or "名称" in str(self.selected_sort):
             items.sort(key=lambda r: r.clone_name.lower())
-        elif self.selected_sort == self.SORT_OLDEST:
+        elif self.selected_sort in sort_oldest_keys or "oldest" in str(self.selected_sort).lower() or "最早" in str(self.selected_sort):
             items.sort(key=lambda r: r.created_at)
-        else:  # SORT_NEWEST
+        else:  # self.sort_newest
             items.sort(key=lambda r: r.created_at, reverse=True)
 
         self._filtered_clones = items
@@ -158,10 +182,10 @@ class CloneListView(toga.Box):
 
         total_count = len(self._raw_clones)
         filter_count = len(self._filtered_clones)
-        if self.search_query or self.selected_filter != self.FILTER_ALL:
-            self.top_bar.update_title(f"我的分身 (筛选 {filter_count}/{total_count})")
+        if self.search_query or self.selected_filter != self.filter_all:
+            self.top_bar.update_title(t("view_clones_title_filtered", filter_count=filter_count, total_count=total_count))
         else:
-            self.top_bar.update_title(f"我的分身 ({total_count})")
+            self.top_bar.update_title(t("view_clones_title", count=total_count))
 
         if not self._filtered_clones:
             self.content_container.add(self.label_empty)
@@ -192,7 +216,7 @@ class CloneListView(toga.Box):
         else:
             table_data = []
             for r in self._filtered_clones:
-                proxy_str = r.proxy_summary if r.proxy_enabled else "未启用"
+                proxy_str = r.proxy_summary if r.proxy_enabled else t("list_proxy_disabled")
                 table_data.append((
                     r.clone_name,
                     r.source_app,
@@ -217,7 +241,7 @@ class CloneListView(toga.Box):
         selection = self.table.selection
         if selection is None:
             return None
-        clone_name = getattr(selection, "Name", None) or getattr(selection, "clone_name", None)
+        clone_name = getattr(selection, "Name", None) or getattr(selection, "clone_name", None) or getattr(selection, t("list_col_name"), None)
         if not clone_name and hasattr(selection, "_raw"):
             clone_name = selection._raw[0]
         for r in self._filtered_clones:
@@ -238,8 +262,8 @@ class CloneListView(toga.Box):
             logger.error(f"Cannot launch clone '{record.clone_name}': file does not exist at '{dest_path}'")
             if self.app_instance and hasattr(self.app_instance, "main_window"):
                 await self.app_instance.main_window.error_dialog(
-                    "Launch Error",
-                    f"Clone application does not exist at {dest_path}",
+                    t("dialog_launch_error_title"),
+                    t("dialog_launch_error_not_found", path=str(dest_path)),
                 )
             return
 
@@ -250,7 +274,7 @@ class CloneListView(toga.Box):
         except Exception as e:
             logger.error(f"Failed to launch clone '{record.clone_name}': {e}")
             if self.app_instance and hasattr(self.app_instance, "main_window"):
-                await self.app_instance.main_window.error_dialog("Launch Error", f"Failed to open app: {e}")
+                await self.app_instance.main_window.error_dialog(t("dialog_launch_error_title"), t("dialog_launch_error_failed", error=str(e)))
 
     async def on_detail_clone(self, record: Optional[CloneRecord]):
         if not record:
@@ -277,7 +301,7 @@ class CloneListView(toga.Box):
             await self.refresh_clones()
         except Exception as e:
             if self.app_instance and hasattr(self.app_instance, "main_window"):
-                await self.app_instance.main_window.error_dialog("Update Error", str(e))
+                await self.app_instance.main_window.error_dialog(t("dialog_update_error_title"), str(e))
 
     async def on_delete_clone(self, record: Optional[CloneRecord]):
         if not record:
@@ -286,16 +310,17 @@ class CloneListView(toga.Box):
         delete_data = False
         if self.app_instance and hasattr(self.app_instance, "main_window"):
             confirmed = await self.app_instance.main_window.confirm_dialog(
-                "Delete Clone",
-                f"Are you sure you want to remove '{record.clone_name}'?",
+                t("dialog_delete_confirm_title"),
+                t("dialog_delete_confirm_msg", name=record.clone_name),
             )
             if not confirmed:
                 return
 
             delete_data = await self.app_instance.main_window.confirm_dialog(
-                "Delete Data Directory",
-                f"Also delete data directory at:\n{record.data_dir}?",
+                t("dialog_delete_data_confirm_title"),
+                t("dialog_delete_data_confirm_msg", path=record.data_dir),
             )
 
         await self.clone_service.remove_clone(record.clone_name, with_data=delete_data)
         await self.refresh_clones()
+

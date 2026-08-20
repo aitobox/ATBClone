@@ -10,6 +10,7 @@ from toga.style.pack import COLUMN, ROW
 from atbclone.core.app_inspector import AppInspector
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.config import DEFAULT_APPS_DIR, DEFAULT_DATA_DIR
+from atbclone.core.i18n import t
 from atbclone.core.logger import get_logger
 from atbclone.core.models import AppInfo
 from atbclone.gui.services.clone_service import CloneService
@@ -29,7 +30,7 @@ class WizardWindow(toga.Window):
         probe_service: ProbeService | None = None,
         on_complete: Callable[[], Coroutine[Any, Any, None]] | None = None,
     ):
-        super().__init__(title="Clone App Wizard", size=(560, 520))
+        super().__init__(title=t("win_wizard_title"), size=(560, 520))
         self.clone_service = clone_service or CloneService()
         self.probe_service = probe_service or ProbeService()
         self.on_complete_callback = on_complete
@@ -40,7 +41,7 @@ class WizardWindow(toga.Window):
 
         # Step indicator label
         self.label_step_header = toga.Label(
-            "Step 1 of 7: Select Source Application",
+            t("win_wizard_step1_header"),
             style=Pack(font_size=15, font_weight="bold", margin_bottom=10),
         )
 
@@ -48,9 +49,9 @@ class WizardWindow(toga.Window):
         self.step_container = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=10))
 
         # Bottom navigation buttons
-        self.btn_prev = toga.Button("◀ Back", on_press=lambda w: asyncio.create_task(self.go_prev()), enabled=False, style=Pack(margin=5))
-        self.btn_next = toga.Button("Next ▶", on_press=lambda w: asyncio.create_task(self.go_next()), style=Pack(margin=5))
-        self.btn_cancel = toga.Button("Cancel", on_press=lambda w: self.close(), style=Pack(margin=5))
+        self.btn_prev = toga.Button(t("win_wizard_btn_back"), on_press=lambda w: asyncio.create_task(self.go_prev()), enabled=False, style=Pack(margin=5))
+        self.btn_next = toga.Button(t("win_wizard_btn_next"), on_press=lambda w: asyncio.create_task(self.go_next()), style=Pack(margin=5))
+        self.btn_cancel = toga.Button(t("btn_cancel"), on_press=lambda w: self.close(), style=Pack(margin=5))
 
         # Initialize UI elements for all 7 steps
         self._init_step_widgets()
@@ -62,12 +63,12 @@ class WizardWindow(toga.Window):
     def _init_step_widgets(self):
         # Step 1: Select App
         self.input_app_path = toga.TextInput(placeholder="/Applications/Example.app", style=Pack(flex=1))
-        self.btn_browse_app = toga.Button("📂 Browse...", on_press=self._on_browse_app, style=Pack(margin_left=5))
+        self.btn_browse_app = toga.Button(t("btn_browse_app"), on_press=self._on_browse_app, style=Pack(margin_left=5))
 
         # Step 2: Recipe Info
-        self.label_recipe_app = toga.Label("App: —", style=Pack(margin=4))
-        self.label_recipe_bundle = toga.Label("Bundle ID: —", style=Pack(margin=4))
-        self.label_recipe_strat = toga.Label("Strategy: —", style=Pack(margin=4))
+        self.label_recipe_app = toga.Label(f"{t('probe_row_app_name')}: —", style=Pack(margin=4))
+        self.label_recipe_bundle = toga.Label(f"{t('probe_row_bundle_id')}: —", style=Pack(margin=4))
+        self.label_recipe_strat = toga.Label(f"{t('probe_row_strategy')}: —", style=Pack(margin=4))
         self.select_recipe_strat = toga.Selection(items=["hard_clone", "soft_clone"], style=Pack(margin=4, width=150))
         # Shows whether recipe came from built-in library or Probe analysis
         self.label_recipe_origin = toga.Label("", style=Pack(margin=4, font_style="italic"))
@@ -88,22 +89,22 @@ class WizardWindow(toga.Window):
 
         # Step 4: Destination Directory
         self.input_dest_dir = toga.TextInput(value=str(DEFAULT_APPS_DIR), style=Pack(flex=1))
-        self.btn_browse_dest = toga.Button("📂 Browse...", on_press=self._on_browse_dest, style=Pack(margin_left=5))
+        self.btn_browse_dest = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_dest, style=Pack(margin_left=5))
 
         # Step 5: Data Directory
-        self.label_data_dir_support = toga.Label("Data Directory Isolation Supported", style=Pack(margin=4))
+        self.label_data_dir_support = toga.Label(t("win_wizard_step5_supported"), style=Pack(margin=4))
         self.input_data_dir = toga.TextInput(style=Pack(flex=1))
-        self.btn_browse_data = toga.Button("📂 Browse...", on_press=self._on_browse_data, style=Pack(margin_left=5))
+        self.btn_browse_data = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_data, style=Pack(margin_left=5))
 
         # Step 6: Proxy Settings
-        self.switch_proxy = toga.Switch("Enable Dedicated Proxy", value=False, style=Pack(margin=5))
+        self.switch_proxy = toga.Switch(t("win_wizard_step6_switch"), value=False, style=Pack(margin=5))
         self.select_proxy_type = toga.Selection(items=["http", "socks5"], style=Pack(width=100))
         self.input_proxy_host = toga.TextInput(value="127.0.0.1", style=Pack(flex=1))
         self.input_proxy_port = toga.TextInput(value="7890", style=Pack(width=80))
 
         # Step 7: Confirmation & Execution
         self.label_summary = toga.Label("", style=Pack(margin=5))
-        self.label_status = toga.Label("Ready to clone.", style=Pack(margin=5, font_weight="bold"))
+        self.label_status = toga.Label(t("win_wizard_status_ready"), style=Pack(margin=5, font_weight="bold"))
         self.progress_bar = toga.ProgressBar(max=None, style=Pack(flex=1, margin=5))  # indeterminate
 
     def _build_layout(self) -> toga.Box:
@@ -125,12 +126,12 @@ class WizardWindow(toga.Window):
             self.step_container.remove(self.step_container.children[0])
 
         self.btn_prev.enabled = (self.current_step > 1)
-        self.btn_next.text = "🚀 Clone Now" if self.current_step == self.TOTAL_STEPS else "Next ▶"
+        self.btn_next.text = t("win_wizard_btn_clone_now") if self.current_step == self.TOTAL_STEPS else t("win_wizard_btn_next")
 
         if self.current_step == 1:
-            self.label_step_header.text = "Step 1 of 7: Select Source Application"
+            self.label_step_header.text = t("win_wizard_step1_header")
             box = toga.Box(style=Pack(direction=COLUMN, margin=5))
-            box.add(toga.Label("Choose the .app bundle you want to clone:", style=Pack(margin_bottom=8)))
+            box.add(toga.Label(t("win_wizard_step1_desc"), style=Pack(margin_bottom=8)))
             row = toga.Box(style=Pack(direction=ROW))
             row.add(self.input_app_path)
             row.add(self.btn_browse_app)
@@ -138,36 +139,36 @@ class WizardWindow(toga.Window):
             self.step_container.add(box)
 
         elif self.current_step == 2:
-            self.label_step_header.text = "Step 2 of 7: Confirm Recipe & Strategy"
+            self.label_step_header.text = t("win_wizard_step2_header")
             box = toga.Box(style=Pack(direction=COLUMN, margin=5))
             box.add(self.label_recipe_app)
             box.add(self.label_recipe_bundle)
             box.add(self.label_recipe_strat)
             box.add(self.label_recipe_origin)
             row_strat = toga.Box(style=Pack(direction=ROW, margin_top=5))
-            row_strat.add(toga.Label("Cloning Strategy:", style=Pack(width=130)))
+            row_strat.add(toga.Label(t("win_wizard_step2_select_strat"), style=Pack(width=130)))
             row_strat.add(self.select_recipe_strat)
             box.add(row_strat)
             self.step_container.add(box)
 
         elif self.current_step == 3:
-            self.label_step_header.text = "Step 3 of 7: Clone Name & Display Name"
+            self.label_step_header.text = t("win_wizard_step3_header")
             box = toga.Box(style=Pack(direction=COLUMN, margin=5))
             row_name = toga.Box(style=Pack(direction=ROW, margin=5))
-            row_name.add(toga.Label("Clone Name:", style=Pack(width=130)))
+            row_name.add(toga.Label(t("win_wizard_step3_clone_name"), style=Pack(width=130)))
             row_name.add(self.input_clone_name)
             box.add(row_name)
 
             row_disp = toga.Box(style=Pack(direction=ROW, margin=5))
-            row_disp.add(toga.Label("Display Name:", style=Pack(width=130)))
+            row_disp.add(toga.Label(t("win_wizard_step3_display_name"), style=Pack(width=130)))
             row_disp.add(self.input_display_name)
             box.add(row_disp)
             self.step_container.add(box)
 
         elif self.current_step == 4:
-            self.label_step_header.text = "Step 4 of 7: Destination Directory"
+            self.label_step_header.text = t("win_wizard_step4_header")
             box = toga.Box(style=Pack(direction=COLUMN, margin=5))
-            box.add(toga.Label("Target directory where the cloned .app will be saved:", style=Pack(margin_bottom=8)))
+            box.add(toga.Label(t("win_wizard_step4_desc"), style=Pack(margin_bottom=8)))
             row = toga.Box(style=Pack(direction=ROW))
             row.add(self.input_dest_dir)
             row.add(self.btn_browse_dest)
@@ -175,11 +176,11 @@ class WizardWindow(toga.Window):
             self.step_container.add(box)
 
         elif self.current_step == 5:
-            self.label_step_header.text = "Step 5 of 7: Data Directory Isolation"
+            self.label_step_header.text = t("win_wizard_step5_header")
             box = toga.Box(style=Pack(direction=COLUMN, margin=5))
             box.add(self.label_data_dir_support)
             row = toga.Box(style=Pack(direction=ROW, margin_top=8))
-            row.add(toga.Label("Data Directory:", style=Pack(width=130)))
+            row.add(toga.Label(t("win_wizard_step5_label"), style=Pack(width=130)))
             row.add(self.input_data_dir)
             if not self.input_data_dir.readonly:
                 row.add(self.btn_browse_data)
@@ -187,11 +188,11 @@ class WizardWindow(toga.Window):
             self.step_container.add(box)
 
         elif self.current_step == 6:
-            self.label_step_header.text = "Step 6 of 7: Network Proxy Configuration"
+            self.label_step_header.text = t("win_wizard_step6_header")
             box = toga.Box(style=Pack(direction=COLUMN, margin=5))
             box.add(self.switch_proxy)
             row = toga.Box(style=Pack(direction=ROW, margin=5))
-            row.add(toga.Label("Type/Host/Port:", style=Pack(width=130)))
+            row.add(toga.Label(t("win_wizard_step6_type_host_port"), style=Pack(width=130)))
             row.add(self.select_proxy_type)
             row.add(self.input_proxy_host)
             row.add(self.input_proxy_port)
@@ -199,7 +200,7 @@ class WizardWindow(toga.Window):
             self.step_container.add(box)
 
         elif self.current_step == 7:
-            self.label_step_header.text = "Step 7 of 7: Confirmation & Execution"
+            self.label_step_header.text = t("win_wizard_step7_header")
             box = toga.Box(style=Pack(direction=COLUMN, margin=5))
             box.add(self.label_summary)
             box.add(self.label_status)
@@ -211,7 +212,7 @@ class WizardWindow(toga.Window):
         if hasattr(self, "app") and self.app and hasattr(self.app, "main_window"):
             try:
                 selected = await self.app.main_window.open_file_dialog(
-                    title="Select macOS Application",
+                    title=t("dialog_select_app_title"),
                     file_types=["app"],
                     initial_directory=Path("/Applications"),
                 )
@@ -225,7 +226,7 @@ class WizardWindow(toga.Window):
         if hasattr(self, "app") and self.app and hasattr(self.app, "main_window"):
             try:
                 selected = await self.app.main_window.select_folder_dialog(
-                    title="Select Destination Directory",
+                    title=t("dialog_select_dest_dir_title"),
                 )
                 if selected:
                     self.input_dest_dir.value = str(selected)
@@ -237,7 +238,7 @@ class WizardWindow(toga.Window):
         if hasattr(self, "app") and self.app and hasattr(self.app, "main_window"):
             try:
                 selected = await self.app.main_window.select_folder_dialog(
-                    title="Select Data Directory",
+                    title=t("dialog_select_data_dir_title"),
                 )
                 if selected:
                     self.input_data_dir.value = str(selected)
@@ -273,13 +274,13 @@ class WizardWindow(toga.Window):
         if self.current_step == 1:
             path_str = self.input_app_path.value.strip()
             if not path_str:
-                await self.error_dialog("Input Required", "Please select or enter an application path.")
+                await self.error_dialog(t("dialog_input_required_title"), t("dialog_input_required_app_path"))
                 return
             try:
                 self.app_info = AppInspector.inspect(path_str)
             except Exception as e:
                 # Fallback probe or show error
-                await self.error_dialog("Error", f"Failed to inspect app: {e}")
+                await self.error_dialog(t("dialog_error_title"), f"Failed to inspect app: {e}")
                 return
 
             # Recipe matching: try built-in library first (consistent with CLI cmd_clone logic),
@@ -294,14 +295,14 @@ class WizardWindow(toga.Window):
                 self.recipe = probe_res.recipe
                 self._recipe_from_probe = True
 
-            self.label_recipe_app.text = f"App Name: {self.app_info.app_name}"
-            self.label_recipe_bundle.text = f"Bundle ID: {self.app_info.bundle_id}"
-            self.label_recipe_strat.text = f"Matched Strategy: {self.recipe.strategy}"
+            self.label_recipe_app.text = f"{t('probe_row_app_name')}: {self.app_info.app_name}"
+            self.label_recipe_bundle.text = f"{t('probe_row_bundle_id')}: {self.app_info.bundle_id}"
+            self.label_recipe_strat.text = f"{t('probe_row_strategy')}: {self.recipe.strategy}"
             self.select_recipe_strat.value = self.recipe.strategy
             if self._recipe_from_probe:
-                self.label_recipe_origin.text = "ℹ️ No built-in Recipe found — strategy auto-detected via Probe analysis."
+                self.label_recipe_origin.text = t("win_wizard_step2_origin_probe")
             else:
-                self.label_recipe_origin.text = "✅ Matched built-in Recipe from library."
+                self.label_recipe_origin.text = t("win_wizard_step2_origin_builtin")
 
         elif self.current_step == 2:
             self.recipe.strategy = str(self.select_recipe_strat.value)
@@ -314,33 +315,34 @@ class WizardWindow(toga.Window):
         elif self.current_step == 3:
             clone_name = self.input_clone_name.value.strip()
             if not clone_name:
-                await self.error_dialog("Input Required", "Clone name cannot be empty.")
+                await self.error_dialog(t("dialog_input_required_title"), t("dialog_input_required_clone_name"))
                 return
 
         elif self.current_step == 4:
             dest_dir = self.input_dest_dir.value.strip()
             if not dest_dir:
-                await self.error_dialog("Input Required", "Destination directory cannot be empty.")
+                await self.error_dialog(t("dialog_input_required_title"), t("dialog_input_required_dest_dir"))
                 return
             clone_name = self.input_clone_name.value.strip()
             self.input_data_dir.value = str(DEFAULT_DATA_DIR / clone_name)
             if not supports_data_dir(self.recipe):
-                self.label_data_dir_support.text = "⚠️ Custom Data Directory is not supported by this Recipe strategy."
+                self.label_data_dir_support.text = t("win_wizard_step5_unsupported")
                 self.input_data_dir.readonly = True
             else:
-                self.label_data_dir_support.text = "✅ Data Directory isolation supported."
+                self.label_data_dir_support.text = t("win_wizard_step5_supported")
                 self.input_data_dir.readonly = False
 
         elif self.current_step == 6:
             # Prepare summary for step 7
             clone_name = self.input_clone_name.value.strip()
+            proxy_str = t("list_proxy_enabled") if self.switch_proxy.value else t("list_proxy_disabled")
             summary_text = (
-                f"Source: {self.app_info.app_name} ({self.app_info.bundle_id})\n"
-                f"Clone Name: {clone_name}\n"
-                f"Strategy: {self.recipe.strategy}\n"
-                f"Destination: {self.input_dest_dir.value}/{clone_name}.app\n"
-                f"Data Directory: {self.input_data_dir.value}\n"
-                f"Proxy: {'Enabled' if self.switch_proxy.value else 'Disabled'}"
+                f"{t('card_label_source', source_app=self.app_info.app_name)} ({self.app_info.bundle_id})\n"
+                f"{t('list_col_name')}: {clone_name}\n"
+                f"{t('list_col_strategy')}: {self.recipe.strategy}\n"
+                f"{t('list_col_destination', default='Destination')}: {self.input_dest_dir.value}/{clone_name}.app\n"
+                f"{t('win_wizard_step5_label')}: {self.input_data_dir.value}\n"
+                f"{t('list_col_proxy')}: {proxy_str}"
             )
             self.label_summary.text = summary_text
 
@@ -355,7 +357,7 @@ class WizardWindow(toga.Window):
     async def _execute_clone(self):
         self.btn_next.enabled = False
         self.btn_prev.enabled = False
-        self.label_status.text = "⏳ Cloning application in background..."
+        self.label_status.text = t("win_wizard_status_cloning")
         self.progress_bar.start()  # start indeterminate spinner
 
         clone_name = self.input_clone_name.value.strip()
@@ -394,16 +396,20 @@ class WizardWindow(toga.Window):
         try:
             await self.clone_service.create_clone(task)
             self.progress_bar.stop()
-            self.label_status.text = f"🎉 Successfully created clone at {dest_path}!"
+            self.label_status.text = t("win_wizard_status_success", path=str(dest_path))
             logger.info(f"Wizard finished successfully for clone '{clone_name}'")
             if self.on_complete_callback:
                 await self.on_complete_callback()
-            await self.info_dialog("Success", f"Clone created successfully!\n{dest_path}")
+            await self.info_dialog(
+                t("dialog_clone_success_title"),
+                t("dialog_clone_success_msg", path=str(dest_path)),
+            )
             self.close()
         except Exception as e:
             self.progress_bar.stop()
-            self.label_status.text = f"❌ Clone failed: {e}"
+            self.label_status.text = t("win_wizard_status_failed", error=str(e))
             logger.error(f"Wizard failed to create clone '{clone_name}': {e}")
-            await self.error_dialog("Clone Error", str(e))
+            await self.error_dialog(t("dialog_clone_error_title"), str(e))
             self.btn_next.enabled = True
             self.btn_prev.enabled = True
+

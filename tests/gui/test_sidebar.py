@@ -29,3 +29,14 @@ def test_sidebar_brand_header():
         isinstance(sub, toga.Box) and any("ATBClone" in l.text for l in sub.children if isinstance(l, toga.Label))
         for sub in header_box.children
     )
+
+
+def test_sidebar_nav_retranslate():
+    from atbclone.core.i18n import set_language
+    set_language("en")
+    sidebar = SidebarNav(on_select=lambda k: None)
+    assert "Clones" in sidebar.buttons["clones"].text
+    set_language("zh")
+    sidebar.retranslate()
+    assert "我的分身" in sidebar.buttons["clones"].text
+

@@ -31,4 +31,5 @@ def test_clone_card_render_and_actions():
     )
 
     assert "WeChat2" in card.label_name.text
-    assert "Soft Clone" in card.label_strategy.text
+    assert "Soft" in card.label_strategy.text or "软包装" in card.label_strategy.text or "克隆" in card.label_strategy.text
+

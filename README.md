@@ -25,23 +25,37 @@
 
 | Category | Application | Bundle Identifier | Strategy | Strip Sandbox |
 | :--- | :--- | :--- | :--- | :---: |
-| **Instant Messaging** | WeChat | `com.tencent.xinWeChat` | Hard Clone | ✘ |
+| **Instant Messaging & Collaboration** | WeChat | `com.tencent.xinWeChat` | Hard Clone | ✘ |
 | | QQ | `com.tencent.qq` | Hard Clone | ✘ |
-| | Telegram | `ph.telegra.Telegraph` | Hard Clone | ✘ |
+| | WeCom (企业微信) | `com.tencent.WeWorkMac` | Hard Clone | ✅ |
+| | Lark (飞书) | `com.electron.lark` | Hard Clone | ✘ |
+| | Telegram (Native Swift) | `ru.keepcoder.Telegram` | Hard Clone | ✘ |
+| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | ✘ |
 | | LINE | `jp.naver.line.mac` | Hard Clone | ✅ |
 | | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | ✘ |
 | | Discord | `com.hnc.Discord` | Hard Clone | ✘ |
 | | Skype | `com.skype.skype` | Hard Clone | ✅ |
 | **AI Clients** | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
+| | ChatGPT (Standard) | `com.openai.chat` | Hard Clone | ✅ |
 | | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
 | | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |
 | | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | ✘ |
 | **Browsers** | Google Chrome | `com.google.Chrome` | Soft Clone | — |
 | | Microsoft Edge | `com.microsoft.edgemac` | Soft Clone | — |
+| | Brave Browser | `com.brave.Browser` | Soft Clone | — |
 | | Firefox | `org.mozilla.firefox` | Soft Clone | — |
+| | Tor Browser | `org.torproject.torbrowser` | Soft Clone | — |
 | | Arc Browser | `company.thebrowser.Browser` | Soft Clone | — |
+| **Media & Entertainment** | Bilibili (哔哩哔哩) | `com.bilibili.bilibiliPC` | Hard Clone | ✘ |
+| | Douyin (抖音) | `com.bytedance.douyin.desktop` | Hard Clone | ✅ |
+| | Netease Music (网易云音乐) | `com.netease.163music` | Hard Clone | ✅ |
+| | Steam | `com.valvesoftware.steam` | Hard Clone | ✘ |
+| **Productivity & Utilities** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | ✅ |
+| | VideoFusion (剪映专业版) | `com.lemon.lvpro` | Hard Clone | ✅ |
+| | CapCut | `com.lemon.lvoverseas` | Hard Clone | ✅ |
 | **Developer Tools** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | — |
 | | VS Code | `com.microsoft.VSCode` | Soft Clone | — |
+| | Android Studio | `com.google.android.studio` | Hard Clone | ✘ |
 | | Zed | `dev.zed.Zed` | Soft Clone | — |
 
 ---
@@ -145,7 +159,7 @@ Example output:
 ┃ 名称     ┃ 原 APP  ┃ Bundle ID            ┃ 策略       ┃ 创建时间         ┃ 代理                   ┃
 ┡━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
 │ 微信2    │ 微信    │ com.tencent.xinWeChat │ hard_clone │ 2026-08-18 22:30 │ 未开启                 │
-│ TG-Proxy │ Telegram│ ph.telegra.Telegraph │ hard_clone │ 2026-08-18 22:45 │ http://127.0.0.1:7890  │
+│ TG-Proxy │ Telegram│ ru.keepcoder.Telegram │ hard_clone │ 2026-08-18 22:45 │ http://127.0.0.1:7890  │
 │ Chrome2  │ Chrome  │ com.google.Chrome    │ soft_clone │ 2026-08-18 23:00 │ 未开启                 │
 └──────────┴─────────┴━━━━━━━━━━━━━━━━━━━━━━┴━━━━━━━━━━━━┴━━━━━━━━━━━━━━━━━━┴━━━━━━━━━━━━━━━━━━━━━━━━┘
 ```

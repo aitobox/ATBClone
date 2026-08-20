@@ -1,0 +1,5 @@
+bundle_id: com.brave.Browser
+app_name: Brave Browser
+strategy: soft_clone
+launch_args:
+- --user-data-dir={{ATB_DATA_DIR}}

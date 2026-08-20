@@ -32,7 +32,7 @@ class RecipeListView(toga.Box):
         self.app_instance = app
         self._raw_recipes: list[dict] = []
         self._filtered_recipes: list[dict] = []
-        self.view_mode: str = "grid"  # "grid" or "list"
+        self.view_mode: str = "list"  # "grid" or "list"
         self.search_query: str = ""
 
         # Localized filter and sort labels
@@ -58,19 +58,19 @@ class RecipeListView(toga.Box):
             on_filter_change=self.on_filter_changed,
             sort_items=[self.sort_name_asc, self.sort_name_desc, self.sort_strategy],
             on_sort_change=self.on_sort_changed,
-            view_modes=[t("topbar_view_grid"), t("topbar_view_list")],
+            view_modes=[t("topbar_view_list"), t("topbar_view_grid")],
             on_view_change=self.on_view_mode_changed,
             on_refresh=lambda w: asyncio.create_task(self.refresh_recipes()),
         )
         self.add(self.top_bar)
 
         # Content container
-        self.content_container = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=(0, 20, 20, 20)))
+        self.content_container = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=(0, 24, 20, 24)))
         self.add(self.content_container)
 
         # Grid view scroll container & flow box
         self.grid_scroll = toga.ScrollContainer(style=Pack(flex=1), horizontal=False)
-        self.grid_box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+        self.grid_box = toga.Box(style=Pack(direction=COLUMN, margin=4))
         self.grid_scroll.content = self.grid_box
 
         # Table view container & action bar
@@ -87,11 +87,11 @@ class RecipeListView(toga.Box):
         )
         self.table_box.add(self.table)
 
-        self.btn_edit = toga.Button(t("btn_edit"), on_press=self.on_edit_recipe, enabled=False, style=Pack(margin=4))
-        self.btn_copy = toga.Button(t("btn_copy_as_custom"), on_press=self.on_copy_recipe, enabled=False, style=Pack(margin=4))
-        self.btn_delete = toga.Button(t("btn_delete"), on_press=self.on_delete_recipe, enabled=False, style=Pack(margin=4))
+        self.btn_edit = toga.Button(t("btn_edit"), on_press=self.on_edit_recipe, enabled=False, style=Pack(margin_right=6, height=26, font_size=12))
+        self.btn_copy = toga.Button(t("btn_copy_as_custom"), on_press=self.on_copy_recipe, enabled=False, style=Pack(margin_right=6, height=26, font_size=12))
+        self.btn_delete = toga.Button(t("btn_delete"), on_press=self.on_delete_recipe, enabled=False, style=Pack(height=26, font_size=12))
 
-        actions_box = toga.Box(style=Pack(direction=ROW, margin_top=6))
+        actions_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=10))
         actions_box.add(self.btn_edit)
         actions_box.add(self.btn_copy)
         actions_box.add(self.btn_delete)
@@ -100,7 +100,7 @@ class RecipeListView(toga.Box):
         # Empty state label
         self.label_empty = toga.Label(
             t("view_recipes_empty_hint"),
-            style=Pack(margin=30, font_size=13, color=Theme.TEXT_MUTED),
+            style=Pack(margin=36, font_size=15, color=Theme.TEXT_MUTED),
         )
 
         self._render_current_view()
@@ -179,7 +179,7 @@ class RecipeListView(toga.Box):
             ROW_SIZE = 2
             for i in range(0, len(self._filtered_recipes), ROW_SIZE):
                 chunk = self._filtered_recipes[i : i + ROW_SIZE]
-                row_box = toga.Box(style=Pack(direction=ROW, margin_bottom=10))
+                row_box = toga.Box(style=Pack(direction=ROW, margin_bottom=12))
                 for item in chunk:
                     card = self._create_recipe_card(item)
                     row_box.add(card)
@@ -203,31 +203,31 @@ class RecipeListView(toga.Box):
         recipe: Recipe = item["recipe"]
         is_builtin = item.get("is_builtin", False)
 
-        card = toga.Box(style=Pack(direction=COLUMN, margin=8, width=290, background_color=Theme.BG_CARD))
+        card = toga.Box(style=Pack(direction=COLUMN, margin=(6, 8, 6, 8), width=340, background_color=Theme.BG_CARD))
 
         # Header
-        header = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=6))
-        header.add(toga.Label(f"📖 {recipe.app_name}", style=Pack(font_weight="bold", font_size=14, flex=1, color=Theme.TEXT_PRIMARY)))
+        header = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(14, 16, 8, 16)))
+        header.add(toga.Label(f"📖 {recipe.app_name}", style=Pack(font_weight="bold", font_size=16, flex=1, color=Theme.TEXT_PRIMARY)))
         origin_text = f"[{t('view_recipes_origin_builtin')}]" if is_builtin else f"[{t('view_recipes_origin_custom')}]"
         origin_color = Theme.ACCENT_BLUE if is_builtin else Theme.BTN_SUCCESS
-        header.add(toga.Label(origin_text, style=Pack(font_size=11, color=origin_color)))
+        header.add(toga.Label(origin_text, style=Pack(font_size=13, font_weight="bold", color=origin_color)))
         card.add(header)
 
         # Body
-        body = toga.Box(style=Pack(direction=COLUMN, margin_bottom=8))
-        body.add(toga.Label(f"Bundle ID: {recipe.bundle_id}", style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_bottom=2)))
+        body = toga.Box(style=Pack(direction=COLUMN, margin=(0, 16, 12, 16)))
+        body.add(toga.Label(f"Bundle ID: {recipe.bundle_id}", style=Pack(font_size=14, color=Theme.TEXT_MUTED, margin_bottom=4)))
         strat_badge = t("card_strategy_hard") if recipe.strategy == "hard_clone" else t("card_strategy_soft")
-        body.add(toga.Label(f"策略: {strat_badge}", style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_bottom=2)))
+        body.add(toga.Label(f"策略: {strat_badge}", style=Pack(font_size=14, color=Theme.TEXT_MUTED)))
         card.add(body)
 
         # Footer
-        actions = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=4))
-        btn_copy = toga.Button(t("btn_copy"), on_press=lambda w: asyncio.create_task(self._copy_recipe_direct(recipe)), style=Pack(margin_right=4, flex=1))
+        actions = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(0, 16, 14, 16)))
+        btn_copy = toga.Button(t("btn_copy"), on_press=lambda w: asyncio.create_task(self._copy_recipe_direct(recipe)), style=Pack(font_weight="bold", font_size=14, height=32, margin_right=6, flex=1))
         actions.add(btn_copy)
 
         if not is_builtin:
-            btn_edit = toga.Button("✏️", on_press=lambda w: self._open_edit_dialog(recipe), style=Pack(margin_right=4, width=36))
-            btn_del = toga.Button("🗑️", on_press=lambda w: asyncio.create_task(self._delete_recipe_direct(recipe.bundle_id)), style=Pack(width=36))
+            btn_edit = toga.Button("✏️", on_press=lambda w: self._open_edit_dialog(recipe), style=Pack(margin_right=4, width=36, height=32))
+            btn_del = toga.Button("🗑️", on_press=lambda w: asyncio.create_task(self._delete_recipe_direct(recipe.bundle_id)), style=Pack(width=36, height=32))
             actions.add(btn_edit)
             actions.add(btn_del)
 

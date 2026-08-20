@@ -52,12 +52,12 @@ def test_recipe_list_view_refresh(tmp_path):
         view = RecipeListView(recipe_service=service)
         await view.refresh_recipes()
         assert len(view._raw_recipes) > 0
-        assert view.view_mode == "grid"
-
-        # Toggle mode
-        view.on_view_mode_changed("list")
         assert view.view_mode == "list"
         assert len(view.table.data) > 0
+
+        # Toggle mode
+        view.on_view_mode_changed("grid")
+        assert view.view_mode == "grid"
 
         # Search filter
         view.on_search_query_changed("WeChat")

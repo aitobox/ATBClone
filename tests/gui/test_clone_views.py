@@ -77,12 +77,12 @@ def test_clone_list_view_refresh(tmp_path):
         view = CloneListView(clone_service=service)
         await view.refresh_clones()
         assert len(view._raw_clones) == 1
-        assert view.view_mode == "grid"
-
-        # Toggle to list mode
-        view.on_view_mode_changed("list")
         assert view.view_mode == "list"
         assert len(view.table.data) == 1
+
+        # Toggle to grid mode
+        view.on_view_mode_changed("grid")
+        assert view.view_mode == "grid"
 
         # Search filter
         view.on_search_query_changed("NotMatching")

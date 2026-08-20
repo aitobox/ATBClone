@@ -17,13 +17,13 @@ class SidebarNav(toga.Box):
     BOTTOM_NAV_KEYS = ["logs", "settings"]
 
     def __init__(self, on_select: Callable[[str], None], active_key: str = "clones"):
-        super().__init__(style=Pack(direction=COLUMN, width=180, margin=0, background_color=Theme.BG_SIDEBAR))
+        super().__init__(style=Pack(direction=COLUMN, width=195, margin=0, background_color=Theme.BG_SIDEBAR))
         self.on_select = on_select
         self.active_key = active_key
         self.buttons: Dict[str, toga.Button] = {}
 
         # Brand header with logo icon
-        header_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(16, 12, 12, 12)))
+        header_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(18, 14, 14, 14)))
 
         logo_path = get_app_icon_path("png")
         if logo_path and logo_path.exists():
@@ -35,20 +35,20 @@ class SidebarNav(toga.Box):
                 pass
 
         title_box = toga.Box(style=Pack(direction=COLUMN))
-        title_label = toga.Label("ATBClone", style=Pack(font_weight="bold", font_size=16, color=Theme.TEXT_PRIMARY))
-        ver_label = toga.Label(f"v{__version__} App Cloner", style=Pack(font_size=10, color=Theme.TEXT_MUTED, margin_top=2))
+        title_label = toga.Label("ATBClone", style=Pack(font_weight="bold", font_size=15, color=Theme.TEXT_PRIMARY))
+        ver_label = toga.Label(f"v{__version__} App Cloner", style=Pack(font_size=10, color=Theme.TEXT_MUTED, margin_top=1))
         title_box.add(title_label)
         title_box.add(ver_label)
         header_box.add(title_box)
         self.add(header_box)
 
         # Main Navigation Section
-        self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=(4, 8, 4, 8)))
+        self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=(4, 10, 4, 10)))
         for key in self.MAIN_NAV_KEYS:
             btn = toga.Button(
                 t(f"nav_{key}"),
                 on_press=self._create_select_handler(key),
-                style=Pack(margin_bottom=4, height=32),
+                style=Pack(margin_bottom=5, height=30, font_size=13),
             )
             self.buttons[key] = btn
             self.main_box.add(btn)
@@ -58,12 +58,12 @@ class SidebarNav(toga.Box):
         self.add(toga.Box(style=Pack(flex=1)))
 
         # Bottom Fixed Navigation Section
-        self.bottom_box = toga.Box(style=Pack(direction=COLUMN, margin=(4, 8, 12, 8)))
+        self.bottom_box = toga.Box(style=Pack(direction=COLUMN, margin=(4, 10, 14, 10)))
         for key in self.BOTTOM_NAV_KEYS:
             btn = toga.Button(
                 t(f"nav_{key}"),
                 on_press=self._create_select_handler(key),
-                style=Pack(margin_bottom=4, height=30),
+                style=Pack(margin_bottom=4, height=28, font_size=13),
             )
             self.buttons[key] = btn
             self.bottom_box.add(btn)

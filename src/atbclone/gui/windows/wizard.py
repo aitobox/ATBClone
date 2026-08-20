@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Callable, Coroutine, Any
 import toga
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW
+from toga.style.pack import COLUMN, ROW, CENTER
 
 from atbclone.core.app_inspector import AppInspector
 from atbclone.core.clone_task import CloneTask
@@ -16,8 +16,10 @@ from atbclone.core.models import AppInfo
 from atbclone.gui.services.clone_service import CloneService
 from atbclone.gui.services.probe_service import ProbeService
 from atbclone.recipes.loader import RecipeLoader
+from atbclone.recipes.loader import RecipeLoader
 from atbclone.recipes.models import Recipe, ProxyConfig, supports_data_dir
 from atbclone.gui.patch_cocoa import patch_cocoa_widgets, configure_cocoa_window
+from atbclone.gui.theme import Theme
 
 logger = get_logger("gui.wizard")
 
@@ -32,7 +34,7 @@ class WizardWindow(toga.Window):
         on_complete: Callable[[], Coroutine[Any, Any, None]] | None = None,
     ):
         patch_cocoa_widgets()
-        super().__init__(title=t("win_wizard_title"), size=(560, 520))
+        super().__init__(title=t("win_wizard_title"), size=(580, 530))
         configure_cocoa_window(self, floating=True)
 
         self.clone_service = clone_service or CloneService()
@@ -46,16 +48,16 @@ class WizardWindow(toga.Window):
         # Step indicator label
         self.label_step_header = toga.Label(
             t("win_wizard_step1_header"),
-            style=Pack(font_size=15, font_weight="bold", margin_bottom=10),
+            style=Pack(font_size=15, font_weight="bold", margin_bottom=12, color=Theme.TEXT_PRIMARY),
         )
 
         # Dynamic container for step forms
-        self.step_container = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=10))
+        self.step_container = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=6))
 
         # Bottom navigation buttons
-        self.btn_prev = toga.Button(t("win_wizard_btn_back"), on_press=lambda w: asyncio.create_task(self.go_prev()), enabled=False, style=Pack(margin=5))
-        self.btn_next = toga.Button(t("win_wizard_btn_next"), on_press=lambda w: asyncio.create_task(self.go_next()), style=Pack(margin=5))
-        self.btn_cancel = toga.Button(t("btn_cancel"), on_press=lambda w: self.close(), style=Pack(margin=5))
+        self.btn_prev = toga.Button(t("win_wizard_btn_back"), on_press=lambda w: asyncio.create_task(self.go_prev()), enabled=False, style=Pack(margin=4, height=32, font_size=14))
+        self.btn_next = toga.Button(t("win_wizard_btn_next"), on_press=lambda w: asyncio.create_task(self.go_next()), style=Pack(margin=4, height=32, font_size=14))
+        self.btn_cancel = toga.Button(t("btn_cancel"), on_press=lambda w: self.close(), style=Pack(margin=4, height=32, font_size=14))
 
         # Initialize UI elements for all 7 steps
         self._init_step_widgets()
@@ -71,16 +73,16 @@ class WizardWindow(toga.Window):
 
     def _init_step_widgets(self):
         # Step 1: Select App
-        self.input_app_path = toga.TextInput(placeholder="/Applications/Example.app", style=Pack(flex=1))
-        self.btn_browse_app = toga.Button(t("btn_browse_app"), on_press=self._on_browse_app, style=Pack(margin_left=5))
+        self.input_app_path = toga.TextInput(placeholder="/Applications/Example.app", style=Pack(flex=1, margin_right=8, font_size=14))
+        self.btn_browse_app = toga.Button(t("btn_browse_app"), on_press=self._on_browse_app, style=Pack(width=96, height=32, font_size=14))
 
         # Step 2: Recipe Info
-        self.label_recipe_app = toga.Label(f"{t('probe_row_app_name')}: —", style=Pack(margin=4))
-        self.label_recipe_bundle = toga.Label(f"{t('probe_row_bundle_id')}: —", style=Pack(margin=4))
-        self.label_recipe_strat = toga.Label(f"{t('probe_row_strategy')}: —", style=Pack(margin=4))
-        self.select_recipe_strat = toga.Selection(items=["hard_clone", "soft_clone"], style=Pack(margin=4, width=150))
+        self.label_recipe_app = toga.Label(f"{t('probe_row_app_name')}: —", style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=4))
+        self.label_recipe_bundle = toga.Label(f"{t('probe_row_bundle_id')}: —", style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=4))
+        self.label_recipe_strat = toga.Label(f"{t('probe_row_strategy')}: —", style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=4))
+        self.select_recipe_strat = toga.Selection(items=["hard_clone", "soft_clone"], style=Pack(width=160, font_size=14))
         # Shows whether recipe came from built-in library or Probe analysis
-        self.label_recipe_origin = toga.Label("", style=Pack(margin=4, font_style="italic"))
+        self.label_recipe_origin = toga.Label("", style=Pack(font_size=12, font_style="italic", margin_bottom=6))
 
         # Step 3: Naming
         self._display_name_customized = False
@@ -88,40 +90,40 @@ class WizardWindow(toga.Window):
         self.input_clone_name = toga.TextInput(
             placeholder="e.g. WeChat2",
             on_change=self._on_clone_name_change,
-            style=Pack(flex=1),
+            style=Pack(flex=1, font_size=14),
         )
         self.input_display_name = toga.TextInput(
             placeholder="Display name in Dock/Finder",
             on_change=self._on_display_name_change,
-            style=Pack(flex=1),
+            style=Pack(flex=1, font_size=14),
         )
 
         # Step 4: Destination Directory
-        self.input_dest_dir = toga.TextInput(value=str(DEFAULT_APPS_DIR), style=Pack(flex=1))
-        self.btn_browse_dest = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_dest, style=Pack(margin_left=5))
+        self.input_dest_dir = toga.TextInput(value=str(DEFAULT_APPS_DIR), style=Pack(flex=1, margin_right=8, font_size=14))
+        self.btn_browse_dest = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_dest, style=Pack(width=96, height=32, font_size=14))
 
         # Step 5: Data Directory
-        self.label_data_dir_support = toga.Label(t("win_wizard_step5_supported"), style=Pack(margin=4))
-        self.input_data_dir = toga.TextInput(style=Pack(flex=1))
-        self.btn_browse_data = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_data, style=Pack(margin_left=5))
+        self.label_data_dir_support = toga.Label(t("win_wizard_step5_supported"), style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=6))
+        self.input_data_dir = toga.TextInput(style=Pack(flex=1, margin_right=8, font_size=14))
+        self.btn_browse_data = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_data, style=Pack(width=96, height=32, font_size=14))
 
         # Step 6: Proxy Settings
-        self.switch_proxy = toga.Switch(t("win_wizard_step6_switch"), value=False, style=Pack(margin=5))
-        self.select_proxy_type = toga.Selection(items=["http", "socks5"], style=Pack(width=100))
-        self.input_proxy_host = toga.TextInput(value="127.0.0.1", style=Pack(flex=1))
-        self.input_proxy_port = toga.TextInput(value="7890", style=Pack(width=80))
+        self.switch_proxy = toga.Switch(t("win_wizard_step6_switch"), value=False, style=Pack(margin_bottom=10, font_size=14))
+        self.select_proxy_type = toga.Selection(items=["http", "https", "socks5"], style=Pack(width=105, margin_right=8, font_size=14))
+        self.input_proxy_host = toga.TextInput(value="127.0.0.1", style=Pack(flex=1, margin_right=8, font_size=14))
+        self.input_proxy_port = toga.TextInput(value="7890", style=Pack(width=90, font_size=14))
 
         # Step 7: Confirmation & Execution
-        self.label_summary = toga.Label("", style=Pack(margin=5))
-        self.label_status = toga.Label(t("win_wizard_status_ready"), style=Pack(margin=5, font_weight="bold"))
-        self.progress_bar = toga.ProgressBar(max=None, style=Pack(flex=1, margin=5))  # indeterminate
+        self.label_summary = toga.Label("", style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=10))
+        self.label_status = toga.Label(t("win_wizard_status_ready"), style=Pack(font_size=14, font_weight="bold", margin_bottom=8, color=Theme.TEXT_PRIMARY))
+        self.progress_bar = toga.ProgressBar(max=None, style=Pack(flex=1, margin_top=4))  # indeterminate
 
     def _build_layout(self) -> toga.Box:
-        root = toga.Box(style=Pack(direction=COLUMN, margin=15, flex=1))
+        root = toga.Box(style=Pack(direction=COLUMN, margin=(18, 20, 18, 20), flex=1))
         root.add(self.label_step_header)
         root.add(self.step_container)
 
-        nav_box = toga.Box(style=Pack(direction=ROW, margin_top=10))
+        nav_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=14))
         nav_box.add(self.btn_cancel)
         nav_box.add(toga.Box(style=Pack(flex=1)))
         nav_box.add(self.btn_prev)
@@ -139,9 +141,9 @@ class WizardWindow(toga.Window):
 
         if self.current_step == 1:
             self.label_step_header.text = t("win_wizard_step1_header")
-            box = toga.Box(style=Pack(direction=COLUMN, margin=5))
-            box.add(toga.Label(t("win_wizard_step1_desc"), style=Pack(margin_bottom=8)))
-            row = toga.Box(style=Pack(direction=ROW))
+            box = toga.Box(style=Pack(direction=COLUMN, margin=4))
+            box.add(toga.Label(t("win_wizard_step1_desc"), style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=10)))
+            row = toga.Box(style=Pack(direction=ROW, align_items=CENTER))
             row.add(self.input_app_path)
             row.add(self.btn_browse_app)
             box.add(row)
@@ -149,36 +151,36 @@ class WizardWindow(toga.Window):
 
         elif self.current_step == 2:
             self.label_step_header.text = t("win_wizard_step2_header")
-            box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+            box = toga.Box(style=Pack(direction=COLUMN, margin=4))
             box.add(self.label_recipe_app)
             box.add(self.label_recipe_bundle)
             box.add(self.label_recipe_strat)
             box.add(self.label_recipe_origin)
-            row_strat = toga.Box(style=Pack(direction=ROW, margin_top=5))
-            row_strat.add(toga.Label(t("win_wizard_step2_select_strat"), style=Pack(width=130)))
+            row_strat = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=8))
+            row_strat.add(toga.Label(t("win_wizard_step2_select_strat"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
             row_strat.add(self.select_recipe_strat)
             box.add(row_strat)
             self.step_container.add(box)
 
         elif self.current_step == 3:
             self.label_step_header.text = t("win_wizard_step3_header")
-            box = toga.Box(style=Pack(direction=COLUMN, margin=5))
-            row_name = toga.Box(style=Pack(direction=ROW, margin=5))
-            row_name.add(toga.Label(t("win_wizard_step3_clone_name"), style=Pack(width=130)))
+            box = toga.Box(style=Pack(direction=COLUMN, margin=4))
+            row_name = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=8))
+            row_name.add(toga.Label(t("win_wizard_step3_clone_name"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
             row_name.add(self.input_clone_name)
             box.add(row_name)
 
-            row_disp = toga.Box(style=Pack(direction=ROW, margin=5))
-            row_disp.add(toga.Label(t("win_wizard_step3_display_name"), style=Pack(width=130)))
+            row_disp = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=8))
+            row_disp.add(toga.Label(t("win_wizard_step3_display_name"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
             row_disp.add(self.input_display_name)
             box.add(row_disp)
             self.step_container.add(box)
 
         elif self.current_step == 4:
             self.label_step_header.text = t("win_wizard_step4_header")
-            box = toga.Box(style=Pack(direction=COLUMN, margin=5))
-            box.add(toga.Label(t("win_wizard_step4_desc"), style=Pack(margin_bottom=8)))
-            row = toga.Box(style=Pack(direction=ROW))
+            box = toga.Box(style=Pack(direction=COLUMN, margin=4))
+            box.add(toga.Label(t("win_wizard_step4_desc"), style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=10)))
+            row = toga.Box(style=Pack(direction=ROW, align_items=CENTER))
             row.add(self.input_dest_dir)
             row.add(self.btn_browse_dest)
             box.add(row)
@@ -186,10 +188,10 @@ class WizardWindow(toga.Window):
 
         elif self.current_step == 5:
             self.label_step_header.text = t("win_wizard_step5_header")
-            box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+            box = toga.Box(style=Pack(direction=COLUMN, margin=4))
             box.add(self.label_data_dir_support)
-            row = toga.Box(style=Pack(direction=ROW, margin_top=8))
-            row.add(toga.Label(t("win_wizard_step5_label"), style=Pack(width=130)))
+            row = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=8))
+            row.add(toga.Label(t("win_wizard_step5_label"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
             row.add(self.input_data_dir)
             if not self.input_data_dir.readonly:
                 row.add(self.btn_browse_data)
@@ -198,10 +200,10 @@ class WizardWindow(toga.Window):
 
         elif self.current_step == 6:
             self.label_step_header.text = t("win_wizard_step6_header")
-            box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+            box = toga.Box(style=Pack(direction=COLUMN, margin=4))
             box.add(self.switch_proxy)
-            row = toga.Box(style=Pack(direction=ROW, margin=5))
-            row.add(toga.Label(t("win_wizard_step6_type_host_port"), style=Pack(width=130)))
+            row = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=6))
+            row.add(toga.Label(t("win_wizard_step6_type_host_port"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
             row.add(self.select_proxy_type)
             row.add(self.input_proxy_host)
             row.add(self.input_proxy_port)
@@ -210,7 +212,7 @@ class WizardWindow(toga.Window):
 
         elif self.current_step == 7:
             self.label_step_header.text = t("win_wizard_step7_header")
-            box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+            box = toga.Box(style=Pack(direction=COLUMN, margin=4))
             box.add(self.label_summary)
             box.add(self.label_status)
             box.add(self.progress_bar)

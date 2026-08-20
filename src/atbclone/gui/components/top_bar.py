@@ -34,12 +34,12 @@ class TopHeaderBar(toga.Box):
         on_view_change: Optional[Callable[[str], None]] = None,
         on_refresh: Optional[Callable[[toga.Button], None]] = None,
     ):
-        super().__init__(style=Pack(direction=COLUMN, margin=(16, 20, 10, 20)))
+        super().__init__(style=Pack(direction=COLUMN, margin=(18, 24, 12, 24)))
         self.on_search_cb = on_search
         self.on_view_change_cb = on_view_change
         self.on_filter_cb = on_filter_change
         self.on_sort_cb = on_sort_change
-        self.current_view_mode: str = "grid"
+        self.current_view_mode: str = "list"
 
         if action_label is None and on_action:
             action_label = t("btn_new_clone")
@@ -47,7 +47,7 @@ class TopHeaderBar(toga.Box):
             search_placeholder = t("topbar_search_placeholder")
 
         # 1. Big Feature Area Section Title Row (大标题 + 紧随其后的新建/操作主按钮)
-        title_row = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=10))
+        title_row = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=12))
         if title:
             self.label_title = toga.Label(
                 title,
@@ -61,7 +61,7 @@ class TopHeaderBar(toga.Box):
             self.btn_action = toga.Button(
                 action_label,
                 on_press=on_action,
-                style=Pack(font_weight="bold", height=32),
+                style=Pack(font_weight="bold", font_size=13, height=30),
             )
             title_row.add(self.btn_action)
         else:
@@ -70,7 +70,7 @@ class TopHeaderBar(toga.Box):
         self.add(title_row)
 
         # Divider separating title row from action toolbar
-        self.divider = toga.Divider(style=Pack(margin=(4, 0, 14, 0)))
+        self.divider = toga.Divider(style=Pack(margin=(2, 0, 12, 0)))
         self.add(self.divider)
 
         # 2. Pinned Compact Action Toolbar Row
@@ -81,7 +81,7 @@ class TopHeaderBar(toga.Box):
             self.input_search = toga.TextInput(
                 placeholder=search_placeholder,
                 on_change=self._handle_search,
-                style=Pack(width=180, margin_right=10),
+                style=Pack(width=190, margin_right=10),
             )
             toolbar_row.add(self.input_search)
         else:
@@ -92,7 +92,7 @@ class TopHeaderBar(toga.Box):
             self.select_filter = toga.Selection(
                 items=filter_items,
                 on_change=self._handle_filter,
-                style=Pack(width=140, margin_right=10),
+                style=Pack(width=145, margin_right=10),
             )
             toolbar_row.add(self.select_filter)
 
@@ -101,13 +101,13 @@ class TopHeaderBar(toga.Box):
             self.select_sort = toga.Selection(
                 items=sort_items,
                 on_change=self._handle_sort,
-                style=Pack(width=130, margin_right=10),
+                style=Pack(width=135, margin_right=10),
             )
             toolbar_row.add(self.select_sort)
 
-        # (d) View Mode dropdown (卡片视图 / 列表视图 下拉单选框)
+        # (d) View Mode dropdown (列表视图 / 卡片视图 下拉单选框)
         if on_view_change:
-            view_items = view_modes or [t("topbar_view_grid"), t("topbar_view_list")]
+            view_items = view_modes or [t("topbar_view_list"), t("topbar_view_grid")]
             self.select_view = toga.Selection(
                 items=view_items,
                 on_change=self._handle_view_change,
@@ -120,7 +120,7 @@ class TopHeaderBar(toga.Box):
 
         # (f) Refresh Button at far right
         if on_refresh:
-            self.btn_refresh = toga.Button(t("topbar_btn_refresh"), on_press=on_refresh, style=Pack(width=72))
+            self.btn_refresh = toga.Button(t("topbar_btn_refresh"), on_press=on_refresh, style=Pack(width=76, height=28, font_size=13))
             toolbar_row.add(self.btn_refresh)
 
         if len(toolbar_row.children) > 1 or (len(toolbar_row.children) == 1 and on_refresh):

@@ -4,9 +4,9 @@ from atbclone.gui.components.top_bar import TopHeaderBar
 
 
 def test_theme_constants():
-    assert Theme.BG_WINDOW == "#F8FAFC"
-    assert Theme.BG_SIDEBAR == "#EEF4FB"
-    assert Theme.ACCENT_BLUE == "#2563EB"
+    assert Theme.BG_WINDOW == "#F5F5F7"
+    assert Theme.BG_SIDEBAR == "#ECECF0"
+    assert Theme.ACCENT_BLUE == "#007AFF"
     assert Theme.BG_CARD == "#FFFFFF"
 
 
@@ -44,7 +44,8 @@ def test_top_header_bar_initialization():
         on_sort_change=on_sort,
         on_view_change=on_view_change,
     )
-    bar2.set_view_mode("list")
     assert bar2.current_view_mode == "list"
-    on_view_change.assert_called_with("list")
+    bar2.set_view_mode("grid")
+    assert bar2.current_view_mode == "grid"
+    on_view_change.assert_called_with("grid")
 

@@ -6,8 +6,8 @@ from typing import Any
 _is_patched = False
 
 
-def configure_cocoa_text_field(native_text_field: Any) -> None:
-    """Configure an NSTextField for smooth single-line text editing and horizontal scrolling.
+def configure_cocoa_text_field(native_text_field: Any, font_size: float = 14.5) -> None:
+    """Configure an NSTextField for smooth single-line text editing, horizontal scrolling, and clear typography.
 
     By default, Toga Cocoa NSTextFieldCell has wraps=True and isScrollable=False.
     When long text (e.g. file paths) exceeds the text field width, Cocoa wraps the text
@@ -19,6 +19,7 @@ def configure_cocoa_text_field(native_text_field: Any) -> None:
     - cell.setWraps_(False)
     - cell.setLineBreakMode_(2)  # NSLineBreakByClipping
     - native.setUsesSingleLineMode_(True)
+    - native.setFont_(NSFont.systemFontOfSize_(font_size))
     """
     if sys.platform != "darwin" or native_text_field is None:
         return
@@ -33,6 +34,26 @@ def configure_cocoa_text_field(native_text_field: Any) -> None:
                 cell.setLineBreakMode_(2)  # NSLineBreakByClipping
         if hasattr(native_text_field, "setUsesSingleLineMode_"):
             native_text_field.setUsesSingleLineMode_(True)
+        if hasattr(native_text_field, "setFont_"):
+            from toga_cocoa.libs import NSFont
+            native_text_field.setFont_(NSFont.systemFontOfSize_(font_size))
+    except Exception:
+        pass
+
+
+def configure_cocoa_table(native_table: Any, row_height: float = 40.0) -> None:
+    """Configure an NSTableView with comfortable row height (40px) and crisp 15.0px header fonts."""
+    if sys.platform != "darwin" or native_table is None:
+        return
+    try:
+        if hasattr(native_table, "setRowHeight_"):
+            native_table.setRowHeight_(row_height)
+        from toga_cocoa.libs import NSFont
+        if hasattr(native_table, "tableColumns"):
+            for col in native_table.tableColumns:
+                header_cell = getattr(col, "headerCell", None)
+                if header_cell and hasattr(header_cell, "setFont_"):
+                    header_cell.setFont_(NSFont.boldSystemFontOfSize_(15.0))
     except Exception:
         pass
 
@@ -40,8 +61,11 @@ def configure_cocoa_text_field(native_text_field: Any) -> None:
 def patch_cocoa_widgets() -> None:
     """Apply monkeypatches to toga_cocoa widget implementations on macOS.
 
-    Ensures all single-line TextInput widgets in the app automatically support
-    horizontal scrolling, clipping line break mode, and smooth cursor movement.
+    Ensures:
+    - All single-line TextInput widgets support horizontal scrolling, clipping mode, and readable 14.5px fonts.
+    - All Switch (checkbox) widgets have comfortable 14.5px label fonts.
+    - All Selection (dropdown) widgets have comfortable 14.5px option fonts and support set_font.
+    - All Table widgets have spacious row height (40px), bold 15.0px headers, and prominent 15.5px cell fonts.
     """
     global _is_patched
     if _is_patched or sys.platform != "darwin":
@@ -49,14 +73,76 @@ def patch_cocoa_widgets() -> None:
 
     try:
         from toga_cocoa.widgets.textinput import TextInput as CocoaTextInput
+        from toga_cocoa.widgets.switch import Switch as CocoaSwitch
+        from toga_cocoa.widgets.selection import Selection as CocoaSelection
+        from toga_cocoa.widgets.table import Table as CocoaTable
+        from toga_cocoa.widgets.internal.cells import TogaIconView
+        from toga_cocoa.libs import NSFont
 
+        # 1. TextInput Patch
         _orig_create = CocoaTextInput.create
 
         def _patched_create(self):
             _orig_create(self)
-            configure_cocoa_text_field(self.native)
+            configure_cocoa_text_field(self.native, font_size=14.5)
 
         CocoaTextInput.create = _patched_create
+
+        # 2. Switch (Checkbox) Patch
+        _orig_switch_create = CocoaSwitch.create
+
+        def _patched_switch_create(self):
+            _orig_switch_create(self)
+            try:
+                if hasattr(self, "native") and self.native is not None:
+                    self.native.setFont_(NSFont.systemFontOfSize_(14.5))
+            except Exception:
+                pass
+
+        CocoaSwitch.create = _patched_switch_create
+
+        # 3. Selection (Dropdown) Patch
+        _orig_selection_create = CocoaSelection.create
+
+        def _patched_selection_create(self):
+            _orig_selection_create(self)
+            try:
+                if hasattr(self, "native") and self.native is not None:
+                    self.native.setFont_(NSFont.systemFontOfSize_(14.5))
+            except Exception:
+                pass
+
+        def _patched_selection_set_font(self, font):
+            try:
+                if font and hasattr(font, "_impl") and hasattr(font._impl, "native"):
+                    self.native.font = font._impl.native
+            except Exception:
+                pass
+
+        CocoaSelection.create = _patched_selection_create
+        CocoaSelection.set_font = _patched_selection_set_font
+
+        # 4. Table & IconView Patch
+        _orig_table_create = CocoaTable.create
+
+        def _patched_table_create(self):
+            _orig_table_create(self)
+            configure_cocoa_table(getattr(self, "native_table", None), row_height=40.0)
+
+        CocoaTable.create = _patched_table_create
+
+        _orig_icon_setup = TogaIconView.setup
+
+        def _patched_icon_setup(self):
+            _orig_icon_setup(self)
+            try:
+                if hasattr(self, "textField") and self.textField is not None:
+                    self.textField.setFont_(NSFont.systemFontOfSize_(15.5))
+            except Exception:
+                pass
+
+        TogaIconView.setup = _patched_icon_setup
+
         _is_patched = True
     except (ImportError, AttributeError, Exception):
         pass

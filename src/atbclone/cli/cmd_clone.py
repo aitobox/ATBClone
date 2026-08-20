@@ -31,7 +31,7 @@ logger = get_logger("cli.clone")
 @click.option("--data-dir", default=None, help="Custom data storage directory for this clone.")
 @click.option("--proxy-host", default=None, help="Proxy host (overrides recipe)")
 @click.option("--proxy-port", default=None, type=int, help="Proxy port")
-@click.option("--proxy-type", default="http", type=click.Choice(["http", "socks5"]), help="Proxy type")
+@click.option("--proxy-type", default="http", type=click.Choice(["http", "https", "socks5"]), help="Proxy type")
 def clone(
     app_path: str,
     name: str | None,

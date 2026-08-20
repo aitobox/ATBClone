@@ -55,6 +55,16 @@ def test_settings_view_open_finder_and_save():
     asyncio.run(_test())
 
 
+def test_settings_view_root_dir_sync_subdirectories(tmp_path):
+    view = SettingsView()
+    custom_root = tmp_path / "CustomATB"
+    view.input_base_dir.value = str(custom_root)
+
+    # Subdirectory labels should automatically reflect custom root
+    assert str(custom_root / "Apps") in view.label_apps_dir.text
+    assert str(custom_root / "Data") in view.label_data_dir.text
+
+
 def test_settings_minimize_to_tray_switch(tmp_path, monkeypatch):
     from atbclone.core import config
     from atbclone.core.config import set_config_value, get_config_value

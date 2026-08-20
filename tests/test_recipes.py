@@ -41,6 +41,16 @@ def test_proxy_config_username_only():
     assert proxy.url == "http://anonymous:@10.0.0.1:3128"
 
 
+def test_proxy_config_https():
+    proxy = ProxyConfig(
+        enabled=True,
+        type="https",
+        host="secure.proxy.com",
+        port=8443,
+    )
+    assert proxy.url == "https://secure.proxy.com:8443"
+
+
 def test_recipe_defaults():
     recipe = Recipe(
         bundle_id="com.example.app",

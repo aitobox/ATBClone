@@ -89,7 +89,7 @@ def wizard() -> None:
     if use_proxy:
         proxy_host = click.prompt(t("wizard_prompt_proxy_host"), default="127.0.0.1")
         proxy_port = click.prompt(t("wizard_prompt_proxy_port"), default=1080, type=int)
-        proxy_type = click.prompt(t("wizard_prompt_proxy_type"), default="http", type=click.Choice(["http", "socks5"]))
+        proxy_type = click.prompt(t("wizard_prompt_proxy_type"), default="http", type=click.Choice(["http", "https", "socks5"]))
 
     # 9. Confirmation
     dest_path = out_path / f"{clone_name}.app"

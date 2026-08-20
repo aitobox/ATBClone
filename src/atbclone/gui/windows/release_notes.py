@@ -50,11 +50,11 @@ class ReleaseNotesWindow(toga.Window):
         root_box = toga.Box(style=Pack(direction=COLUMN, flex=1, background_color=Theme.BG_WINDOW))
 
         # Top Control Bar
-        top_bar = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(12, 16, 8, 16)))
+        top_bar = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(16, 20, 10, 20)))
 
         label_lang = toga.Label(
             t("release_notes_lang_label"),
-            style=Pack(font_weight="bold", font_size=12, margin_right=8, color=Theme.TEXT_PRIMARY),
+            style=Pack(font_weight="bold", font_size=13, margin_right=10, color=Theme.TEXT_PRIMARY),
         )
         top_bar.add(label_lang)
 
@@ -63,7 +63,7 @@ class ReleaseNotesWindow(toga.Window):
         self.selection_lang = toga.Selection(
             items=display_items,
             on_change=self._on_lang_changed,
-            style=Pack(width=260, margin_right=12),
+            style=Pack(width=270, margin_right=12),
         )
 
         # Set default selection index
@@ -81,7 +81,7 @@ class ReleaseNotesWindow(toga.Window):
         self.btn_open_external = toga.Button(
             t("release_notes_btn_open_external"),
             on_press=self.on_open_in_external_editor,
-            style=Pack(margin_right=8, height=30),
+            style=Pack(margin_right=8, height=30, font_size=13),
         )
         top_bar.add(self.btn_open_external)
 
@@ -89,14 +89,14 @@ class ReleaseNotesWindow(toga.Window):
         self.btn_close = toga.Button(
             t("release_notes_btn_close"),
             on_press=lambda w: self.close(),
-            style=Pack(width=70, height=30),
+            style=Pack(width=72, height=30, font_size=13),
         )
         top_bar.add(self.btn_close)
 
         root_box.add(top_bar)
 
         # Main Text Display Box
-        content_box = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=(0, 16, 16, 16)))
+        content_box = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=(0, 20, 20, 20)))
 
         self.text_content = toga.MultilineTextInput(
             readonly=True,

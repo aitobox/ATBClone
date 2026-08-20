@@ -39,7 +39,7 @@ class CloneListView(toga.Box):
         self.app_instance = app
         self._raw_clones: list[CloneRecord] = []
         self._filtered_clones: list[CloneRecord] = []
-        self.view_mode: str = "grid"  # "grid" or "list"
+        self.view_mode: str = "list"  # "grid" or "list"
         self.search_query: str = ""
 
         # Filter and Sort definitions
@@ -66,19 +66,19 @@ class CloneListView(toga.Box):
             on_filter_change=self.on_filter_changed,
             sort_items=[self.sort_newest, self.sort_name, self.sort_oldest],
             on_sort_change=self.on_sort_changed,
-            view_modes=[t("topbar_view_grid"), t("topbar_view_list")],
+            view_modes=[t("topbar_view_list"), t("topbar_view_grid")],
             on_view_change=self.on_view_mode_changed,
             on_refresh=lambda w: asyncio.create_task(self.refresh_clones()),
         )
         self.add(self.top_bar)
 
         # Content container pinned right below header
-        self.content_container = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=(0, 20, 20, 20)))
+        self.content_container = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=(0, 24, 20, 24)))
         self.add(self.content_container)
 
         # Grid view scroll container & flow box
         self.grid_scroll = toga.ScrollContainer(style=Pack(flex=1), horizontal=False)
-        self.grid_box = toga.Box(style=Pack(direction=COLUMN, margin=5))
+        self.grid_box = toga.Box(style=Pack(direction=COLUMN, margin=4))
         self.grid_scroll.content = self.grid_box
 
         # Table view & action bar
@@ -96,13 +96,13 @@ class CloneListView(toga.Box):
         )
         self.table_box.add(self.table)
 
-        self.btn_launch_table = toga.Button(t("btn_launch"), on_press=lambda w: asyncio.create_task(self.on_launch_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
-        self.btn_update_table = toga.Button(t("btn_update"), on_press=lambda w: asyncio.create_task(self.on_update_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
-        self.btn_edit_table = toga.Button(t("btn_edit"), on_press=lambda w: asyncio.create_task(self.on_edit_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
-        self.btn_detail_table = toga.Button(t("btn_detail"), on_press=lambda w: asyncio.create_task(self.on_detail_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
-        self.btn_delete_table = toga.Button(t("btn_delete"), on_press=lambda w: asyncio.create_task(self.on_delete_clone(self.get_selected_record())), enabled=False, style=Pack(margin=4))
+        self.btn_launch_table = toga.Button(t("btn_launch"), on_press=lambda w: asyncio.create_task(self.on_launch_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=26, font_size=12))
+        self.btn_update_table = toga.Button(t("btn_update"), on_press=lambda w: asyncio.create_task(self.on_update_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=26, font_size=12))
+        self.btn_edit_table = toga.Button(t("btn_edit"), on_press=lambda w: asyncio.create_task(self.on_edit_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=26, font_size=12))
+        self.btn_detail_table = toga.Button(t("btn_detail"), on_press=lambda w: asyncio.create_task(self.on_detail_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=26, font_size=12))
+        self.btn_delete_table = toga.Button(t("btn_delete"), on_press=lambda w: asyncio.create_task(self.on_delete_clone(self.get_selected_record())), enabled=False, style=Pack(height=26, font_size=12))
 
-        actions_box = toga.Box(style=Pack(direction=ROW, margin_top=6))
+        actions_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=10))
         actions_box.add(self.btn_launch_table)
         actions_box.add(self.btn_update_table)
         actions_box.add(self.btn_edit_table)
@@ -113,7 +113,7 @@ class CloneListView(toga.Box):
         # Empty state label
         self.label_empty = toga.Label(
             t("view_clones_empty_hint"),
-            style=Pack(margin=30, font_size=13, color=Theme.TEXT_MUTED),
+            style=Pack(margin=36, font_size=15, color=Theme.TEXT_MUTED),
         )
 
         self._render_current_view()
@@ -199,7 +199,7 @@ class CloneListView(toga.Box):
             ROW_SIZE = 2
             for i in range(0, len(self._filtered_clones), ROW_SIZE):
                 chunk = self._filtered_clones[i:i + ROW_SIZE]
-                row_box = toga.Box(style=Pack(direction=ROW, margin_bottom=10))
+                row_box = toga.Box(style=Pack(direction=ROW, margin_bottom=12))
                 for record in chunk:
                     card = CloneCard(
                         record=record,

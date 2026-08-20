@@ -124,15 +124,23 @@ class TrayService:
     def _handle_click(self, sender: Any) -> None:
         """Handle left vs right mouse button click events."""
         try:
-            current_event = getattr(NSApplication.sharedApplication, "currentEvent", None) if NSApplication else None
+            current_event = None
+            if NSApplication is not None and hasattr(NSApplication, "sharedApplication"):
+                app = NSApplication.sharedApplication
+                if hasattr(app, "currentEvent"):
+                    ce = app.currentEvent
+                    current_event = ce() if callable(ce) else ce
+
             event_type = getattr(current_event, "type", None)
+            logger.info(f"Tray clicked, event_type={event_type}")
+
             # NSEventTypeRightMouseDown = 3, NSEventTypeRightMouseUp = 4
             if event_type in (3, 4):
                 self.show_context_menu()
             else:
                 self.on_menu_show()
         except Exception as e:
-            logger.debug(f"Error determining click event type: {e}")
+            logger.warning(f"Error determining click event type: {e}")
             self.on_menu_show()
 
     def show_context_menu(self) -> None:
@@ -140,9 +148,9 @@ class TrayService:
         if not self._status_item or NSMenu is None or NSMenuItem is None:
             return
         try:
-            menu = NSMenu.alloc().init()
-            if hasattr(menu, "setAutoenablesItems_"):
-                menu.setAutoenablesItems_(True)
+            self._menu = NSMenu.alloc().init()
+            if hasattr(self._menu, "setAutoenablesItems_"):
+                self._menu.setAutoenablesItems_(True)
 
             item_show = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
                 t("tray_menu_show"),
@@ -151,11 +159,11 @@ class TrayService:
             )
             if self._target and hasattr(item_show, "setTarget_"):
                 item_show.setTarget_(self._target)
-            menu.addItem_(item_show)
+            self._menu.addItem_(item_show)
 
             if hasattr(NSMenuItem, "separatorItem"):
                 sep = NSMenuItem.separatorItem()
-                menu.addItem_(sep)
+                self._menu.addItem_(sep)
 
             item_quit = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
                 t("tray_menu_quit"),
@@ -164,10 +172,10 @@ class TrayService:
             )
             if self._target and hasattr(item_quit, "setTarget_"):
                 item_quit.setTarget_(self._target)
-            menu.addItem_(item_quit)
+            self._menu.addItem_(item_quit)
 
             if hasattr(self._status_item, "popUpStatusItemMenu_"):
-                self._status_item.popUpStatusItemMenu_(menu)
+                self._status_item.popUpStatusItemMenu_(self._menu)
         except Exception as e:
             logger.warning(f"Failed to popup context menu: {e}")
 

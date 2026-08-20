@@ -60,9 +60,8 @@ def test_tray_service_left_click_shows_window():
     service = TrayService(app=app)
     with patch("atbclone.gui.services.tray_service.NSApplication") as mock_nsapp:
         mock_event = MagicMock()
-        # 1 or other non-right-click type
         mock_event.type = 1
-        mock_nsapp.sharedApplication.currentEvent = mock_event
+        mock_nsapp.sharedApplication.currentEvent.return_value = mock_event
 
         service._handle_click(None)
         assert app.shown is True
@@ -72,11 +71,13 @@ def test_tray_service_right_click_shows_menu():
     app = DummyApp()
     service = TrayService(app=app)
     service._status_item = MagicMock()
-    with patch("atbclone.gui.services.tray_service.NSApplication") as mock_nsapp,          patch("atbclone.gui.services.tray_service.NSMenu") as mock_menu_cls,          patch("atbclone.gui.services.tray_service.NSMenuItem") as mock_menu_item_cls:
+    with patch("atbclone.gui.services.tray_service.NSApplication") as mock_nsapp, \
+         patch("atbclone.gui.services.tray_service.NSMenu") as mock_menu_cls, \
+         patch("atbclone.gui.services.tray_service.NSMenuItem") as mock_menu_item_cls:
         
         mock_event = MagicMock()
-        mock_event.type = 3  # NSEventTypeRightMouseUp
-        mock_nsapp.sharedApplication.currentEvent = mock_event
+        mock_event.type = 3  # NSEventTypeRightMouseDown
+        mock_nsapp.sharedApplication.currentEvent.return_value = mock_event
 
         mock_menu = MagicMock()
         mock_menu_cls.alloc.return_value.init.return_value = mock_menu

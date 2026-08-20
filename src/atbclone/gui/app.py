@@ -136,11 +136,16 @@ class ATBCloneApp(toga.App):
                     from toga_cocoa.libs.appkit import NSApplication
                     native_win = getattr(getattr(self.main_window, "_impl", None), "native", None)
                     if native_win:
-                        if hasattr(native_win, "deminiaturize_"):
-                            native_win.deminiaturize_(None)
+                        if hasattr(native_win, "isMiniaturized") and native_win.isMiniaturized:
+                            if hasattr(native_win, "deminiaturize_"):
+                                native_win.deminiaturize_(None)
+                        if hasattr(native_win, "setIsVisible_"):
+                            native_win.setIsVisible_(True)
                         if hasattr(native_win, "makeKeyAndOrderFront_"):
                             native_win.makeKeyAndOrderFront_(None)
-                    if NSApplication is not None:
+                        if hasattr(native_win, "orderFrontRegardless"):
+                            native_win.orderFrontRegardless()
+                    if NSApplication is not None and hasattr(NSApplication, "sharedApplication"):
                         NSApplication.sharedApplication.activateIgnoringOtherApps_(True)
         except Exception:
             pass

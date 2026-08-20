@@ -6,6 +6,35 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.7.0] - 2026-08-20
+
+### 🖥️ Native BeeWare Toga GUI Desktop Application
+- **Modern Ice-Blue Graphical Interface**:
+  - Introduced the full native macOS desktop application (`atbclone-gui`), built on BeeWare Toga.
+  - Implemented responsive sidebar navigation and unified views: Clone Cards Grid (`ClonesView`), App Prober (`ProbeView`), Recipe Manager (`RecipesView`), Logs Viewer (`LogsView`), and Settings (`SettingsView`).
+  - Interactive visual wizard for drag-and-drop cloning with real-time feedback.
+
+### 🍏 Native macOS Menu Bar Tray Service & Window Minimization
+- **System Menu Bar Tray Integration**:
+  - Implemented native `NSStatusBar` & `NSStatusItem` Menu Bar icon (`TrayService`) with quick actions (Open Main Window, Create Clone, Quick Launch, Preferences, Quit).
+  - Added "Minimize to System Tray" setting with seamless Cocoa selector registration and `NSWindowDelegate` notifications.
+
+### 📖 GUI Multilingual Release Notes Viewer
+- **Integrated Release Notes Window**:
+  - Added a dedicated Release Notes viewer accessible directly from the Settings view.
+  - Dynamic 9-language switcher dropdown allowing real-time Markdown rendering across all supported languages.
+
+### 📝 Unified Operation Logging System
+- **Thread-safe Logging & Live Stream**:
+  - Implemented `atbclone.core.logger` with persistent file logging (`~/.atbclone/logs/atbclone.log`) and live memory broadcasting (`LogBroadcastHandler`).
+  - Interactive GUI Logs view with live streaming, log level filtering, search, export, and disk log clearing.
+
+### 📦 Enhanced Recipes & Testing
+- **New Built-in Recipes**: Added official recipes for **Claude Desktop** (`com.anthropic.claudefordesktop`), **Telegram** (`ru.keepcoder.Telegram`), **Cursor**, and other popular tools.
+- **Comprehensive Testing**: Upgraded test suite to 299 automated unit and GUI integration tests.
+
+---
+
 ## [v0.6.0] - 2026-08-19
 
 ### 📂 Custom Data Directory Support

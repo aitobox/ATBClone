@@ -6,6 +6,35 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.7.0] - 2026-08-20
+
+### 🖥️ Aplicación de escritorio nativa con interfaz BeeWare Toga
+- **Moderna interfaz gráfica Ice-Blue**:
+  - Lanzamiento de la aplicación nativa para macOS (`atbclone-gui`) desarrollada con BeeWare Toga.
+  - Navegación lateral intuitiva y diseño en cuadrícula de tarjetas: gestión de clones (`ClonesView`), análisis profundo (`ProbeView`), recetas (`RecipesView`), visor de registros (`LogsView`) y ajustes (`SettingsView`).
+  - Asistente visual interactivo con soporte para arrastrar y soltar archivos `.app`.
+
+### 🍏 Integración en la barra de menús de macOS y minimización
+- **Servicio de barra de menús (TrayService)**:
+  - Integración nativa mediante `NSStatusBar` y `NSStatusItem` con menú rápido (Abrir ventana principal, Crear clon, Inicio rápido, Preferencias, Salir).
+  - Opción de «Minimizar a la barra de menús» mediante selectores Cocoa y `NSWindowDelegate`.
+
+### 📖 Visor multilingüe de notas de versión en la GUI
+- **Ventana integrada de Release Notes**:
+  - Acceso directo a las notas de versión desde la pantalla de configuración.
+  - Menú desplegable dinámico en 9 idiomas con renderizado Markdown en tiempo real.
+
+### 📝 Sistema unificado de registro de operaciones (Unified Logger)
+- **Persistencia en disco y transmisión en directo**:
+  - Módulo `atbclone.core.logger` que unifica los registros de CLI y GUI (`~/.atbclone/logs/atbclone.log`) con difusión en memoria (`LogBroadcastHandler`).
+  - Visor de registros en la GUI con filtrado por niveles, búsqueda, exportación y vaciado.
+
+### 📦 Nuevas recetas y ampliación de pruebas
+- **Recetas integradas**: Soporte para **Claude Desktop** (`com.anthropic.claudefordesktop`), **Telegram** (`ru.keepcoder.Telegram`), **Cursor** y más.
+- **Pruebas integrales**: Conjunto de pruebas ampliado a 299 pruebas unitarias y de integración GUI.
+
+---
+
 ## [v0.6.0] - 2026-08-19
 
 ### 📂 Soporte para directorio de datos personalizado

@@ -6,6 +6,35 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.7.0] - 2026-08-20
+
+### 🖥️ Application de bureau native BeeWare Toga GUI
+- **Interface graphique moderne Ice-Blue**:
+  - Lancement de l'application de bureau native macOS (`atbclone-gui`) basée sur BeeWare Toga.
+  - Navigation par barre latérale et disposition en cartes : gestion des clones (`ClonesView`), analyse d'applications (`ProbeView`), gestion des recettes (`RecipesView`), visualiseur de journaux (`LogsView`) et paramètres (`SettingsView`).
+  - Assistant visuel interactif avec support du glisser-déposer de fichiers `.app`.
+
+### 🍏 Barre des menus système macOS et réduction en arrière-plan
+- **Service de barre des menus (TrayService)**:
+  - Intégration dans la barre des menus via `NSStatusBar` et `NSStatusItem` avec menu contextuel (Ouvrir, Créer un clone, Lancement rapide, Préférences, Quitter).
+  - Option « Réduire dans la barre des menus » avec gestion transparente via Cocoa Selector et `NSWindowDelegate`.
+
+### 📖 Visualiseur de notes de version multilingue intégré
+- **Fenêtre dédiée aux notes de version**:
+  - Accès direct aux notes de version depuis les paramètres de l'application.
+  - Sélecteur dynamique parmi les 9 langues supportées avec rendu Markdown en temps réel.
+
+### 📝 Système unifié de journalisation des opérations (Unified Logger)
+- **Persistance fichier et diffusion en direct**:
+  - Implémentation de `atbclone.core.logger` unifiant les journaux CLI et GUI (`~/.atbclone/logs/atbclone.log`) avec diffusion mémoire (`LogBroadcastHandler`).
+  - Vue Journaux dans l'interface graphique avec flux en direct, filtrage par niveau, recherche, export et purge.
+
+### 📦 Nouvelles recettes et couverture de tests
+- **Recettes populaires**: Intégration de **Claude Desktop** (`com.anthropic.claudefordesktop`), **Telegram** (`ru.keepcoder.Telegram`), **Cursor**, etc.
+- **Tests automatisés**: 299 tests unitaires et d'intégration validant l'interface et le cœur du moteur.
+
+---
+
 ## [v0.6.0] - 2026-08-19
 
 ### 📂 Support des répertoires de données personnalisés

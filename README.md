@@ -9,11 +9,11 @@
 ## ✨ Key Features
 
 - 📦 **Dual-Engine Cloning Mechanism**:
-  - **Hard Clone**: Designed for native and social applications (WeChat, QQ, Telegram, AI clients, etc.). Duplicates the entire App Bundle, modifies `Info.plist` and Bundle Identifier, injects isolated `HOME` / `TMPDIR` data directories via binary launcher script hijack, optionally strips App Sandbox restrictions, and performs ad-hoc code re-signing.
-  - **Soft Clone**: Designed for Chromium-based applications and modern code editors (Chrome, Edge, Arc, Cursor, VS Code, etc.). Generates a lightweight wrapper bundle, automatically injecting isolated `--user-data-dir` / `--profile` launch arguments and proxy environment variables.
+  - **Hard Clone**: Designed for native and social applications (WeChat, QQ, Telegram, AI clients, Chrome, Edge, Arc, etc.). Duplicates the entire App Bundle, modifies `Info.plist` and Bundle Identifier, injects isolated `HOME` / `TMPDIR` data directories via binary launcher script hijack, optionally strips App Sandbox restrictions, and performs ad-hoc code re-signing.
+  - **Soft Clone**: Designed for modern code editors and browsers (Cursor, VS Code, Firefox, Brave, Tor, Zed, etc.). Generates a lightweight wrapper bundle, automatically injecting isolated `--user-data-dir` / `--profile` launch arguments and proxy environment variables.
 - 🔍 **Intelligent App Prober**: Automatically inspects Mach-O architectures, frameworks, and code signing sandbox entitlements for any application without a pre-configured recipe, dynamically determining the optimal soft/hard clone strategy and generating recommended recipes.
 - 🌐 **Isolated Network Proxies**: Configure dedicated HTTP or SOCKS5 proxies (with authentication support) per cloned application without interfering with host system or primary application traffic.
-- 📑 **Recipe Engine**: 18+ built-in recipes for popular apps and AI Agent tools, with local override support via `~/.atbclone/recipes/`.
+- 📑 **Recipe Engine**: 33+ built-in recipes for popular apps and AI Agent tools, with local override support via `~/.atbclone/recipes/`.
 - 🪄 **Interactive Wizard**: Step-by-step interactive CLI guide supporting terminal drag-and-drop application paths, automatic name incrementing, custom data directory configuration, and on-the-fly proxy setup.
 - 🔄 **Lifecycle Management**: View cloned apps (`list`), re-clone after primary app updates while preserving user and chat data (`update`), and safely remove clones with interactive prompts or flag controls (`remove` with `--with-data` / `--keep-data`).
 - 🛡️ **Security & Privilege Elevation**: Writing to `~/Applications` requires no admin privileges; writing to `/Applications` uses native single-prompt macOS `osascript` authorization; robust path escaping via `shlex.quote` throughout.
@@ -41,12 +41,12 @@
 | | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
 | | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |
 | | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | ✘ |
-| **Browsers** | Google Chrome | `com.google.Chrome` | Soft Clone | — |
-| | Microsoft Edge | `com.microsoft.edgemac` | Soft Clone | — |
+| **Browsers** | Google Chrome | `com.google.Chrome` | Hard Clone | ✘ |
+| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | ✘ |
 | | Brave Browser | `com.brave.Browser` | Soft Clone | — |
 | | Firefox | `org.mozilla.firefox` | Soft Clone | — |
 | | Tor Browser | `org.torproject.torbrowser` | Soft Clone | — |
-| | Arc Browser | `company.thebrowser.Browser` | Soft Clone | — |
+| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | ✘ |
 | **Media & Entertainment** | Bilibili (哔哩哔哩) | `com.bilibili.bilibiliPC` | Hard Clone | ✘ |
 | | Douyin (抖音) | `com.bytedance.douyin.desktop` | Hard Clone | ✅ |
 | | Netease Music (网易云音乐) | `com.netease.163music` | Hard Clone | ✅ |
@@ -161,7 +161,7 @@ Example output:
 ┡━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
 │ 微信2    │ 微信    │ com.tencent.xinWeChat │ hard_clone │ 2026-08-18 22:30 │ 未开启                 │
 │ TG-Proxy │ Telegram│ ru.keepcoder.Telegram │ hard_clone │ 2026-08-18 22:45 │ http://127.0.0.1:7890  │
-│ Chrome2  │ Chrome  │ com.google.Chrome    │ soft_clone │ 2026-08-18 23:00 │ 未开启                 │
+│ Chrome2  │ Chrome  │ com.google.Chrome    │ hard_clone │ 2026-08-18 23:00 │ 未开启                 │
 └──────────┴─────────┴━━━━━━━━━━━━━━━━━━━━━━┴━━━━━━━━━━━━┴━━━━━━━━━━━━━━━━━━┴━━━━━━━━━━━━━━━━━━━━━━━━┘
 ```
 
@@ -360,7 +360,7 @@ src/atbclone/
 │   └── state.py          # YAML state management
 ├── executor/             # Low-level executors (Subprocess / AppleScript elevation)
 │   └── runner.py
-└── recipes/              # Recipe models, loaders & 18 built-in rules
+└── recipes/              # Recipe models, loaders & 33 built-in rules
     ├── builtin/          # Built-in YAML recipes
     ├── loader.py         # Recipe matching & priority loader
     └── models.py         # Pydantic validation models

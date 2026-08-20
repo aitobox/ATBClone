@@ -8,15 +8,15 @@
 
 ## ✨ 核心特性
 
-- 📦 **双引擎克隆机制**：
-  - **硬克隆 (Hard Clone)**：适用于原生与社交应用（微信、QQ、Telegram、AI 客户端等）。完整复制 App Bundle，修改 `Info.plist` 与 Bundle Identifier，通过二进制劫持脚本注入独立的 `HOME` / `TMPDIR` 数据目录，可选解除 Sandbox 限制并执行 Ad-hoc 重签名。
-  - **软克隆 (Soft Clone)**：适用于 Chromium 系列应用及现代编辑器（Chrome、Edge、Arc、Cursor、VS Code 等）。创建轻量级 Wrapper 包，自动注入独立的 `--user-data-dir` / `--profile` 启动参数与代理环境变量。
+- 📦 **双引擎克隆架构 (Dual-Engine Cloning Mechanism)**：
+  - **硬克隆 (Hard Clone)**：面向原生/社交与独立架构应用（微信、QQ、Telegram、AI 客户端、Chrome、Edge、Arc 等）。完整复制 App Bundle，修改 `Info.plist` 与 Bundle Identifier，通过二进制劫持启动脚本注入独立 `HOME` / `TMPDIR` 数据目录，支持按需剥离 App Sandbox 沙盒限制，并完成 Ad-hoc 重新签名。
+  - **软克隆 (Soft Clone)**：面向现代代码编辑器与浏览器（Cursor、VS Code、Firefox、Brave、Tor、Zed 等）。生成轻量级启动器包装（Wrapper Bundle），自动注入 `--user-data-dir` / `--profile` 参数与独立代理环境变量。
 - 🔍 **智能应用探测 (App Prober)**：遇到未预设规则的任意 macOS 应用程序时，自动分析其 Mach-O 架构、Frameworks 与代码签名沙盒权限，动态决定软/硬克隆策略并提取推荐规则。
-- 🌐 **独立网络代理**：支持为每个分身单独指定 HTTP 或 SOCKS5 代理（支持认证），分身流量与系统及原应用互不干扰。
-- 📑 **规则引擎 (Recipe Engine)**：内置 18+ 常用应用与 AI Agent 工具分身规则，支持通过 `~/.atbclone/recipes/` 本地优先级覆盖自定义规则。
-- 🪄 **交互式向导 (Wizard)**：命令行交互式一步步引导，支持终端路径拖拽、自动识别并编号、自定义数据目录配置、即时配置代理。
-- 🔄 **生命周期管理**：提供分身列表查看（`list`）、原版本升级后一键重克隆且保留聊天数据（`update`）、安全删除分身（`remove` 支持交互式询问清理数据目录及 `--with-data` / `--keep-data` 参数控制）。
-- 🛡️ **安全与提权设计**：写入 `~/Applications` 无需管理员权限；写入 `/Applications` 自动使用 macOS 原生单次 `osascript` 授权；全流程使用原子脚本与 `shlex.quote` 路径防护。
+- 🌐 **独立网络代理 (Isolated Network Proxies)**：为每个分身实例配置独立的 HTTP 或 SOCKS5 代理（支持认证），与系统主网络及母体应用互不干扰。
+- 📑 **规则引擎 (Recipe Engine)**：内置 33+ 常用应用与 AI Agent 工具分身规则，支持通过 `~/.atbclone/recipes/` 本地优先级覆盖自定义规则。
+- 🪄 **交互式向导 (Interactive Wizard)**：全流程引导式 CLI，支持终端拖拽 `.app` 路径、自动命名递增、自定义数据目录与快捷代理配置。
+- 🔄 **生命周期管理**：查看已有分身（`list`）、主应用升级后一键重克隆并保留用户数据（`update`）、安全删除分身（`remove` 支持 `--with-data` / `--keep-data` 与交互确认）。
+- 🛡️ **安全与提权机制**：默认克隆至 `~/Applications` 无需 root/sudo 权限；如需写入系统级 `/Applications` 采用原生单次 `osascript` 授权提权；严格使用 `shlex.quote` 保证路径转义安全。
 
 
 ---
@@ -41,12 +41,12 @@
 | | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
 | | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |
 | | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | ✘ |
-| **浏览器** | Google Chrome | `com.google.Chrome` | Soft Clone | — |
-| | Microsoft Edge | `com.microsoft.edgemac` | Soft Clone | — |
+| **浏览器** | Google Chrome | `com.google.Chrome` | Hard Clone | ✘ |
+| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | ✘ |
 | | Brave Browser | `com.brave.Browser` | Soft Clone | — |
 | | Firefox | `org.mozilla.firefox` | Soft Clone | — |
 | | Tor Browser | `org.torproject.torbrowser` | Soft Clone | — |
-| | Arc Browser | `company.thebrowser.Browser` | Soft Clone | — |
+| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | ✘ |
 | **音视频与社交娱乐** | 哔哩哔哩 (Bilibili) | `com.bilibili.bilibiliPC` | Hard Clone | ✘ |
 | | 抖音 (Douyin) | `com.bytedance.douyin.desktop` | Hard Clone | ✅ |
 | | 网易云音乐 | `com.netease.163music` | Hard Clone | ✅ |
@@ -160,7 +160,7 @@ atbclone list
 ┡━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
 │ 微信2    │ 微信    │ com.tencent.xinWeChat │ hard_clone │ 2026-08-18 22:30 │ 未开启                 │
 │ TG-Proxy │ Telegram│ ru.keepcoder.Telegram │ hard_clone │ 2026-08-18 22:45 │ http://127.0.0.1:7890  │
-│ Chrome2  │ Chrome  │ com.google.Chrome    │ soft_clone │ 2026-08-18 23:00 │ 未开启                 │
+│ Chrome2  │ Chrome  │ com.google.Chrome    │ hard_clone │ 2026-08-18 23:00 │ 未开启                 │
 └──────────┴─────────┴━━━━━━━━━━━━━━━━━━━━━━┴━━━━━━━━━━━━┴━━━━━━━━━━━━━━━━━━┴━━━━━━━━━━━━━━━━━━━━━━━━┘
 ```
 
@@ -359,7 +359,7 @@ src/atbclone/
 │   └── state.py          # YAML 状态管理
 ├── executor/             # 底层执行器 (Direct Subprocess / AppleScript 提权)
 │   └── runner.py
-└── recipes/              # 规则模型、加载器与 18 个内置规则
+└── recipes/              # 规则模型、加载器与 33 个内置规则
     ├── builtin/          # 内置 YAML 规则
     ├── loader.py         # 规则匹配与优先级加载
     └── models.py         # Pydantic 校验模型

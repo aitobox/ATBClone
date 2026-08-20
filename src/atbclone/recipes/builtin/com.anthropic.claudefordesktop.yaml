@@ -1,0 +1,7 @@
+bundle_id: com.anthropic.claudefordesktop
+app_name: Claude
+strategy: hard_clone
+strip_sandbox: false
+environment_injection:
+  HOME: '{{ATB_DATA_DIR}}/Home'
+  TMPDIR: '{{ATB_DATA_DIR}}/Tmp'

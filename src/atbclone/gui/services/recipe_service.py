@@ -1,0 +1,128 @@
+"""Recipe Service for async recipe CRUD."""
+
+import asyncio
+from pathlib import Path
+import yaml
+
+from atbclone.core.config import DEFAULT_RECIPES_DIR
+from atbclone.recipes.loader import RecipeLoader
+from atbclone.recipes.models import Recipe
+
+
+class RecipeService:
+    def __init__(self, custom_recipes_dir: Path | None = None):
+        self.custom_recipes_dir = Path(custom_recipes_dir or DEFAULT_RECIPES_DIR)
+
+    async def list_all_recipes(self) -> list[dict]:
+        loop = asyncio.get_running_loop()
+
+        def _list():
+            recipes_map: dict[str, dict] = {}
+
+            # Built-in recipes
+            if RecipeLoader.BUILTIN_DIR.is_dir():
+                for f in sorted(RecipeLoader.BUILTIN_DIR.glob("*.yaml")):
+                    try:
+                        r = RecipeLoader._load_file(f)
+                        recipes_map[r.bundle_id] = {
+                            "bundle_id": r.bundle_id,
+                            "app_name": r.app_name,
+                            "strategy": r.strategy,
+                            "is_builtin": True,
+                            "path": str(f),
+                            "recipe": r,
+                        }
+                    except Exception:
+                        pass
+
+            # Local custom overrides / additions
+            if self.custom_recipes_dir.is_dir():
+                for f in sorted(self.custom_recipes_dir.glob("*.yaml")):
+                    try:
+                        r = RecipeLoader._load_file(f)
+                        recipes_map[r.bundle_id] = {
+                            "bundle_id": r.bundle_id,
+                            "app_name": r.app_name,
+                            "strategy": r.strategy,
+                            "is_builtin": False,
+                            "path": str(f),
+                            "recipe": r,
+                        }
+                    except Exception:
+                        pass
+
+            return list(recipes_map.values())
+
+        return await loop.run_in_executor(None, _list)
+
+    async def get_recipe(self, bundle_id: str) -> Recipe | None:
+        loop = asyncio.get_running_loop()
+
+        def _get():
+            local_file = self.custom_recipes_dir / f"{bundle_id}.yaml"
+            if local_file.is_file():
+                return RecipeLoader._load_file(local_file)
+            builtin_file = RecipeLoader.BUILTIN_DIR / f"{bundle_id}.yaml"
+            if builtin_file.is_file():
+                return RecipeLoader._load_file(builtin_file)
+            return None
+
+        return await loop.run_in_executor(None, _get)
+
+    async def save_custom_recipe(self, recipe: Recipe) -> Path:
+        loop = asyncio.get_running_loop()
+
+        def _save():
+            self.custom_recipes_dir.mkdir(parents=True, exist_ok=True)
+            target_path = self.custom_recipes_dir / f"{recipe.bundle_id}.yaml"
+            data = recipe.model_dump()
+            with open(target_path, "w", encoding="utf-8") as f:
+                yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
+            return target_path
+
+        return await loop.run_in_executor(None, _save)
+
+    async def duplicate_recipe(self, original: Recipe) -> Recipe:
+        """Duplicate a recipe as a new custom recipe with auto-incremented sequence suffix to ensure uniqueness."""
+        all_recipes = await self.list_all_recipes()
+        existing_bundle_ids = {r["bundle_id"] for r in all_recipes}
+        existing_app_names = {r["app_name"] for r in all_recipes}
+
+        # Generate next available app_name (e.g. Chrome_2, Chrome_3)
+        base_name = original.app_name
+        counter = 2
+        new_name = f"{base_name}_{counter}"
+        while new_name in existing_app_names:
+            counter += 1
+            new_name = f"{base_name}_{counter}"
+
+        # Generate next available bundle_id (e.g. com.tencent.xinWeChat.atbclone.2)
+        from atbclone.core.app_inspector import AppInspector
+        base_bundle_id = original.bundle_id
+        b_counter = 2
+        new_bundle_id = AppInspector.generate_bundle_id(base_bundle_id, b_counter)
+        while new_bundle_id in existing_bundle_ids:
+            b_counter += 1
+            new_bundle_id = AppInspector.generate_bundle_id(base_bundle_id, b_counter)
+
+        # Build cloned Recipe model with unique names
+        data = original.model_dump()
+        data["app_name"] = new_name
+        data["bundle_id"] = new_bundle_id
+        new_recipe = Recipe(**data)
+
+        await self.save_custom_recipe(new_recipe)
+        return new_recipe
+
+    async def delete_custom_recipe(self, bundle_id: str) -> bool:
+        loop = asyncio.get_running_loop()
+
+        def _delete():
+            target_path = self.custom_recipes_dir / f"{bundle_id}.yaml"
+            if target_path.is_file():
+                target_path.unlink()
+                return True
+            return False
+
+        return await loop.run_in_executor(None, _delete)
+

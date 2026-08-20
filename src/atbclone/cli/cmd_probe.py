@@ -11,9 +11,11 @@ from rich.table import Table
 
 from atbclone.core.app_prober import AppProber
 from atbclone.core.i18n import t
+from atbclone.core.logger import get_logger
 from atbclone.recipes.loader import RecipeLoader
 
 console = Console()
+logger = get_logger("cli.probe")
 
 
 @click.command()
@@ -28,14 +30,17 @@ def probe(app_path: str, save: bool, output: str | None, json_mode: bool) -> Non
         console.print(t("probe_err_invalid_app", app_path=app_path), soft_wrap=True)
         sys.exit(1)
 
+    logger.info(f"Probing application at '{target}'")
     try:
         result = AppProber.analyze(target)
     except Exception as e:
+        logger.error(f"Failed to probe application '{target}': {e}")
         console.print(t("probe_err_failed", error=e), soft_wrap=True)
         sys.exit(1)
 
     info = result.app_info
     recipe = result.recipe
+    logger.info(f"Probe completed for '{info.app_name}' (bundle='{info.bundle_id}', strategy='{recipe.strategy}', sandbox={result.has_sandbox})")
 
     recipe_dict = {
         "bundle_id": recipe.bundle_id,
@@ -91,9 +96,11 @@ def probe(app_path: str, save: bool, output: str | None, json_mode: bool) -> Non
         target_dir.mkdir(parents=True, exist_ok=True)
         target_file = target_dir / f"{info.bundle_id}.yaml"
         target_file.write_text(yaml_str, encoding="utf-8")
+        logger.info(f"Saved probed recipe to '{target_file}'")
         console.print(t("probe_saved_to", path=target_file), soft_wrap=True)
     elif output:
         out_file = Path(output).expanduser().resolve()
         out_file.parent.mkdir(parents=True, exist_ok=True)
         out_file.write_text(yaml_str, encoding="utf-8")
+        logger.info(f"Saved probed recipe to '{out_file}'")
         console.print(t("probe_saved_to", path=out_file), soft_wrap=True)

@@ -12,11 +12,13 @@ from atbclone.core.clone_task import CloneTask
 from atbclone.core.config import DEFAULT_DATA_DIR
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.i18n import t
+from atbclone.core.logger import get_logger
 from atbclone.core.state import CloneRecord, StateManager
 from atbclone.executor.runner import CloneError
 from atbclone.recipes import RecipeLoader, supports_data_dir
 
 console = Console()
+logger = get_logger("cli.clone")
 
 
 @click.command()
@@ -102,6 +104,7 @@ def clone(
 
     needs_admin = not dest_path.is_relative_to(Path.home())
 
+    logger.info(f"Starting clone creation: name='{clone_name}', source='{app_path}', strategy='{recipe.strategy}', dest='{dest_path}'")
     console.print(t("starting_clone", app_name=info.app_name, clone_name=clone_name), soft_wrap=True)
     try:
         if recipe.strategy == "soft_clone":
@@ -124,7 +127,9 @@ def clone(
         )
         StateManager().add(record)
 
+        logger.info(f"Clone '{clone_name}' created successfully at '{dest_path}'")
         console.print(t("clone_success", dest_path=dest_path), soft_wrap=True)
     except (CloneError, Exception) as e:
+        logger.error(f"Failed to create clone '{clone_name}': {e}")
         console.print(t("clone_error", error=e), soft_wrap=True)
         sys.exit(1)

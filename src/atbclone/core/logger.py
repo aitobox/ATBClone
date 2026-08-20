@@ -44,14 +44,18 @@ def setup_logging(log_file: Path = DEFAULT_LOG_FILE) -> logging.Logger:
     )
 
     # File Handler (10MB, 3 backups, UTF-8)
-    file_handler = RotatingFileHandler(
-        str(_initialized_log_file),
-        maxBytes=10 * 1024 * 1024,
-        backupCount=3,
-        encoding="utf-8",
-    )
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+    try:
+        _initialized_log_file.parent.mkdir(parents=True, exist_ok=True)
+        file_handler = RotatingFileHandler(
+            str(_initialized_log_file),
+            maxBytes=10 * 1024 * 1024,
+            backupCount=3,
+            encoding="utf-8",
+        )
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+    except (OSError, PermissionError):
+        pass
 
     # Broadcast Handler for live subscribers
     broadcast_handler = BroadcastHandler()

@@ -8,9 +8,11 @@ from rich.console import Console
 from rich.table import Table
 
 from atbclone.core.i18n import t
+from atbclone.core.logger import get_logger
 from atbclone.recipes.loader import RecipeLoader
 
 console = Console()
+logger = get_logger("cli.recipe")
 
 
 @click.group(name="recipe")
@@ -21,6 +23,7 @@ def recipe() -> None:
 @recipe.command(name="list")
 def recipe_list() -> None:
     """List all built-in recipes."""
+    logger.info("Listing all built-in recipes")
     builtin_dir = RecipeLoader.BUILTIN_DIR
     yaml_files = sorted(builtin_dir.glob("*.yaml"))
 
@@ -60,6 +63,7 @@ def recipe_list() -> None:
 @click.argument("bundle_id")
 def recipe_show(bundle_id: str) -> None:
     """Show recipe details for a specific bundle ID."""
+    logger.info(f"Showing recipe details for bundle_id='{bundle_id}'")
     local_file = RecipeLoader.get_local_dir() / f"{bundle_id}.yaml"
     builtin_file = RecipeLoader.BUILTIN_DIR / f"{bundle_id}.yaml"
 
@@ -69,6 +73,7 @@ def recipe_show(bundle_id: str) -> None:
     elif builtin_file.is_file():
         console.print(builtin_file.read_text(encoding="utf-8").rstrip())
     else:
+        logger.error(f"Recipe not found for bundle_id='{bundle_id}'")
         console.print(t("recipe_err_not_found", bundle_id=bundle_id))
         sys.exit(1)
 

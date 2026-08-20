@@ -7,10 +7,12 @@ import click
 from rich.console import Console
 
 from atbclone.core.i18n import t
+from atbclone.core.logger import get_logger
 from atbclone.core.state import StateManager
 from atbclone.executor.runner import CloneError, Runner
 
 console = Console()
+logger = get_logger("cli.remove")
 
 
 @click.command(name="remove")
@@ -70,11 +72,14 @@ def remove(clone_name: str, with_data: bool | None, no_with_data: bool) -> None:
 
     script = "\n".join(lines) + "\n"
 
+    logger.info(f"Removing clone '{clone_name}' (with_data={delete_data}, dest='{record.dest_path}')")
     try:
         Runner.run(script, needs_admin)
     except (CloneError, Exception) as e:
+        logger.error(f"Failed to remove clone '{clone_name}': {e}")
         console.print(f"[bold red]Error:[/bold red] {e}")
         sys.exit(1)
 
     sm.remove(clone_name)
+    logger.info(f"Successfully removed clone '{clone_name}'")
     console.print(t("remove_success", clone_name=clone_name))

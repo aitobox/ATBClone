@@ -12,11 +12,13 @@ from atbclone.core.app_inspector import AppInspector
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.i18n import t
+from atbclone.core.logger import get_logger
 from atbclone.core.state import StateManager
 from atbclone.executor.runner import CloneError, Runner
 from atbclone.recipes.loader import RecipeLoader
 
 console = Console()
+logger = get_logger("cli.update")
 
 
 @click.command(name="update")
@@ -36,6 +38,7 @@ def update(clone_name: str) -> None:
     dest_path = Path(record.dest_path)
     needs_admin = not dest_path.is_relative_to(Path.home())
 
+    logger.info(f"Starting update for clone '{clone_name}' (source='{record.source_path}', strategy='{record.strategy}')")
     console.print(t("update_starting", clone_name=clone_name))
 
     lines = [
@@ -48,6 +51,7 @@ def update(clone_name: str) -> None:
     try:
         Runner.run(script, needs_admin)
     except (CloneError, Exception) as e:
+        logger.error(f"Failed to clear old bundle for '{clone_name}': {e}")
         console.print(f"[bold red]Error:[/bold red] {e}")
         sys.exit(1)
 
@@ -88,7 +92,9 @@ def update(clone_name: str) -> None:
         record.created_at = datetime.now(timezone.utc).isoformat()
         sm.add(record)
 
+        logger.info(f"Clone '{clone_name}' updated successfully")
         console.print(t("update_success", clone_name=clone_name))
     except (CloneError, Exception) as e:
+        logger.error(f"Failed to update clone '{clone_name}': {e}")
         console.print(f"[bold red]Error:[/bold red] {e}")
         sys.exit(1)

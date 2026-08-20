@@ -6,6 +6,34 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.8.0] - 2026-08-20
+
+### 🎨 macOS Human Interface Guidelines (HIG) Visuelle Neugestaltung
+- **Natives Apple-Designsystem & Verbesserte Barrierefreiheit**:
+  - Vollständige Überarbeitung des GUI-Designs gemäß Apple Human Interface Guidelines (HIG): Standardisierte Farbpaletten, Systemschrift-Hierarchie (11pt–22pt) und großzügige Abstände.
+  - Optimierung der Cocoa-Tabellendarstellung via Runtime-Patch (`patch_cocoa`): Erhöhte Zeilenhöhe (40px), modernisierte Tabellenköpfe und vergrößerte Schriftarten für optimale Lesbarkeit.
+  - Vergrößerung von Eingabefeldern, Dropdowns, Schaltern, Schaltflächen und Beschriftungen in Assistenten, Einstellungen und Bearbeitungsdialogen.
+  - Umgestaltung der Tabellenaktionsleisten im nativen macOS-Toolbar-Stil.
+  - Standardmäßige Aktivierung der **Listenansicht (List View)** für alle Verwaltungsbereiche.
+
+### 💾 Einheitliche Speicherverwaltung mit automatischer Pfadsynchronisierung
+- **Optimierte Speichereinstellungen**:
+  - Neugestaltung der `SettingsView`: Die Änderung des Hauptspeicherverzeichnisses aktualisiert automatisch alle abgeleiteten Unterverzeichnisse (`clones.yaml`, `Data/`, `logs/`, `recipes/`).
+  - Echtzeit-Gültigkeitsprüfung für Verzeichnispfade.
+
+### 🌐 Unterstützung für HTTPS-Proxy-Protokolle
+- **Erweiterte Netzwerkkonfiguration**:
+  - Vollständige Unterstützung für `https://`-Proxy-Schemas in Recipe-Modellen, CLI (`atbclone clone`, `atbclone wizard`) und GUI.
+
+### 📦 Paketierung & Test-Suite-Erweiterung
+- **Modul-Einstiegspunkt & DMG-Prüfung**:
+  - Hinzugefügter Einstiegspunkt `src/atbclone/__main__.py` für `python -m atbclone`.
+  - Erweiterung des Build-Skripts `scripts/build_gui.sh` um Bundle-Integritäts- und Signaturprüfungen.
+- **Test-Suite**:
+  - Erweiterung auf 304 automatisierte Unit- und GUI-Integrationstests.
+
+---
+
 ## [v0.7.0] - 2026-08-20
 
 ### 🖥️ Native BeeWare Toga Desktop-GUI-Anwendung

@@ -6,6 +6,34 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.8.0] - 2026-08-20
+
+### 🎨 Renovación visual según las directrices macOS HIG
+- **Diseño nativo de Apple y accesibilidad mejorada**:
+  - Rediseño integral de la interfaz gráfica siguiendo las Apple Human Interface Guidelines (HIG): paletas de colores nativas, escala tipográfica (11pt–22pt) y espaciado armonioso.
+  - Renderizado optimizado de tablas Cocoa mediante parche dinámico (`patch_cocoa`): altura de fila ampliada a 40px, encabezados modernizados y fuente de celdas aumentada.
+  - Mayor tamaño en campos de entrada, menús desplegables, interruptores, botones y etiquetas en el asistente y configuración.
+  - Barras de acciones inferiores transformadas en barras de herramientas nativas compactas de macOS.
+  - Modo predeterminado cambiado a **Vista de Lista (List View)** en todas las secciones de administración.
+
+### 💾 Configuración unificada de almacenamiento y sincronización de rutas
+- **Gestión simplificada de almacenamiento**:
+  - Reorganización de `SettingsView`: al modificar el directorio raíz de almacenamiento se actualizan automáticamente todas las subrutas derivadas (`clones.yaml`, `Data/`, `logs/`, `recipes/`).
+  - Validación de rutas e indicadores de estado en tiempo real.
+
+### 🌐 Soporte para protocolo de proxy HTTPS
+- **Ampliación de opciones de red**:
+  - Soporte completo para esquemas de proxy `https://` en modelos de recetas, CLI (`atbclone clone`, `atbclone wizard`) y GUI.
+
+### 📦 Mejoras en el empaquetado de la aplicación y pruebas
+- **Punto de entrada de módulo y generación de DMG**:
+  - Incorporación de `src/atbclone/__main__.py` para ejecución directa con `python -m atbclone`.
+  - Mejora del script `scripts/build_gui.sh` con verificación de integridad del App Bundle, iconos y firma de código.
+- **Pruebas integrales**:
+  - Conjunto de pruebas ampliado a 304 pruebas unitarias y de integración GUI.
+
+---
+
 ## [v0.7.0] - 2026-08-20
 
 ### 🖥️ Aplicación de escritorio nativa con interfaz BeeWare Toga

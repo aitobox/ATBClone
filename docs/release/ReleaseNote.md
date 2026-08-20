@@ -6,6 +6,34 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.8.0] - 2026-08-20
+
+### 🎨 macOS Human Interface Guidelines (HIG) Visual Overhaul
+- **Native Apple Design System & Accessibility**:
+  - Fully overhauled the GUI design to adhere strictly to Apple Human Interface Guidelines: standardized native color palettes, typography scale (11pt–22pt), and comfortable spacing hierarchy.
+  - Enhanced Cocoa table rendering via runtime patches (`patch_cocoa`): increased row height to 40px, modernized table headers, and enlarged cell font sizes for crystal-clear readability.
+  - Enlarged input fields, dropdown selectors, switches, action buttons, and form labels across the Creation Wizard, Settings, and Detail/Edit dialogs.
+  - Refined table action footers into compact native macOS toolbar buttons.
+  - Switched default view mode to **List View** across all management views for dense and readable app inspection.
+
+### 💾 Unified Storage Settings & Subdirectory Auto-Sync
+- **Streamlined Storage Management**:
+  - Reorganized SettingsView to consolidate root storage and path configurations. Modifying the Root Storage directory automatically and reactively updates all derived subdirectories (`clones.yaml`, `Data/`, `logs/`, `recipes/`).
+  - Added real-time validation and directory existence status indicators.
+
+### 🌐 HTTPS Proxy Protocol Support
+- **Full HTTPS Proxy Integration**:
+  - Added support for `https://` proxy schemes across Recipe validation models, CLI (`atbclone clone`, `atbclone wizard`), and GUI network configurations.
+
+### 📦 Application Bundle & Packaging Improvements
+- **Direct Module Entrypoint & DMG Enhancements**:
+  - Added `src/atbclone/__main__.py` entrypoint allowing direct execution via `python -m atbclone`.
+  - Enhanced GUI packaging script (`scripts/build_gui.sh`) with robust bundle integrity validation, resource verification, and DMG creation.
+- **Testing**:
+  - Expanded automated test suite to 304 unit and GUI integration tests.
+
+---
+
 ## [v0.7.0] - 2026-08-20
 
 ### 🖥️ Native BeeWare Toga GUI Desktop Application

@@ -6,6 +6,34 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.8.0] - 2026-08-20
+
+### 🎨 Refonte visuelle conforme aux directives macOS HIG
+- **Système de design Apple natif et accessibilité**:
+  - Refonte complète de l'interface graphique selon les Apple Human Interface Guidelines (HIG) : palettes de couleurs natives, hiérarchie typographique (11pt–22pt) et espacements confortables.
+  - Amélioration de l'affichage des tableaux Cocoa via des correctifs d'exécution (`patch_cocoa`) : hauteur de ligne augmentée à 40px, en-têtes modernisés et typographie agrandie.
+  - Agrandissement des champs de saisie, menus déroulants, commutateurs, boutons et libellés dans l'assistant et les paramètres.
+  - Pieds de page d'actions transformés en barres d'outils natives macOS compactes.
+  - Activation de la **Vue Liste (List View)** par défaut pour toutes les sections de gestion.
+
+### 💾 Gestion unifiée du stockage et synchronisation automatique
+- **Paramètres de stockage simplifiés**:
+  - Réorganisation de la vue Paramètres (`SettingsView`) : la modification du dossier racine met à jour automatiquement tous les sous-dossiers dérivés (`clones.yaml`, `Data/`, `logs/`, `recipes/`).
+  - Validation et indicateurs d'état des chemins en temps réel.
+
+### 🌐 Support du protocole proxy HTTPS
+- **Configuration réseau enrichie**:
+  - Prise en charge complète des URL de proxy en `https://` dans les modèles de recettes, la CLI (`atbclone clone`, `atbclone wizard`) et l'interface graphique.
+
+### 📦 Améliorations du packaging et extension des tests
+- **Point d'entrée de module et création de DMG**:
+  - Ajout de `src/atbclone/__main__.py` pour l'exécution directe via `python -m atbclone`.
+  - Amélioration de `scripts/build_gui.sh` avec vérification de l'intégrité du bundle d'application et validation de la signature.
+- **Tests**:
+  - Suite de tests portée à 304 tests automatisés unitaires et d'intégration GUI.
+
+---
+
 ## [v0.7.0] - 2026-08-20
 
 ### 🖥️ Application de bureau native BeeWare Toga GUI

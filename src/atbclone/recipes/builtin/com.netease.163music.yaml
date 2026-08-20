@@ -1,0 +1,7 @@
+bundle_id: com.netease.163music
+app_name: 网易云音乐
+strategy: hard_clone
+strip_sandbox: true
+environment_injection:
+  HOME: '{{ATB_DATA_DIR}}/Home'
+  TMPDIR: '{{ATB_DATA_DIR}}/Tmp'

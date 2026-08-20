@@ -19,14 +19,14 @@ def test_recipe_list():
     assert "Strip Sandbox" in result.output or "解除沙盒" in result.output
 
 
-def test_recipe_list_shows_all_18():
+def test_recipe_list_shows_all():
     runner = CliRunner(env={"COLUMNS": "160"})
     result = runner.invoke(cli, ["recipe", "list"])
     assert result.exit_code == 0
     # Count occurrences of strategy types
     hard_count = result.output.count("hard_clone")
     soft_count = result.output.count("soft_clone")
-    assert hard_count + soft_count == 18
+    assert hard_count + soft_count == len(list(RecipeLoader.BUILTIN_DIR.glob("*.yaml")))
 
 
 def test_recipe_list_sorted():

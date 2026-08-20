@@ -1,4 +1,4 @@
-bundle_id: ph.telegra.Telegraph
+bundle_id: ru.keepcoder.Telegram
 app_name: Telegram
 strategy: hard_clone
 strip_sandbox: false

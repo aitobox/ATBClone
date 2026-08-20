@@ -1,0 +1,6 @@
+bundle_id: org.torproject.torbrowser
+app_name: Tor Browser
+strategy: soft_clone
+launch_args:
+- -profile
+- '{{ATB_DATA_DIR}}'

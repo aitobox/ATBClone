@@ -66,7 +66,7 @@ def test_clone_list_view_refresh(tmp_path):
             clone_name="TG2",
             source_app="Telegram",
             source_path="/Applications/Telegram.app",
-            bundle_id="ph.telegra.Telegraph",
+            bundle_id="ru.keepcoder.Telegram",
             strategy="hard_clone",
             dest_path=str(tmp_path / "TG2.app"),
             data_dir=str(tmp_path / "data"),

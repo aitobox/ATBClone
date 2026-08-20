@@ -65,6 +65,8 @@ def test_views_i18n_multi_language():
 
         settings_v = SettingsView()
         assert settings_v.select_language is not None
+        assert settings_v.btn_release_notes is not None
+        assert len(settings_v.btn_release_notes.text) > 0
 
 
 def test_app_retranslate_ui(tmp_path, monkeypatch):
@@ -82,13 +84,17 @@ def test_app_retranslate_ui(tmp_path, monkeypatch):
         set_language("zh")
         app.retranslate_ui()
         assert "我的分身" in app.sidebar.buttons["clones"].text
+        assert "更新日志" in app.settings_view.btn_release_notes.text
 
         # Switch to Japanese
         set_language("ja")
         app.retranslate_ui()
         assert "マイ クローン" in app.sidebar.buttons["clones"].text
+        assert "リリースノート" in app.settings_view.btn_release_notes.text
 
         # Switch to English
         set_language("en")
         app.retranslate_ui()
         assert "Clones" in app.sidebar.buttons["clones"].text
+        assert "Release Notes" in app.settings_view.btn_release_notes.text
+

@@ -23,6 +23,7 @@ from atbclone.core.i18n import (
 from atbclone.core.logger import get_logger
 from atbclone.gui.components.top_bar import TopHeaderBar
 from atbclone.gui.theme import Theme
+from atbclone.gui.windows.release_notes import ReleaseNotesWindow
 
 logger = get_logger("gui.settings")
 
@@ -122,8 +123,22 @@ class SettingsView(toga.Box):
         card_info.add(toga.Label(t("settings_card_about"), style=Pack(font_weight="bold", font_size=14, margin_bottom=6, color=Theme.TEXT_PRIMARY)))
         card_info.add(toga.Label(t("settings_label_version", version=__version__), style=Pack(font_size=12, color=Theme.TEXT_MUTED, margin_bottom=2)))
         card_info.add(toga.Label(t("settings_label_python", version=platform.python_version(), arch=platform.machine()), style=Pack(font_size=12, color=Theme.TEXT_MUTED, margin_bottom=2)))
-        card_info.add(toga.Label(t("settings_label_os", os_ver=platform.mac_ver()[0] or 'macOS'), style=Pack(font_size=12, color=Theme.TEXT_MUTED)))
+        card_info.add(toga.Label(t("settings_label_os", os_ver=platform.mac_ver()[0] or 'macOS'), style=Pack(font_size=12, color=Theme.TEXT_MUTED, margin_bottom=8)))
+
+        self.btn_release_notes = toga.Button(
+            t("settings_btn_release_notes"),
+            on_press=self.on_open_release_notes,
+            style=Pack(height=32, margin_top=4),
+        )
+        card_info.add(self.btn_release_notes)
         content_box.add(card_info)
+
+        self.release_notes_window: Optional[ReleaseNotesWindow] = None
+
+    def on_open_release_notes(self, widget: toga.Button):
+        """Open or focus the ReleaseNotesWindow."""
+        self.release_notes_window = ReleaseNotesWindow()
+        self.release_notes_window.show()
 
     def _on_language_changed(self, widget: toga.Selection):
         if widget.value is None:

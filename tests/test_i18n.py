@@ -231,3 +231,22 @@ def test_configured_language_persistence(tmp_path, monkeypatch):
     assert get_configured_language() == "auto"
 
 
+def test_tray_i18n_keys():
+    from atbclone.core.i18n import t, set_language, SUPPORTED_LANGUAGES
+
+    keys = [
+        "settings_card_tray",
+        "settings_switch_minimize_to_tray",
+        "settings_hint_minimize_to_tray",
+        "tray_menu_show",
+        "tray_menu_quit",
+    ]
+    for lang in SUPPORTED_LANGUAGES:
+        set_language(lang)
+        for k in keys:
+            val = t(k)
+            assert val != k, f"Missing translation for key '{k}' in language '{lang}'"
+            assert len(val) > 0
+
+
+

@@ -94,9 +94,9 @@ class TrayService:
                         button.setTarget_(self._target)
                     if hasattr(button, "setAction_"):
                         button.setAction_(SEL("onTrayClicked:"))
-                    # NSEventMaskLeftMouseUp = 1 << 2, NSEventMaskRightMouseDown = 1 << 3, NSEventMaskRightMouseUp = 1 << 4
+                    # NSEventMaskLeftMouseDown = 1 << 1, NSEventMaskLeftMouseUp = 1 << 2, NSEventMaskRightMouseDown = 1 << 3, NSEventMaskRightMouseUp = 1 << 4
                     if hasattr(button, "sendActionOn_"):
-                        button.sendActionOn_((1 << 2) | (1 << 3) | (1 << 4))
+                        button.sendActionOn_((1 << 1) | (1 << 2) | (1 << 3) | (1 << 4))
 
             self._is_enabled = True
             logger.info("System tray icon enabled successfully.")
@@ -131,11 +131,23 @@ class TrayService:
                     ce = app.currentEvent
                     current_event = ce() if callable(ce) else ce
 
-            event_type = getattr(current_event, "type", None)
-            logger.info(f"Tray clicked, event_type={event_type}")
+            is_right_click = False
+            if current_event is not None:
+                event_type = getattr(current_event, "type", None)
+                type_val = getattr(event_type, "value", event_type)
+                # NSEventTypeRightMouseDown = 3, NSEventTypeRightMouseUp = 4
+                if type_val in (3, 4):
+                    is_right_click = True
+                else:
+                    # Check for Control + Click modifier (NSEventModifierFlagControl = 0x40000)
+                    mod_flags = getattr(current_event, "modifierFlags", 0)
+                    mod_val = getattr(mod_flags, "value", mod_flags)
+                    if isinstance(mod_val, int) and (mod_val & 0x40000):
+                        is_right_click = True
 
-            # NSEventTypeRightMouseDown = 3, NSEventTypeRightMouseUp = 4
-            if event_type in (3, 4):
+            logger.info(f"Tray clicked, is_right_click={is_right_click}")
+
+            if is_right_click:
                 self.show_context_menu()
             else:
                 self.on_menu_show()

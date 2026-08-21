@@ -91,11 +91,49 @@ def test_app_show_main_window_and_exit():
         mock_exit.assert_called_once()
 
 
+def test_app_window_close_and_hide_with_tray(tmp_path, monkeypatch):
+    from atbclone.core import config
+    from atbclone.core.config import set_config_value
+
+    test_cfg_file = tmp_path / "config.yaml"
+    monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", test_cfg_file)
+    monkeypatch.setattr(config, "DEFAULT_ATB_DIR", tmp_path)
+    set_config_value("minimize_to_tray", True)
+
+    app = ATBCloneApp("ATBClone", "com.atbclone.app")
+    app.startup()
+
+    # When tray is enabled, close handler should return False to keep app alive
+    with patch.object(app.tray_service, "_is_enabled", True):
+        res = app._on_window_close(app.main_window)
+        assert res is False
+
+    # When tray is disabled, close handler returns True
+    with patch.object(app.tray_service, "_is_enabled", False):
+        res = app._on_window_close(app.main_window)
+        assert res is True
+
+
+def test_app_show_main_window_restores_from_hidden_or_minimized():
+    from toga.constants import WindowState
+    app = ATBCloneApp("ATBClone", "com.atbclone.app")
+    app.startup()
+
+    # Simulate hidden window
+    native = getattr(getattr(app.main_window, "_impl", None), "native", None)
+    if native and hasattr(native, "orderOut_"):
+        native.orderOut_(None)
+
+    app.show_main_window()
+    assert app.main_window.visible
+
+
 def test_app_retranslate_ui_updates_tray():
     app = ATBCloneApp("ATBClone", "com.atbclone.app")
     app.startup()
     with patch.object(app.tray_service, "retranslate") as mock_retrans:
         app.retranslate_ui()
         mock_retrans.assert_called_once()
+
 
 

@@ -60,11 +60,32 @@ def test_tray_service_left_click_shows_window():
     service = TrayService(app=app)
     with patch("atbclone.gui.services.tray_service.NSApplication") as mock_nsapp:
         mock_event = MagicMock()
-        mock_event.type = 1
+        mock_event.type = 2  # LeftMouseUp
+        mock_event.modifierFlags = 0
         mock_nsapp.sharedApplication.currentEvent.return_value = mock_event
 
         service._handle_click(None)
         assert app.shown is True
+
+
+def test_tray_service_ctrl_left_click_shows_menu():
+    app = DummyApp()
+    service = TrayService(app=app)
+    service._status_item = MagicMock()
+    with patch("atbclone.gui.services.tray_service.NSApplication") as mock_nsapp, \
+         patch("atbclone.gui.services.tray_service.NSMenu") as mock_menu_cls, \
+         patch("atbclone.gui.services.tray_service.NSMenuItem") as mock_menu_item_cls:
+        
+        mock_event = MagicMock()
+        mock_event.type = 1  # LeftMouseDown with Ctrl modifier
+        mock_event.modifierFlags = 0x40000  # NSEventModifierFlagControl
+        mock_nsapp.sharedApplication.currentEvent.return_value = mock_event
+
+        mock_menu = MagicMock()
+        mock_menu_cls.alloc.return_value.init.return_value = mock_menu
+
+        service._handle_click(None)
+        service._status_item.popUpStatusItemMenu_.assert_called_once_with(mock_menu)
 
 
 def test_tray_service_right_click_shows_menu():
@@ -77,6 +98,7 @@ def test_tray_service_right_click_shows_menu():
         
         mock_event = MagicMock()
         mock_event.type = 3  # NSEventTypeRightMouseDown
+        mock_event.modifierFlags = 0
         mock_nsapp.sharedApplication.currentEvent.return_value = mock_event
 
         mock_menu = MagicMock()
@@ -96,8 +118,27 @@ def test_tray_service_menu_callbacks():
     assert app.exited is True
 
 
+def test_tray_callback_target():
+    from atbclone.gui.services.tray_service import TrayCallbackTarget
+    app = DummyApp()
+    service = TrayService(app=app)
+    target = TrayCallbackTarget.alloc().init() if hasattr(TrayCallbackTarget, "alloc") else TrayCallbackTarget()
+    target._tray_service = service
+
+    with patch.object(service, "_handle_click") as mock_handle:
+        target.onTrayClicked_(None)
+        mock_handle.assert_called_once()
+
+    target.onMenuShow_(None)
+    assert app.shown is True
+
+    target.onMenuQuit_(None)
+    assert app.exited is True
+
+
 def test_tray_service_retranslate():
     app = DummyApp()
     service = TrayService(app=app)
     # Shouldn't raise any exceptions
     service.retranslate()
+

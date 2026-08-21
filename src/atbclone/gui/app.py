@@ -1,6 +1,7 @@
 """ATBClone Main Application (BeeWare Toga) with Modern GUI Architecture."""
 
 import asyncio
+import sys
 from pathlib import Path
 from typing import Any, Optional
 import toga
@@ -8,7 +9,11 @@ from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 
 from atbclone.core.config import get_config_value
+from atbclone.core.logger import get_logger
 from atbclone.core.resources import get_app_icon_path
+from toga.constants import WindowState
+
+logger = get_logger("gui.app")
 from atbclone.gui.services.clone_service import CloneService
 from atbclone.gui.services.doctor_service import DoctorService
 from atbclone.gui.services.probe_service import ProbeService
@@ -107,6 +112,7 @@ class ATBCloneApp(toga.App):
 
         self.main_window.content = self.root_box
         self.main_window.on_hide = self._on_window_hide
+        self.main_window.on_close = self._on_window_close
         self.main_window.show()
 
         # Initialize native system tray service
@@ -124,19 +130,53 @@ class ATBCloneApp(toga.App):
                 native_win = getattr(getattr(window, "_impl", None), "native", None)
                 if native_win and hasattr(native_win, "orderOut_"):
                     native_win.orderOut_(None)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Error hiding window to tray: {e}")
+
+    def _on_window_close(self, window: Any) -> bool:
+        """Handle window close event: hide to tray if minimize_to_tray is enabled, else allow exit."""
+        if hasattr(self, "tray_service") and self.tray_service and self.tray_service.is_enabled:
+            try:
+                native_win = getattr(getattr(window, "_impl", None), "native", None)
+                if native_win and hasattr(native_win, "orderOut_"):
+                    native_win.orderOut_(None)
+                return False
+            except Exception as e:
+                logger.debug(f"Error intercepting window close for tray: {e}")
+        return True
 
     def show_main_window(self) -> None:
-        """Bring main window to front and activate application."""
+        """Bring main window to front and activate application from tray or background."""
         try:
-            if hasattr(self, "main_window") and self.main_window:
-                self.main_window.show()
-                if sys.platform == "darwin":
+            if not hasattr(self, "main_window") or not self.main_window:
+                return
+
+            # 1. Cocoa native unhide and activate application
+            if sys.platform == "darwin":
+                try:
                     from toga_cocoa.libs.appkit import NSApplication
-                    native_win = getattr(getattr(self.main_window, "_impl", None), "native", None)
-                    if native_win:
-                        if hasattr(native_win, "isMiniaturized") and native_win.isMiniaturized:
+                    if NSApplication is not None and hasattr(NSApplication, "sharedApplication"):
+                        ns_app = NSApplication.sharedApplication
+                        if hasattr(ns_app, "unhide_"):
+                            ns_app.unhide_(None)
+                        if hasattr(ns_app, "activateIgnoringOtherApps_"):
+                            ns_app.activateIgnoringOtherApps_(True)
+                        elif hasattr(ns_app, "activate"):
+                            ns_app.activate()
+                except Exception as e:
+                    logger.debug(f"Failed activating NSApplication: {e}")
+
+            # 2. Reset any pending state transition in Toga
+            impl = getattr(self.main_window, "_impl", None)
+            if impl and hasattr(impl, "_pending_state_transition"):
+                impl._pending_state_transition = None
+
+            # 3. Cocoa native deminiaturize & bring window to front
+            if sys.platform == "darwin" and impl:
+                native_win = getattr(impl, "native", None)
+                if native_win is not None:
+                    try:
+                        if getattr(native_win, "isMiniaturized", False):
                             if hasattr(native_win, "deminiaturize_"):
                                 native_win.deminiaturize_(None)
                         if hasattr(native_win, "setIsVisible_"):
@@ -145,10 +185,41 @@ class ATBCloneApp(toga.App):
                             native_win.makeKeyAndOrderFront_(None)
                         if hasattr(native_win, "orderFrontRegardless"):
                             native_win.orderFrontRegardless()
+                        if hasattr(native_win, "makeMainWindow"):
+                            native_win.makeMainWindow()
+                        if hasattr(native_win, "makeKeyWindow"):
+                            native_win.makeKeyWindow()
+                    except Exception as e:
+                        logger.debug(f"Failed native window restore: {e}")
+
+            # 4. Toga window state synchronization
+            try:
+                if self.main_window.state != WindowState.NORMAL:
+                    if impl and hasattr(impl, "_apply_state"):
+                        impl._apply_state(WindowState.NORMAL)
+            except Exception:
+                pass
+
+            # 5. Toga show fallback if still not visible
+            try:
+                if not self.main_window.visible:
+                    self.main_window.show()
+            except Exception:
+                pass
+
+            # 6. Re-activate app again to ensure key window focus
+            if sys.platform == "darwin":
+                try:
+                    from toga_cocoa.libs.appkit import NSApplication
                     if NSApplication is not None and hasattr(NSApplication, "sharedApplication"):
-                        NSApplication.sharedApplication.activateIgnoringOtherApps_(True)
-        except Exception:
-            pass
+                        ns_app = NSApplication.sharedApplication
+                        if hasattr(ns_app, "activateIgnoringOtherApps_"):
+                            ns_app.activateIgnoringOtherApps_(True)
+                except Exception:
+                    pass
+
+        except Exception as e:
+            logger.warning(f"Error restoring main window: {e}")
 
     def exit_application(self) -> None:
         """Cleanly terminate the application and remove status tray icon."""

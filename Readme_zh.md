@@ -6,6 +6,23 @@
 
 ---
 
+## 📥 软件下载 (Download)
+
+请前往 [GitHub Releases](https://github.com/aitobox/ATBClone/releases) 页面下载最新版本的 ATBClone。
+
+Release 页面主要提供两个发布文件，**核心功能完全一致**：
+
+| 发布包 | 适用人群 | 说明 |
+| :--- | :--- | :--- |
+| **`ATBClone-arm-0.8.0.dmg`** | 👶 **普通用户 / 小白用户（强烈推荐）** | macOS 原生 GUI 桌面客户端安装包 (`.dmg`)。提供现代化卡片式图形界面，零终端操作门槛，开箱即用。 |
+| **`ATBCloneCli.tar.gz`** | ⚡ **专业用户 / 开发者** | 独立二进制命令行工具归档（`ATBCloneCli`）。无需安装 Python 环境，专为终端极客、脚本自动化与高级运维场景打造。 |
+
+> 💡 **使用建议与指引**：
+> - **普通用户 / 小白用户**：请**优先下载并使用 GUI 图形界面版 (`.dmg`)**。图形化操作简单直观，支持卡片化浏览、一键克隆、状态查看、快捷启动与偏好设置。
+> - **专业用户 / 开发者**：推荐使用 **CLI 命令行工具 (`ATBCloneCli` / `atbclone`)**，支持丰富的子命令、深度架构探测、批量脚本与灵活参数调优。
+
+---
+
 ## ✨ 核心特性
 
 - 📦 **双引擎克隆架构 (Dual-Engine Cloning Mechanism)**：
@@ -21,79 +38,37 @@
 
 ---
 
-## 📋 内置分身规则 (Built-in Recipes)
+## 🖥️ 图形化界面使用指南 (GUI — 推荐普通用户使用)
 
-| 类别 | 应用名称 | Bundle Identifier | 克隆策略 | 沙盒解除 (Strip Sandbox) |
-| :--- | :--- | :--- | :--- | :---: |
-| **即时通讯 & 协同办公** | 微信 (WeChat) | `com.tencent.xinWeChat` | Hard Clone | ✘ |
-| | QQ | `com.tencent.qq` | Hard Clone | ✘ |
-| | 企业微信 (WeCom) | `com.tencent.WeWorkMac` | Hard Clone | ✅ |
-| | 飞书 (Lark) | `com.electron.lark` | Hard Clone | ✘ |
-| | Telegram (原生 Swift) | `ru.keepcoder.Telegram` | Hard Clone | ✘ |
-| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | ✘ |
-| | LINE | `jp.naver.line.mac` | Hard Clone | ✅ |
-| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | ✘ |
-| | Discord | `com.hnc.Discord` | Hard Clone | ✘ |
-| | Skype | `com.skype.skype` | Hard Clone | ✅ |
-| **AI 客户端** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | ✘ |
-| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
-| | ChatGPT (标准版) | `com.openai.chat` | Hard Clone | ✅ |
-| | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
-| | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |
-| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | ✘ |
-| **浏览器** | Google Chrome | `com.google.Chrome` | Hard Clone | ✘ |
-| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | ✘ |
-| | Brave Browser | `com.brave.Browser` | Soft Clone | — |
-| | Firefox | `org.mozilla.firefox` | Soft Clone | — |
-| | Tor Browser | `org.torproject.torbrowser` | Soft Clone | — |
-| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | ✘ |
-| **音视频与社交娱乐** | 哔哩哔哩 (Bilibili) | `com.bilibili.bilibiliPC` | Hard Clone | ✘ |
-| | 抖音 (Douyin) | `com.bytedance.douyin.desktop` | Hard Clone | ✅ |
-| | 网易云音乐 | `com.netease.163music` | Hard Clone | ✅ |
-| | Steam | `com.valvesoftware.steam` | Hard Clone | ✘ |
-| **生产力与实用工具** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | ✅ |
-| | 剪映专业版 | `com.lemon.lvpro` | Hard Clone | ✅ |
-| | CapCut | `com.lemon.lvoverseas` | Hard Clone | ✅ |
-| **开发工具** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | — |
-| | VS Code | `com.microsoft.VSCode` | Soft Clone | — |
-| | Android Studio | `com.google.android.studio` | Hard Clone | ✘ |
-| | Zed | `dev.zed.Zed` | Soft Clone | — |
+> 💡 **新手与普通用户提示**：如果您不习惯终端命令行操作，请直接从 [GitHub Releases](https://github.com/aitobox/ATBClone/releases) 下载 `ATBClone-arm-0.8.0.dmg` 安装包，将 `ATBClone.app` 拖入 `应用程序` 文件夹即可直接运行使用！
+
+macOS 原生桌面图形客户端提供直观、全功能的应用分身管理：
+
+1. **仪表盘与分身卡片 (Dashboard)**：
+   - 以现代卡片式布局清晰展示所有分身应用，直观查看应用图标、克隆策略、独立代理状态与创建时间。
+   - 支持一键启动分身、一键升级（同步原应用并完整保留聊天记录与登录数据）以及安全卸载清理。
+2. **可视化新建分身向导**：
+   - 支持拖拽或文件选择器选取任意 `.app` 应用本体。
+   - 自动匹配内置规则或动态触发深度架构探测。
+   - 可视化自定义分身名称、显示标题、独立数据目录（如外接移动硬盘）以及 HTTP/SOCKS5 专属代理配置。
+3. **内置规则库 (Recipe Library)**：
+   - 分类浏览内置的 33+ 热门应用规则（微信、QQ、Chrome、Cursor、ChatGPT、Claude 等），查看沙盒剥离与隔离策略。
+4. **应用深度探测器 (App Prober)**：
+   - 可视化检测任意未知应用的 Mach-O 架构、Frameworks 与沙盒权限，一键生成专属分身规则。
+5. **系统健康自检 (Doctor)**：
+   - 一键自检系统版本、Xcode 命令行工具、代码签名环境与存储权限，保障分身稳定运行。
+6. **多语言与菜单栏托盘**：
+   - 内置多国语言支持（简体中文、繁體中文、English、日本語、한국어 等），支持最小化至 macOS 菜单栏托盘常驻。
+
+*(开发者如需从源码启动 GUI：运行 `bash scripts/run_gui.sh` 或 `python -m atbclone.gui`)*
 
 ---
 
-## 🛠️ 环境依赖
+## 🚀 命令行工具使用指南 (CLI — 专业用户 / 脚本自动化)
 
-- **操作系统**：macOS 13.0+ (Apple Silicon arm64 / Intel x86_64)
-- **Python**：Python 3.12+（`build_cli.sh` 编译时强制要求；推荐使用 Conda）
-- **系统开发工具**：已安装 Xcode Command Line Tools（提供 `codesign`, `xcode-select`, `PlistBuddy`）
+> ⚡ **专业用户与自动化场景**：CLI 工具（`atbclone` 或独立二进制 `ATBCloneCli`）提供完整的终端控制能力，支持丰富的子命令与漂亮的 Rich 终端输出，适合极客与脚本集成。
 
-```bash
-# 安装 Xcode Command Line Tools (若尚未安装)
-xcode-select --install
-```
-
----
-
-## 📦 安装与配置
-
-### 1. 从源码安装（开发模式）
-
-```bash
-# 1. 切换到项目目录并激活环境 (如 Conda)
-conda activate ATBClone
-
-# 2. 安装项目及其开发依赖
-pip install -e ".[dev]"
-
-# 3. 运行环境自检
-atbclone doctor
-```
-
----
-
-## 🚀 快速上手与使用指南
-
-### 1. 交互式向导（推荐新手使用）
+### 1. 交互式向导（CLI 引导模式）
 
 无需记忆参数，根据终端提示一步步操作：
 ```bash
@@ -270,21 +245,81 @@ atbclone --version
 
 ---
 
+## 📋 内置分身规则 (Built-in Recipes)
+
+| 类别 | 应用名称 | Bundle Identifier | 克隆策略 | 沙盒解除 (Strip Sandbox) |
+| :--- | :--- | :--- | :--- | :---: |
+| **即时通讯 & 协同办公** | 微信 (WeChat) | `com.tencent.xinWeChat` | Hard Clone | ✘ |
+| | QQ | `com.tencent.qq` | Hard Clone | ✘ |
+| | 企业微信 (WeCom) | `com.tencent.WeWorkMac` | Hard Clone | ✅ |
+| | 飞书 (Lark) | `com.electron.lark` | Hard Clone | ✘ |
+| | Telegram (原生 Swift) | `ru.keepcoder.Telegram` | Hard Clone | ✘ |
+| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | ✘ |
+| | LINE | `jp.naver.line.mac` | Hard Clone | ✅ |
+| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | ✘ |
+| | Discord | `com.hnc.Discord` | Hard Clone | ✘ |
+| | Skype | `com.skype.skype` | Hard Clone | ✅ |
+| **AI 客户端** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | ✘ |
+| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
+| | ChatGPT (标准版) | `com.openai.chat` | Hard Clone | ✅ |
+| | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
+| | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |
+| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | ✘ |
+| **浏览器** | Google Chrome | `com.google.Chrome` | Hard Clone | ✘ |
+| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | ✘ |
+| | Brave Browser | `com.brave.Browser` | Soft Clone | — |
+| | Firefox | `org.mozilla.firefox` | Soft Clone | — |
+| | Tor Browser | `org.torproject.torbrowser` | Soft Clone | — |
+| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | ✘ |
+| **音视频与社交娱乐** | 哔哩哔哩 (Bilibili) | `com.bilibili.bilibiliPC` | Hard Clone | ✘ |
+| | 抖音 (Douyin) | `com.bytedance.douyin.desktop` | Hard Clone | ✅ |
+| | 网易云音乐 | `com.netease.163music` | Hard Clone | ✅ |
+| | Steam | `com.valvesoftware.steam` | Hard Clone | ✘ |
+| **生产力与实用工具** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | ✅ |
+| | 剪映专业版 | `com.lemon.lvpro` | Hard Clone | ✅ |
+| | CapCut | `com.lemon.lvoverseas` | Hard Clone | ✅ |
+| **开发工具** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | — |
+| | VS Code | `com.microsoft.VSCode` | Soft Clone | — |
+| | Android Studio | `com.google.android.studio` | Hard Clone | ✘ |
+| | Zed | `dev.zed.Zed` | Soft Clone | — |
+
+---
+
+## 🛠️ 开发与环境依赖 (Development Setup)
+
+- **操作系统**：macOS 13.0+ (Apple Silicon arm64 / Intel x86_64)
+- **Python**：Python 3.12+（`build_cli.sh` 编译时强制要求；推荐使用 Conda）
+- **系统开发工具**：已安装 Xcode Command Line Tools（提供 `codesign`, `xcode-select`, `PlistBuddy`）
+
+```bash
+# 1. 安装 Xcode Command Line Tools (若尚未安装)
+xcode-select --install
+
+# 2. 切换到项目目录并激活 Conda 环境，以可编辑模式安装全部依赖 (含 GUI)
+conda activate ATBClone
+pip install -e ".[dev,gui]"
+
+# 3. 运行环境自检
+atbclone doctor
+```
+
+---
+
 ## 🏷️ 语义化版本管理 (Version Management)
 
-项目采用标准的语义化版本号格式 `x.y.z`（当前版本：`0.1.0`），并提供了专用的版本管理脚本 `scripts/manage_version.py`：
+项目采用标准的语义化版本号格式 `x.y.z`（当前版本：`0.8.0`），并提供了专用的版本管理脚本 `scripts/manage_version.py`：
 
 ```bash
 # 1. 检查各配置文件版本是否一致
 python scripts/manage_version.py --show
 
-# 2. 语义化升级版本 (patch: 0.1.0 -> 0.1.1, minor: 0.1.0 -> 0.2.0, major: 0.1.0 -> 1.0.0)
+# 2. 语义化升级版本 (patch: 0.8.0 -> 0.8.1, minor: 0.8.0 -> 0.9.0, major: 0.8.0 -> 1.0.0)
 python scripts/manage_version.py --bump patch
 python scripts/manage_version.py --bump minor
 python scripts/manage_version.py --bump major
 
 # 3. 指定显式版本
-python scripts/manage_version.py 0.2.0
+python scripts/manage_version.py 0.8.0
 
 # 4. 预览变更（不实际写入文件）
 python scripts/manage_version.py --bump patch --dry-run
@@ -294,18 +329,21 @@ python scripts/manage_version.py --bump patch --dry-run
 
 ---
 
-## 🏗️ 构建与打包为独立二进制 (Build)
+## 🏗️ 独立二进制构建与打包 (Build)
 
-项目提供了基于 [Nuitka](https://nuitka.net/) 的全自动单文件二进制构建脚本，可将整个 CLI 打包为无需 Python 环境依赖的独立可执行文件：
+项目提供了自动化构建与打包脚本，支持独立 CLI 二进制及 GUI DMG 安装包构建：
 
 ```bash
-# 执行打包脚本
+# 1. 构建 CLI 独立二进制 (生成于 dist/ATBCloneCli)
 bash scripts/build_cli.sh
+
+# 2. 构建 GUI 原生安装包 (生成于 dist/ATBClone-0.8.0.dmg)
+bash scripts/build_gui.sh
 ```
 
-构建完成后将在 `dist/` 目录生成独立二进制文件：
+构建完成后将在 `dist/` 目录生成产物：
 ```bash
-# 验证打包产物
+# 验证 CLI 独立二进制
 ./dist/ATBCloneCli --help
 ./dist/ATBCloneCli version
 ./dist/ATBCloneCli doctor
@@ -357,6 +395,10 @@ src/atbclone/
 │   ├── engines.py        # Soft & Hard 克隆执行引擎
 │   ├── models.py         # 基础模型
 │   └── state.py          # YAML 状态管理
+├── gui/                  # 原生 macOS GUI 桌面客户端层 (Toga / Briefcase)
+│   ├── components/       # 可复用 UI 组件 (分身卡片、侧边栏、顶部栏)
+│   ├── services/         # GUI 业务服务桥接 (clone, doctor, probe, recipe, tray)
+│   └── views/            # GUI 视图 (仪表盘、规则库、探测器、自检、设置、日志)
 ├── executor/             # 底层执行器 (Direct Subprocess / AppleScript 提权)
 │   └── runner.py
 └── recipes/              # 规则模型、加载器与 33 个内置规则

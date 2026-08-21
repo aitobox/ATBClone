@@ -6,6 +6,23 @@
 
 ---
 
+## 📥 Download
+
+Visit the [GitHub Releases](https://github.com/aitobox/ATBClone/releases) page to download the latest release of ATBClone.
+
+ATBClone provides two distribution packages with **identical core functionality**:
+
+| Distribution Package | Target Audience | Description |
+| :--- | :--- | :--- |
+| **`ATBClone-arm-0.8.0.dmg`** | 👶 **General Users (Strongly Recommended)** | macOS Native GUI desktop application installer (`.dmg`). Provides a modern, visual card-based interface with zero terminal knowledge required. |
+| **`ATBCloneCli.tar.gz`** | ⚡ **Power Users / Developers** | Standalone binary command-line tool archive (`ATBCloneCli`). Zero Python dependencies required; ideal for terminal power users, automation scripts, and CI/CD pipelines. |
+
+> 💡 **User Guidance**:
+> - **Beginners / Everyday Users**: Please **prioritize downloading and using the GUI app (`.dmg`)**. It offers an intuitive visual interface for one-click cloning, app launching, status monitoring, and settings.
+> - **Advanced Users / Developers**: Use the **CLI tool (`ATBCloneCli` / `atbclone`)** for fast terminal interaction, batch scripting, deep application probing, and headless workflows.
+
+---
+
 ## ✨ Key Features
 
 - 📦 **Dual-Engine Cloning Mechanism**:
@@ -21,79 +38,37 @@
 
 ---
 
-## 📋 Built-in Recipes
+## 🖥️ Graphical User Interface (GUI — Recommended for General Users)
 
-| Category | Application | Bundle Identifier | Strategy | Strip Sandbox |
-| :--- | :--- | :--- | :--- | :---: |
-| **Instant Messaging & Collaboration** | WeChat | `com.tencent.xinWeChat` | Hard Clone | ✘ |
-| | QQ | `com.tencent.qq` | Hard Clone | ✘ |
-| | WeCom (企业微信) | `com.tencent.WeWorkMac` | Hard Clone | ✅ |
-| | Lark (飞书) | `com.electron.lark` | Hard Clone | ✘ |
-| | Telegram (Native Swift) | `ru.keepcoder.Telegram` | Hard Clone | ✘ |
-| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | ✘ |
-| | LINE | `jp.naver.line.mac` | Hard Clone | ✅ |
-| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | ✘ |
-| | Discord | `com.hnc.Discord` | Hard Clone | ✘ |
-| | Skype | `com.skype.skype` | Hard Clone | ✅ |
-| **AI Clients** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | ✘ |
-| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
-| | ChatGPT (Standard) | `com.openai.chat` | Hard Clone | ✅ |
-| | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
-| | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |
-| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | ✘ |
-| **Browsers** | Google Chrome | `com.google.Chrome` | Hard Clone | ✘ |
-| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | ✘ |
-| | Brave Browser | `com.brave.Browser` | Soft Clone | — |
-| | Firefox | `org.mozilla.firefox` | Soft Clone | — |
-| | Tor Browser | `org.torproject.torbrowser` | Soft Clone | — |
-| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | ✘ |
-| **Media & Entertainment** | Bilibili (哔哩哔哩) | `com.bilibili.bilibiliPC` | Hard Clone | ✘ |
-| | Douyin (抖音) | `com.bytedance.douyin.desktop` | Hard Clone | ✅ |
-| | Netease Music (网易云音乐) | `com.netease.163music` | Hard Clone | ✅ |
-| | Steam | `com.valvesoftware.steam` | Hard Clone | ✘ |
-| **Productivity & Utilities** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | ✅ |
-| | VideoFusion (剪映专业版) | `com.lemon.lvpro` | Hard Clone | ✅ |
-| | CapCut | `com.lemon.lvoverseas` | Hard Clone | ✅ |
-| **Developer Tools** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | — |
-| | VS Code | `com.microsoft.VSCode` | Soft Clone | — |
-| | Android Studio | `com.google.android.studio` | Hard Clone | ✘ |
-| | Zed | `dev.zed.Zed` | Soft Clone | — |
+> 💡 **Tip for Everyday Users**: If you prefer not to use the terminal, download `ATBClone-arm-0.8.0.dmg` from [GitHub Releases](https://github.com/aitobox/ATBClone/releases), open the DMG, drag `ATBClone.app` to your `Applications` folder, and launch it directly.
+
+The native macOS desktop interface provides a visual, streamlined experience:
+
+1. **Dashboard & Clone Cards**:
+   - Displays all cloned applications in a modern card layout showing app icons, cloning strategies, proxy statuses, and creation timestamps.
+   - Launch cloned apps, update after primary app upgrades (preserving chat history and data), or safely remove clones with a single click.
+2. **Visual Clone Creation**:
+   - Drag and drop or browse for any `.app` bundle from your system.
+   - Automatically matches built-in recipes or runs the App Prober on unlisted applications.
+   - Customize clone name, display title, custom icon, dedicated data directory (e.g. on external SSDs), and independent HTTP / SOCKS5 proxies.
+3. **Built-in Recipe Library**:
+   - Explore 33+ pre-configured application recipes (WeChat, QQ, Chrome, Cursor, ChatGPT, Claude, etc.) categorized by type, complete with sandbox stripping rules and isolation strategies.
+4. **App Prober (Deep Architecture Inspection)**:
+   - Inspect any unknown macOS app's Mach-O architecture, frameworks, and sandbox entitlements, and generate custom recipe YAML files with one click.
+5. **System Diagnostics (Doctor)**:
+   - Self-check system prerequisites, Xcode command-line tools, codesigning utilities, and storage permissions to ensure optimal stability.
+6. **Multi-language & System Tray**:
+   - Fully localized across multiple languages (English, 简体中文, 繁體中文, 日本語, 한국어, Deutsch, Français, Русский, Español) with macOS menu bar tray integration.
+
+*(For developers running the GUI from source: run `bash scripts/run_gui.sh` or `python -m atbclone.gui`)*
 
 ---
 
-## 🛠️ Prerequisites
+## 🚀 Command Line Interface (CLI — For Power Users & Scripting)
 
-- **Operating System**: macOS 13.0+ (Apple Silicon arm64 / Intel x86_64)
-- **Python**: Python 3.12+ (strictly required for `build_cli.sh` compilation; Conda recommended)
-- **System Tools**: Xcode Command Line Tools installed (provides `codesign`, `xcode-select`, `PlistBuddy`)
+> ⚡ **For Advanced Users & Automation**: The CLI tool (`atbclone` or standalone binary `ATBCloneCli`) provides full control over the cloning engine with scriptable commands, rich terminal tables, and automation support.
 
-```bash
-# Install Xcode Command Line Tools (if not already installed)
-xcode-select --install
-```
-
----
-
-## 📦 Installation & Setup
-
-### 1. Install from Source (Development Mode)
-
-```bash
-# 1. Navigate to the project directory and activate your environment (e.g. Conda)
-conda activate ATBClone
-
-# 2. Install the package and development dependencies
-pip install -e ".[dev]"
-
-# 3. Run environment self-check
-atbclone doctor
-```
-
----
-
-## 🚀 Quick Start & CLI Usage
-
-### 1. Interactive Wizard (Recommended for Beginners)
+### 1. Interactive Wizard (CLI Guided Mode)
 
 No need to memorize CLI options—follow the interactive prompts in your terminal:
 ```bash
@@ -271,21 +246,81 @@ atbclone --version
 
 ---
 
+## 📋 Built-in Recipes
+
+| Category | Application | Bundle Identifier | Strategy | Strip Sandbox |
+| :--- | :--- | :--- | :--- | :---: |
+| **Instant Messaging & Collaboration** | WeChat | `com.tencent.xinWeChat` | Hard Clone | ✘ |
+| | QQ | `com.tencent.qq` | Hard Clone | ✘ |
+| | WeCom (企业微信) | `com.tencent.WeWorkMac` | Hard Clone | ✅ |
+| | Lark (飞书) | `com.electron.lark` | Hard Clone | ✘ |
+| | Telegram (Native Swift) | `ru.keepcoder.Telegram` | Hard Clone | ✘ |
+| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | ✘ |
+| | LINE | `jp.naver.line.mac` | Hard Clone | ✅ |
+| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | ✘ |
+| | Discord | `com.hnc.Discord` | Hard Clone | ✘ |
+| | Skype | `com.skype.skype` | Hard Clone | ✅ |
+| **AI Clients** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | ✘ |
+| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
+| | ChatGPT (Standard) | `com.openai.chat` | Hard Clone | ✅ |
+| | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
+| | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |
+| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | ✘ |
+| **Browsers** | Google Chrome | `com.google.Chrome` | Hard Clone | ✘ |
+| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | ✘ |
+| | Brave Browser | `com.brave.Browser` | Soft Clone | — |
+| | Firefox | `org.mozilla.firefox` | Soft Clone | — |
+| | Tor Browser | `org.torproject.torbrowser` | Soft Clone | — |
+| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | ✘ |
+| **Media & Entertainment** | Bilibili (哔哩哔哩) | `com.bilibili.bilibiliPC` | Hard Clone | ✘ |
+| | Douyin (抖音) | `com.bytedance.douyin.desktop` | Hard Clone | ✅ |
+| | Netease Music (网易云音乐) | `com.netease.163music` | Hard Clone | ✅ |
+| | Steam | `com.valvesoftware.steam` | Hard Clone | ✘ |
+| **Productivity & Utilities** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | ✅ |
+| | VideoFusion (剪映专业版) | `com.lemon.lvpro` | Hard Clone | ✅ |
+| | CapCut | `com.lemon.lvoverseas` | Hard Clone | ✅ |
+| **Developer Tools** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | — |
+| | VS Code | `com.microsoft.VSCode` | Soft Clone | — |
+| | Android Studio | `com.google.android.studio` | Hard Clone | ✘ |
+| | Zed | `dev.zed.Zed` | Soft Clone | — |
+
+---
+
+## 🛠️ Prerequisites & Development Setup
+
+- **Operating System**: macOS 13.0+ (Apple Silicon arm64 / Intel x86_64)
+- **Python**: Python 3.12+ (strictly required for `build_cli.sh` compilation; Conda recommended)
+- **System Tools**: Xcode Command Line Tools installed (provides `codesign`, `xcode-select`, `PlistBuddy`)
+
+```bash
+# 1. Install Xcode Command Line Tools (if not already installed)
+xcode-select --install
+
+# 2. Activate Conda environment and install in development mode
+conda activate ATBClone
+pip install -e ".[dev,gui]"
+
+# 3. Run environment self-check
+atbclone doctor
+```
+
+---
+
 ## 🏷️ Semantic Version Management
 
-The project adheres to semantic versioning `x.y.z` (current version: `0.1.0`) and provides a dedicated version management script at `scripts/manage_version.py`:
+The project adheres to semantic versioning `x.y.z` (current version: `0.8.0`) and provides a dedicated version management script at `scripts/manage_version.py`:
 
 ```bash
 # 1. Check version consistency across configuration files
 python scripts/manage_version.py --show
 
-# 2. Bump semantic version (patch: 0.1.0 -> 0.1.1, minor: 0.1.0 -> 0.2.0, major: 0.1.0 -> 1.0.0)
+# 2. Bump semantic version (patch: 0.8.0 -> 0.8.1, minor: 0.8.0 -> 0.9.0, major: 0.8.0 -> 1.0.0)
 python scripts/manage_version.py --bump patch
 python scripts/manage_version.py --bump minor
 python scripts/manage_version.py --bump major
 
 # 3. Set an explicit version
-python scripts/manage_version.py 0.2.0
+python scripts/manage_version.py 0.8.0
 
 # 4. Preview changes without writing to disk
 python scripts/manage_version.py --bump patch --dry-run
@@ -297,11 +332,14 @@ python scripts/manage_version.py --bump patch --dry-run
 
 ## 🏗️ Standalone Binary Packaging (Build)
 
-The project includes an automated [Nuitka](https://nuitka.net/)-based single-file build script to package the CLI into a standalone binary with zero Python runtime dependency:
+The project includes automated build scripts to package both the CLI and GUI into standalone binaries:
 
 ```bash
-# Run build script
+# 1. Build CLI standalone binary (dist/ATBCloneCli)
 bash scripts/build_cli.sh
+
+# 2. Build GUI DMG installer (dist/ATBClone-0.8.0.dmg)
+bash scripts/build_gui.sh
 ```
 
 The resulting standalone binary will be generated under `dist/`:
@@ -358,6 +396,10 @@ src/atbclone/
 │   ├── engines.py        # Soft & Hard cloning execution engines
 │   ├── models.py         # Domain models
 │   └── state.py          # YAML state management
+├── gui/                  # Native macOS GUI desktop application layer (Toga / Briefcase)
+│   ├── components/       # Reusable UI widgets (cards, sidebar, top bar)
+│   ├── services/         # GUI service bridge (clone, doctor, probe, recipe, tray)
+│   └── views/            # GUI views (dashboard, recipes, probe, doctor, settings, logs)
 ├── executor/             # Low-level executors (Subprocess / AppleScript elevation)
 │   └── runner.py
 └── recipes/              # Recipe models, loaders & 33 built-in rules

@@ -16,11 +16,52 @@ class AppInspector:
 
     @classmethod
     def inspect(cls, app_path: str | Path) -> AppInfo:
-        path = Path(app_path)
+        path = Path(app_path).expanduser().resolve()
         if not path.exists():
             raise FileNotFoundError(f"App not found: {app_path}")
 
+        # Check bundle layout
+        is_ios_app = False
+        relative_plist_path = Path("Contents/Info.plist")
+        relative_executable_path = Path("Contents/MacOS")
+        relative_resources_path = Path("Contents/Resources")
+
         plist_path = path / "Contents" / "Info.plist"
+
+        if not plist_path.exists():
+            # Check iOS on Mac (Apple Silicon wrapper bundle)
+            wrapper_dir = path / "Wrapper"
+            wrapped_bundle = path / "WrappedBundle"
+            if wrapped_bundle.exists() and (wrapped_bundle / "Info.plist").exists():
+                is_ios_app = True
+                try:
+                    target_inner = wrapped_bundle.resolve().relative_to(path.resolve())
+                    relative_plist_path = target_inner / "Info.plist"
+                    relative_executable_path = target_inner
+                    relative_resources_path = target_inner
+                    plist_path = path / relative_plist_path
+                except Exception:
+                    is_ios_app = True
+                    relative_plist_path = Path("WrappedBundle/Info.plist")
+                    relative_executable_path = Path("WrappedBundle")
+                    relative_resources_path = Path("WrappedBundle")
+                    plist_path = path / relative_plist_path
+            elif wrapper_dir.is_dir():
+                inner_apps = list(wrapper_dir.glob("*.app"))
+                if inner_apps:
+                    is_ios_app = True
+                    inner = inner_apps[0]
+                    rel_inner = inner.relative_to(path)
+                    relative_plist_path = rel_inner / "Info.plist"
+                    relative_executable_path = rel_inner
+                    relative_resources_path = rel_inner
+                    plist_path = inner / "Info.plist"
+            elif (path / "Info.plist").exists():
+                relative_plist_path = Path("Info.plist")
+                relative_executable_path = Path(".")
+                relative_resources_path = Path(".")
+                plist_path = path / "Info.plist"
+
         bundle_id = ""
         app_name = ""
         executable_name = ""
@@ -45,7 +86,9 @@ class AppInspector:
         # Check sandbox entitlements
         entitlements = cls._run_cmd(["codesign", "-d", "--entitlements", "-", str(path)])
         has_sandbox = False
-        if "com.apple.security.app-sandbox" in entitlements:
+        if is_ios_app:
+            has_sandbox = True
+        elif "com.apple.security.app-sandbox" in entitlements:
             # Check for boolean true (either structured codesign format or XML format)
             if re.search(r"com\.apple\.security\.app-sandbox.*?(true|\[Bool\]\s*true)", entitlements, re.IGNORECASE | re.DOTALL):
                 if not re.search(r"com\.apple\.security\.app-sandbox\s*\n\s*\[Value\]\s*\n\s*\[Bool\]\s*false", entitlements, re.IGNORECASE):
@@ -53,7 +96,10 @@ class AppInspector:
             elif "<false/>" not in entitlements and "[Bool] false" not in entitlements:
                 has_sandbox = True
 
-        executable = path / "Contents" / "MacOS" / executable_name
+        if is_ios_app:
+            executable = path / relative_executable_path / executable_name
+        else:
+            executable = path / "Contents" / "MacOS" / executable_name
 
         return AppInfo(
             path=path,
@@ -61,6 +107,10 @@ class AppInspector:
             app_name=app_name,
             executable=executable,
             has_sandbox=has_sandbox,
+            is_ios_app=is_ios_app,
+            relative_plist_path=relative_plist_path,
+            relative_executable_path=relative_executable_path,
+            relative_resources_path=relative_resources_path,
         )
 
     @staticmethod

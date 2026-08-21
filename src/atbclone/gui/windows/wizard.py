@@ -315,6 +315,10 @@ class WizardWindow(toga.Window):
                 await self.error_dialog(t("dialog_error_title"), f"Failed to inspect app: {e}")
                 return
 
+            if getattr(self.app_info, "is_ios_app", False):
+                await self.error_dialog(t("dialog_clone_error_title"), t("clone_err_ios_wrapper_unsupported"))
+                return
+
             # Recipe matching: try built-in library first (consistent with CLI cmd_clone logic),
             # fall back to Probe auto-analysis only when no built-in recipe exists.
             self._recipe_from_probe = False

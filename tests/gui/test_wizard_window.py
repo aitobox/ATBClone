@@ -178,3 +178,30 @@ def test_wizard_execute_clone_ios_app_shows_error(tmp_path: Path):
 
     asyncio.run(_test())
 
+
+def test_wizard_step1_ios_app_shows_error_dialog(tmp_path: Path):
+    async def _test():
+        clone_service = CloneService(state_file=tmp_path / "clones.yaml")
+        wizard = WizardWindow(clone_service=clone_service)
+        wizard.input_app_path.value = "/Applications/小宇宙.app"
+        wizard.error_dialog = AsyncMock()
+
+        mock_info = AppInfo(
+            path=Path("/Applications/小宇宙.app"),
+            bundle_id="app.podcast.cosmos",
+            app_name="小宇宙",
+            executable=Path("/Applications/小宇宙.app/Wrapper/Podcast.app/Podcast"),
+            has_sandbox=True,
+            is_ios_app=True,
+        )
+
+        with patch("atbclone.core.app_inspector.AppInspector.inspect", return_value=mock_info):
+            await wizard.go_next()
+            assert wizard.current_step == 1
+            wizard.error_dialog.assert_called_once()
+            _, err_msg = wizard.error_dialog.call_args[0]
+            assert "iOS on Mac Wrapper" in err_msg or "不支持 iOS on Mac Wrapper 应用" in err_msg
+
+    asyncio.run(_test())
+
+

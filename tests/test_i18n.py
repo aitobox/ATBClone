@@ -291,5 +291,14 @@ def test_settings_storage_labels_all_languages():
         assert "{path}" not in data_txt and "{dir}" not in data_txt
 
 
+def test_dialog_delete_data_confirm_msg_all_languages():
+    """Verify dialog_delete_data_confirm_msg uses actual newlines rather than literal '\\n'."""
+    from atbclone.core.i18n import t, set_language, SUPPORTED_LANGUAGES
 
-
+    test_path = "/Users/testuser/.atbclone/Data/WeChat3"
+    for lang in SUPPORTED_LANGUAGES:
+        set_language(lang)
+        msg = t("dialog_delete_data_confirm_msg", path=test_path)
+        assert test_path in msg
+        assert "\\n" not in msg, f"Literal '\\n' found in dialog_delete_data_confirm_msg for lang '{lang}'"
+        assert "\n" in msg, f"Expected actual newline in dialog_delete_data_confirm_msg for lang '{lang}'"

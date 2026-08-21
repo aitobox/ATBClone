@@ -66,7 +66,7 @@ def patch_cocoa_widgets() -> None:
     Ensures:
     - All single-line TextInput widgets support horizontal scrolling, clipping mode, and readable 13.5px fonts.
     - All Switch (checkbox) widgets have comfortable 13.5px label fonts.
-    - All Selection (dropdown) widgets have comfortable 13.5px option fonts and support set_font.
+    - All Selection (dropdown) widgets have comfortable 12.0px option fonts and support set_font.
     - All Table widgets have comfortable row height (34px), crisp 12.5px headers, and readable 13.0px cell fonts.
     """
     global _is_patched
@@ -110,7 +110,7 @@ def patch_cocoa_widgets() -> None:
             _orig_selection_create(self)
             try:
                 if hasattr(self, "native") and self.native is not None:
-                    self.native.setFont_(NSFont.systemFontOfSize_(13.5))
+                    self.native.setFont_(NSFont.systemFontOfSize_(12.0))
             except Exception:
                 pass
 

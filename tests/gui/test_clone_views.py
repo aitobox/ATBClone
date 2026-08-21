@@ -133,6 +133,11 @@ def test_clone_list_view_refresh(tmp_path):
             mock_up.assert_not_awaited()
         view._busy_clones.clear()
 
+        # Test double-click (on_activate) on table row opens edit window
+        with patch.object(view, "on_edit_clone", new_callable=AsyncMock) as mock_edit:
+            await view.on_table_activate(view.table, row=view.table.data[0])
+            mock_edit.assert_awaited_once_with(record)
+
     asyncio.run(_test())
 
 

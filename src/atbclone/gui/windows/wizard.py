@@ -80,7 +80,7 @@ class WizardWindow(toga.Window):
         self.label_recipe_app = toga.Label(f"{t('probe_row_app_name')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
         self.label_recipe_bundle = toga.Label(f"{t('probe_row_bundle_id')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
         self.label_recipe_strat = toga.Label(f"{t('probe_row_strategy')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
-        self.select_recipe_strat = toga.Selection(items=["hard_clone", "soft_clone"], style=Pack(width=160, font_size=13.5))
+        self.select_recipe_strat = toga.Selection(items=["hard_clone", "soft_clone"], style=Pack(width=160, font_size=12.0))
         # Shows whether recipe came from built-in library or Probe analysis
         self.label_recipe_origin = toga.Label("", style=Pack(font_size=11.5, font_style="italic", margin_bottom=6))
 
@@ -105,7 +105,7 @@ class WizardWindow(toga.Window):
         ]
         self.select_language = toga.Selection(
             items=self._lang_display_items,
-            style=Pack(flex=1, font_size=13.5),
+            style=Pack(flex=1, font_size=12.0),
         )
 
         # Step 4: Destination Directory
@@ -119,7 +119,7 @@ class WizardWindow(toga.Window):
 
         # Step 6: Proxy Settings
         self.switch_proxy = toga.Switch(t("win_wizard_step6_switch"), value=False, style=Pack(margin_bottom=8, font_size=13.5))
-        self.select_proxy_type = toga.Selection(items=["http", "https", "socks5"], style=Pack(width=105, margin_right=8, font_size=13.5))
+        self.select_proxy_type = toga.Selection(items=["http", "https", "socks5"], style=Pack(width=105, margin_right=8, font_size=12.0))
         self.input_proxy_host = toga.TextInput(value="127.0.0.1", style=Pack(flex=1, margin_right=8, font_size=13.5))
         self.input_proxy_port = toga.TextInput(value="7890", style=Pack(width=90, font_size=13.5))
 

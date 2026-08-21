@@ -71,7 +71,7 @@ class SettingsView(toga.Box):
             items=lang_items,
             value=current_item,
             on_change=self._on_language_changed,
-            style=Pack(flex=1, font_size=13.5),
+            style=Pack(flex=1, font_size=12.0),
         )
         row_lang.add(self.select_language)
         inner_lang.add(row_lang)
@@ -119,7 +119,7 @@ class SettingsView(toga.Box):
         inner_proxy.add(self.switch_proxy)
 
         row_proxy = toga.Box(style=Pack(direction=ROW, align_items=CENTER))
-        self.select_proxy_type = toga.Selection(items=["http", "https", "socks5"], style=Pack(width=105, margin_right=8, font_size=13.5))
+        self.select_proxy_type = toga.Selection(items=["http", "https", "socks5"], style=Pack(width=105, margin_right=8, font_size=12.0))
         self.input_proxy_host = toga.TextInput(value="127.0.0.1", style=Pack(flex=1, margin_right=8, font_size=13.5))
         self.input_proxy_port = toga.TextInput(value="7890", style=Pack(width=90, font_size=13.5))
         row_proxy.add(self.select_proxy_type)

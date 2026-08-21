@@ -73,6 +73,11 @@ def test_recipe_list_view_refresh(tmp_path):
         assert len(view._filtered_recipes) >= 1
         assert view._filtered_recipes[0]["app_name"].lower() >= view._filtered_recipes[-1]["app_name"].lower()
 
+        # Switch back to list view mode
+        view.on_view_mode_changed("list")
+        assert view.view_mode == "list"
+        assert len(view.table.data) >= 1
+
         # Selection enables edit for all recipes, but delete only for custom
         with patch.object(view, "get_selected_recipe_item", return_value=view._filtered_recipes[0]):
             view.on_table_select(view.table)
@@ -84,6 +89,11 @@ def test_recipe_list_view_refresh(tmp_path):
             view.on_table_select(view.table)
             assert view.btn_edit.enabled is False
             assert view.btn_delete.enabled is False
+
+        # Test double-click (on_activate) on table row opens edit window
+        with patch.object(view, "_open_edit_dialog") as mock_open:
+            view.on_table_activate(view.table, row=view.table.data[0])
+            mock_open.assert_called_once_with(view._filtered_recipes[0]["recipe"])
 
     asyncio.run(_test())
 

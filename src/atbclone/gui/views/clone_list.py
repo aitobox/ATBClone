@@ -93,6 +93,7 @@ class CloneListView(toga.Box):
                 t("list_col_created_at"),
             ],
             on_select=self.on_table_select,
+            on_activate=self.on_table_activate,
             style=Pack(flex=1),
         )
         self.table_box.add(self.table)
@@ -243,13 +244,26 @@ class CloneListView(toga.Box):
         self.btn_detail_table.enabled = has_sel
         self.btn_delete_table.enabled = has_sel and not is_busy
 
-    def get_selected_record(self) -> Optional[CloneRecord]:
-        selection = self.table.selection
+    async def on_table_activate(self, widget: toga.Table, row=None, **kwargs):
+        record = self.get_selected_record(row)
+        if record:
+            await self.on_edit_clone(record)
+
+    def get_selected_record(self, row=None) -> Optional[CloneRecord]:
+        selection = row if row is not None else self.table.selection
         if selection is None:
             return None
         clone_name = getattr(selection, "Name", None) or getattr(selection, "clone_name", None) or getattr(selection, t("list_col_name"), None)
         if not clone_name and hasattr(selection, "_raw"):
             clone_name = selection._raw[0]
+        if not clone_name and isinstance(selection, (tuple, list)) and len(selection) > 0:
+            clone_name = selection[0]
+        if not clone_name and hasattr(selection, "__dict__"):
+            known_names = {r.clone_name for r in self._filtered_clones}
+            for k, v in selection.__dict__.items():
+                if not k.startswith("_") and isinstance(v, str) and v in known_names:
+                    clone_name = v
+                    break
         for r in self._filtered_clones:
             if r.clone_name == clone_name:
                 return r

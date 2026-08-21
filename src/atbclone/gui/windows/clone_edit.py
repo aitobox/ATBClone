@@ -46,7 +46,7 @@ class CloneEditWindow(toga.Window):
         self.select_proxy_type = toga.Selection(
             items=["http", "https", "socks5"],
             value=proxy_type,
-            style=Pack(width=105, margin_right=8, font_size=13.5),
+            style=Pack(width=105, margin_right=8, font_size=12.0),
         )
         self.input_proxy_host = toga.TextInput(
             value=proxy_host,
@@ -67,7 +67,7 @@ class CloneEditWindow(toga.Window):
         self.select_language = toga.Selection(
             items=self._lang_display_items,
             value=self._lang_display_items[curr_lang_idx],
-            style=Pack(flex=1, font_size=13.5),
+            style=Pack(flex=1, font_size=12.0),
         )
 
         self.btn_save = toga.Button(t("btn_save_changes"), on_press=self.on_save_press, style=Pack(flex=1, margin_left=8, height=30, font_weight="bold", font_size=13))
@@ -78,7 +78,7 @@ class CloneEditWindow(toga.Window):
     def _build_content(self) -> toga.Box:
         box = toga.Box(style=Pack(direction=COLUMN, margin=(18, 20, 18, 20)))
 
-        title_label = toga.Label(f"Editing: {self.record.clone_name}", style=Pack(font_weight="bold", font_size=15, margin_bottom=12, color=Theme.TEXT_PRIMARY))
+        title_label = toga.Label(t("win_edit_title", name=self.record.clone_name), style=Pack(font_weight="bold", font_size=15, margin_bottom=12, color=Theme.TEXT_PRIMARY))
         box.add(title_label)
 
         # Language Settings

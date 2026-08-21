@@ -35,7 +35,7 @@ class RecipeEditWindow(toga.Window):
         self.select_strategy = toga.Selection(
             items=["hard_clone", "soft_clone"],
             value=recipe.strategy if recipe else "hard_clone",
-            style=Pack(flex=1, font_size=13.5),
+            style=Pack(flex=1, font_size=12.0),
         )
         self.switch_strip_sandbox = toga.Switch(
             text=t("win_recipe_strip_sandbox"),
@@ -53,7 +53,7 @@ class RecipeEditWindow(toga.Window):
         self.select_proxy_type = toga.Selection(
             items=["http", "https", "socks5"],
             value=proxy.type,
-            style=Pack(width=105, margin_right=8, font_size=13.5),
+            style=Pack(width=105, margin_right=8, font_size=12.0),
         )
         self.input_proxy_host = toga.TextInput(
             value=proxy.host,

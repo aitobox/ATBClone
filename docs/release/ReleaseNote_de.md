@@ -6,6 +6,39 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.9.0] - 2026-08-21
+
+### 🌐 Unabhängige Sprach- und Gebietsschema-Isolation pro Klon
+- **Benutzerdefinierte Spracheinstellungen (`--language` / `--locale`)**:
+  - Unterstützung für die Ausführung von Klonen in dedizierten Sprachen, unabhängig von der Sprache des macOS-Wirtssystems oder der Hauptanwendung.
+  - Erweiterung von `atbclone clone` und `atbclone wizard` um `--language` / `--locale` sowie grafische Sprachauswahl im GUI-Assistenten und Bearbeitungsdialog.
+  - Automatische Injektion von `AppleLanguages` und `AppleLocale` in Start-Wrapper und Binärdateien.
+  - Neues Modul `atbclone.core.locale` zur BCP-47-Sprachcode- und Regionsanalyse.
+
+### 🆔 Eindeutige Bundle-ID-Generierung bei Mehrfachklonen
+- **Kollisionsfreie Bundle-IDs**:
+  - `AppInspector.find_next_bundle_id` zur dynamischen Erkennung bestehender Klone und automatischen Vergabe kollisionsfreier IDs (`com.vendor.app.atb1`, `atb2` usw.).
+
+### 🍏 Menüleisten-Tray-Aktivierung und Fenster-Lebenszyklus
+- **Zuverlässige Fensterwiederherstellung**:
+  - Optimierte Reaktivierung, Fokusübernahme und Deminiaturisierung beim Öffnen aus dem Statusmenü (`TrayService`).
+  - Abfangen des Fensterschließens (`Cmd+W` / rote Schließen-Schaltfläche) bei aktiviertem „In Menüleiste minimieren“.
+  - Verbesserte Handhabung von Klickereignissen im Menüleistensymbol.
+
+### ⚡ Klon-Aktualisierung und Bereinigung des Zielverzeichnisses
+- **Atomare Aktualisierungsprozesse**:
+  - Beseitigung von Race-Conditions bei Klon-Updates durch gründliche Vorbereinigung des Zielverzeichnisses.
+  - Verbesserte reaktive Synchronisierung von Klon-Karten in der Benutzeroberfläche.
+
+### 🎨 Typografie, Widget-Größen und Dokumentation
+- **Visueller Feinschliff**:
+  - Optimierung der Tabellenzeilenhöhe (34px) und Beseitigung von Textüberläufen in Dropdown-Menüs.
+  - Erweiterung der README um Download-Hinweise, GUI-Anleitung und Screenshots.
+- **Test-Suite**:
+  - Ausbau auf 329 automatisierte Tests.
+
+---
+
 ## [v0.8.0] - 2026-08-20
 
 ### 🎨 macOS Human Interface Guidelines (HIG) Visuelle Neugestaltung

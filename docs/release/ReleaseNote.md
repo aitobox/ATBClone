@@ -6,6 +6,39 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.9.0] - 2026-08-21
+
+### 🌐 Per-Clone Independent Language & Locale Isolation
+- **Custom Locale & Language Selection (`--language` / `--locale`)**:
+  - Added support for running clones in dedicated languages independent from the host system macOS language and primary application settings.
+  - CLI commands `atbclone clone` and `atbclone wizard` now support `--language` / `--locale` parameters, and the GUI Creation Wizard / Edit Dialog provide interactive language pickers.
+  - Automatically injects `AppleLanguages` and `AppleLocale` macOS user defaults and environment variables into soft clone wrappers and hard clone binary launchers.
+  - Added `atbclone.core.locale` helper supporting comprehensive language tag parsing, BCP-47 identifiers, and system locales.
+
+### 🆔 Robust Multi-Instance Bundle ID Resolution
+- **Collision-Free Clone Bundle Identifiers**:
+  - Introduced `AppInspector.find_next_bundle_id` to dynamically scan active clone states and the file system, ensuring deterministic, collision-free Bundle IDs (`com.vendor.app.atb1`, `atb2`, etc.) when creating multiple instances of the same application.
+
+### 🍏 System Tray Activation & Window Lifecycle Improvements
+- **Seamless macOS Menu Bar Tray Experience**:
+  - Fixed window activation, deminiaturization, and unhiding when restoring the main window from the system menu bar status item (`TrayService`).
+  - Intercepted window close events (`Cmd+W` / red traffic light button) when "Minimize to System Tray" is enabled to cleanly hide the window to the tray rather than terminating.
+  - Enhanced status item mouse event handling (left click, right click, and Ctrl+Click).
+
+### ⚡ Clone Update Concurrency & Clean Destination Cleanup
+- **Atomic Re-cloning**:
+  - Resolved race conditions during clone update operations by enforcing thorough destination bundle cleanup before re-generation.
+  - Fixed UI state synchronization and reactive card updates upon clone modification.
+
+### 🎨 GUI Typography, Sizing & Documentation
+- **Visual Polish**:
+  - Optimized Cocoa table row heights (34px), typography scale, and dropdown selection text sizing to prevent clipping.
+  - Added comprehensive download sections, GUI walkthrough guide, and screenshots to documentation.
+- **Testing**:
+  - Expanded automated test suite to 329 unit and GUI integration tests.
+
+---
+
 ## [v0.8.0] - 2026-08-20
 
 ### 🎨 macOS Human Interface Guidelines (HIG) Visual Overhaul

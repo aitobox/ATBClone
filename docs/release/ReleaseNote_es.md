@@ -6,6 +6,39 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.9.0] - 2026-08-21
+
+### 🌐 Aislamiento independiente de idioma y configuración regional (Locale)
+- **Configuración de idioma exclusivo por clon (`--language` / `--locale`)**:
+  - Compatibilidad para ejecutar cada clon en un idioma exclusivo, independiente del idioma del sistema macOS y de la aplicación original.
+  - Opciones `--language` / `--locale` agregadas a `atbclone clone` y `atbclone wizard`, con selector de idioma en el asistente visual y ventana de edición.
+  - Inyección automática de `AppleLanguages` y `AppleLocale` en scripts de inicio y ejecutables.
+  - Módulo `atbclone.core.locale` para análisis de códigos de idioma BCP-47.
+
+### 🆔 Resolución robusta de identificadores Bundle multi-instancia
+- **Identificadores de paquete únicos y secuenciales**:
+  - Incorporación de `AppInspector.find_next_bundle_id` para generar Bundle IDs deterministas y sin colisiones (`com.vendor.app.atb1`, `atb2`, etc.) al clonar la misma aplicación varias veces.
+
+### 🍏 Activación desde la barra de menús y ciclo de vida de la ventana
+- **Restauración fluida desde el System Tray**:
+  - Corrección de la activación, desminiaturización y enfoque de la ventana principal al abrir desde `TrayService`.
+  - Intercepción del cierre de ventana (`Cmd+W` / botón rojo) para ocultar hacia la barra de menús cuando la opción está activa.
+  - Soporte mejorado para eventos de ratón en el icono de estado.
+
+### ⚡ Actualización de clones y limpieza de directorio destino
+- **Actualizaciones atómicas**:
+  - Corrección de condiciones de carrera durante la actualización de clones mediante limpieza previa del directorio de destino.
+  - Sincronización en tiempo real de tarjetas y listas en la GUI.
+
+### 🎨 Tipografía, ajuste de controles y documentación
+- **Pulido visual**:
+  - Altura de fila en tablas Cocoa ajustada a 34px y eliminación del truncamiento de texto en menús desplegables.
+  - README actualizado con guía de uso de la interfaz gráfica y capturas de pantalla.
+- **Pruebas integrales**:
+  - Conjunto de pruebas ampliado a 329 pruebas automatizadas.
+
+---
+
 ## [v0.8.0] - 2026-08-20
 
 ### 🎨 Renovación visual según las directrices macOS HIG

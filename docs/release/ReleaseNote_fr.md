@@ -6,6 +6,39 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.9.0] - 2026-08-21
+
+### 🌐 Isolation linguistique et régionale indépendante par clone
+- **Sélection de la langue et du locale (`--language` / `--locale`)**:
+  - Possibilité d'exécuter chaque clone dans une langue dédiée, indépendamment de la langue de macOS et de l'application principale.
+  - Prise en charge des options `--language` / `--locale` dans la CLI (`atbclone clone`, `atbclone wizard`) et sélecteur de langue interactif dans l'interface graphique.
+  - Injection automatique des préférences `AppleLanguages` et `AppleLocale` dans les scripts lanceurs et exécutables.
+  - Nouveau module `atbclone.core.locale` pour l'analyse des identifiants BCP-47.
+
+### 🆔 Résolution robuste des identifiants Bundle multi-instances
+- **Identifiants uniques sans collision**:
+  - Introduction de `AppInspector.find_next_bundle_id` pour attribuer automatiquement des Bundle ID incrémentaux et sans conflit (`com.vendor.app.atb1`, `atb2`, etc.).
+
+### 🍏 Restauration depuis la barre des menus et cycle de vie de la fenêtre
+- **Réactivation fluide depuis le System Tray**:
+  - Correction de l'activation, de la déminiaturisation et de la mise au premier plan lors de l'ouverture via `TrayService`.
+  - Interception de la fermeture de fenêtre (`Cmd+W` / bouton rouge) pour masquer vers la barre des menus lorsque l'option est active.
+  - Prise en charge affinée des clics sur l'icône de statut (gauche, droite, Ctrl+clic).
+
+### ⚡ Mise à jour de clone et nettoyage de la destination
+- **Mises à jour atomiques**:
+  - Résolution des conditions de concurrence lors des mises à jour grâce à un nettoyage préalable complet du répertoire cible.
+  - Synchronisation réactive des cartes et listes de clones dans l'interface.
+
+### 🎨 Typographie, dimensions des widgets et documentation
+- **Améliorations visuelles**:
+  - Hauteur de ligne des tableaux ajustée à 34px et correction du débordement de texte dans les menus déroulants.
+  - README enrichi avec guide de démarrage, instructions GUI et captures d'écran.
+- **Tests**:
+  - Extension de la suite de tests à 329 tests automatisés.
+
+---
+
 ## [v0.8.0] - 2026-08-20
 
 ### 🎨 Refonte visuelle conforme aux directives macOS HIG

@@ -49,6 +49,33 @@ def set_macos_dock_icon(icon_path: Optional[Path] = None) -> bool:
     return False
 
 
+def set_macos_dock_visible(visible: bool) -> bool:
+    """Show or hide the application icon on macOS Dock via Cocoa AppKit activation policy.
+
+    - visible=True: Sets NSApplicationActivationPolicyRegular (0) to show Dock icon and standard UI.
+    - visible=False: Sets NSApplicationActivationPolicyAccessory (1) to hide Dock icon.
+    """
+    if sys.platform != "darwin":
+        return False
+    try:
+        from toga_cocoa.libs.appkit import (
+            NSApplication,
+            NSApplicationActivationPolicyRegular,
+            NSApplicationActivationPolicyAccessory,
+        )
+        if NSApplication is not None and hasattr(NSApplication, "sharedApplication"):
+            ns_app = NSApplication.sharedApplication
+            if hasattr(ns_app, "setActivationPolicy_"):
+                policy = NSApplicationActivationPolicyRegular if visible else NSApplicationActivationPolicyAccessory
+                ns_app.setActivationPolicy_(policy)
+                if visible:
+                    set_macos_dock_icon()
+                return True
+    except Exception as e:
+        logger.debug(f"Failed setting macOS dock visibility to {visible}: {e}")
+    return False
+
+
 class ATBCloneApp(toga.App):
     """Main BeeWare Toga application entry point and view coordinator."""
 
@@ -130,6 +157,7 @@ class ATBCloneApp(toga.App):
                 native_win = getattr(getattr(window, "_impl", None), "native", None)
                 if native_win and hasattr(native_win, "orderOut_"):
                     native_win.orderOut_(None)
+                set_macos_dock_visible(False)
             except Exception as e:
                 logger.debug(f"Error hiding window to tray: {e}")
 
@@ -140,6 +168,7 @@ class ATBCloneApp(toga.App):
                 native_win = getattr(getattr(window, "_impl", None), "native", None)
                 if native_win and hasattr(native_win, "orderOut_"):
                     native_win.orderOut_(None)
+                set_macos_dock_visible(False)
                 return False
             except Exception as e:
                 logger.debug(f"Error intercepting window close for tray: {e}")
@@ -150,6 +179,9 @@ class ATBCloneApp(toga.App):
         try:
             if not hasattr(self, "main_window") or not self.main_window:
                 return
+
+            # 0. Ensure Dock icon is visible when restoring main window
+            set_macos_dock_visible(True)
 
             # 1. Cocoa native unhide and activate application
             if sys.platform == "darwin":
@@ -225,6 +257,7 @@ class ATBCloneApp(toga.App):
         """Cleanly terminate the application and remove status tray icon."""
         if hasattr(self, "tray_service") and self.tray_service:
             self.tray_service.disable()
+        set_macos_dock_visible(True)
         self.exit()
 
     def switch_view(self, view_name: str):

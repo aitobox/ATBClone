@@ -199,6 +199,8 @@ class SettingsView(toga.Box):
                 self.app_instance.tray_service.enable()
             else:
                 self.app_instance.tray_service.disable()
+                from atbclone.gui.app import set_macos_dock_visible
+                set_macos_dock_visible(True)
 
     def _on_base_dir_changed(self, widget: toga.TextInput) -> None:
         self._sync_storage_labels()

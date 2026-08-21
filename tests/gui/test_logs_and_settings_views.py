@@ -80,10 +80,12 @@ def test_settings_minimize_to_tray_switch(tmp_path, monkeypatch):
     assert hasattr(view, "switch_minimize_to_tray")
     assert view.switch_minimize_to_tray.value is True
 
-    # Test toggling switch to False disables tray service and updates config
-    view.switch_minimize_to_tray.value = False
-    assert get_config_value("minimize_to_tray") is False
-    mock_app.tray_service.disable.assert_called_once()
+    # Test toggling switch to False disables tray service, ensures dock visible, and updates config
+    with patch("atbclone.gui.app.set_macos_dock_visible") as mock_dock_vis:
+        view.switch_minimize_to_tray.value = False
+        assert get_config_value("minimize_to_tray") is False
+        mock_app.tray_service.disable.assert_called_once()
+        mock_dock_vis.assert_called_with(True)
 
     # Test toggling switch to True enables tray service and updates config
     view.switch_minimize_to_tray.value = True

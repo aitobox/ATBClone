@@ -145,6 +145,22 @@ def patch_cocoa_widgets() -> None:
 
         TogaIconView.setup = _patched_icon_setup
 
+        # 5. AppDelegate reopen patch (clicking Dock icon restores window)
+        try:
+            import toga_cocoa.libs.appkit
+            from toga_cocoa.app import AppDelegate
+            from rubicon.objc import objc_method
+
+            @objc_method
+            def _applicationShouldHandleReopen_hasVisibleWindows_(self, sender, flag: bool) -> bool:
+                if hasattr(self, "interface") and hasattr(self.interface, "show_main_window"):
+                    self.interface.show_main_window()
+                return True
+
+            AppDelegate.applicationShouldHandleReopen_hasVisibleWindows_ = _applicationShouldHandleReopen_hasVisibleWindows_
+        except Exception:
+            pass
+
         _is_patched = True
     except (ImportError, AttributeError, Exception):
         pass

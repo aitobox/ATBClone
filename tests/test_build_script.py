@@ -157,6 +157,15 @@ def test_build_gui_references_icon():
     root = Path(__file__).parent.parent
     content = (root / "scripts" / "build_gui.sh").read_text(encoding="utf-8")
     assert "logo.icns" in content or "ATBClone.icns" in content or "icon" in content
+    assert "atbclone.icns" in content
+
+
+def test_build_gui_syncs_latest_icons_and_resources():
+    root = Path(__file__).parent.parent
+    content = (root / "scripts" / "build_gui.sh").read_text(encoding="utf-8")
+    assert 'cp -f "resource/images/logo.icns" "${APP_BUNDLE}/Contents/Resources/atbclone.icns"' in content
+    assert 'cp -f "resource/images/logo.icns" "${APP_BUNDLE}/Contents/Resources/ATBClone.icns"' in content
+    assert 'Contents/Resources/resource/images' in content
 
 
 def test_build_gui_bundle_integrity_checks():
@@ -165,4 +174,5 @@ def test_build_gui_bundle_integrity_checks():
     assert "Python.framework" in content
     assert "__main__.py" in content
     assert "briefcase build macOS -u" in content
+
 

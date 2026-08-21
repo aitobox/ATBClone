@@ -208,7 +208,24 @@ if [[ ! -f "${APP_BUNDLE}/Contents/Resources/app/atbclone/__main__.py" ]]; then
     echo "[-] Error: __main__.py entry point is missing from ${APP_BUNDLE}/Contents/Resources/app/atbclone/." >&2
     exit 1
 fi
-if [[ -f "${APP_BUNDLE}/Contents/Resources/ATBClone.icns" || -f "${APP_BUNDLE}/Contents/Resources/logo.icns" || -f "${APP_BUNDLE}/Contents/Resources/icon.icns" ]]; then
+
+# Sync latest logo icons & static resources into app bundle
+echo "[*] Synchronizing latest icons and resources into ${APP_BUNDLE}/Contents/Resources/ ..."
+if [[ -f "resource/images/logo.icns" ]]; then
+    cp -f "resource/images/logo.icns" "${APP_BUNDLE}/Contents/Resources/atbclone.icns"
+    cp -f "resource/images/logo.icns" "${APP_BUNDLE}/Contents/Resources/ATBClone.icns"
+fi
+mkdir -p "${APP_BUNDLE}/Contents/Resources/resource/images"
+if [[ -d "resource/images" ]]; then
+    cp -R resource/images/* "${APP_BUNDLE}/Contents/Resources/resource/images/"
+fi
+mkdir -p "${APP_BUNDLE}/Contents/Resources/docs/release"
+if [[ -d "docs/release" ]]; then
+    cp -R docs/release/* "${APP_BUNDLE}/Contents/Resources/docs/release/"
+fi
+touch "${APP_BUNDLE}"
+
+if [[ -f "${APP_BUNDLE}/Contents/Resources/atbclone.icns" || -f "${APP_BUNDLE}/Contents/Resources/ATBClone.icns" || -f "${APP_BUNDLE}/Contents/Resources/logo.icns" || -f "${APP_BUNDLE}/Contents/Resources/icon.icns" ]]; then
     echo "[+] App bundle icon verified in: ${APP_BUNDLE}/Contents/Resources/"
 fi
 echo "[+] Bundle integrity verified: Python.framework & entrypoint present."

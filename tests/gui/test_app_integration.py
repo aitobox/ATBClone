@@ -192,5 +192,29 @@ def test_app_retranslate_ui_updates_tray():
         mock_retrans.assert_called_once()
 
 
+def test_app_on_exit_hook():
+    app = ATBCloneApp("ATBClone", "com.atbclone.app")
+    app.startup()
+    assert app.on_exit == app._on_app_exit
+
+    with patch.object(app.tray_service, "disable") as mock_disable, \
+         patch("atbclone.gui.app.set_macos_dock_visible") as mock_dock_vis:
+        ret = app._on_app_exit(app)
+        assert ret is True
+        mock_disable.assert_called_once()
+        mock_dock_vis.assert_called_with(True)
+
+
+def test_main_entry_clean_exit():
+    from atbclone.gui import main
+    mock_app = MagicMock()
+    with patch("atbclone.gui.build_app", return_value=mock_app), \
+         patch("os._exit") as mock_os_exit:
+        main()
+        mock_app.main_loop.assert_called_once()
+        mock_os_exit.assert_called_once_with(0)
+
+
+
 
 

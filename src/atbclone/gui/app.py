@@ -140,6 +140,7 @@ class ATBCloneApp(toga.App):
         self.main_window.content = self.root_box
         self.main_window.on_hide = self._on_window_hide
         self.main_window.on_close = self._on_window_close
+        self.on_exit = self._on_app_exit
         self.main_window.show()
 
         # Initialize native system tray service
@@ -172,6 +173,17 @@ class ATBCloneApp(toga.App):
                 return False
             except Exception as e:
                 logger.debug(f"Error intercepting window close for tray: {e}")
+        return True
+
+    def _on_app_exit(self, app: Any) -> bool:
+        """Handle application exit event: teardown tray icon, restore dock, and allow shutdown."""
+        logger.info("Application shutdown initiated via on_exit hook.")
+        try:
+            if hasattr(self, "tray_service") and self.tray_service:
+                self.tray_service.disable()
+            set_macos_dock_visible(True)
+        except Exception as e:
+            logger.warning(f"Error during on_app_exit cleanup: {e}")
         return True
 
     def show_main_window(self) -> None:

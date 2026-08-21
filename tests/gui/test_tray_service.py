@@ -43,6 +43,8 @@ def test_tray_service_enable_and_disable():
             # Disabling should clean up
             service.disable()
             assert service.is_enabled is False
+            mock_button.setTarget_.assert_called_with(None)
+            mock_button.setAction_.assert_called_with(None)
             mock_sb.systemStatusBar.removeStatusItem_.assert_called_once_with(mock_item)
 
 

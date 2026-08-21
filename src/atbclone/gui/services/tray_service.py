@@ -112,12 +112,19 @@ class TrayService:
             self._is_enabled = False
             return
         try:
+            button = getattr(self._status_item, "button", None)
+            if button is not None:
+                if hasattr(button, "setTarget_"):
+                    button.setTarget_(None)
+                if hasattr(button, "setAction_"):
+                    button.setAction_(None)
             if NSStatusBar is not None and hasattr(NSStatusBar, "systemStatusBar"):
                 NSStatusBar.systemStatusBar.removeStatusItem_(self._status_item)
         except Exception as e:
             logger.warning(f"Error removing status item: {e}")
         self._status_item = None
         self._target = None
+        self._menu = None
         self._is_enabled = False
         logger.info("System tray icon disabled.")
 

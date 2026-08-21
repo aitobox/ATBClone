@@ -15,8 +15,23 @@ def build_app():
 
 
 def main():
+    import os
+    import sys
+
     app = build_app()
-    return app.main_loop()
+    try:
+        app.main_loop()
+    finally:
+        # On macOS packaged applications (Briefcase / native C launcher),
+        # popping the native C autorelease pool after Py_Finalize can crash
+        # (SIGSEGV in new_threadstate via ctypes/rubicon-objc).
+        # We explicitly call os._exit(0) to terminate the process cleanly.
+        try:
+            sys.stdout.flush()
+            sys.stderr.flush()
+        except Exception:
+            pass
+        os._exit(0)
 
 
 __all__ = ["build_app", "main", "patch_cocoa_widgets"]

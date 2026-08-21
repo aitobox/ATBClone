@@ -28,13 +28,13 @@ class DoctorView(toga.Box):
         )
         self.add(self.top_bar)
 
-        content_box = toga.Box(style=Pack(direction=COLUMN, margin=(0, 24, 24, 24), flex=1))
+        content_box = toga.Box(style=Pack(direction=COLUMN, margin=(0, 24, 20, 24), flex=1))
         self.add(content_box)
 
         # Summary badge card
-        self.card_summary = toga.Box(style=Pack(direction=COLUMN, margin_bottom=18, background_color=Theme.BG_CARD))
-        inner_summary = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(16, 20, 16, 20), flex=1))
-        self.label_summary = toga.Label(t("doctor_summary_initial"), style=Pack(font_weight="bold", font_size=16, flex=1, color=Theme.TEXT_PRIMARY))
+        self.card_summary = toga.Box(style=Pack(direction=COLUMN, margin_bottom=14, background_color=Theme.BG_CARD))
+        inner_summary = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(14, 18, 14, 18), flex=1))
+        self.label_summary = toga.Label(t("doctor_summary_initial"), style=Pack(font_weight="bold", font_size=15, flex=1, color=Theme.TEXT_PRIMARY))
         inner_summary.add(self.label_summary)
         self.card_summary.add(inner_summary)
         content_box.add(self.card_summary)

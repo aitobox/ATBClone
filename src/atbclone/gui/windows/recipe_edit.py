@@ -25,21 +25,21 @@ class RecipeEditWindow(toga.Window):
 
         self.input_bundle_id = toga.TextInput(
             value=recipe.bundle_id if recipe else "",
-            style=Pack(flex=1, font_size=14),
+            style=Pack(flex=1, font_size=13.5),
         )
         self.input_app_name = toga.TextInput(
             value=recipe.app_name if recipe else "",
-            style=Pack(flex=1, font_size=14),
+            style=Pack(flex=1, font_size=13.5),
         )
         self.select_strategy = toga.Selection(
             items=["hard_clone", "soft_clone"],
             value=recipe.strategy if recipe else "hard_clone",
-            style=Pack(flex=1, font_size=14),
+            style=Pack(flex=1, font_size=13.5),
         )
         self.switch_strip_sandbox = toga.Switch(
             text=t("win_recipe_strip_sandbox"),
             value=recipe.strip_sandbox if recipe else False,
-            style=Pack(margin_bottom=4, font_size=14),
+            style=Pack(margin_bottom=4, font_size=13.5),
         )
 
         # Proxy Configuration
@@ -47,32 +47,32 @@ class RecipeEditWindow(toga.Window):
         self.switch_proxy = toga.Switch(
             text=t("win_recipe_enable_proxy"),
             value=proxy.enabled,
-            style=Pack(margin_bottom=4, font_size=14),
+            style=Pack(margin_bottom=4, font_size=13.5),
         )
         self.select_proxy_type = toga.Selection(
             items=["http", "https", "socks5"],
             value=proxy.type,
-            style=Pack(width=105, margin_right=8, font_size=14),
+            style=Pack(width=105, margin_right=8, font_size=13.5),
         )
         self.input_proxy_host = toga.TextInput(
             value=proxy.host,
-            style=Pack(flex=1, margin_right=8, font_size=14),
+            style=Pack(flex=1, margin_right=8, font_size=13.5),
         )
         self.input_proxy_port = toga.TextInput(
             value=str(proxy.port),
-            style=Pack(width=90, font_size=14),
+            style=Pack(width=90, font_size=13.5),
         )
 
         # Action buttons
         self.btn_save = toga.Button(
             t("btn_save_recipe"),
             on_press=self.on_save_press,
-            style=Pack(flex=1, margin_left=8, height=32, font_weight="bold", font_size=14),
+            style=Pack(flex=1, margin_left=8, height=30, font_weight="bold", font_size=13),
         )
         self.btn_cancel = toga.Button(
             t("btn_cancel"),
             on_press=lambda widget: self.close(),
-            style=Pack(flex=1, height=32, font_size=14),
+            style=Pack(flex=1, height=30, font_size=13),
         )
 
         self.content = self._build_content()
@@ -82,30 +82,30 @@ class RecipeEditWindow(toga.Window):
 
         # Bundle ID
         row1 = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=8))
-        row1.add(toga.Label(t("win_recipe_bundle_id"), style=Pack(width=120, font_size=14, color=Theme.TEXT_PRIMARY)))
+        row1.add(toga.Label(t("win_recipe_bundle_id"), style=Pack(width=120, font_size=13, color=Theme.TEXT_PRIMARY)))
         row1.add(self.input_bundle_id)
         form_box.add(row1)
 
         # App Name
         row2 = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=8))
-        row2.add(toga.Label(t("win_recipe_app_name"), style=Pack(width=120, font_size=14, color=Theme.TEXT_PRIMARY)))
+        row2.add(toga.Label(t("win_recipe_app_name"), style=Pack(width=120, font_size=13, color=Theme.TEXT_PRIMARY)))
         row2.add(self.input_app_name)
         form_box.add(row2)
 
         # Strategy
         row3 = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=8))
-        row3.add(toga.Label(t("win_recipe_strategy"), style=Pack(width=120, font_size=14, color=Theme.TEXT_PRIMARY)))
+        row3.add(toga.Label(t("win_recipe_strategy"), style=Pack(width=120, font_size=13, color=Theme.TEXT_PRIMARY)))
         row3.add(self.select_strategy)
         form_box.add(row3)
 
         # Strip Sandbox
         row4 = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=8))
-        row4.add(toga.Label(t("win_recipe_sandbox"), style=Pack(width=120, font_size=14, color=Theme.TEXT_PRIMARY)))
+        row4.add(toga.Label(t("win_recipe_sandbox"), style=Pack(width=120, font_size=13, color=Theme.TEXT_PRIMARY)))
         row4.add(self.switch_strip_sandbox)
         form_box.add(row4)
 
         # Proxy section
-        proxy_heading = toga.Label(t("win_recipe_proxy_heading"), style=Pack(margin_top=14, margin_bottom=8, font_size=15, font_weight="bold", color=Theme.TEXT_PRIMARY))
+        proxy_heading = toga.Label(t("win_recipe_proxy_heading"), style=Pack(margin_top=12, margin_bottom=8, font_size=15, font_weight="bold", color=Theme.TEXT_PRIMARY))
         form_box.add(proxy_heading)
 
         row_proxy_switch = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=6))
@@ -113,15 +113,14 @@ class RecipeEditWindow(toga.Window):
         form_box.add(row_proxy_switch)
 
         row_proxy_detail = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=8))
-        row_proxy_detail.add(toga.Label(t("win_edit_type_host_port"), style=Pack(width=120, font_size=14, color=Theme.TEXT_PRIMARY)))
+        row_proxy_detail.add(toga.Label(t("win_edit_type_host_port"), style=Pack(width=120, font_size=13, color=Theme.TEXT_PRIMARY)))
         row_proxy_detail.add(self.select_proxy_type)
         row_proxy_detail.add(self.input_proxy_host)
         row_proxy_detail.add(self.input_proxy_port)
         form_box.add(row_proxy_detail)
-        form_box.add(row_proxy_detail)
 
         # Button row
-        btn_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=24))
+        btn_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=20))
         btn_box.add(self.btn_cancel)
         btn_box.add(self.btn_save)
         form_box.add(btn_box)

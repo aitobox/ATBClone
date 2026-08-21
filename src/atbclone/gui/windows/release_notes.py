@@ -39,8 +39,9 @@ class ReleaseNotesWindow(toga.Window):
         configure_cocoa_window(self, floating=True)
 
         self.current_lang = normalize_lang_code(initial_lang or get_language())
-
         self.current_path: Optional[Path] = None
+        self.selection_lang: Optional[toga.Selection] = None
+        self.text_content: Optional[toga.MultilineTextInput] = None
 
         # Build UI Components
         self._build_ui()
@@ -48,6 +49,20 @@ class ReleaseNotesWindow(toga.Window):
 
     def _build_ui(self):
         root_box = toga.Box(style=Pack(direction=COLUMN, flex=1, background_color=Theme.BG_WINDOW))
+
+        # Main Text Display Box (created before Selection to prevent callback race)
+        content_box = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=(0, 20, 20, 20)))
+
+        self.text_content = toga.MultilineTextInput(
+            readonly=True,
+            style=Pack(
+                flex=1,
+                font_family="monospace",
+                font_size=12,
+                background_color=Theme.BG_CARD,
+            ),
+        )
+        content_box.add(self.text_content)
 
         # Top Control Bar
         top_bar = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(16, 20, 10, 20)))
@@ -60,17 +75,18 @@ class ReleaseNotesWindow(toga.Window):
 
         # Build dropdown selection items
         display_items = [name for _, name in LANGUAGE_DISPLAY_NAMES]
+        lang_codes = [code for code, _ in LANGUAGE_DISPLAY_NAMES]
+        default_item = display_items[0]
+        if self.current_lang in lang_codes:
+            idx = lang_codes.index(self.current_lang)
+            default_item = display_items[idx]
+
         self.selection_lang = toga.Selection(
             items=display_items,
+            value=default_item,
             on_change=self._on_lang_changed,
             style=Pack(width=270, margin_right=12),
         )
-
-        # Set default selection index
-        lang_codes = [code for code, _ in LANGUAGE_DISPLAY_NAMES]
-        if self.current_lang in lang_codes:
-            idx = lang_codes.index(self.current_lang)
-            self.selection_lang.value = display_items[idx]
         top_bar.add(self.selection_lang)
 
         # Spacer
@@ -94,25 +110,13 @@ class ReleaseNotesWindow(toga.Window):
         top_bar.add(self.btn_close)
 
         root_box.add(top_bar)
-
-        # Main Text Display Box
-        content_box = toga.Box(style=Pack(direction=COLUMN, flex=1, margin=(0, 20, 20, 20)))
-
-        self.text_content = toga.MultilineTextInput(
-            readonly=True,
-            style=Pack(
-                flex=1,
-                font_family="monospace",
-                font_size=12,
-                background_color=Theme.BG_CARD,
-            ),
-        )
-        content_box.add(self.text_content)
         root_box.add(content_box)
 
         self.content = root_box
 
     def _on_lang_changed(self, widget: toga.Selection):
+        if not hasattr(self, "text_content") or self.text_content is None:
+            return
         display_val = widget.value
         for code, name in LANGUAGE_DISPLAY_NAMES:
             if name == display_val:
@@ -126,6 +130,8 @@ class ReleaseNotesWindow(toga.Window):
 
     def load_release_notes(self, lang_code: str):
         """Load markdown content into text viewer."""
+        if not hasattr(self, "text_content") or self.text_content is None:
+            return
         path = get_release_notes_path(lang_code)
         self.current_path = path
         if path and path.exists():

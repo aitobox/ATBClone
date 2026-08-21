@@ -40,24 +40,24 @@ class CloneEditWindow(toga.Window):
         self.switch_proxy = toga.Switch(
             text=t("win_edit_switch_proxy"),
             value=record.proxy_enabled,
-            style=Pack(margin_bottom=10, font_size=14),
+            style=Pack(margin_bottom=8, font_size=13.5),
         )
         self.select_proxy_type = toga.Selection(
             items=["http", "https", "socks5"],
             value=proxy_type,
-            style=Pack(width=105, margin_right=8, font_size=14),
+            style=Pack(width=105, margin_right=8, font_size=13.5),
         )
         self.input_proxy_host = toga.TextInput(
             value=proxy_host,
-            style=Pack(flex=1, margin_right=8, font_size=14),
+            style=Pack(flex=1, margin_right=8, font_size=13.5),
         )
         self.input_proxy_port = toga.TextInput(
             value=proxy_port,
-            style=Pack(width=90, font_size=14),
+            style=Pack(width=90, font_size=13.5),
         )
 
-        self.btn_save = toga.Button(t("btn_save_changes"), on_press=self.on_save_press, style=Pack(flex=1, margin_left=8, height=32, font_weight="bold", font_size=14))
-        self.btn_cancel = toga.Button(t("btn_cancel"), on_press=lambda w: self.close(), style=Pack(flex=1, height=32, font_size=14))
+        self.btn_save = toga.Button(t("btn_save_changes"), on_press=self.on_save_press, style=Pack(flex=1, margin_left=8, height=30, font_weight="bold", font_size=13))
+        self.btn_cancel = toga.Button(t("btn_cancel"), on_press=lambda w: self.close(), style=Pack(flex=1, height=30, font_size=13))
 
         self.content = self._build_content()
 
@@ -71,14 +71,14 @@ class CloneEditWindow(toga.Window):
         box.add(self.switch_proxy)
 
         row_proxy = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=6))
-        row_proxy.add(toga.Label(t("win_edit_type_host_port"), style=Pack(width=120, font_size=14, color=Theme.TEXT_PRIMARY)))
+        row_proxy.add(toga.Label(t("win_edit_type_host_port"), style=Pack(width=120, font_size=13, color=Theme.TEXT_PRIMARY)))
         row_proxy.add(self.select_proxy_type)
         row_proxy.add(self.input_proxy_host)
         row_proxy.add(self.input_proxy_port)
         box.add(row_proxy)
 
         # Action Buttons
-        btn_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=24))
+        btn_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=20))
         btn_box.add(self.btn_cancel)
         btn_box.add(self.btn_save)
         box.add(btn_box)

@@ -43,15 +43,15 @@ class ProbeView(toga.Box):
 
         # ── Card 1: Target App Selection ───────────────────────────────────── #
         card_target = toga.Box(style=Pack(direction=COLUMN, margin_bottom=14, background_color=Theme.BG_CARD))
-        inner_target = toga.Box(style=Pack(direction=COLUMN, margin=(14, 16, 14, 16)))
+        inner_target = toga.Box(style=Pack(direction=COLUMN, margin=(14, 18, 14, 18)))
         inner_target.add(toga.Label(t("probe_card_target"), style=Pack(font_weight="bold", font_size=15, margin_bottom=12, color=Theme.TEXT_PRIMARY)))
 
         row_input = toga.Box(style=Pack(direction=ROW, align_items=CENTER))
         self.input_path = toga.TextInput(
             placeholder=t("probe_input_placeholder"),
-            style=Pack(flex=1, margin_right=8, font_size=14),
+            style=Pack(flex=1, margin_right=8, font_size=13.5),
         )
-        self.btn_browse = toga.Button(t("btn_browse_app"), on_press=self.on_browse_press, style=Pack(width=110, height=32, font_size=14))
+        self.btn_browse = toga.Button(t("btn_browse_app"), on_press=self.on_browse_press, style=Pack(width=100, height=30, font_size=13))
         row_input.add(self.input_path)
         row_input.add(self.btn_browse)
         inner_target.add(row_input)
@@ -60,15 +60,15 @@ class ProbeView(toga.Box):
 
         # ── Card 2: Analysis Results Panel ─────────────────────────────────── #
         self.card_results = toga.Box(style=Pack(direction=COLUMN, margin_bottom=14, background_color=Theme.BG_CARD))
-        inner_results = toga.Box(style=Pack(direction=COLUMN, margin=(14, 16, 14, 16)))
+        inner_results = toga.Box(style=Pack(direction=COLUMN, margin=(14, 18, 14, 18)))
         inner_results.add(toga.Label(t("probe_card_results"), style=Pack(font_weight="bold", font_size=15, margin_bottom=12, color=Theme.TEXT_PRIMARY)))
 
-        self.label_app_name = toga.Label(f"{t('probe_row_app_name')}: —", style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=6))
-        self.label_bundle_id = toga.Label(f"{t('probe_row_bundle_id')}: —", style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=6))
-        self.label_sandbox = toga.Label(f"{t('probe_row_sandbox')}: —", style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=6))
-        self.label_frameworks = toga.Label(f"{t('probe_row_frameworks')}: —", style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=6))
-        self.label_reason = toga.Label(f"{t('probe_row_reason')}: —", style=Pack(font_size=13.5, color=Theme.TEXT_MUTED, margin_bottom=6))
-        self.label_strategy = toga.Label(f"{t('probe_row_strategy')}: —", style=Pack(font_weight="bold", font_size=14, color=Theme.ACCENT_BLUE, margin_bottom=14))
+        self.label_app_name = toga.Label(f"{t('probe_row_app_name')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_bundle_id = toga.Label(f"{t('probe_row_bundle_id')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_sandbox = toga.Label(f"{t('probe_row_sandbox')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_frameworks = toga.Label(f"{t('probe_row_frameworks')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_reason = toga.Label(f"{t('probe_row_reason')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_strategy = toga.Label(f"{t('probe_row_strategy')}: —", style=Pack(font_weight="bold", font_size=13.5, color=Theme.ACCENT_BLUE, margin_bottom=12))
 
         inner_results.add(self.label_app_name)
         inner_results.add(self.label_bundle_id)
@@ -82,7 +82,7 @@ class ProbeView(toga.Box):
             t("probe_btn_save_recipe"),
             on_press=lambda w: asyncio.create_task(self.save_probed_recipe()),
             enabled=False,
-            style=Pack(font_weight="bold", font_size=14, height=34),
+            style=Pack(font_weight="bold", font_size=13, height=30),
         )
         inner_results.add(self.btn_save_recipe)
         self.card_results.add(inner_results)

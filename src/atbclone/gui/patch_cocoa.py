@@ -6,7 +6,7 @@ from typing import Any
 _is_patched = False
 
 
-def configure_cocoa_text_field(native_text_field: Any, font_size: float = 14.5) -> None:
+def configure_cocoa_text_field(native_text_field: Any, font_size: float = 13.5) -> None:
     """Configure an NSTextField for smooth single-line text editing, horizontal scrolling, and clear typography.
 
     By default, Toga Cocoa NSTextFieldCell has wraps=True and isScrollable=False.
@@ -41,19 +41,21 @@ def configure_cocoa_text_field(native_text_field: Any, font_size: float = 14.5) 
         pass
 
 
-def configure_cocoa_table(native_table: Any, row_height: float = 40.0) -> None:
-    """Configure an NSTableView with comfortable row height (40px) and crisp 15.0px header fonts."""
+def configure_cocoa_table(native_table: Any, row_height: float = 34.0) -> None:
+    """Configure an NSTableView with comfortable row height (34px) and crisp 12.5px header fonts."""
     if sys.platform != "darwin" or native_table is None:
         return
     try:
         if hasattr(native_table, "setRowHeight_"):
             native_table.setRowHeight_(row_height)
+        if hasattr(native_table, "setUsesAlternatingRowBackgroundColors_"):
+            native_table.setUsesAlternatingRowBackgroundColors_(True)
         from toga_cocoa.libs import NSFont
         if hasattr(native_table, "tableColumns"):
             for col in native_table.tableColumns:
                 header_cell = getattr(col, "headerCell", None)
                 if header_cell and hasattr(header_cell, "setFont_"):
-                    header_cell.setFont_(NSFont.boldSystemFontOfSize_(15.0))
+                    header_cell.setFont_(NSFont.boldSystemFontOfSize_(12.5))
     except Exception:
         pass
 
@@ -62,10 +64,10 @@ def patch_cocoa_widgets() -> None:
     """Apply monkeypatches to toga_cocoa widget implementations on macOS.
 
     Ensures:
-    - All single-line TextInput widgets support horizontal scrolling, clipping mode, and readable 14.5px fonts.
-    - All Switch (checkbox) widgets have comfortable 14.5px label fonts.
-    - All Selection (dropdown) widgets have comfortable 14.5px option fonts and support set_font.
-    - All Table widgets have spacious row height (40px), bold 15.0px headers, and prominent 15.5px cell fonts.
+    - All single-line TextInput widgets support horizontal scrolling, clipping mode, and readable 13.5px fonts.
+    - All Switch (checkbox) widgets have comfortable 13.5px label fonts.
+    - All Selection (dropdown) widgets have comfortable 13.5px option fonts and support set_font.
+    - All Table widgets have comfortable row height (34px), crisp 12.5px headers, and readable 13.0px cell fonts.
     """
     global _is_patched
     if _is_patched or sys.platform != "darwin":
@@ -84,7 +86,7 @@ def patch_cocoa_widgets() -> None:
 
         def _patched_create(self):
             _orig_create(self)
-            configure_cocoa_text_field(self.native, font_size=14.5)
+            configure_cocoa_text_field(self.native, font_size=13.5)
 
         CocoaTextInput.create = _patched_create
 
@@ -95,7 +97,7 @@ def patch_cocoa_widgets() -> None:
             _orig_switch_create(self)
             try:
                 if hasattr(self, "native") and self.native is not None:
-                    self.native.setFont_(NSFont.systemFontOfSize_(14.5))
+                    self.native.setFont_(NSFont.systemFontOfSize_(13.5))
             except Exception:
                 pass
 
@@ -108,7 +110,7 @@ def patch_cocoa_widgets() -> None:
             _orig_selection_create(self)
             try:
                 if hasattr(self, "native") and self.native is not None:
-                    self.native.setFont_(NSFont.systemFontOfSize_(14.5))
+                    self.native.setFont_(NSFont.systemFontOfSize_(13.5))
             except Exception:
                 pass
 
@@ -127,7 +129,7 @@ def patch_cocoa_widgets() -> None:
 
         def _patched_table_create(self):
             _orig_table_create(self)
-            configure_cocoa_table(getattr(self, "native_table", None), row_height=40.0)
+            configure_cocoa_table(getattr(self, "native_table", None), row_height=34.0)
 
         CocoaTable.create = _patched_table_create
 
@@ -137,7 +139,7 @@ def patch_cocoa_widgets() -> None:
             _orig_icon_setup(self)
             try:
                 if hasattr(self, "textField") and self.textField is not None:
-                    self.textField.setFont_(NSFont.systemFontOfSize_(15.5))
+                    self.textField.setFont_(NSFont.systemFontOfSize_(13.0))
             except Exception:
                 pass
 

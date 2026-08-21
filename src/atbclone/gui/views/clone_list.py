@@ -96,13 +96,13 @@ class CloneListView(toga.Box):
         )
         self.table_box.add(self.table)
 
-        self.btn_launch_table = toga.Button(t("btn_launch"), on_press=lambda w: asyncio.create_task(self.on_launch_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=26, font_size=12))
-        self.btn_update_table = toga.Button(t("btn_update"), on_press=lambda w: asyncio.create_task(self.on_update_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=26, font_size=12))
-        self.btn_edit_table = toga.Button(t("btn_edit"), on_press=lambda w: asyncio.create_task(self.on_edit_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=26, font_size=12))
-        self.btn_detail_table = toga.Button(t("btn_detail"), on_press=lambda w: asyncio.create_task(self.on_detail_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=26, font_size=12))
-        self.btn_delete_table = toga.Button(t("btn_delete"), on_press=lambda w: asyncio.create_task(self.on_delete_clone(self.get_selected_record())), enabled=False, style=Pack(height=26, font_size=12))
+        self.btn_launch_table = toga.Button(t("btn_launch"), on_press=lambda w: asyncio.create_task(self.on_launch_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5, font_weight="bold"))
+        self.btn_update_table = toga.Button(t("btn_update"), on_press=lambda w: asyncio.create_task(self.on_update_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
+        self.btn_edit_table = toga.Button(t("btn_edit"), on_press=lambda w: asyncio.create_task(self.on_edit_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
+        self.btn_detail_table = toga.Button(t("btn_detail"), on_press=lambda w: asyncio.create_task(self.on_detail_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
+        self.btn_delete_table = toga.Button(t("btn_delete"), on_press=lambda w: asyncio.create_task(self.on_delete_clone(self.get_selected_record())), enabled=False, style=Pack(height=28, font_size=12.5))
 
-        actions_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=10))
+        actions_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=8))
         actions_box.add(self.btn_launch_table)
         actions_box.add(self.btn_update_table)
         actions_box.add(self.btn_edit_table)
@@ -113,7 +113,7 @@ class CloneListView(toga.Box):
         # Empty state label
         self.label_empty = toga.Label(
             t("view_clones_empty_hint"),
-            style=Pack(margin=36, font_size=15, color=Theme.TEXT_MUTED),
+            style=Pack(margin=(40, 20, 40, 20), font_size=14, color=Theme.TEXT_MUTED),
         )
 
         self._render_current_view()

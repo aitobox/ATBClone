@@ -46,3 +46,21 @@ def test_release_notes_window_dropdown_change(toga_app):
     window.selection_lang.value = "日本語 (Japanese)"
     window._on_lang_changed(window.selection_lang)
     assert window.current_lang == "ja"
+
+
+def test_release_notes_window_guards_uninitialized(toga_app):
+    window = ReleaseNotesWindow(initial_lang="en")
+    window.text_content = None
+    # Calling callbacks when text_content is None should not raise AttributeError
+    window._on_lang_changed(window.selection_lang)
+    window.load_release_notes("zh")
+
+
+def test_release_notes_window_external_editor(toga_app, monkeypatch):
+    window = ReleaseNotesWindow(initial_lang="en")
+    called_cmds = []
+    monkeypatch.setattr("subprocess.Popen", lambda cmd: called_cmds.append(cmd))
+    window.on_open_in_external_editor(window.btn_open_external)
+    assert len(called_cmds) == 1
+    assert called_cmds[0][0] == "open"
+

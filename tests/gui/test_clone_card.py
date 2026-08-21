@@ -16,6 +16,7 @@ def test_clone_card_render_and_actions():
     )
 
     on_launch = MagicMock()
+    on_open_dir = MagicMock()
     on_update = MagicMock()
     on_edit = MagicMock()
     on_detail = MagicMock()
@@ -24,6 +25,7 @@ def test_clone_card_render_and_actions():
     card = CloneCard(
         record=record,
         on_launch=on_launch,
+        on_open_dir=on_open_dir,
         on_update=on_update,
         on_edit=on_edit,
         on_detail=on_detail,

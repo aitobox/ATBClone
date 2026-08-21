@@ -73,5 +73,28 @@ def test_recipe_list_view_refresh(tmp_path):
         assert len(view._filtered_recipes) >= 1
         assert view._filtered_recipes[0]["app_name"].lower() >= view._filtered_recipes[-1]["app_name"].lower()
 
+        # Selection enables edit for all recipes, but delete only for custom
+        with patch.object(view, "get_selected_recipe_item", return_value=view._filtered_recipes[0]):
+            view.on_table_select(view.table)
+            assert view.btn_edit.enabled is True
+            assert view.btn_delete.enabled is not view._filtered_recipes[0]["is_builtin"]
+
+        # Deselecting disables both
+        with patch.object(view, "get_selected_recipe_item", return_value=None):
+            view.on_table_select(view.table)
+            assert view.btn_edit.enabled is False
+            assert view.btn_delete.enabled is False
+
     asyncio.run(_test())
+
+
+def test_recipe_edit_window_bundle_id_readonly_behavior():
+    # Existing recipe: readonly bundle_id
+    recipe = Recipe(bundle_id="com.tencent.xinWeChat", app_name="WeChat", strategy="hard_clone")
+    win1 = RecipeEditWindow(title="Edit", recipe=recipe)
+    assert win1.input_bundle_id.readonly is True
+
+    # New recipe: editable bundle_id
+    win2 = RecipeEditWindow(title="New", recipe=None)
+    assert win2.input_bundle_id.readonly is False
 

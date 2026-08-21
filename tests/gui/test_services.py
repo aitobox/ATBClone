@@ -91,6 +91,65 @@ def test_clone_service_remove_clone(tmp_path):
     asyncio.run(_test())
 
 
+def test_clone_service_update_clone(tmp_path):
+    async def _test():
+        state_file = tmp_path / "clones.yaml"
+        source_app = tmp_path / "WeChat.app"
+        source_app.mkdir(parents=True, exist_ok=True)
+        (source_app / "Contents").mkdir(parents=True, exist_ok=True)
+        (source_app / "Contents" / "MacOS").mkdir(parents=True, exist_ok=True)
+
+        service = CloneService(state_file=state_file)
+        record = CloneRecord(
+            clone_name="WeChat2",
+            source_app="WeChat",
+            source_path=str(source_app),
+            bundle_id="com.tencent.xinWeChat",
+            strategy="hard_clone",
+            dest_path=str(tmp_path / "WeChat2.app"),
+            data_dir=str(tmp_path / "data"),
+            created_at="2026-08-19T00:00:00Z",
+        )
+        service.state_manager.add(record)
+
+        with patch("atbclone.core.app_inspector.AppInspector.inspect") as mock_inspect, \
+             patch("atbclone.core.engines.HardCloneEngine.execute") as mock_exec, \
+             patch("atbclone.executor.runner.Runner.run") as mock_runner:
+            mock_inspect.return_value = AppInfo(
+                path=source_app,
+                bundle_id="com.tencent.xinWeChat",
+                app_name="WeChat",
+                executable=source_app / "Contents" / "MacOS" / "WeChat",
+                has_sandbox=True,
+            )
+            updated = await service.update_clone("WeChat2")
+            assert updated.clone_name == "WeChat2"
+            assert mock_exec.called
+            assert "WeChat2" not in service._busy_clones
+
+    asyncio.run(_test())
+
+
+def test_clone_service_concurrent_busy_lock(tmp_path):
+    async def _test():
+        state_file = tmp_path / "clones.yaml"
+        service = CloneService(state_file=state_file)
+        service._busy_clones.add("WeChat2")
+
+        with pytest.raises(RuntimeError, match="Operation already in progress for 'WeChat2'"):
+            await service.update_clone("WeChat2")
+
+        with pytest.raises(RuntimeError, match="Operation already in progress for 'WeChat2'"):
+            await service.remove_clone("WeChat2")
+
+        task = MagicMock()
+        task.clone_name = "WeChat2"
+        with pytest.raises(RuntimeError, match="Operation already in progress for 'WeChat2'"):
+            await service.create_clone(task)
+
+    asyncio.run(_test())
+
+
 def test_recipe_service_crud(tmp_path):
     async def _test():
         service = RecipeService(custom_recipes_dir=tmp_path / "recipes")
@@ -111,18 +170,13 @@ def test_recipe_service_crud(tmp_path):
         assert loaded is not None
         assert loaded.app_name == "CustomApp"
 
-        # Duplicate recipe test with automatic sequence suffix (.atbclone.N)
+        # Duplicate recipe test creates custom override with identical bundle_id
         orig_recipe = await service.get_recipe("com.tencent.xinWeChat")
         assert orig_recipe is not None
         dup1 = await service.duplicate_recipe(orig_recipe)
-        assert dup1.app_name == f"{orig_recipe.app_name}_2"
-        assert dup1.bundle_id == f"{orig_recipe.bundle_id}.atbclone.2"
-        assert (tmp_path / "recipes" / f"{dup1.bundle_id}.yaml").exists()
-
-        # Duplicate again to get _3
-        dup2 = await service.duplicate_recipe(orig_recipe)
-        assert dup2.app_name == f"{orig_recipe.app_name}_3"
-        assert dup2.bundle_id == f"{orig_recipe.bundle_id}.atbclone.3"
+        assert dup1.app_name == orig_recipe.app_name
+        assert dup1.bundle_id == orig_recipe.bundle_id
+        assert (tmp_path / "recipes" / f"{orig_recipe.bundle_id}.yaml").exists()
 
         # Delete custom recipe
         deleted = await service.delete_custom_recipe("com.custom.app")

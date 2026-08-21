@@ -87,35 +87,10 @@ class RecipeService:
         return await loop.run_in_executor(None, _save)
 
     async def duplicate_recipe(self, original: Recipe) -> Recipe:
-        """Duplicate a recipe as a new custom recipe with auto-incremented sequence suffix to ensure uniqueness."""
-        all_recipes = await self.list_all_recipes()
-        existing_bundle_ids = {r["bundle_id"] for r in all_recipes}
-        existing_app_names = {r["app_name"] for r in all_recipes}
-
-        # Generate next available app_name (e.g. Chrome_2, Chrome_3)
-        base_name = original.app_name
-        counter = 2
-        new_name = f"{base_name}_{counter}"
-        while new_name in existing_app_names:
-            counter += 1
-            new_name = f"{base_name}_{counter}"
-
-        # Generate next available bundle_id (e.g. com.tencent.xinWeChat.atbclone.2)
-        from atbclone.core.app_inspector import AppInspector
-        base_bundle_id = original.bundle_id
-        b_counter = 2
-        new_bundle_id = AppInspector.generate_bundle_id(base_bundle_id, b_counter)
-        while new_bundle_id in existing_bundle_ids:
-            b_counter += 1
-            new_bundle_id = AppInspector.generate_bundle_id(base_bundle_id, b_counter)
-
-        # Build cloned Recipe model with unique names
+        """Create a custom override copy of a recipe preserving its original bundle_id and app_name."""
         data = original.model_dump()
-        data["app_name"] = new_name
-        data["bundle_id"] = new_bundle_id
         new_recipe = Recipe(**data)
-
-        logger.info(f"Duplicating recipe '{original.app_name}' -> '{new_name}' (bundle='{new_bundle_id}')")
+        logger.info(f"Creating custom recipe override for '{original.app_name}' (bundle='{original.bundle_id}')")
         await self.save_custom_recipe(new_recipe)
         return new_recipe
 

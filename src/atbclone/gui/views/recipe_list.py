@@ -87,13 +87,11 @@ class RecipeListView(toga.Box):
         )
         self.table_box.add(self.table)
 
-        self.btn_edit = toga.Button(t("btn_edit"), on_press=self.on_edit_recipe, enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
-        self.btn_copy = toga.Button(t("btn_copy_as_custom"), on_press=self.on_copy_recipe, enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5, font_weight="bold"))
+        self.btn_edit = toga.Button(t("btn_edit"), on_press=self.on_edit_recipe, enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5, font_weight="bold"))
         self.btn_delete = toga.Button(t("btn_delete"), on_press=self.on_delete_recipe, enabled=False, style=Pack(height=28, font_size=12.5))
 
         actions_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=8))
         actions_box.add(self.btn_edit)
-        actions_box.add(self.btn_copy)
         actions_box.add(self.btn_delete)
         self.table_box.add(actions_box)
 
@@ -223,13 +221,11 @@ class RecipeListView(toga.Box):
 
         # Footer
         actions = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(0, 14, 12, 14)))
-        btn_copy = toga.Button(t("btn_copy"), on_press=lambda w: asyncio.create_task(self._copy_recipe_direct(recipe)), style=Pack(font_weight="bold", font_size=13, height=30, margin_right=6, flex=1))
-        actions.add(btn_copy)
+        btn_edit = toga.Button(t("btn_edit"), on_press=lambda w: self._open_edit_dialog(recipe), style=Pack(font_weight="bold", font_size=13, height=30, margin_right=6, flex=1))
+        actions.add(btn_edit)
 
         if not is_builtin:
-            btn_edit = toga.Button("✏️", on_press=lambda w: self._open_edit_dialog(recipe), style=Pack(margin_right=4, width=34, height=30))
             btn_del = toga.Button("🗑️", on_press=lambda w: asyncio.create_task(self._delete_recipe_direct(recipe.bundle_id)), style=Pack(width=34, height=30))
-            actions.add(btn_edit)
             actions.add(btn_del)
 
         card.add(actions)
@@ -239,11 +235,9 @@ class RecipeListView(toga.Box):
         selected = self.get_selected_recipe_item()
         if selected is None:
             self.btn_edit.enabled = False
-            self.btn_copy.enabled = False
             self.btn_delete.enabled = False
         else:
-            self.btn_edit.enabled = not selected.get("is_builtin", False)
-            self.btn_copy.enabled = True
+            self.btn_edit.enabled = True
             self.btn_delete.enabled = not selected.get("is_builtin", False)
 
     def get_selected_recipe_item(self) -> Optional[dict]:
@@ -281,19 +275,9 @@ class RecipeListView(toga.Box):
 
     async def on_edit_recipe(self, widget: toga.Button):
         item = self.get_selected_recipe_item()
-        if not item or item.get("is_builtin"):
-            return
-        self._open_edit_dialog(item["recipe"])
-
-    async def _copy_recipe_direct(self, recipe: Recipe):
-        await self.recipe_service.duplicate_recipe(recipe)
-        await self.refresh_recipes()
-
-    async def on_copy_recipe(self, widget: toga.Button):
-        item = self.get_selected_recipe_item()
         if not item:
             return
-        await self._copy_recipe_direct(item["recipe"])
+        self._open_edit_dialog(item["recipe"])
 
     async def _delete_recipe_direct(self, bundle_id: str):
         deleted = await self.recipe_service.delete_custom_recipe(bundle_id)

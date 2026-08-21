@@ -103,5 +103,36 @@ def test_clone_list_view_refresh(tmp_path):
         view.on_sort_changed(CloneListView.SORT_NAME)
         assert len(view._filtered_clones) == 1
 
+        # Table selection enables open_dir button
+        with patch.object(view, "get_selected_record", return_value=record):
+            view.on_table_select(view.table)
+            assert view.btn_launch_table.enabled is True
+            assert view.btn_open_dir_table.enabled is True
+
+        # Deselect disables open_dir button
+        with patch.object(view, "get_selected_record", return_value=None):
+            view.on_table_select(view.table)
+            assert view.btn_launch_table.enabled is False
+            assert view.btn_open_dir_table.enabled is False
+
+        # Test on_open_clone_dir when file exists
+        (tmp_path / "TG2.app").mkdir(exist_ok=True)
+        with patch("subprocess.Popen") as mock_popen:
+            await view.on_open_clone_dir(record)
+            mock_popen.assert_called_once_with(["open", "-R", str(tmp_path / "TG2.app")])
+
+        # Test on_update_clone with busy lock guard
+        with patch.object(service, "update_clone", new_callable=AsyncMock) as mock_up:
+            await view.on_update_clone(record)
+            mock_up.assert_awaited_once_with("TG2")
+
+        # When already busy, on_update_clone should no-op
+        view._busy_clones.add("TG2")
+        with patch.object(service, "update_clone", new_callable=AsyncMock) as mock_up:
+            await view.on_update_clone(record)
+            mock_up.assert_not_awaited()
+        view._busy_clones.clear()
+
     asyncio.run(_test())
+
 

@@ -106,6 +106,7 @@ class SoftCloneEngine(CloneEngine):
         script = f"""set -e
 mkdir -p {dst_parent}
 mkdir -p {data_dir}
+rm -rf {dst_app}
 mkdir -p {dst_mac}
 # Copy Resources dir so the app icon (.icns) and other assets are available
 if [ -d {src_resources} ]; then
@@ -204,6 +205,7 @@ class HardCloneEngine(CloneEngine):
         script = f"""set -e
 mkdir -p {dst_parent}
 mkdir -p {data_dir}
+rm -rf {dst}
 cp -R {src} {dst}
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
 /usr/libexec/PlistBuddy -c "Set :CFBundleName {task.clone_name}" {dst_plist}

@@ -39,6 +39,7 @@ class CloneListView(toga.Box):
         self.app_instance = app
         self._raw_clones: list[CloneRecord] = []
         self._filtered_clones: list[CloneRecord] = []
+        self._busy_clones: set[str] = set()
         self.view_mode: str = "list"  # "grid" or "list"
         self.search_query: str = ""
 
@@ -97,6 +98,7 @@ class CloneListView(toga.Box):
         self.table_box.add(self.table)
 
         self.btn_launch_table = toga.Button(t("btn_launch"), on_press=lambda w: asyncio.create_task(self.on_launch_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5, font_weight="bold"))
+        self.btn_open_dir_table = toga.Button(t("btn_open_clone_dir"), on_press=lambda w: asyncio.create_task(self.on_open_clone_dir(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
         self.btn_update_table = toga.Button(t("btn_update"), on_press=lambda w: asyncio.create_task(self.on_update_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
         self.btn_edit_table = toga.Button(t("btn_edit"), on_press=lambda w: asyncio.create_task(self.on_edit_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
         self.btn_detail_table = toga.Button(t("btn_detail"), on_press=lambda w: asyncio.create_task(self.on_detail_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
@@ -104,6 +106,7 @@ class CloneListView(toga.Box):
 
         actions_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=8))
         actions_box.add(self.btn_launch_table)
+        actions_box.add(self.btn_open_dir_table)
         actions_box.add(self.btn_update_table)
         actions_box.add(self.btn_edit_table)
         actions_box.add(self.btn_detail_table)
@@ -204,6 +207,7 @@ class CloneListView(toga.Box):
                     card = CloneCard(
                         record=record,
                         on_launch=lambda r: asyncio.create_task(self.on_launch_clone(r)),
+                        on_open_dir=lambda r: asyncio.create_task(self.on_open_clone_dir(r)),
                         on_update=lambda r: asyncio.create_task(self.on_update_clone(r)),
                         on_edit=lambda r: asyncio.create_task(self.on_edit_clone(r)),
                         on_detail=lambda r: asyncio.create_task(self.on_detail_clone(r)),
@@ -231,11 +235,13 @@ class CloneListView(toga.Box):
     def on_table_select(self, widget: toga.Table):
         record = self.get_selected_record()
         has_sel = record is not None
-        self.btn_launch_table.enabled = has_sel
-        self.btn_update_table.enabled = has_sel
-        self.btn_edit_table.enabled = has_sel
+        is_busy = bool(record and record.clone_name in self._busy_clones)
+        self.btn_launch_table.enabled = has_sel and not is_busy
+        self.btn_open_dir_table.enabled = has_sel
+        self.btn_update_table.enabled = has_sel and not is_busy
+        self.btn_edit_table.enabled = has_sel and not is_busy
         self.btn_detail_table.enabled = has_sel
-        self.btn_delete_table.enabled = has_sel
+        self.btn_delete_table.enabled = has_sel and not is_busy
 
     def get_selected_record(self) -> Optional[CloneRecord]:
         selection = self.table.selection
@@ -276,6 +282,29 @@ class CloneListView(toga.Box):
             if self.app_instance and hasattr(self.app_instance, "main_window"):
                 await self.app_instance.main_window.error_dialog(t("dialog_launch_error_title"), t("dialog_launch_error_failed", error=str(e)))
 
+    async def on_open_clone_dir(self, record: Optional[CloneRecord]):
+        if not record:
+            return
+        dest_path = Path(record.dest_path)
+        logger.info(f"Opening directory for clone '{record.clone_name}' at '{dest_path}'")
+        loop = asyncio.get_running_loop()
+        try:
+            if dest_path.exists():
+                await loop.run_in_executor(None, lambda: subprocess.Popen(["open", "-R", str(dest_path)]))
+            elif dest_path.parent.exists():
+                await loop.run_in_executor(None, lambda: subprocess.Popen(["open", str(dest_path.parent)]))
+            else:
+                logger.error(f"Cannot open directory for clone '{record.clone_name}': path does not exist at '{dest_path}'")
+                if self.app_instance and hasattr(self.app_instance, "main_window"):
+                    await self.app_instance.main_window.error_dialog(
+                        t("dialog_launch_error_title"),
+                        t("dialog_launch_error_not_found", path=str(dest_path)),
+                    )
+        except Exception as e:
+            logger.error(f"Failed to open directory for clone '{record.clone_name}': {e}")
+            if self.app_instance and hasattr(self.app_instance, "main_window"):
+                await self.app_instance.main_window.error_dialog(t("dialog_launch_error_title"), str(e))
+
     async def on_detail_clone(self, record: Optional[CloneRecord]):
         if not record:
             return
@@ -303,33 +332,46 @@ class CloneListView(toga.Box):
         win.show()
 
     async def on_update_clone(self, record: Optional[CloneRecord]):
-        if not record:
+        if not record or record.clone_name in self._busy_clones:
             return
+        self._busy_clones.add(record.clone_name)
+        if hasattr(self, "btn_update_table") and self.btn_update_table:
+            self.btn_update_table.text = t("btn_updating")
+            self.btn_update_table.enabled = False
         try:
             await self.clone_service.update_clone(record.clone_name)
             await self.refresh_clones()
         except Exception as e:
             if self.app_instance and hasattr(self.app_instance, "main_window"):
                 await self.app_instance.main_window.error_dialog(t("dialog_update_error_title"), str(e))
+        finally:
+            self._busy_clones.discard(record.clone_name)
+            if hasattr(self, "btn_update_table") and self.btn_update_table:
+                self.btn_update_table.text = t("btn_update")
+            self.on_table_select(self.table)
 
     async def on_delete_clone(self, record: Optional[CloneRecord]):
-        if not record:
+        if not record or record.clone_name in self._busy_clones:
             return
+        self._busy_clones.add(record.clone_name)
+        try:
+            delete_data = False
+            if self.app_instance and hasattr(self.app_instance, "main_window"):
+                confirmed = await self.app_instance.main_window.confirm_dialog(
+                    t("dialog_delete_confirm_title"),
+                    t("dialog_delete_confirm_msg", name=record.clone_name),
+                )
+                if not confirmed:
+                    return
 
-        delete_data = False
-        if self.app_instance and hasattr(self.app_instance, "main_window"):
-            confirmed = await self.app_instance.main_window.confirm_dialog(
-                t("dialog_delete_confirm_title"),
-                t("dialog_delete_confirm_msg", name=record.clone_name),
-            )
-            if not confirmed:
-                return
+                delete_data = await self.app_instance.main_window.confirm_dialog(
+                    t("dialog_delete_data_confirm_title"),
+                    t("dialog_delete_data_confirm_msg", path=record.data_dir),
+                )
 
-            delete_data = await self.app_instance.main_window.confirm_dialog(
-                t("dialog_delete_data_confirm_title"),
-                t("dialog_delete_data_confirm_msg", path=record.data_dir),
-            )
-
-        await self.clone_service.remove_clone(record.clone_name, with_data=delete_data)
-        await self.refresh_clones()
+            await self.clone_service.remove_clone(record.clone_name, with_data=delete_data)
+            await self.refresh_clones()
+        finally:
+            self._busy_clones.discard(record.clone_name)
+            self.on_table_select(self.table)
 

@@ -25,6 +25,7 @@ class RecipeEditWindow(toga.Window):
 
         self.input_bundle_id = toga.TextInput(
             value=recipe.bundle_id if recipe else "",
+            readonly=bool(recipe and recipe.bundle_id),
             style=Pack(flex=1, font_size=13.5),
         )
         self.input_app_name = toga.TextInput(

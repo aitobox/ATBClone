@@ -6,6 +6,24 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.9.3] - 2026-08-21
+
+### 🛡️ Inspection d'applications renforcée et validation dans l'assistant
+- **Détection préventive des applications iOS-on-Mac**:
+  - Mise à niveau de `AppInspector.inspect_app` pour vérifier immédiatement `UIDeviceFamily` et `LSRequiresIPhoneOS` lors de la sélection de fichier.
+  - Dans l'assistant de création (`WizardWindow`), la sélection d'une application iOS wrapper déclenche instantanément une boîte de dialogue d'avertissement et réinitialise la sélection.
+
+### 🍏 Fermeture propre sous macOS et nettoyage mémoire Cocoa
+- **Prévention des plantages à la fermeture**:
+  - Amélioration de `TrayService.disable()` et `ATBCloneApp.exit_app()` pour détacher proprement les cibles et sélecteurs de l'icône de barre des menus.
+  - Arrêt sécurisé de la boucle d'événements Cocoa (`NSApp.terminate_` / `os._exit(0)`), éliminant tout risque de crash lors de la fermeture via le menu de la barre d'état ou `Cmd+Q`.
+
+### 📦 Tests
+- **Suite de tests**:
+  - Extension à 341 tests automatisés.
+
+---
+
 ## [v0.9.2] - 2026-08-21
 
 ### 🍏 Masquage dynamique de l'icône du Dock macOS et amélioration du Tray

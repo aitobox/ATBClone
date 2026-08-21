@@ -6,6 +6,24 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.9.3] - 2026-08-21
+
+### 🛡️ Inspección mejorada y validación preventiva en el asistente
+- **Detección temprana de aplicaciones iOS-on-Mac**:
+  - Actualización de `AppInspector.inspect_app` para analizar directamente `UIDeviceFamily` y `LSRequiresIPhoneOS` al arrastrar o seleccionar una aplicación.
+  - En el asistente de la GUI (`WizardWindow`), al seleccionar una aplicación portada de iOS se muestra inmediatamente un cuadro de diálogo de aviso y se reinicia la entrada.
+
+### 🍏 Cierre limpio en macOS y liberación de recursos Cocoa
+- **Prevención de fallos al cerrar la aplicación (Crash on Exit)**:
+  - Optimización de `TrayService.disable()` y `ATBCloneApp.exit_app()` para desvincular de forma segura los selectores y destinos del icono de la barra de menús.
+  - Cierre ordenado del bucle de eventos Cocoa (`NSApp.terminate_` / `os._exit(0)`), eliminando cierres inesperados al salir mediante el menú de la bandeja o `Cmd+Q`.
+
+### 📦 Pruebas integrales
+- **Ampliación de pruebas**:
+  - Conjunto de pruebas ampliado a 341 pruebas automatizadas.
+
+---
+
 ## [v0.9.2] - 2026-08-21
 
 ### 🍏 Ocultación dinámica del icono del Dock en macOS y mejoras en la bandeja

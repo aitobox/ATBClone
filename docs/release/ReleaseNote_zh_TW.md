@@ -6,6 +6,24 @@
 
 ---
 
+## [v0.9.3] - 2026-08-21
+
+### 🛡️ 應用程式檢查增強與精靈 iOS 移植應用程式友善攔截
+- **精靈前置檢查與錯誤對話方塊**：
+  - 增強 `AppInspector.inspect_app` 邏輯，在使用者選取或拖放應用程式時直接分析 `UIDeviceFamily` / `LSRequiresIPhoneOS` 及 `Wrapper/` 結構並標記 `is_ios_wrapper`。
+  - 在 GUI 建立精靈 (`WizardWindow`) 中，一旦選入 iOS 移植應用程式，立即彈出多語言警告對話方塊並清空輸入欄位，將不相容攔截前置至第一步，提供更明確的引導。
+
+### 🍏 macOS 結束流程最佳化與 Cocoa 記憶體解綁
+- **修復結束時偶發崩潰 (Crash on Exit)**：
+  - 最佳化 `TrayService.disable()` 與 `ATBCloneApp.exit_app()`，在結束前安全解綁並重設 Cocoa 狀態列選單與圖示 target/action，消除野指標與懸掛選取器。
+  - 採用標準的 Cocoa 事件迴圈終止流程 (`NSApp.terminate_` / `os._exit(0)`)，徹底解決透過系統匣「結束」或 `Cmd+Q` 結束程式時偶發的崩潰問題。
+
+### 📦 測試套件擴充
+- **自動化測試增強**：
+  - 自動化測試案例擴充至 341 項，全面涵蓋 iOS 移植應用程式精靈對話方塊攔截與安全結束流程。
+
+---
+
 ## [v0.9.2] - 2026-08-21
 
 ### 🍏 macOS Dock 欄圖示動態隱藏與系統匣體驗增強

@@ -6,6 +6,24 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.9.3] - 2026-08-21
+
+### 🛡️ Enhanced App Inspection & Wizard Validation for iOS Wrapper Apps
+- **Interactive Wizard Pre-check & Error Dialog**:
+  - Upgraded `AppInspector.inspect_app` to detect iOS-on-Mac (Designed for iPad/iPhone) wrapper applications directly during file selection or drag-and-drop.
+  - In the GUI Creation Wizard (`WizardWindow`), selecting an unsupported iOS wrapper application now immediately triggers a localized warning dialog and resets the input, preventing invalid workflows upfront.
+
+### 🍏 Clean macOS Exit & Cocoa Memory Target Teardown
+- **Crash Prevention on Application Termination**:
+  - Enhanced `TrayService.disable()` and `ATBCloneApp.exit_app()` to safely unbind Cocoa status item targets and selectors, eliminating dangling Objective-C pointers during shutdown.
+  - Implemented clean Cocoa event loop termination (`NSApp.terminate_` / `os._exit(0)`), completely resolving crash-on-exit / segmentation fault issues when quitting via the Menu Bar tray or `Cmd+Q`.
+
+### 📦 Test Suite Expansion
+- **Comprehensive Testing**:
+  - Expanded test coverage to 341 automated unit and GUI integration tests.
+
+---
+
 ## [v0.9.2] - 2026-08-21
 
 ### 🍏 Dynamic macOS Dock Icon Hiding & System Tray Polishing

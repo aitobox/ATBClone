@@ -6,6 +6,24 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.9.3] - 2026-08-21
+
+### 🛡️ Erweiterte App-Prüfung & Vorab-Validierung im Assistenten
+- **Vorzeitige Erkennung von iOS-Wrapper-Apps**:
+  - Aktualisierung von `AppInspector.inspect_app`, um `UIDeviceFamily` und `LSRequiresIPhoneOS` direkt beim Auswählen oder Drag-and-Drop zu analysieren.
+  - Im GUI-Assistenten (`WizardWindow`) wird bei der Auswahl einer nicht unterstützten iOS-Wrapper-App sofort ein lokalisierter Warndialog angezeigt und das Eingabefeld zurückgesetzt.
+
+### 🍏 Sauberer macOS-Beendigungsprozess & Cocoa-Freigabe
+- **Verhinderung von Beendigungsabstürzen**:
+  - Optimierung von `TrayService.disable()` und `ATBCloneApp.exit_app()` zum sicheren Entbinden von Cocoa-Status-Item-Targets und Selektoren beim Beenden.
+  - Saubere Beendigung der Cocoa-Ereignisschleife (`NSApp.terminate_` / `os._exit(0)`), wodurch Abstürze beim Beenden über das Tray-Menü oder `Cmd+Q` behoben wurden.
+
+### 📦 Test-Suite
+- **Erweiterung der Testabdeckung**:
+  - Ausbau auf 341 automatisierte Tests.
+
+---
+
 ## [v0.9.2] - 2026-08-21
 
 ### 🍏 Dynamisches Ausblenden des macOS Dock-Icons & Tray-Optimierung

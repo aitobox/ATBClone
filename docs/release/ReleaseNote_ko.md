@@ -6,6 +6,24 @@
 
 ---
 
+## [v0.9.3] - 2026-08-21
+
+### 🛡️ 앱 검사 강화 및 마법사 내 iOS 래퍼 앱 즉시 차단
+- **마법사 사전 검증 및 안내 대화상자**:
+  - `AppInspector.inspect_app` 로직을 개선하여 앱 선택 또는 드래그 앤 드롭 시 `UIDeviceFamily` / `LSRequiresIPhoneOS` 구조를 즉시 분석하고 `is_ios_wrapper` 플래그를 설정합니다.
+  - GUI 생성 마법사(`WizardWindow`)에서 iOS 래퍼 앱이 선택되면 즉시 다국어 경고 대화상자를 띄우고 입력을 초기화하여 사전 안내를 명확히 제공합니다.
+
+### 🍏 macOS 종료 프로세스 최적화 및 Cocoa 리소스 정리
+- **앱 종료 시 크래시 (Crash on Exit) 방지**:
+  - `TrayService.disable()` 및 `ATBCloneApp.exit_app()`에서 종료 전 Cocoa 상태 표시줄 메뉴 및 아이콘의 target/action을 안전하게 해제하도록 개선했습니다.
+  - 표준 Cocoa 이벤트 루프 종료(`NSApp.terminate_` / `os._exit(0)`)를 적용하여 트레이 메뉴 "종료" 또는 `Cmd+Q` 입력 시 발생하던 비정상 종료 문제를 완전히 해결했습니다.
+
+### 📦 테스트 확장
+- **테스트 스위트 확장**:
+  - 전체 자동화 테스트를 341개로 확대했습니다.
+
+---
+
 ## [v0.9.2] - 2026-08-21
 
 ### 🍏 macOS Dock 아이콘 동적 숨김 및 트레이 연동 강화

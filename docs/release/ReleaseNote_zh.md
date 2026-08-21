@@ -6,6 +6,24 @@
 
 ---
 
+## [v0.9.3] - 2026-08-21
+
+### 🛡️ 应用检查增强与向导 iOS 移植应用友好拦截
+- **向导前置检查与错误弹窗**：
+  - 增强 `AppInspector.inspect_app` 逻辑，在用户选择或拖拽应用时直接分析 `UIDeviceFamily` / `LSRequiresIPhoneOS` 及 `Wrapper/` 结构并标记 `is_ios_wrapper`。
+  - 在 GUI 创建向导 (`WizardWindow`) 中，一旦选入 iOS 移植应用，立即弹出多语言警告弹窗并清空输入框，将不兼容拦截前置至第一步，提供更明确的引导。
+
+### 🍏 macOS 退出流程优化与 Cocoa 内存解绑
+- **修复退出时偶发崩溃 (Crash on Exit)**：
+  - 优化 `TrayService.disable()` 与 `ATBCloneApp.exit_app()`，在退出前安全解绑并重置 Cocoa 状态栏菜单与图标 target/action，消除野指针与悬挂选择器。
+  - 采用标准的 Cocoa 事件循环终止流程 (`NSApp.terminate_` / `os._exit(0)`)，彻底解决通过托盘“退出”或 `Cmd+Q` 退出程序时偶发的崩溃问题。
+
+### 📦 测试套件扩充
+- **自动化测试增强**：
+  - 自动化测试用例扩充至 341 项，全面覆盖 iOS 移植应用向导弹窗拦截与安全退出流程。
+
+---
+
 ## [v0.9.2] - 2026-08-21
 
 ### 🍏 macOS Dock 栏图标动态隐藏与托盘体验增强

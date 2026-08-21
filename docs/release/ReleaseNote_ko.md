@@ -6,6 +6,26 @@
 
 ---
 
+## [v0.9.1] - 2026-08-21
+
+### 🛡️ iOS-on-Mac (Designed for iPad/iPhone) 앱 감지 및 안전한 차단
+- **미지원 아키텍처 안전 차단**:
+  - `AppProber` 및 복제 엔진(`SoftCloneEngine` / `HardCloneEngine`)을 개선하여 Apple Silicon용 iOS/iPadOS 래퍼 애플리케이션(`Wrapper/` 폴더 또는 `UIDeviceFamily` / `LSRequiresIPhoneOS=True` 포함 앱)을 정확히 감지합니다.
+  - CLI (`atbclone clone`, `atbclone wizard`) 및 GUI 마법사에서 iOS 이식 앱 복제를 사전에 안전하게 차단하고 친절한 오류 메시지(`error_ios_wrapper_unsupported`)를 제공하여 번들 손상 및 실행 실패를 방지합니다.
+
+### 🎨 패키징 스크립트 아이콘 자동 생성 지원
+- **동적 `.icns` 생성 파이프라인**:
+  - `scripts/build_gui.sh`에서 DMG 패키징 시 `sips` 및 `iconutil`을 활용하여 PNG 이미지를 다중 해상도 `.icns` 리소스로 자동 빌드하도록 개선했습니다.
+  - 빌드 프로세스 전반의 리소스 검증을 강화했습니다.
+
+### 🌐 다국어 로컬라이제이션
+- **오류 안내 다국어 번역**:
+  - iOS 래퍼 앱 차단 안내 메시지를 9개 언어 전체에 반영했습니다.
+- **테스트 확장**:
+  - 전체 단위 및 GUI 통합 테스트를 336개로 확대했습니다.
+
+---
+
 ## [v0.9.0] - 2026-08-21
 
 ### 🌐 클론별 독립 언어 및 로케일 (Locale) 격리 지원

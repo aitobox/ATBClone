@@ -6,6 +6,26 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.9.1] - 2026-08-21
+
+### 🛡️ iOS-on-Mac Wrapper Application Detection & Safe Rejection
+- **Graceful Unsupported Architecture Handling**:
+  - Enhanced `AppProber`, `SoftCloneEngine`, and `HardCloneEngine` to accurately identify iOS/iPadOS wrapper applications designed for Apple Silicon (apps containing `Wrapper/` or `UIDeviceFamily` with `LSRequiresIPhoneOS=True`).
+  - Gracefully rejects cloning iOS-on-Mac wrapper applications with clear, localized error prompts (`error_ios_wrapper_unsupported`) across CLI (`atbclone clone`, `atbclone wizard`) and GUI Creation Wizard, preventing corrupted bundle generation and launch failures.
+
+### 🎨 Automated Icon Resource Pipeline in Packaging Scripts
+- **Dynamic `.icns` Generation**:
+  - Added automated `.icns` compilation via `sips` and `iconutil` in `scripts/build_gui.sh` during macOS DMG and app bundle generation.
+  - Enhanced asset inclusion and integrity verification in packaging workflows.
+
+### 🌐 Multi-Language Localization
+- **Localized Error Diagnostics**:
+  - Added localized prompt messages for unsupported iOS wrapper apps across all 9 supported languages.
+- **Testing**:
+  - Expanded test suite to 336 automated unit and GUI integration tests.
+
+---
+
 ## [v0.9.0] - 2026-08-21
 
 ### 🌐 Per-Clone Independent Language & Locale Isolation

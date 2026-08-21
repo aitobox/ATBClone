@@ -6,6 +6,26 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.9.1] - 2026-08-21
+
+### 🛡️ Détection et rejet sécurisé des applications iOS-on-Mac
+- **Gestion sécurisée des architectures non prises en charge**:
+  - Amélioration de `AppProber`, `SoftCloneEngine` et `HardCloneEngine` pour détecter précisément les applications portées depuis iOS/iPadOS sur Apple Silicon (contenant `Wrapper/` ou `UIDeviceFamily` / `LSRequiresIPhoneOS=True`).
+  - Rejet sécurisé des tentatives de clonage de ces applications dans la CLI (`atbclone clone`, `atbclone wizard`) et l'assistant GUI avec message explicatif (`error_ios_wrapper_unsupported`), évitant tout crash au lancement.
+
+### 🎨 Génération automatique d'icônes dans les scripts de build
+- **Compilation dynamique `.icns`**:
+  - Ajout de la génération automatisée d'icônes `.icns` via `sips` et `iconutil` dans `scripts/build_gui.sh` lors de la création du fichier DMG.
+  - Intégration et validation renforcées des ressources dans le packaging.
+
+### 🌐 Localisation et tests
+- **Messages d'erreur multilingues**:
+  - Traduction du message de rejet des applications iOS dans les 9 langues.
+- **Tests**:
+  - Extension de la suite de tests à 336 tests automatisés.
+
+---
+
 ## [v0.9.0] - 2026-08-21
 
 ### 🌐 Isolation linguistique et régionale indépendante par clone

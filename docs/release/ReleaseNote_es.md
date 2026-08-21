@@ -6,6 +6,26 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.9.1] - 2026-08-21
+
+### 🛡️ Detección y bloqueo seguro de aplicaciones iOS-on-Mac
+- **Gestión de arquitecturas no compatibles**:
+  - Mejora de `AppProber`, `SoftCloneEngine` y `HardCloneEngine` para identificar con precisión aplicaciones de iOS/iPadOS ejecutadas en Apple Silicon (aplicaciones con `Wrapper/` o `UIDeviceFamily` / `LSRequiresIPhoneOS=True`).
+  - Bloqueo preventivo de la clonación de aplicaciones iOS en la CLI (`atbclone clone`, `atbclone wizard`) y en el asistente de la GUI con aviso descriptivo (`error_ios_wrapper_unsupported`), evitando la creación de paquetes corruptos.
+
+### 🎨 Generación automática de iconos en scripts de compilación
+- **Creación dinámica de `.icns`**:
+  - Adición de la compilación automática de iconos `.icns` mediante `sips` e `iconutil` en `scripts/build_gui.sh` durante el empaquetado en DMG.
+  - Validación reforzada de recursos y firmas en el empaquetado.
+
+### 🌐 Localización y pruebas
+- **Mensajes de error traducidos**:
+  - Traducción del mensaje de advertencia sobre aplicaciones de iOS a los 9 idiomas.
+- **Pruebas integrales**:
+  - Conjunto de pruebas ampliado a 336 pruebas automatizadas.
+
+---
+
 ## [v0.9.0] - 2026-08-21
 
 ### 🌐 Aislamiento independiente de idioma y configuración regional (Locale)

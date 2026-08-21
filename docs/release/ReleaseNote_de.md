@@ -6,6 +6,26 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.9.1] - 2026-08-21
+
+### 🛡️ Erkennung und Blockierung von iOS-on-Mac-Apps
+- **Sichere Behandlung nicht unterstützter Architekturen**:
+  - Erweiterung von `AppProber`, `SoftCloneEngine` und `HardCloneEngine` zur präzisen Erkennung von iOS/iPadOS-Wrapper-Apps auf Apple Silicon (Apps mit `Wrapper/` oder `UIDeviceFamily` / `LSRequiresIPhoneOS=True`).
+  - Sicheres Abweisen von Klonversuchen für iOS-Wrapper-Apps in CLI (`atbclone clone`, `atbclone wizard`) und GUI mit verständlicher Fehlermeldung (`error_ios_wrapper_unsupported`), um fehlerhafte Bundles zu verhindern.
+
+### 🎨 Automatische Icon-Generierung in Build-Skripten
+- **Dynamische `.icns`-Erstellung**:
+  - Optimierung von `scripts/build_gui.sh` zur automatischen Umwandlung von PNG-Dateien in `.icns`-Symboldateien mittels `sips` und `iconutil` während der DMG-Erstellung.
+  - Erweiterte Ressourcenvalidierung im Build-Prozess.
+
+### 🌐 Lokalisierung & Test-Suite
+- **Mehrsprachige Fehlermeldungen**:
+  - Vollständige Übersetzung der iOS-Wrapper-Warnung in alle 9 unterstützten Sprachen.
+- **Test-Suite**:
+  - Ausbau auf 336 automatisierte Tests.
+
+---
+
 ## [v0.9.0] - 2026-08-21
 
 ### 🌐 Unabhängige Sprach- und Gebietsschema-Isolation pro Klon

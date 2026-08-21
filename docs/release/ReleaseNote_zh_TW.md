@@ -6,6 +6,26 @@
 
 ---
 
+## [v0.9.1] - 2026-08-21
+
+### 🛡️ iOS-on-Mac (Designed for iPad/iPhone) 相容應用程式偵測與攔截
+- **優雅識別與安全攔截**：
+  - 增強 `AppProber` 探測引擎及分身引擎 (`SoftCloneEngine` / `HardCloneEngine`)，精準識別基於 Apple Silicon 執行的 iOS/iPadOS 移植封裝應用程式（如包含 `Wrapper/` 目錄或 `UIDeviceFamily` / `LSRequiresIPhoneOS=True` 的應用程式）。
+  - 在 CLI 命令列 (`atbclone clone`, `atbclone wizard`) 及 GUI 互動精靈中友善攔截並提示不支援複製此類 iOS 移植應用程式 (`error_ios_wrapper_unsupported`)，避免產生損壞的分身及啟動崩潰。
+
+### 🎨 打包指令碼自動化圖示資源產生
+- **動態 `.icns` 圖示編譯**：
+  - 最佳化 `scripts/build_gui.sh`，在產生 macOS DMG 安裝套件時自動呼叫 `sips` 與 `iconutil` 將 PNG 圖示動態編譯為多解析度 `.icns` 資源。
+  - 增強 CLI 與 GUI 建置指令碼中的資源打包與完整性驗證。
+
+### 🌐 多語言在地化完善
+- **新增錯誤提示多語言支援**：
+  - 9 種語言全面補齊針對 iOS 移植應用程式的攔截提示文案。
+- **測試套件擴充**：
+  - 自動化測試案例擴充至 336 項，全面涵蓋 iOS 移植應用程式探測與攔截邏輯。
+
+---
+
 ## [v0.9.0] - 2026-08-21
 
 ### 🌐 分身獨立語言與地區 (Locale) 隔離支援

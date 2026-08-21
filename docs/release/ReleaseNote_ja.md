@@ -6,6 +6,26 @@
 
 ---
 
+## [v0.9.1] - 2026-08-21
+
+### 🛡️ iOS-on-Mac（Designed for iPad/iPhone）アプリの検出と安全な拒否
+- **未対応アーキテクチャの安全なハンドリング**:
+  - `AppProber` および各クローンエンジン（`SoftCloneEngine` / `HardCloneEngine`）を強化し、Apple Silicon 向け iOS/iPadOS ラッパーアプリ（`Wrapper/` ディレクトリまたは `UIDeviceFamily` / `LSRequiresIPhoneOS=True` を含むアプリ）を正確に検出。
+  - CLI（`atbclone clone`, `atbclone wizard`）および GUI ウィザードにおいて、iOS ラッパーアプリのクローン作成を適切にブロックし、多言語エラーメッセージ（`error_ios_wrapper_unsupported`）を表示して破損や起動失敗を防止。
+
+### 🎨 ビルドスクリプトによるアプリアイコン自動生成
+- **動的な `.icns` 変換**:
+  - `scripts/build_gui.sh` において、DMG 作成時に `sips` および `iconutil` を使用して PNG から高解像度 `.icns` アイコンを自動生成する処理を追加。
+  - パッケージング工程におけるリソース同梱および検証を強化。
+
+### 🌐 多言語ローカライズの拡充
+- **エラーメッセージの翻訳**:
+  - iOS ラッパーアプリ非対応の警告メッセージを 9 言語すべてに追加。
+- **テストの拡充**:
+  - 自動テストスイートを 336 件に拡大。
+
+---
+
 ## [v0.9.0] - 2026-08-21
 
 ### 🌐 クローンごとの独立言語およびロケール (Locale) 分離サポート

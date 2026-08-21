@@ -86,3 +86,30 @@ class AppInspector:
         """Generate standardized bundle identifier for a cloned application instance."""
         return f"{bundle_id}.atbclone.{num}"
 
+    @classmethod
+    def resolve_bundle_id(
+        cls,
+        base_bundle_id: str,
+        clone_name: str = "",
+        existing_bundle_ids: set[str] | list[str] | None = None,
+    ) -> str:
+        """Generate a unique bundle identifier for a cloned application instance.
+
+        If clone_name ends with digits (e.g. 'WeChat2', 'WeChat3'), attempts to use that number.
+        Ensures uniqueness by avoiding collisions with existing_bundle_ids.
+        """
+        existing = set(existing_bundle_ids or [])
+        num = 1
+        match = re.search(r"(\d+)$", clone_name.strip())
+        if match:
+            try:
+                num = int(match.group(1))
+            except ValueError:
+                num = 1
+
+        candidate = cls.generate_bundle_id(base_bundle_id, num)
+        while candidate in existing:
+            num += 1
+            candidate = cls.generate_bundle_id(base_bundle_id, num)
+        return candidate
+

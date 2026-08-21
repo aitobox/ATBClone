@@ -110,7 +110,13 @@ def wizard() -> None:
         return
 
     # 10. Execute clone
-    new_bundle_id = AppInspector.generate_bundle_id(info.bundle_id, num)
+    existing_records = StateManager().load()
+    existing_bundle_ids = {r.new_bundle_id for r in existing_records if r.new_bundle_id}
+    new_bundle_id = AppInspector.resolve_bundle_id(
+        info.bundle_id,
+        clone_name=clone_name,
+        existing_bundle_ids=existing_bundle_ids,
+    )
 
     task = CloneTask(
         source=info,

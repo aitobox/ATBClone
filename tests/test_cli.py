@@ -31,6 +31,7 @@ def test_cli_subcommands_english_help():
     assert "Clone application name." in res.output
     assert "Display name shown in Dock/Finder" in res.output
     assert "Path to custom icon file" in res.output
+    assert "--language" in res.output
     assert "Target output directory" in res.output
     assert "Custom data storage directory" in res.output
 

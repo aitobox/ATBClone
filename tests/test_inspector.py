@@ -158,3 +158,35 @@ def test_generate_bundle_id_large_num():
     bundle_id = AppInspector.generate_bundle_id("org.mozilla.firefox", 10)
     assert bundle_id == "org.mozilla.firefox.atbclone.10"
 
+
+def test_resolve_bundle_id_from_clone_name_number():
+    bundle_id = AppInspector.resolve_bundle_id("com.tencent.xinWeChat", clone_name="WeChat2")
+    assert bundle_id == "com.tencent.xinWeChat.atbclone.2"
+
+    bundle_id3 = AppInspector.resolve_bundle_id("com.tencent.xinWeChat", clone_name="WeChat3")
+    assert bundle_id3 == "com.tencent.xinWeChat.atbclone.3"
+
+
+def test_resolve_bundle_id_avoids_existing_collisions():
+    existing = {"com.tencent.xinWeChat.atbclone.2"}
+    # Even if clone_name ends with 2, it skips existing and gives 3
+    bundle_id = AppInspector.resolve_bundle_id(
+        "com.tencent.xinWeChat",
+        clone_name="WeChat2",
+        existing_bundle_ids=existing,
+    )
+    assert bundle_id == "com.tencent.xinWeChat.atbclone.3"
+
+
+def test_resolve_bundle_id_without_clone_number():
+    bundle_id = AppInspector.resolve_bundle_id("com.google.Chrome", clone_name="ChromeWork")
+    assert bundle_id == "com.google.Chrome.atbclone.1"
+
+    existing = {"com.google.Chrome.atbclone.1"}
+    bundle_id2 = AppInspector.resolve_bundle_id(
+        "com.google.Chrome",
+        clone_name="ChromeWork",
+        existing_bundle_ids=existing,
+    )
+    assert bundle_id2 == "com.google.Chrome.atbclone.2"
+

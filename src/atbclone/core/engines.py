@@ -4,11 +4,18 @@ import shlex
 import textwrap
 
 from atbclone.core.clone_task import CloneTask
+from atbclone.core.locale import build_language_wrapper_snippet
 from atbclone.executor.runner import CloneError, Runner
 
 
 class CloneEngine:
     """Base class providing shared helper methods for clone engines."""
+
+    @staticmethod
+    def _build_language_env_and_args(task: CloneTask) -> tuple[str, list[str]]:
+        """Generate shell exports and launch arguments for language/locale configuration."""
+        lang = getattr(task, "language", None) or getattr(task.recipe, "language", "system")
+        return build_language_wrapper_snippet(lang)
 
     @staticmethod
     def _build_proxy_env(task: CloneTask) -> str:
@@ -66,16 +73,22 @@ class SoftCloneEngine(CloneEngine):
         )
         wrapper = shlex.quote(str(task.dest_path / "Contents" / "MacOS" / bin_name))
 
+        lang_env, lang_args = cls._build_language_env_and_args(task)
+
         args_list = [
             shlex.quote(arg.replace("{{ATB_DATA_DIR}}", str(task.data_dir)))
             for arg in task.recipe.launch_args
         ]
+        for larg in lang_args:
+            args_list.append(shlex.quote(larg))
+
         args_str = f" {' '.join(args_list)}" if args_list else ""
         exec_cmd = f'exec {src_bin}{args_str} "$@"'
 
-
         proxy_env = cls._build_proxy_env(task)
-        wrapper_lines = ["#!/bin/bash"]
+        wrapper_lines = ["#!/bin/bash", 'REAL_USER_HOME="$HOME"']
+        if lang_env:
+            wrapper_lines.append(lang_env)
         if proxy_env:
             wrapper_lines.append(proxy_env)
         wrapper_lines.append(exec_cmd)
@@ -143,6 +156,8 @@ class HardCloneEngine(CloneEngine):
         bin_bak = shlex.quote(str(task.dest_path / "Contents" / "MacOS" / f"{orig_bin_name}.bin"))
         wrapper = bin_orig
 
+        lang_env, lang_args = cls._build_language_env_and_args(task)
+
         env_vars = "\n".join([
             f"export {k}={shlex.quote(v.replace('{{ATB_DATA_DIR}}', str(task.data_dir)))}"
             for k, v in task.recipe.environment_injection.items()
@@ -154,11 +169,16 @@ class HardCloneEngine(CloneEngine):
             shlex.quote(arg.replace("{{ATB_DATA_DIR}}", str(task.data_dir)))
             for arg in task.recipe.launch_args
         ]
+        for larg in lang_args:
+            args_list.append(shlex.quote(larg))
+
         args_str = f" {' '.join(args_list)}" if args_list else ""
 
-        wrapper_lines = ["#!/bin/bash"]
+        wrapper_lines = ["#!/bin/bash", 'REAL_USER_HOME="$HOME"']
         if env_vars:
             wrapper_lines.append(env_vars)
+        if lang_env:
+            wrapper_lines.append(lang_env)
         if proxy_env:
             wrapper_lines.append(proxy_env)
         wrapper_lines.append(f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"')

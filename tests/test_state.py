@@ -271,3 +271,57 @@ def test_save_creates_parent_dirs(tmp_path):
     loaded = mgr.load()
     assert len(loaded) == 1
     assert loaded[0].clone_name == "微信2"
+
+
+def test_clone_record_language_support_and_backward_compatibility(tmp_path):
+    state_file = tmp_path / "clones.yaml"
+    mgr = StateManager(state_file)
+
+    # 1. Default language should be "system"
+    rec = CloneRecord(
+        clone_name="微信2",
+        source_app="微信",
+        source_path="/Applications/WeChat.app",
+        bundle_id="com.tencent.xinWeChat",
+        strategy="hard_clone",
+        dest_path=str(tmp_path / "微信2.app"),
+        data_dir=str(tmp_path / "Data" / "微信2"),
+        created_at="2026-08-18T14:00:00+00:00",
+    )
+    assert rec.language == "system"
+
+    # 2. Custom language should be saved and loaded
+    rec_custom = CloneRecord(
+        clone_name="WeChat_EN",
+        source_app="微信",
+        source_path="/Applications/WeChat.app",
+        bundle_id="com.tencent.xinWeChat",
+        strategy="hard_clone",
+        dest_path=str(tmp_path / "WeChat_EN.app"),
+        data_dir=str(tmp_path / "Data" / "WeChat_EN"),
+        created_at="2026-08-18T14:00:00+00:00",
+        language="en",
+    )
+    mgr.save([rec, rec_custom])
+    loaded = mgr.load()
+    assert len(loaded) == 2
+    assert loaded[0].language == "system"
+    assert loaded[1].language == "en"
+
+    # 3. Backward compatibility with old YAML without language field
+    old_yaml_content = """
+- clone_name: OldClone
+  source_app: App
+  source_path: /Applications/App.app
+  bundle_id: com.app.old
+  strategy: soft_clone
+  dest_path: /Applications/OldClone.app
+  data_dir: /Data/OldClone
+  created_at: 2026-08-01T00:00:00+00:00
+"""
+    state_file.write_text(old_yaml_content, encoding="utf-8")
+    loaded_old = mgr.load()
+    assert len(loaded_old) == 1
+    assert loaded_old[0].clone_name == "OldClone"
+    assert loaded_old[0].language == "system"
+

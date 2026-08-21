@@ -285,7 +285,7 @@ def test_update_fallback_bundle_id_when_empty(
         assert result.exit_code == 0
 
         task, _ = mock_hard_exec.call_args[0]
-        assert task.new_bundle_id == "com.tencent.xinWeChat.atbclone.1"
+        assert task.new_bundle_id == "com.tencent.xinWeChat.atbclone.2"
 
 
 def test_update_help():

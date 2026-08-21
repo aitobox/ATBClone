@@ -62,6 +62,7 @@ class CloneService:
                     proxy_enabled=task.recipe.proxy.enabled,
                     proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",
                     new_bundle_id=task.new_bundle_id,
+                    language=task.language,
                 )
                 self.state_manager.add(record)
                 logger.info(f"Clone '{task.clone_name}' created successfully at '{dest_path}'")
@@ -94,7 +95,13 @@ class CloneService:
             info = AppInspector.inspect(record.source_path)
             recipe = RecipeLoader.match(info.bundle_id)
             data_dir = Path(record.data_dir)
-            new_bundle_id = record.new_bundle_id or AppInspector.generate_bundle_id(record.bundle_id, 1)
+            existing_records = self.state_manager.load()
+            existing_bundle_ids = {r.new_bundle_id for r in existing_records if r.new_bundle_id and r.clone_name != clone_name}
+            new_bundle_id = record.new_bundle_id or AppInspector.resolve_bundle_id(
+                record.bundle_id,
+                clone_name=record.clone_name,
+                existing_bundle_ids=existing_bundle_ids,
+            )
 
             task = CloneTask(
                 source=info,
@@ -103,6 +110,7 @@ class CloneService:
                 recipe=recipe,
                 clone_name=record.clone_name,
                 new_bundle_id=new_bundle_id,
+                language=record.language,
             )
 
             if record.proxy_enabled and record.proxy_summary:

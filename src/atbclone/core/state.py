@@ -21,6 +21,7 @@ class CloneRecord:
     proxy_enabled: bool = False
     proxy_summary: str = ""
     new_bundle_id: str = ""
+    language: str = "system"
 
 
 class StateManager:
@@ -43,6 +44,8 @@ class StateManager:
         records: list[CloneRecord] = []
         for item in data:
             if isinstance(item, dict):
+                if "language" not in item or not item["language"]:
+                    item["language"] = "system"
                 try:
                     records.append(CloneRecord(**item))
                 except TypeError:

@@ -26,6 +26,7 @@ class Recipe(BaseModel):
     environment_injection: dict[str, str] = Field(default_factory=dict)
     symlink_whitelist: list[str] = Field(default_factory=list)
     launch_args: list[str] = Field(default_factory=list)
+    language: str = "system"
 
 
 def supports_data_dir(recipe: Recipe) -> bool:

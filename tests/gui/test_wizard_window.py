@@ -113,3 +113,36 @@ def test_wizard_name_auto_sync_and_manual_override():
     wizard.input_display_name.value = "GoogleSijidege3"
     wizard.input_clone_name.value = "GoogleSijidege4"
     assert wizard.input_display_name.value == "GoogleSijidege4"
+
+
+def test_wizard_execute_clone_bundle_id_resolution(tmp_path: Path):
+    async def _test():
+        clone_service = CloneService(state_file=tmp_path / "clones.yaml")
+        wizard = WizardWindow(clone_service=clone_service)
+
+        wizard.app_info = AppInfo(
+            path=Path("/Applications/WeChat.app"),
+            bundle_id="com.tencent.xinWeChat",
+            app_name="WeChat",
+            executable=Path("/Applications/WeChat.app/Contents/MacOS/WeChat"),
+            has_sandbox=False,
+        )
+        wizard.recipe = Recipe(bundle_id="com.tencent.xinWeChat", app_name="WeChat", strategy="hard_clone")
+        wizard.input_clone_name.value = "WeChat3"
+        wizard.input_dest_dir.value = str(tmp_path / "Apps")
+        wizard.input_data_dir.value = str(tmp_path / "Data" / "WeChat3")
+
+        created_task = None
+        async def mock_create_clone(task):
+            nonlocal created_task
+            created_task = task
+            return MagicMock()
+
+        wizard.clone_service.create_clone = mock_create_clone
+        wizard.info_dialog = AsyncMock()
+
+        await wizard._execute_clone()
+        assert created_task is not None
+        assert created_task.new_bundle_id == "com.tencent.xinWeChat.atbclone.3"
+
+    asyncio.run(_test())

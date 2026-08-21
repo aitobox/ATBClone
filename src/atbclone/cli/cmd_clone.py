@@ -12,6 +12,7 @@ from atbclone.core.clone_task import CloneTask
 from atbclone.core.config import DEFAULT_DATA_DIR
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.i18n import t
+from atbclone.core.locale import SUPPORTED_LANGUAGES
 from atbclone.core.logger import get_logger
 from atbclone.core.state import CloneRecord, StateManager
 from atbclone.executor.runner import CloneError
@@ -27,6 +28,7 @@ logger = get_logger("cli.clone")
 @click.option("--display-name", default=None, help="Display name shown in Dock/Finder (supports Unicode, defaults to --name).")
 @click.option("--icon", default=None, type=click.Path(exists=True, dir_okay=False), help="Path to custom icon file (.icns, defaults to original app icon).")
 @click.option("--strategy", default=None, type=click.Choice(["hard_clone", "soft_clone"]), help="Override cloning strategy (hard_clone or soft_clone).")
+@click.option("--language", "-l", default="system", type=click.Choice(list(SUPPORTED_LANGUAGES.keys())), help="Target locale/language (system, zh-Hans, zh-Hant, en, ja, ko).")
 @click.option("--output-dir", default=str(Path.home() / "Applications"), help="Target output directory for the cloned application.")
 @click.option("--data-dir", default=None, help="Custom data storage directory for this clone.")
 @click.option("--proxy-host", default=None, help="Proxy host (overrides recipe)")
@@ -38,6 +40,7 @@ def clone(
     display_name: str | None,
     icon: str | None,
     strategy: str | None,
+    language: str,
     output_dir: str,
     data_dir: str | None,
     proxy_host: str | None,
@@ -78,7 +81,13 @@ def clone(
         target_data_dir = DEFAULT_DATA_DIR / (name or info.app_name)
 
     clone_name, num = AppInspector.next_available_name(name or info.app_name, out_path)
-    new_bundle_id = AppInspector.generate_bundle_id(info.bundle_id, num)
+    existing_records = StateManager().load()
+    existing_bundle_ids = {r.new_bundle_id for r in existing_records if r.new_bundle_id}
+    new_bundle_id = AppInspector.resolve_bundle_id(
+        info.bundle_id,
+        clone_name=clone_name,
+        existing_bundle_ids=existing_bundle_ids,
+    )
     dest_path = out_path / f"{clone_name}.app"
 
     # If data_dir was not specified, compute data_dir using the resolved unique clone_name
@@ -94,6 +103,7 @@ def clone(
         new_bundle_id=new_bundle_id,
         display_name=display_name or None,
         icon_path=Path(icon) if icon else None,
+        language=language,
     )
 
     if proxy_host:
@@ -104,7 +114,7 @@ def clone(
 
     needs_admin = not dest_path.is_relative_to(Path.home())
 
-    logger.info(f"Starting clone creation: name='{clone_name}', source='{app_path}', strategy='{recipe.strategy}', dest='{dest_path}'")
+    logger.info(f"Starting clone creation: name='{clone_name}', source='{app_path}', strategy='{recipe.strategy}', dest='{dest_path}', language='{language}'")
     console.print(t("starting_clone", app_name=info.app_name, clone_name=clone_name), soft_wrap=True)
     try:
         if recipe.strategy == "soft_clone":
@@ -124,6 +134,7 @@ def clone(
             proxy_enabled=task.recipe.proxy.enabled,
             proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",
             new_bundle_id=new_bundle_id,
+            language=language,
         )
         StateManager().add(record)
 

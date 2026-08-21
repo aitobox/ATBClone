@@ -84,7 +84,7 @@ class WizardWindow(toga.Window):
         # Shows whether recipe came from built-in library or Probe analysis
         self.label_recipe_origin = toga.Label("", style=Pack(font_size=11.5, font_style="italic", margin_bottom=6))
 
-        # Step 3: Naming
+        # Step 3: Naming & Language
         self._display_name_customized = False
         self._syncing_name = False
         self.input_clone_name = toga.TextInput(
@@ -95,6 +95,16 @@ class WizardWindow(toga.Window):
         self.input_display_name = toga.TextInput(
             placeholder="Display name in Dock/Finder",
             on_change=self._on_display_name_change,
+            style=Pack(flex=1, font_size=13.5),
+        )
+
+        from atbclone.core.locale import SUPPORTED_LANGUAGES
+        self._lang_keys = list(SUPPORTED_LANGUAGES.keys())
+        self._lang_display_items = [
+            t(SUPPORTED_LANGUAGES[k]["label_key"]) for k in self._lang_keys
+        ]
+        self.select_language = toga.Selection(
+            items=self._lang_display_items,
             style=Pack(flex=1, font_size=13.5),
         )
 
@@ -174,6 +184,11 @@ class WizardWindow(toga.Window):
             row_disp.add(toga.Label(t("win_wizard_step3_display_name"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
             row_disp.add(self.input_display_name)
             box.add(row_disp)
+
+            row_lang = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=8))
+            row_lang.add(toga.Label(t("win_wizard_step3_language"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
+            row_lang.add(self.select_language)
+            box.add(row_lang)
             self.step_container.add(box)
 
         elif self.current_step == 4:
@@ -373,6 +388,15 @@ class WizardWindow(toga.Window):
         self.current_step += 1
         self._render_current_step()
 
+    def _get_selected_language(self) -> str:
+        if self.select_language.value:
+            try:
+                idx = self._lang_display_items.index(str(self.select_language.value))
+                return self._lang_keys[idx]
+            except ValueError:
+                pass
+        return "system"
+
     async def _execute_clone(self):
         self.btn_next.enabled = False
         self.btn_prev.enabled = False
@@ -383,10 +407,17 @@ class WizardWindow(toga.Window):
         dest_dir = Path(self.input_dest_dir.value.strip()).expanduser().resolve()
         dest_path = dest_dir / f"{clone_name}.app"
         data_dir = Path(self.input_data_dir.value.strip()).expanduser().resolve()
-        new_bundle_id = AppInspector.generate_bundle_id(self.app_info.bundle_id, 1)
+        existing_records = self.clone_service.state_manager.load()
+        existing_bundle_ids = {r.new_bundle_id for r in existing_records if r.new_bundle_id}
+        new_bundle_id = AppInspector.resolve_bundle_id(
+            self.app_info.bundle_id,
+            clone_name=clone_name,
+            existing_bundle_ids=existing_bundle_ids,
+        )
         display_name = self.input_display_name.value.strip() or None
+        lang = self._get_selected_language()
 
-        logger.info(f"Wizard executing clone: name='{clone_name}', source='{self.app_info.path}', dest='{dest_path}', data_dir='{data_dir}'")
+        logger.info(f"Wizard executing clone: name='{clone_name}', source='{self.app_info.path}', dest='{dest_path}', data_dir='{data_dir}', language='{lang}'")
 
         # Build recipe copy with proxy
         port = 1080
@@ -410,6 +441,7 @@ class WizardWindow(toga.Window):
             clone_name=clone_name,
             new_bundle_id=new_bundle_id,
             display_name=display_name,
+            language=lang,
         )
 
         try:

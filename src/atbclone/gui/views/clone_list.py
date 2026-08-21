@@ -288,6 +288,15 @@ class CloneListView(toga.Box):
 
         async def _save_cb(updated_record: CloneRecord):
             await self.clone_service.update_clone_record(updated_record)
+            if (
+                updated_record.language != record.language
+                or updated_record.proxy_summary != record.proxy_summary
+                or updated_record.proxy_enabled != record.proxy_enabled
+            ):
+                try:
+                    await self.clone_service.update_clone(updated_record.clone_name)
+                except Exception as e:
+                    logger.warning(f"Failed to auto-update clone after edit: {e}")
             await self.refresh_clones()
 
         win = CloneEditWindow(record=record, on_save=_save_cb)

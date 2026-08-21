@@ -59,7 +59,13 @@ def update(clone_name: str) -> None:
         info = AppInspector.inspect(record.source_path)
         recipe = RecipeLoader.match(info.bundle_id)
         data_dir = Path(record.data_dir)
-        new_bundle_id = record.new_bundle_id or AppInspector.generate_bundle_id(record.bundle_id, 1)
+        existing_records = sm.load()
+        existing_bundle_ids = {r.new_bundle_id for r in existing_records if r.new_bundle_id and r.clone_name != record.clone_name}
+        new_bundle_id = record.new_bundle_id or AppInspector.resolve_bundle_id(
+            record.bundle_id,
+            clone_name=record.clone_name,
+            existing_bundle_ids=existing_bundle_ids,
+        )
 
         task = CloneTask(
             source=info,

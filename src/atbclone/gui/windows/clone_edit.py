@@ -7,6 +7,7 @@ from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER
 
 from atbclone.core.i18n import t
+from atbclone.core.locale import SUPPORTED_LANGUAGES
 from atbclone.core.state import CloneRecord
 from atbclone.recipes.models import ProxyConfig
 from atbclone.gui.patch_cocoa import configure_cocoa_window
@@ -19,7 +20,7 @@ class CloneEditWindow(toga.Window):
         record: CloneRecord,
         on_save: Callable[[CloneRecord], Coroutine[Any, Any, None]] | None = None,
     ):
-        super().__init__(title=t("win_edit_title", name=record.clone_name), size=(500, 360))
+        super().__init__(title=t("win_edit_title", name=record.clone_name), size=(500, 390))
         configure_cocoa_window(self, floating=True)
         self.record = record
         self.on_save_callback = on_save
@@ -56,6 +57,19 @@ class CloneEditWindow(toga.Window):
             style=Pack(width=90, font_size=13.5),
         )
 
+        # Language selection
+        self._lang_keys = list(SUPPORTED_LANGUAGES.keys())
+        self._lang_display_items = [
+            t(SUPPORTED_LANGUAGES[k]["label_key"]) for k in self._lang_keys
+        ]
+        curr_lang = record.language if record.language in self._lang_keys else "system"
+        curr_lang_idx = self._lang_keys.index(curr_lang)
+        self.select_language = toga.Selection(
+            items=self._lang_display_items,
+            value=self._lang_display_items[curr_lang_idx],
+            style=Pack(flex=1, font_size=13.5),
+        )
+
         self.btn_save = toga.Button(t("btn_save_changes"), on_press=self.on_save_press, style=Pack(flex=1, margin_left=8, height=30, font_weight="bold", font_size=13))
         self.btn_cancel = toga.Button(t("btn_cancel"), on_press=lambda w: self.close(), style=Pack(flex=1, height=30, font_size=13))
 
@@ -66,6 +80,12 @@ class CloneEditWindow(toga.Window):
 
         title_label = toga.Label(f"Editing: {self.record.clone_name}", style=Pack(font_weight="bold", font_size=15, margin_bottom=12, color=Theme.TEXT_PRIMARY))
         box.add(title_label)
+
+        # Language Settings
+        row_lang = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=12))
+        row_lang.add(toga.Label(t("win_edit_language"), style=Pack(width=120, font_size=13, color=Theme.TEXT_PRIMARY)))
+        row_lang.add(self.select_language)
+        box.add(row_lang)
 
         # Proxy Settings
         box.add(self.switch_proxy)
@@ -85,6 +105,15 @@ class CloneEditWindow(toga.Window):
 
         return box
 
+    def _get_selected_language(self) -> str:
+        if self.select_language.value:
+            try:
+                idx = self._lang_display_items.index(str(self.select_language.value))
+                return self._lang_keys[idx]
+            except ValueError:
+                pass
+        return "system"
+
     def get_updated_record(self) -> CloneRecord:
         port = 1080
         try:
@@ -96,8 +125,9 @@ class CloneEditWindow(toga.Window):
         proxy_type = str(self.select_proxy_type.value)
         proxy_host = self.input_proxy_host.value.strip() or "127.0.0.1"
         proxy_summary = f"{proxy_type}://{proxy_host}:{port}" if proxy_enabled else ""
+        lang = self._get_selected_language()
 
-        # Clone current record with updated proxy info
+        # Clone current record with updated proxy and language info
         updated = CloneRecord(
             clone_name=self.record.clone_name,
             source_app=self.record.source_app,
@@ -110,6 +140,7 @@ class CloneEditWindow(toga.Window):
             proxy_enabled=proxy_enabled,
             proxy_summary=proxy_summary,
             new_bundle_id=self.record.new_bundle_id,
+            language=lang,
         )
         return updated
 

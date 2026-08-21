@@ -6,6 +6,24 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.9.2] - 2026-08-21
+
+### 🍏 Dynamisches Ausblenden des macOS Dock-Icons & Tray-Optimierung
+- **Automatische Dock-Icon-Verwaltung**:
+  - Dynamische Steuerung der Dock-Sichtbarkeit über AppKit-Aktivierungsrichtlinien (`NSApplicationActivationPolicy`).
+  - Beim Minimieren oder Schließen in die Menüleiste wird das Dock-Icon vollständig ausgeblendet (`NSApplicationActivationPolicyAccessory`).
+  - Beim Wiederherstellen aus der Menüleiste erscheint das Dock-Icon nahtlos wieder (`NSApplicationActivationPolicyRegular`) mit sofortigem Fensterfokus.
+- **Dock-Reopen-Handler**:
+  - Implementierung von `applicationShouldHandleReopen:hasVisibleWindows:` im `AppDelegate`, um das Hauptfenster beim Klick auf das Dock-Symbol zuverlässig wiederherzustellen.
+
+### 📦 Ressourcenoptimierung & Test-Suite
+- **Dateigrößenoptimierung**:
+  - Optimierung und Kompression der Icon-Ressourcen (`logo.icns`, `logo.png`).
+- **Test-Suite**:
+  - Erweiterung auf 338 automatisierte Tests.
+
+---
+
 ## [v0.9.1] - 2026-08-21
 
 ### 🛡️ Erkennung und Blockierung von iOS-on-Mac-Apps

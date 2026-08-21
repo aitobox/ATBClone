@@ -6,6 +6,24 @@
 
 ---
 
+## [v0.9.2] - 2026-08-21
+
+### 🍏 macOS Dock 아이콘 동적 숨김 및 트레이 연동 강화
+- **Dock 아이콘 자동 표시/숨김 제어**:
+  - Cocoa AppKit 실행 정책(`NSApplicationActivationPolicy`)을 기반으로 Dock 아이콘의 동적 표시/숨김을 지원합니다.
+  - "트레이로 최소화" 활성화 시 창을 닫거나 최소화하면 앱이 보조 모드(`NSApplicationActivationPolicyAccessory`)로 전환되어 Dock 아이콘이 완전히 숨겨집니다.
+  - 메뉴 막대 트레이에서 창을 복원할 때 일반 모드(`NSApplicationActivationPolicyRegular`)로 자동 복귀하여 Dock 아이콘이 다시 표시되고 창이 활성화됩니다.
+- **Dock 클릭 시 창 복원 (Reopen Handler)**:
+  - `AppDelegate`에 `applicationShouldHandleReopen:hasVisibleWindows:`를 연결하여 Dock 아이콘 클릭 시 메인 창이 자연스럽게 활성화되도록 개선했습니다.
+
+### 📦 리소스 최적화 및 테스트 확장
+- **아이콘 용량 최적화**:
+  - `logo.icns` 및 `logo.png` 이미지 리소스를 압축 최적화하여 패키징 용량을 줄였습니다.
+- **테스트 확장**:
+  - 전체 자동화 테스트를 338개로 확대했습니다.
+
+---
+
 ## [v0.9.1] - 2026-08-21
 
 ### 🛡️ iOS-on-Mac (Designed for iPad/iPhone) 앱 감지 및 안전한 차단

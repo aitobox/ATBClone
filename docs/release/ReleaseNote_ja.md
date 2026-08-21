@@ -6,6 +6,24 @@
 
 ---
 
+## [v0.9.2] - 2026-08-21
+
+### 🍏 macOS Dock アイコンの動的非表示およびトレイ連携の強化
+- **Dock アイコンの自動表示・非表示切り替え**:
+  - Cocoa AppKit のアクティベーションポリシー（`NSApplicationActivationPolicy`）を利用した動的な Dock アイコン管理を実装。
+  - 「トレイに最小化」有効時、ウィンドウを閉じたりトレイに格納すると、Dock アイコンが完全に非表示化（`NSApplicationActivationPolicyAccessory`）。
+  - メニューバートレイから復元すると、即座に標準モード（`NSApplicationActivationPolicyRegular`）に戻り、Dock アイコンが再表示されてウィンドウが最前面化。
+- **Dock クリック時のウィンドウ復元 (Reopen Handler)**:
+  - `AppDelegate` に `applicationShouldHandleReopen:hasVisibleWindows:` を実装し、Dock クリック時にスムーズにメイン画面を復元。
+
+### 📦 リソースサイズ最適化とテスト拡充
+- **アプリアイコンの軽量化**:
+  - `logo.icns` および `logo.png` を最適化・圧縮し、アプリサイズとメモリ使用量を削減。
+- **テストの網羅性**:
+  - 自動テストスイートを 338 件に拡大。
+
+---
+
 ## [v0.9.1] - 2026-08-21
 
 ### 🛡️ iOS-on-Mac（Designed for iPad/iPhone）アプリの検出と安全な拒否

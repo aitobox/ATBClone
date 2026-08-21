@@ -6,6 +6,24 @@
 
 ---
 
+## [v0.9.2] - 2026-08-21
+
+### 🍏 macOS Dock 欄圖示動態隱藏與系統匣體驗增強
+- **Dock 欄圖示動態顯示/隱藏**：
+  - 基於 Cocoa AppKit 執行原則 (`NSApplicationActivationPolicy`) 實現 Dock 欄圖示動態顯隱控制。
+  - 開啟「最小化至系統匣」後，當視窗最小化或關閉至系統匣時，自動將 App 切換為背景配件模式 (`NSApplicationActivationPolicyAccessory`)，完全隱藏 Dock 欄圖示。
+  - 從頂部選單列系統匣還原視窗時，自動無縫恢復為標準模式 (`NSApplicationActivationPolicyRegular`)，重新顯示 Dock 圖示並置頂焦點。
+- **Dock 點擊還原視窗回應 (Reopen Handler)**：
+  - 注入原生 `AppDelegate` 的 `applicationShouldHandleReopen:hasVisibleWindows:` 方法，支援在 Dock 欄點擊應用程式圖示時平滑喚起並啟動主視窗。
+
+### 📦 資源體積最佳化與測試擴充
+- **圖示資源瘦身**：
+  - 對應用程式圖示資源 (`logo.icns`, `logo.png`) 進行無損壓縮與最佳化，顯著降低打包體積與記憶體佔用。
+- **測試套件擴充**：
+  - 自動化測試案例擴充至 338 項，全面涵蓋 Dock 欄原則切換與生命週期還原。
+
+---
+
 ## [v0.9.1] - 2026-08-21
 
 ### 🛡️ iOS-on-Mac (Designed for iPad/iPhone) 相容應用程式偵測與攔截

@@ -6,6 +6,24 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.9.2] - 2026-08-21
+
+### 🍏 Ocultación dinámica del icono del Dock en macOS y mejoras en la bandeja
+- **Control automático de visibilidad en el Dock**:
+  - Gestión dinámica del icono del Dock mediante las políticas de activación de AppKit (`NSApplicationActivationPolicy`).
+  - Al minimizar o cerrar la ventana hacia la bandeja del sistema, el icono del Dock se oculta automáticamente (`NSApplicationActivationPolicyAccessory`).
+  - Al restaurar la ventana desde la barra de menús, el icono reaparece de forma transparente (`NSApplicationActivationPolicyRegular`) con enfoque inmediato.
+- **Controlador de reapertura desde el Dock**:
+  - Implementación de `applicationShouldHandleReopen:hasVisibleWindows:` en `AppDelegate` para restaurar la ventana principal al hacer clic en el Dock.
+
+### 📦 Optimización de recursos y pruebas
+- **Reducción de peso de iconos**:
+  - Optimización y compresión de recursos (`logo.icns` y `logo.png`) para reducir el tamaño del paquete.
+- **Pruebas integrales**:
+  - Conjunto de pruebas ampliado a 338 pruebas automatizadas.
+
+---
+
 ## [v0.9.1] - 2026-08-21
 
 ### 🛡️ Detección y bloqueo seguro de aplicaciones iOS-on-Mac

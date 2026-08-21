@@ -6,6 +6,24 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.9.2] - 2026-08-21
+
+### 🍏 Masquage dynamique de l'icône du Dock macOS et amélioration du Tray
+- **Gestion automatique de la visibilité dans le Dock**:
+  - Gestion dynamique de l'icône du Dock via les politiques d'activation AppKit (`NSApplicationActivationPolicy`).
+  - Lors de la réduction ou de la fermeture vers la barre des menus, l'icône du Dock est automatiquement masquée (`NSApplicationActivationPolicyAccessory`).
+  - Lors de la restauration depuis la barre des menus, l'icône réapparaît instantanément (`NSApplicationActivationPolicyRegular`) avec le focus sur la fenêtre.
+- **Gestionnaire de réouverture depuis le Dock**:
+  - Ajout du support de `applicationShouldHandleReopen:hasVisibleWindows:` dans `AppDelegate` pour réafficher la fenêtre principale lors d'un clic sur l'icône du Dock.
+
+### 📦 Optimisation des ressources et tests
+- **Allègement des icônes**:
+  - Compression et optimisation des fichiers d'icônes (`logo.icns`, `logo.png`) pour réduire la taille du bundle.
+- **Tests**:
+  - Suite de tests portée à 338 tests automatisés.
+
+---
+
 ## [v0.9.1] - 2026-08-21
 
 ### 🛡️ Détection et rejet sécurisé des applications iOS-on-Mac

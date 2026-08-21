@@ -6,6 +6,24 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.9.2] - 2026-08-21
+
+### 🍏 Dynamic macOS Dock Icon Hiding & System Tray Polishing
+- **Automatic Dock Icon Management**:
+  - Implemented dynamic macOS Dock icon visibility management via AppKit activation policies (`NSApplicationActivationPolicy`).
+  - When minimizing or closing the window to the system tray (`minimize_to_tray` enabled), the Dock icon is automatically hidden from the macOS Dock (`NSApplicationActivationPolicyAccessory`).
+  - When restoring the window from the menu bar tray, the Dock icon seamlessly reappears (`NSApplicationActivationPolicyRegular`) with instant focus.
+- **Dock Reopen Handler**:
+  - Added native `AppDelegate` patch for `applicationShouldHandleReopen:hasVisibleWindows:` to smoothly restore and focus the main window when clicking the application in macOS Finder or Dock.
+
+### 📦 Asset Footprint Optimization & Testing
+- **Optimized Image Resources**:
+  - Compressed and optimized application icon assets (`logo.icns` and `logo.png`), reducing bundle overhead.
+- **Testing**:
+  - Expanded automated test suite to 338 unit and GUI integration tests.
+
+---
+
 ## [v0.9.1] - 2026-08-21
 
 ### 🛡️ iOS-on-Mac Wrapper Application Detection & Safe Rejection

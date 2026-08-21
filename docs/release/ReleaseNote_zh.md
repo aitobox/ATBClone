@@ -6,6 +6,24 @@
 
 ---
 
+## [v0.9.2] - 2026-08-21
+
+### 🍏 macOS Dock 栏图标动态隐藏与托盘体验增强
+- **Dock 栏图标动态显示/隐藏**：
+  - 基于 Cocoa AppKit 运行策略 (`NSApplicationActivationPolicy`) 实现 Dock 栏图标动态显隐控制。
+  - 开启“最小化到托盘”后，当窗口最小化或关闭至系统托盘时，自动将 App 切换为后台配件模式 (`NSApplicationActivationPolicyAccessory`)，完全隐藏 Dock 栏图标。
+  - 从顶部菜单栏托盘还原窗口时，自动无缝恢复为标准模式 (`NSApplicationActivationPolicyRegular`)，重新显现 Dock 图标并置顶聚焦。
+- **Dock 点击恢复窗口响应 (Reopen Handler)**：
+  - 注入原生 `AppDelegate` 的 `applicationShouldHandleReopen:hasVisibleWindows:` 方法，支持在 Dock 栏点击应用图标时平滑拉起并激活主窗口。
+
+### 📦 资源体积优化与测试扩充
+- **图标资源瘦身**：
+  - 对应用图标资源 (`logo.icns`, `logo.png`) 进行无损压缩与优化，显著降低打包体积与内存占用。
+- **测试套件扩充**：
+  - 自动化测试用例扩充至 338 项，全面覆盖 Dock 栏策略切换与生命周期恢复。
+
+---
+
 ## [v0.9.1] - 2026-08-21
 
 ### 🛡️ iOS-on-Mac (Designed for iPad/iPhone) 兼容应用检测与拦截

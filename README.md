@@ -4,6 +4,11 @@
 
 > 🚀 **ATBClone** is a modern application multi-instancing and clone management engine designed for macOS. It supports isolated user data directories, independent network proxies (HTTP / SOCKS5), automated recipe matching, ad-hoc code re-signing, and sandbox removal.
 
+<p align="center">
+  <img src="resource/images/screenshot-20260821-110121.png" alt="ATBClone Clones Dashboard" width="49%">
+  <img src="resource/images/screenshot-20260821-110133.png" alt="ATBClone Built-in Recipes" width="49%">
+</p>
+
 ---
 
 ## 📥 Download

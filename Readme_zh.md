@@ -4,6 +4,11 @@
 
 > 🚀 **ATBClone** 是一个专为 macOS 设计的现代化应用程序多开（Multi-Instancing）与分身管理引擎。支持独立数据隔离、独立网络代理（HTTP / SOCKS5）、自动化规则匹配、重签名与沙盒解除。
 
+<p align="center">
+  <img src="resource/images/screenshot-20260821-110121.png" alt="ATBClone 分身管理仪表盘" width="49%">
+  <img src="resource/images/screenshot-20260821-110133.png" alt="ATBClone 内置分身规则库" width="49%">
+</p>
+
 ---
 
 ## 📥 软件下载 (Download)

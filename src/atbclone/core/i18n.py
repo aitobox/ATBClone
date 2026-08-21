@@ -398,6 +398,28 @@ MESSAGES: dict[str, dict[str, str]] = {
         "ru": "[bold red]Ошибка:[/bold red] Приложение '{app_name}' не поддерживает пользовательский каталог данных.",
         "es": "[bold red]Error:[/bold red] La aplicación '{app_name}' no admite un directorio de datos personalizado.",
     },
+    "clone_err_ios_wrapper_unsupported": {
+        "en": "iOS on Mac Wrapper applications are not supported.",
+        "zh": "不支持 iOS on Mac Wrapper 应用",
+        "zh_TW": "不支援 iOS on Mac Wrapper 應用程式",
+        "ja": "iOS on Mac Wrapper アプリケーションはサポートされていません。",
+        "ko": "iOS on Mac Wrapper 애플리케이션은 지원되지 않습니다.",
+        "de": "iOS-on-Mac-Wrapper-Anwendungen werden nicht unterstützt.",
+        "fr": "Les applications Wrapper iOS sur Mac ne sont pas prises en charge.",
+        "ru": "Приложения iOS on Mac Wrapper не поддерживаются.",
+        "es": "Las aplicaciones Wrapper de iOS en Mac no son compatibles.",
+    },
+    "clone_err_ios_wrapper_unsupported_cli": {
+        "en": "[bold red]Error:[/bold red] iOS on Mac Wrapper applications are not supported.",
+        "zh": "[bold red]错误:[/bold red] 不支持 iOS on Mac Wrapper 应用。",
+        "zh_TW": "[bold red]錯誤:[/bold red] 不支援 iOS on Mac Wrapper 應用程式。",
+        "ja": "[bold red]エラー:[/bold red] iOS on Mac Wrapper アプリケーションはサポートされていません。",
+        "ko": "[bold red]오류:[/bold red] iOS on Mac Wrapper 애플리케이션은 지원되지 않습니다.",
+        "de": "[bold red]Fehler:[/bold red] iOS-on-Mac-Wrapper-Anwendungen werden nicht unterstützt.",
+        "fr": "[bold red]Erreur :[/bold red] Les applications Wrapper iOS sur Mac ne sont pas prises en charge.",
+        "ru": "[bold red]Ошибка:[/bold red] Приложения iOS on Mac Wrapper не поддерживаются.",
+        "es": "[bold red]Error:[/bold red] Las aplicaciones Wrapper de iOS en Mac no son compatibles.",
+    },
 
     "clone_no_recipe_found": {
         "en": "[yellow]No pre-configured recipe found for '{bundle_id}'.[/yellow]",

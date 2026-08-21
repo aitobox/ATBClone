@@ -621,5 +621,27 @@ def test_clone_with_custom_data_dir_unsupported(tmp_path):
         assert "does not support custom data directory" in result.output
 
 
+def test_clone_ios_wrapper_app_fails(tmp_path: Path):
+    runner = CliRunner()
+    fake_app = tmp_path / "小宇宙.app"
+    fake_app.mkdir()
+
+    from atbclone.core.models import AppInfo
+    mock_info = AppInfo(
+        path=fake_app,
+        bundle_id="app.podcast.cosmos",
+        app_name="小宇宙",
+        executable=fake_app / "Wrapper" / "Podcast.app" / "Podcast",
+        has_sandbox=True,
+        is_ios_app=True,
+    )
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_info):
+        result = runner.invoke(cli, ["clone", str(fake_app)])
+        assert result.exit_code == 1
+        assert "不支持 iOS on Mac Wrapper 应用" in result.output or "iOS on Mac Wrapper" in result.output
+
+
+
 
 

@@ -398,6 +398,15 @@ class WizardWindow(toga.Window):
         return "system"
 
     async def _execute_clone(self):
+        if getattr(self.app_info, "is_ios_app", False):
+            err_msg = t("clone_err_ios_wrapper_unsupported")
+            self.label_status.text = t("win_wizard_status_failed", error=err_msg)
+            logger.error(f"Wizard cannot clone iOS wrapper app '{self.app_info.app_name}': {err_msg}")
+            await self.error_dialog(t("dialog_clone_error_title"), err_msg)
+            self.btn_next.enabled = True
+            self.btn_prev.enabled = True
+            return
+
         self.btn_next.enabled = False
         self.btn_prev.enabled = False
         self.label_status.text = t("win_wizard_status_cloning")

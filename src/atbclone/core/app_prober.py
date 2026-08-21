@@ -42,9 +42,15 @@ class AppProber:
 
     @staticmethod
     def detect_frameworks(app_path: Path | str) -> list[str]:
-        """Detect notable frameworks and dynamic libraries inside Contents/Frameworks/."""
-        path = Path(app_path)
+        """Detect notable frameworks and dynamic libraries inside Contents/Frameworks/ or Wrapper/*.app/Frameworks/."""
+        path = Path(app_path).expanduser().resolve()
         frameworks_dir = path / "Contents" / "Frameworks"
+        if not frameworks_dir.is_dir() and (path / "Wrapper").is_dir():
+            for inner in (path / "Wrapper").glob("*.app"):
+                fw = inner / "Frameworks"
+                if fw.is_dir():
+                    frameworks_dir = fw
+                    break
         if not frameworks_dir.is_dir():
             return []
         return [
@@ -76,21 +82,23 @@ class AppProber:
 
         bid_lower = app_info.bundle_id.lower()
 
+        # iOS/iPadOS app on Apple Silicon Mac detection
+        if getattr(app_info, "is_ios_app", False):
+            strategy = "hard_clone"
+            strip_sandbox = False
+            launch_args = []
+            env_injection: dict[str, str] = {}
+            reason = "iOS/iPadOS Wrapper application on Mac (not supported for cloning)."
         # Chromium / Electron detection
-        is_chromium = any(k in bid_lower for k in ["chrome", "chromium", "microsoft.edge", "arc"])
-        is_electron = (
-            any("Electron" in fw or "Chromium" in fw for fw in frameworks)
-            or "electron" in bid_lower
-        )
-        is_firefox = "firefox" in bid_lower
-
-        if is_chromium or is_electron:
+        elif any(k in bid_lower for k in ["chrome", "chromium", "microsoft.edge", "arc"]) or (
+            any("Electron" in fw or "Chromium" in fw for fw in frameworks) or "electron" in bid_lower
+        ):
             strategy = "soft_clone"
             strip_sandbox = False
             launch_args = ["--user-data-dir={{ATB_DATA_DIR}}"]
-            env_injection: dict[str, str] = {}
+            env_injection = {}
             reason = "Chromium/Electron framework detected; supports --user-data-dir parameter."
-        elif is_firefox:
+        elif "firefox" in bid_lower:
             strategy = "soft_clone"
             strip_sandbox = False
             launch_args = ["-profile", "{{ATB_DATA_DIR}}"]

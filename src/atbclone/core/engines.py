@@ -1,5 +1,6 @@
 """Clone engines for creating soft (wrapper) and hard (physical) app clones."""
 
+from pathlib import Path
 import shlex
 import textwrap
 
@@ -60,6 +61,10 @@ class SoftCloneEngine(CloneEngine):
             task: The clone task parameters.
             needs_admin: Whether administrator elevation is required.
         """
+        if getattr(task.source, "is_ios_app", False):
+            from atbclone.core.i18n import t
+            raise CloneError(t("clone_err_ios_wrapper_unsupported"))
+
         src_bin = shlex.quote(str(task.source.executable))
         src_plist = shlex.quote(str(task.source.path / "Contents" / "Info.plist"))
         dst_app = shlex.quote(str(task.dest_path))
@@ -143,11 +148,24 @@ class HardCloneEngine(CloneEngine):
             task: The clone task parameters.
             needs_admin: Whether administrator elevation is required.
         """
+        if getattr(task.source, "is_ios_app", False):
+            from atbclone.core.i18n import t
+            raise CloneError(t("clone_err_ios_wrapper_unsupported"))
+
         src = shlex.quote(str(task.source.path))
         dst = shlex.quote(str(task.dest_path))
-        dst_plist = shlex.quote(str(task.dest_path / "Contents" / "Info.plist"))
-        dst_resources = shlex.quote(str(task.dest_path / "Contents" / "Resources"))
 
+        rel_plist = getattr(task.source, "relative_plist_path", Path("Contents/Info.plist"))
+        rel_resources = getattr(task.source, "relative_resources_path", Path("Contents/Resources"))
+
+        dst_plist = shlex.quote(str(task.dest_path / rel_plist))
+        dst_resources = shlex.quote(str(task.dest_path / rel_resources))
+
+        # Effective display name: explicit override > clone_name
+        effective_display_name = task.display_name if task.display_name else task.clone_name
+        icon_cmd = cls._build_icon_cmd(task, dst_resources, dst_plist)
+        dst_parent = shlex.quote(str(task.dest_path.parent))
+        data_dir = shlex.quote(str(task.data_dir))
         orig_bin_name = (
             task.source.executable.name
             if task.source.executable and task.source.executable.name
@@ -185,7 +203,6 @@ class HardCloneEngine(CloneEngine):
         wrapper_lines.append(f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"')
         wrapper_body = "\n".join(wrapper_lines)
 
-
         if task.recipe.strip_sandbox:
             ent_plist = shlex.quote(str(task.dest_path / "Contents" / "atb_entitlements.plist"))
             codesign_cmds = (
@@ -195,12 +212,6 @@ class HardCloneEngine(CloneEngine):
             )
         else:
             codesign_cmds = f"codesign --force --deep --sign - {dst}\n"
-
-        # Effective display name: explicit override > clone_name
-        effective_display_name = task.display_name if task.display_name else task.clone_name
-        icon_cmd = cls._build_icon_cmd(task, dst_resources, dst_plist)
-        dst_parent = shlex.quote(str(task.dest_path.parent))
-        data_dir = shlex.quote(str(task.data_dir))
 
         script = f"""set -e
 mkdir -p {dst_parent}
@@ -219,6 +230,7 @@ chmod +x {wrapper}
 xattr -cr {dst}
 {codesign_cmds}codesign -vv --deep --strict {dst}
 """
+
         try:
             Runner.run(script, needs_admin)
         except Exception:

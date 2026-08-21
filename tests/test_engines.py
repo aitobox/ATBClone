@@ -383,3 +383,51 @@ class TestHardCloneEngineCustomisation:
             script, _ = mock_run.call_args[0]
             assert "Delete :LSHasLocalizedDisplayName" in script
 
+
+class TestIOSEngines:
+    """Tests for iOS on Mac app support in Clone Engines."""
+
+    @pytest.fixture
+    def ios_app_info(self):
+        return AppInfo(
+            path=Path("/Applications/小宇宙.app"),
+            bundle_id="app.podcast.cosmos",
+            app_name="小宇宙",
+            executable=Path("/Applications/小宇宙.app/Wrapper/Podcast.app/Podcast"),
+            has_sandbox=True,
+            is_ios_app=True,
+            relative_plist_path=Path("Wrapper/Podcast.app/Info.plist"),
+            relative_executable_path=Path("Wrapper/Podcast.app/Podcast"),
+            relative_resources_path=Path("Wrapper/Podcast.app"),
+        )
+
+    @pytest.fixture
+    def ios_task(self, ios_app_info):
+        recipe = Recipe(
+            bundle_id="app.podcast.cosmos",
+            app_name="小宇宙",
+            strategy="hard_clone",
+            strip_sandbox=False,
+        )
+        return CloneTask(
+            source=ios_app_info,
+            dest_path=Path("/Users/test/Applications/小宇宙 Brain.app"),
+            data_dir=Path("/Users/test/Data/小宇宙 Brain"),
+            recipe=recipe,
+            clone_name="小宇宙 Brain",
+            new_bundle_id="app.podcast.cosmos.atbclone.1",
+        )
+
+    def test_hard_clone_ios_app_raises_clone_error(self, ios_task):
+        with pytest.raises(CloneError) as exc_info:
+            HardCloneEngine.execute(ios_task, needs_admin=False)
+        assert "iOS on Mac Wrapper" in str(exc_info.value)
+
+    def test_soft_clone_ios_app_raises_clone_error(self, ios_task):
+        ios_task.recipe.strategy = "soft_clone"
+        with pytest.raises(CloneError) as exc_info:
+            SoftCloneEngine.execute(ios_task, needs_admin=False)
+        assert "iOS on Mac Wrapper" in str(exc_info.value)
+
+
+

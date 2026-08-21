@@ -57,6 +57,10 @@ def clone(
     out_path.mkdir(parents=True, exist_ok=True)
 
     info = AppInspector.inspect(app_path)
+    if getattr(info, "is_ios_app", False):
+        console.print(t("clone_err_ios_wrapper_unsupported_cli"), soft_wrap=True)
+        sys.exit(1)
+
     if RecipeLoader.has_recipe(info.bundle_id):
         recipe = RecipeLoader.match(info.bundle_id)
     else:

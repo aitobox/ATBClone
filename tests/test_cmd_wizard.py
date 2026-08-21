@@ -359,3 +359,25 @@ def test_wizard_invalid_icon_then_valid(tmp_path: Path, mock_app_info: AppInfo, 
         assert "Must be a .icns file" in result.output or "必须是 .icns 文件" in result.output
         task, _ = mock_hard_exec.call_args[0]
         assert task.icon_path is None
+
+
+def test_wizard_ios_wrapper_app_fails(tmp_path: Path):
+    runner = CliRunner()
+    fake_app = tmp_path / "小宇宙.app"
+    fake_app.mkdir()
+
+    from atbclone.core.models import AppInfo
+    mock_info = AppInfo(
+        path=fake_app,
+        bundle_id="app.podcast.cosmos",
+        app_name="小宇宙",
+        executable=fake_app / "Wrapper" / "Podcast.app" / "Podcast",
+        has_sandbox=True,
+        is_ios_app=True,
+    )
+
+    with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_info):
+        result = runner.invoke(cli, ["wizard"], input=f"{fake_app}\n")
+        assert result.exit_code == 1
+        assert "不支持 iOS on Mac Wrapper 应用" in result.output or "iOS on Mac Wrapper" in result.output
+

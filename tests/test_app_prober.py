@@ -105,3 +105,31 @@ def test_app_prober_firefox(tmp_path: Path):
         recipe = AppProber.probe(app_dir)
         assert recipe.strategy == "soft_clone"
         assert recipe.launch_args == ["-profile", "{{ATB_DATA_DIR}}"]
+
+
+def test_app_prober_ios_app(tmp_path: Path):
+    app_dir = tmp_path / "小宇宙.app"
+    app_dir.mkdir()
+
+    mock_info = AppInfo(
+        path=app_dir,
+        bundle_id="app.podcast.cosmos",
+        app_name="小宇宙",
+        executable=app_dir / "Wrapper" / "Podcast.app" / "Podcast",
+        has_sandbox=True,
+        is_ios_app=True,
+        relative_plist_path=Path("Wrapper/Podcast.app/Info.plist"),
+        relative_executable_path=Path("Wrapper/Podcast.app/Podcast"),
+        relative_resources_path=Path("Wrapper/Podcast.app"),
+    )
+
+    with patch.object(AppProber, "inspect_entitlements", return_value={}), \
+         patch.object(AppProber, "detect_frameworks", return_value=[]):
+        result = AppProber.analyze(app_dir, app_info=mock_info)
+        assert result.strategy == "hard_clone"
+        assert result.has_sandbox is True
+        assert result.recipe.strip_sandbox is False
+        assert result.recipe.launch_args == []
+        assert result.recipe.environment_injection == {}
+        assert "iOS" in result.reason
+

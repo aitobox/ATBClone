@@ -6,6 +6,23 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.9.5] - 2026-08-23
+
+### 📝 Nouveau composant `WrappingLabel` & Retour à la ligne automatique
+- **Gestion du texte multiligne sous macOS**:
+  - Création du composant `WrappingLabel` pour contourner les limitations d'affichage sur une seule ligne de Toga Cocoa.
+  - Recalcul dynamique de la hauteur (`cellSizeForBounds_`) selon la largeur du conteneur, évitant l'élargissement excessif des fenêtres lors de l'affichage de chemins longs.
+- **Amélioration des rapports d'analyse et détails**:
+  - Intégration de `WrappingLabel` dans `ProbeView` (rapport de diagnostic, évaluation de compatibilité), `CloneDetailWindow` et `WizardWindow`.
+
+### 🧪 Isolation des tests et gestion de configuration
+- **Résolution dynamique des chemins**:
+  - Amélioration de `StateManager` et `RecipeLoader` pour évaluer les chemins à l'exécution, garantissant l'isolation des tests unitaires vis-à-vis des données locales de l'utilisateur.
+- **Tests**:
+  - Suite de tests portée à 347 tests automatisés.
+
+---
+
 ## [v0.9.4] - 2026-08-23
 
 ### 📁 Migration du répertoire de données par défaut vers `~/ATBClone`

@@ -6,6 +6,23 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.9.5] - 2026-08-23
+
+### 📝 Nuevo componente `WrappingLabel` y ajuste automático de texto
+- **Salto de línea dinámico en texto multilínea**:
+  - Implementación del componente `WrappingLabel` para solucionar las limitaciones de etiquetas de una sola línea en Toga Cocoa.
+  - Cálculo dinámico de altura (`cellSizeForBounds_`) según el ancho disponible, evitando el ensanchamiento horizontal no deseado de ventanas y diálogos.
+- **Mejora en informes de análisis y detalles**:
+  - Incorporación de `WrappingLabel` en `ProbeView` (informe del analizador, compatibilidad), `CloneDetailWindow` y `WizardWindow`.
+
+### 🧪 Aislamiento de pruebas y estado
+- **Evaluación dinámica de rutas**:
+  - Optimización de `StateManager` y `RecipeLoader` para resolver rutas dinámicamente, asegurando la total independencia de las pruebas frente al estado local del usuario.
+- **Pruebas integrales**:
+  - Conjunto de pruebas ampliado a 347 pruebas automatizadas.
+
+---
+
 ## [v0.9.4] - 2026-08-23
 
 ### 📁 Migración del directorio de datos predeterminado a `~/ATBClone`

@@ -81,6 +81,109 @@ def configure_cocoa_wrapping_label(native_label: Any) -> None:
         pass
 
 
+if sys.platform == "darwin":
+    try:
+        from toga_cocoa.widgets.table import TogaTable
+        from toga_cocoa.libs import NSImage, NSIndexSet
+        from rubicon.objc import objc_method
+
+        class ATBTable(TogaTable):
+            @objc_method
+            def tableView_didClickTableColumn_(self, tableView, tableColumn) -> None:
+                try:
+                    table_columns = list(self.tableColumns)
+                    col_index = -1
+                    for idx, col in enumerate(table_columns):
+                        if col == tableColumn or str(col.identifier) == str(tableColumn.identifier):
+                            col_index = idx
+                            break
+                    if col_index == -1:
+                        return
+
+                    toga_col = getattr(tableColumn, "toga_column", None)
+                    if toga_col is None and hasattr(self.interface, "columns") and col_index < len(self.interface.columns):
+                        toga_col = self.interface.columns[col_index]
+
+                    clicked_id = str(tableColumn.identifier)
+                    curr_id = getattr(self, "_sort_col_id", None)
+                    if curr_id == clicked_id:
+                        ascending = not getattr(self, "_sort_ascending", True)
+                    else:
+                        ascending = True
+
+                    self._sort_col_id = clicked_id
+                    self._sort_ascending = ascending
+
+                    # Update macOS sort indicator chevrons
+                    indicator_name = "NSAscendingSortIndicator" if ascending else "NSDescendingSortIndicator"
+                    indicator_img = NSImage.imageNamed_(indicator_name)
+                    for col in table_columns:
+                        if str(col.identifier) == clicked_id:
+                            self.setIndicatorImage_inTableColumn_(indicator_img, col)
+                        else:
+                            self.setIndicatorImage_inTableColumn_(None, col)
+
+                    if hasattr(self, "setHighlightedTableColumn_"):
+                        self.setHighlightedTableColumn_(tableColumn)
+
+                    # If interface has custom handler, invoke it
+                    if hasattr(self.interface, "on_header_sort") and callable(self.interface.on_header_sort):
+                        self.interface.on_header_sort(col_index, toga_col, ascending)
+                        return
+
+                    # Default safe auto-sorting
+                    if hasattr(self.interface, "data") and self.interface.data is not None:
+                        col_accessor = getattr(toga_col, "accessor", None) or str(col_index)
+
+                        def _safe_sort_key(row):
+                            val = None
+                            if hasattr(row, col_accessor):
+                                val = getattr(row, col_accessor)
+                            elif hasattr(toga_col, "value"):
+                                try:
+                                    val = toga_col.value(row)
+                                except Exception:
+                                    pass
+                            elif isinstance(row, (tuple, list)) and col_index < len(row):
+                                val = row[col_index]
+                            elif isinstance(row, dict) and col_accessor in row:
+                                val = row[col_accessor]
+
+                            if val is None:
+                                return (2, "")
+                            if isinstance(val, (int, float)):
+                                return (0, val)
+                            if isinstance(val, bool):
+                                return (0, int(val))
+                            return (1, str(val).lower())
+
+                        # Preserve selection if any
+                        selected_item = getattr(self.interface, "selection", None)
+
+                        if hasattr(self.interface.data, "_data") and isinstance(self.interface.data._data, list):
+                            self.interface.data._data.sort(key=_safe_sort_key, reverse=not ascending)
+                            self.reloadData()
+                            if selected_item is not None and selected_item in self.interface.data._data:
+                                new_idx = self.interface.data._data.index(selected_item)
+                                self.selectRowIndexes_byExtendingSelection_(NSIndexSet.indexSetWithIndex(new_idx), False)
+                        elif isinstance(self.interface.data, list):
+                            self.interface.data.sort(key=_safe_sort_key, reverse=not ascending)
+                            self.reloadData()
+                        else:
+                            try:
+                                rows = list(self.interface.data)
+                                rows.sort(key=_safe_sort_key, reverse=not ascending)
+                                self.interface.data = rows
+                            except Exception:
+                                pass
+                except Exception:
+                    pass
+    except Exception:
+        ATBTable = None
+else:
+    ATBTable = None
+
+
 def patch_cocoa_widgets() -> None:
     """Apply monkeypatches to toga_cocoa widget implementations on macOS.
 
@@ -88,7 +191,7 @@ def patch_cocoa_widgets() -> None:
     - All single-line TextInput widgets support horizontal scrolling, clipping mode, and readable 13.5px fonts.
     - All Switch (checkbox) widgets have comfortable 13.5px label fonts.
     - All Selection (dropdown) widgets have comfortable 12.0px option fonts and support set_font.
-    - All Table widgets have comfortable row height (34px), crisp 12.5px headers, and readable 13.0px cell fonts.
+    - All Table widgets have comfortable row height (34px), crisp 12.5px headers, readable 13.0px cell fonts, and native header sorting.
     """
     global _is_patched
     if _is_patched or sys.platform != "darwin":
@@ -147,13 +250,51 @@ def patch_cocoa_widgets() -> None:
         CocoaSelection.set_font = _patched_selection_set_font
 
         # 4. Table & IconView Patch
-        _orig_table_create = CocoaTable.create
+        if ATBTable is not None:
+            try:
+                from toga_cocoa.libs import (
+                    NSBezelBorder,
+                    NSScrollView,
+                    NSTableViewColumnAutoresizingStyle,
+                    SEL,
+                )
 
-        def _patched_table_create(self):
-            _orig_table_create(self)
-            configure_cocoa_table(getattr(self, "native_table", None), row_height=34.0)
+                def _patched_table_create(self):
+                    self.native = NSScrollView.alloc().init()
+                    self.native.hasVerticalScroller = True
+                    self.native.hasHorizontalScroller = False
+                    self.native.autohidesScrollers = False
+                    self.native.borderType = NSBezelBorder
 
-        CocoaTable.create = _patched_table_create
+                    self.native_table = ATBTable.alloc().init()
+                    self.native_table.interface = self.interface
+                    self.native_table.impl = self
+                    self.native_table.columnAutoresizingStyle = (
+                        NSTableViewColumnAutoresizingStyle.Uniform
+                    )
+                    self.native_table.usesAlternatingRowBackgroundColors = True
+                    self.native_table.allowsMultipleSelection = self.interface.multiple_select
+                    self.native_table.allowsColumnReordering = False
+
+                    self.columns = []
+                    if not self.interface._show_headings:
+                        self.native_table.setHeaderView(None)
+                    for index, toga_column in enumerate(self.interface._columns):
+                        self._insert_column(index, toga_column)
+
+                    self.native_table.delegate = self.native_table
+                    self.native_table.dataSource = self.native_table
+                    self.native_table.target = self.native_table
+                    self.native_table.doubleAction = SEL("onDoubleClick:")
+
+                    self.native.documentView = self.native_table
+                    self.add_constraints()
+
+                    configure_cocoa_table(self.native_table, row_height=34.0)
+
+                CocoaTable.create = _patched_table_create
+            except Exception:
+                pass
 
         _orig_icon_setup = TogaIconView.setup
 

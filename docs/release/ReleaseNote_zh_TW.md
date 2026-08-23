@@ -6,6 +6,28 @@
 
 ---
 
+## [v0.9.4] - 2026-08-23
+
+### 📁 預設根資料目錄遷移至使用者可見目錄 (`~/ATBClone`)
+- **直覺便捷的資料與設定管理**：
+  - 將 ATBClone 預設根目錄從隱藏的 `~/.atbclone` 遷移至使用者主目錄下的可見資料夾 `~/ATBClone`（包含 `~/ATBClone/Data/` 資料目錄、`~/ATBClone/clones.yaml` 狀態檔案與記錄檔）。
+  - 使用者在 Finder 或終端機中查詢分身資料、備份與管理儲存空間更加直覺便捷。
+
+### 🏷️ 應用程式顯示名稱精確覆蓋與多語言在地化清理
+- **徹底消除系統語言預設名稱干擾**：
+  - 增強 `SoftCloneEngine` 與 `HardCloneEngine`，在產生分身時自動移除 `Info.plist` 中的 `LSHasLocalizedDisplayName`，並清理資源套件中各語言的 `InfoPlist.strings`（如 `CFBundleDisplayName`、`CFBundleName`）。
+  - 確保 Finder、Dock 欄、Spotlight 焦點搜尋和活動監視器中嚴格顯示使用者自訂的分身名稱，杜絕被原應用程式多語言覆蓋。
+
+### 🔄 LaunchServices 服務自動註冊與即時重新整理
+- **圖示與中繼資料即時生效**：
+  - 在分身建立與更新流程最後自動執行 `lsregister -f` 強制註冊，確保 macOS 立即重新整理分身圖示與 Bundle 資訊，無需重新啟動系統或 Finder。
+
+### 📦 文件與測試套件同步
+- **全域路徑更新**：
+  - 同步更新 CLI 說明資訊、GUI 設定頁面說明、README 及全套 341 項自動化測試。
+
+---
+
 ## [v0.9.3] - 2026-08-21
 
 ### 🛡️ 應用程式檢查增強與精靈 iOS 移植應用程式友善攔截

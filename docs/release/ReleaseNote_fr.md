@@ -6,6 +6,28 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.9.4] - 2026-08-23
+
+### 📁 Migration du répertoire de données par défaut vers `~/ATBClone`
+- **Gestion intuitive des données utilisateur**:
+  - Déplacement du dossier racine par défaut de `~/.atbclone` vers le répertoire accessible `~/ATBClone` (`~/ATBClone/Data/`, `~/ATBClone/clones.yaml`).
+  - Facilite l'accès, la sauvegarde et l'inspection des données de clones dans le Finder et le Terminal.
+
+### 🏷️ Application stricte du nom d'affichage personnalisé
+- **Nettoyage des localisations**:
+  - Suppression de `LSHasLocalizedDisplayName` et nettoyage des fichiers `InfoPlist.strings` dans `SoftCloneEngine` et `HardCloneEngine`.
+  - Garantit que le Finder, le Dock, Spotlight et le Moniteur d'activité affichent précisément le nom choisi par l'utilisateur.
+
+### 🔄 Enregistrement automatique LaunchServices
+- **Actualisation instantanée du cache**:
+  - Enregistrement immédiat via `lsregister -f` lors de la création ou mise à jour pour rafraîchir les icônes et métadonnées sans redémarrage.
+
+### 📦 Documentation et tests
+- **Mise à jour globale**:
+  - Actualisation des guides, des paramètres GUI et des 341 tests automatisés.
+
+---
+
 ## [v0.9.3] - 2026-08-21
 
 ### 🛡️ Inspection d'applications renforcée et validation dans l'assistant

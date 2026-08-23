@@ -6,6 +6,28 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.9.4] - 2026-08-23
+
+### 📁 Visible Default Data Directory Migration (`~/ATBClone`)
+- **Intuitive User Data Management**:
+  - Migrated the default ATBClone root directory from hidden `~/.atbclone` to user-accessible `~/ATBClone` (including `~/ATBClone/Data/`, `~/ATBClone/clones.yaml`, and logs).
+  - Makes managing, backing up, and inspecting clone storage and configurations straightforward via macOS Finder and Terminal.
+
+### 🏷️ Exact Application Display Name Enforcement & Localization Override
+- **Consistent Bundle Naming**:
+  - Enhanced both `SoftCloneEngine` and `HardCloneEngine` to clean up localized strings (`InfoPlist.strings`) and remove `LSHasLocalizedDisplayName` within cloned app bundles.
+  - Ensures Finder, Dock, Spotlight, and Activity Monitor strictly display the custom clone display name instead of falling back to system-localized default titles.
+
+### 🔄 Instant LaunchServices Registration
+- **Automated Cache Refresh**:
+  - Automatically registers newly generated or updated clones with macOS LaunchServices (`lsregister -f`), immediately reflecting icon and metadata updates across Finder, Dock, and Spotlight without requiring system reboots.
+
+### 📦 Test Suite & Documentation
+- **Updated References**:
+  - Reflected new `~/ATBClone` default path across CLI documentation, GUI settings, and all 341 unit and integration tests.
+
+---
+
 ## [v0.9.3] - 2026-08-21
 
 ### 🛡️ Enhanced App Inspection & Wizard Validation for iOS Wrapper Apps

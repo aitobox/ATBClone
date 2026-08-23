@@ -96,6 +96,7 @@ class CloneListView(toga.Box):
             on_activate=self.on_table_activate,
             style=Pack(flex=1),
         )
+        self.table.on_header_sort = self.on_table_header_sort
         self.table_box.add(self.table)
 
         self.btn_launch_table = toga.Button(t("btn_launch"), on_press=lambda w: asyncio.create_task(self.on_launch_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5, font_weight="bold"))
@@ -137,6 +138,29 @@ class CloneListView(toga.Box):
     def on_sort_changed(self, sort_val: str):
         self.selected_sort = sort_val
         self._apply_filter()
+
+    def on_table_header_sort(self, col_index: int, column, ascending: bool):
+        """Handle header click sorting for Table view and synchronize with toolbar."""
+        if col_index == 0:  # Name
+            self._filtered_clones.sort(key=lambda r: r.clone_name.lower(), reverse=not ascending)
+            if ascending:
+                self.selected_sort = self.sort_name
+                if hasattr(self.top_bar, "select_sort") and self.top_bar.select_sort:
+                    self.top_bar.select_sort.value = self.sort_name
+        elif col_index == 1:  # Source App
+            self._filtered_clones.sort(key=lambda r: r.source_app.lower(), reverse=not ascending)
+        elif col_index == 2:  # Strategy
+            self._filtered_clones.sort(key=lambda r: r.strategy.lower(), reverse=not ascending)
+        elif col_index == 3:  # Proxy
+            self._filtered_clones.sort(key=lambda r: (r.proxy_enabled, r.proxy_summary), reverse=not ascending)
+        elif col_index == 4:  # Created At
+            self._filtered_clones.sort(key=lambda r: r.created_at, reverse=not ascending)
+            target_sort = self.sort_oldest if ascending else self.sort_newest
+            self.selected_sort = target_sort
+            if hasattr(self.top_bar, "select_sort") and self.top_bar.select_sort:
+                self.top_bar.select_sort.value = target_sort
+
+        self._render_current_view()
 
     def on_action_new_clone(self, widget: toga.Button):
         if self.app_instance and hasattr(self.app_instance, "action_new_clone"):

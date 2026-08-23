@@ -141,3 +141,40 @@ def test_clone_list_view_refresh(tmp_path):
     asyncio.run(_test())
 
 
+def test_clone_list_view_table_header_sort():
+    view = CloneListView()
+    view._raw_clones = [
+        CloneRecord(clone_name="Beta", source_app="App2", source_path="/Applications/App2.app", bundle_id="b.app", strategy="soft_clone", dest_path="/p2", data_dir="/d2", created_at="2026-08-20T10:00:00"),
+        CloneRecord(clone_name="Alpha", source_app="App1", source_path="/Applications/App1.app", bundle_id="a.app", strategy="hard_clone", dest_path="/p1", data_dir="/d1", created_at="2026-08-21T10:00:00"),
+    ]
+    view._apply_filter()
+
+    # Sort column 0 (Name) ASC
+    view.on_table_header_sort(0, view.table.columns[0], ascending=True)
+    assert [r.clone_name for r in view._filtered_clones] == ["Alpha", "Beta"]
+    assert view.top_bar.select_sort.value == view.sort_name
+
+    # Sort column 0 (Name) DESC
+    view.on_table_header_sort(0, view.table.columns[0], ascending=False)
+    assert [r.clone_name for r in view._filtered_clones] == ["Beta", "Alpha"]
+
+    # Sort column 1 (Source App) ASC
+    view.on_table_header_sort(1, view.table.columns[1], ascending=True)
+    assert [r.source_app for r in view._filtered_clones] == ["App1", "App2"]
+
+    # Sort column 2 (Strategy) ASC
+    view.on_table_header_sort(2, view.table.columns[2], ascending=True)
+    assert [r.strategy for r in view._filtered_clones] == ["hard_clone", "soft_clone"]
+
+    # Sort column 4 (Created At) DESC
+    view.on_table_header_sort(4, view.table.columns[4], ascending=False)
+    assert [r.clone_name for r in view._filtered_clones] == ["Alpha", "Beta"]
+    assert view.top_bar.select_sort.value == view.sort_newest
+
+    # Sort column 4 (Created At) ASC
+    view.on_table_header_sort(4, view.table.columns[4], ascending=True)
+    assert [r.clone_name for r in view._filtered_clones] == ["Beta", "Alpha"]
+    assert view.top_bar.select_sort.value == view.sort_oldest
+
+
+

@@ -27,7 +27,7 @@ class DoctorView(toga.Box):
         self.top_bar = TopHeaderBar(
             title=t("nav_doctor"),
             action_label=t("doctor_btn_recheck"),
-            on_action=lambda w: asyncio.create_task(self.run_checks()),
+            on_action=lambda w: self.app_instance.safe_create_task(self.run_checks()) if (self.app_instance and hasattr(self.app_instance, "safe_create_task")) else asyncio.create_task(self.run_checks()),
         )
         self.add(self.top_bar)
 
@@ -43,7 +43,7 @@ class DoctorView(toga.Box):
         # One-click install Xcode Command Line Tools button
         self.btn_install_xcode = toga.Button(
             t("doctor_btn_install_xcode"),
-            on_press=lambda w: asyncio.create_task(self.action_install_xcode(w)),
+            on_press=lambda w: self.app_instance.safe_create_task(self.action_install_xcode(w)) if (self.app_instance and hasattr(self.app_instance, "safe_create_task")) else asyncio.create_task(self.action_install_xcode(w)),
             style=Pack(
                 height=32,
                 font_size=13,
@@ -103,6 +103,7 @@ class DoctorView(toga.Box):
         passed_count = 0
         total_count = len(items)
         xcode_select_passed = True
+        codesign_passed = True
 
         for item in items:
             if item.passed:
@@ -112,6 +113,8 @@ class DoctorView(toga.Box):
                 status_icon = t("doctor_status_missing")
                 if item.name == "xcode-select":
                     xcode_select_passed = False
+                elif item.name == "codesign":
+                    codesign_passed = False
 
             table_data.append((
                 status_icon,
@@ -126,9 +129,10 @@ class DoctorView(toga.Box):
             self.btn_install_xcode.style.visibility = "hidden"
         else:
             self.label_summary.text = t("doctor_summary_issues_found", count=total_count - passed_count)
-            if not xcode_select_passed:
+            if not (xcode_select_passed and codesign_passed):
                 self.btn_install_xcode.style.visibility = "visible"
             else:
                 self.btn_install_xcode.style.visibility = "hidden"
+
 
 

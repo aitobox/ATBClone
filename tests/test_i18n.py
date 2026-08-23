@@ -323,3 +323,34 @@ def test_doctor_install_i18n_keys():
             assert val != k, f"Missing translation for key '{k}' in language '{lang}'"
             assert len(val) > 0
 
+
+def test_batch_operation_i18n_keys():
+    """Verify all batch operation translation keys are present in all supported languages."""
+    from atbclone.core.i18n import t, set_language, SUPPORTED_LANGUAGES
+
+    keys = [
+        "btn_batch_update",
+        "btn_batch_delete",
+        "btn_updating_progress",
+        "btn_deleting_progress",
+        "dialog_batch_delete_confirm_title",
+        "dialog_batch_delete_confirm_msg",
+        "dialog_batch_delete_data_confirm_title",
+        "dialog_batch_delete_data_confirm_msg",
+        "dialog_batch_summary_title",
+        "dialog_batch_summary_msg",
+    ]
+    for lang in SUPPORTED_LANGUAGES:
+        set_language(lang)
+        for k in keys:
+            val = t(k, count=3, current=1, total=3, names="App1, App2", success=2, failed=1, errors="None")
+            assert val != k, f"Missing translation for key '{k}' in language '{lang}'"
+            assert len(val) > 0
+
+    # Specific format verification
+    set_language("zh")
+    assert "3" in t("btn_batch_update", count=3)
+    assert "3" in t("btn_batch_delete", count=3)
+    assert "1/3" in t("btn_updating_progress", current=1, total=3)
+    assert "2/3" in t("btn_deleting_progress", current=2, total=3)
+

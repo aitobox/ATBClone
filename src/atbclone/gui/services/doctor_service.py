@@ -29,7 +29,7 @@ class DoctorService:
                 out = subprocess.check_output(
                     "xcode-select -p", shell=True, stderr=subprocess.STDOUT, text=True
                 ).strip()
-                return bool(out)
+                return bool(out and (Path(out).exists() or out.startswith("/")))
             except Exception as e:
                 logger.debug(f"xcode-select -p check failed: {e}")
                 return False
@@ -93,11 +93,19 @@ class DoctorService:
             # 2. xcode-select
             try:
                 out = subprocess.check_output("xcode-select -p", shell=True, stderr=subprocess.STDOUT, text=True).strip()
-                items.append(DoctorCheckItem(
-                    name="xcode-select",
-                    passed=True,
-                    details=out,
-                ))
+                if out and (Path(out).exists() or out.startswith("/")):
+                    items.append(DoctorCheckItem(
+                        name="xcode-select",
+                        passed=True,
+                        details=out,
+                    ))
+                else:
+                    items.append(DoctorCheckItem(
+                        name="xcode-select",
+                        passed=False,
+                        details=out or "Not found",
+                        hint=t("doctor_hint_xcode_select"),
+                    ))
             except Exception:
                 items.append(DoctorCheckItem(
                     name="xcode-select",

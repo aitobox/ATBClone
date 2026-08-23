@@ -32,6 +32,7 @@ class RecipeListView(toga.Box):
         self.app_instance = app
         self._raw_recipes: list[dict] = []
         self._filtered_recipes: list[dict] = []
+        self._busy_recipes: set[str] = set()
         self.view_mode: str = "list"  # "grid" or "list"
         self.search_query: str = ""
 
@@ -283,19 +284,20 @@ class RecipeListView(toga.Box):
         count = len(selected_items)
         custom_items = [r for r in selected_items if not r.get("is_builtin", False)]
         custom_count = len(custom_items)
+        has_busy = any(r["bundle_id"] in self._busy_recipes for r in selected_items)
 
         if count == 0:
             self.btn_edit.enabled = False
             self.btn_delete.enabled = False
             self.btn_delete.text = t("btn_delete")
         elif count == 1:
-            self.btn_edit.enabled = True
-            self.btn_delete.enabled = (custom_count == 1)
+            self.btn_edit.enabled = not has_busy
+            self.btn_delete.enabled = (custom_count == 1) and not has_busy
             self.btn_delete.text = t("btn_delete")
         else:  # count >= 2
             self.btn_edit.enabled = False
             if custom_count > 0:
-                self.btn_delete.enabled = True
+                self.btn_delete.enabled = not has_busy
                 self.btn_delete.text = t("btn_batch_delete", count=custom_count)
             else:
                 self.btn_delete.enabled = False
@@ -303,7 +305,7 @@ class RecipeListView(toga.Box):
 
     def on_table_activate(self, widget: toga.Table, row=None, **kwargs):
         item = self.get_selected_recipe_item(row)
-        if not item:
+        if not item or not item.get("recipe"):
             return
         self._open_edit_dialog(item["recipe"])
 
@@ -312,7 +314,11 @@ class RecipeListView(toga.Box):
             return None
         if isinstance(item, str):
             return item if item in known_bundle_ids else None
-        bundle_id = getattr(item, "bundle_id", None) or getattr(item, t("recipe_col_bundle_id"), None)
+        bundle_id = (
+            getattr(item, "bundle_id", None)
+            or getattr(item, "Bundle ID", None)
+            or getattr(item, t("recipe_col_bundle_id"), None)
+        )
         if bundle_id and bundle_id in known_bundle_ids:
             return bundle_id
         if hasattr(item, "_raw") and item._raw and len(item._raw) > 1 and isinstance(item._raw[1], str) and item._raw[1] in known_bundle_ids:
@@ -374,11 +380,15 @@ class RecipeListView(toga.Box):
 
     async def on_edit_recipe(self, widget: toga.Button):
         item = self.get_selected_recipe_item()
-        if not item:
+        if not item or not item.get("recipe"):
+            return
+        if item["bundle_id"] in self._busy_recipes:
             return
         self._open_edit_dialog(item["recipe"])
 
     async def _delete_recipe_direct(self, bundle_id: str, app_name: Optional[str] = None):
+        if bundle_id in self._busy_recipes:
+            return
         if self.app_instance and hasattr(self.app_instance, "main_window"):
             name = app_name or bundle_id
             confirmed = await self.app_instance.main_window.confirm_dialog(
@@ -387,9 +397,14 @@ class RecipeListView(toga.Box):
             )
             if not confirmed:
                 return
-        deleted = await self.recipe_service.delete_custom_recipe(bundle_id)
-        if deleted:
-            await self.refresh_recipes()
+
+        self._busy_recipes.add(bundle_id)
+        try:
+            deleted = await self.recipe_service.delete_custom_recipe(bundle_id)
+            if deleted:
+                await self.refresh_recipes()
+        finally:
+            self._busy_recipes.discard(bundle_id)
 
     async def on_delete_recipe(self, widget: toga.Button):
         selected_items = self.get_selected_recipe_items()
@@ -404,12 +419,16 @@ class RecipeListView(toga.Box):
         if not custom_items:
             return
 
-        total_custom = len(custom_items)
+        active_items = [r for r in custom_items if r["bundle_id"] not in self._busy_recipes]
+        if not active_items:
+            return
+
+        total_custom = len(active_items)
         total_builtin = len(builtin_items)
 
         if self.app_instance and hasattr(self.app_instance, "main_window"):
             if total_custom == 1 and total_builtin == 0:
-                item = custom_items[0]
+                item = active_items[0]
                 confirmed = await self.app_instance.main_window.confirm_dialog(
                     t("dialog_recipe_delete_confirm_title"),
                     t("dialog_recipe_delete_confirm_msg", name=item["app_name"]),
@@ -417,7 +436,7 @@ class RecipeListView(toga.Box):
                 if not confirmed:
                     return
             elif total_builtin == 0:
-                names_summary = ", ".join(r["app_name"] for r in custom_items[:6])
+                names_summary = ", ".join(r["app_name"] for r in active_items[:6])
                 if total_custom > 6:
                     names_summary += f" ... (+{total_custom - 6})"
                 confirmed = await self.app_instance.main_window.confirm_dialog(
@@ -427,7 +446,7 @@ class RecipeListView(toga.Box):
                 if not confirmed:
                     return
             else:  # Mixed selection: total_custom >= 1 and total_builtin >= 1
-                names_summary = ", ".join(r["app_name"] for r in custom_items[:6])
+                names_summary = ", ".join(r["app_name"] for r in active_items[:6])
                 if total_custom > 6:
                     names_summary += f" ... (+{total_custom - 6})"
                 confirmed = await self.app_instance.main_window.confirm_dialog(
@@ -442,11 +461,15 @@ class RecipeListView(toga.Box):
                 if not confirmed:
                     return
 
+        for r in active_items:
+            self._busy_recipes.add(r["bundle_id"])
+
         failed_list: list[tuple[str, str]] = []
-        self.btn_delete.enabled = False
+        if hasattr(self, "btn_delete") and self.btn_delete:
+            self.btn_delete.enabled = False
 
         try:
-            for idx, r in enumerate(custom_items, 1):
+            for idx, r in enumerate(active_items, 1):
                 if total_custom > 1:
                     self.btn_delete.text = t("btn_deleting_progress", current=idx, total=total_custom)
                 else:
@@ -457,7 +480,10 @@ class RecipeListView(toga.Box):
                     failed_list.append((r["app_name"], str(e)))
             await self.refresh_recipes()
         finally:
-            self.btn_delete.text = t("btn_delete")
+            for r in active_items:
+                self._busy_recipes.discard(r["bundle_id"])
+            if hasattr(self, "btn_delete") and self.btn_delete:
+                self.btn_delete.text = t("btn_delete")
             self.on_table_select(self.table)
 
         if failed_list and self.app_instance and hasattr(self.app_instance, "main_window"):

@@ -354,3 +354,29 @@ def test_batch_operation_i18n_keys():
     assert "1/3" in t("btn_updating_progress", current=1, total=3)
     assert "2/3" in t("btn_deleting_progress", current=2, total=3)
 
+
+def test_recipe_delete_dialog_i18n_keys():
+    """Verify all recipe deletion confirmation dialog translation keys are present in all supported languages."""
+    from atbclone.core.i18n import t, set_language, SUPPORTED_LANGUAGES
+
+    keys = [
+        "dialog_recipe_delete_confirm_title",
+        "dialog_recipe_delete_confirm_msg",
+        "dialog_recipe_batch_delete_confirm_title",
+        "dialog_recipe_batch_delete_confirm_msg",
+        "dialog_recipe_batch_delete_confirm_mixed_title",
+        "dialog_recipe_batch_delete_confirm_mixed_msg",
+    ]
+    for lang in SUPPORTED_LANGUAGES:
+        set_language(lang)
+        for k in keys:
+            val = t(k, name="TestApp", count=3, custom_count=2, builtin_count=1, names="App1, App2")
+            assert val != k, f"Missing translation for key '{k}' in language '{lang}'"
+            assert len(val) > 0
+
+    set_language("zh")
+    assert "TestApp" in t("dialog_recipe_delete_confirm_msg", name="TestApp")
+    assert "3" in t("dialog_recipe_batch_delete_confirm_msg", count=3, names="App1, App2, App3")
+    assert "2" in t("dialog_recipe_batch_delete_confirm_mixed_msg", custom_count=2, builtin_count=1, names="App1, App2")
+
+

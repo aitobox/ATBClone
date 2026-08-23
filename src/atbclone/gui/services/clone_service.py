@@ -69,6 +69,7 @@ class CloneService:
                         proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",
                         new_bundle_id=task.new_bundle_id,
                         language=task.language,
+                        display_name=task.display_name,
                     )
                     self.state_manager.add(record)
                     logger.info(f"Clone '{task.clone_name}' created successfully at '{dest_path}'")
@@ -124,6 +125,7 @@ class CloneService:
                     clone_name=record.clone_name,
                     new_bundle_id=new_bundle_id,
                     language=record.language,
+                    display_name=getattr(record, "display_name", None),
                 )
 
                 if record.proxy_enabled and record.proxy_summary:

@@ -74,6 +74,8 @@ def update(clone_name: str) -> None:
             recipe=recipe,
             clone_name=record.clone_name,
             new_bundle_id=new_bundle_id,
+            language=getattr(record, "language", "system"),
+            display_name=getattr(record, "display_name", None),
         )
 
         if record.proxy_enabled and record.proxy_summary:

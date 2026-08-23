@@ -150,7 +150,7 @@ strip_sandbox: true
 
 def test_recipe_loader_get_local_dir_default():
     assert RecipeLoader.LOCAL_DIR is None
-    expected = Path.home() / ".atbclone" / "recipes"
+    expected = Path.home() / "ATBClone" / "recipes"
     assert RecipeLoader.get_local_dir() == expected
 
 

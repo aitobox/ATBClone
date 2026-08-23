@@ -29,13 +29,13 @@ ATBClone 旨在解决传统多开工具（如简单的 `cp` 命令或 App Store 
 * **适用场景**：Chrome、Edge、VS Code 等自带数据隔离参数的应用；或仅需简单多开账号、无需严格独立 Dock 图标和 TCC 权限的场景。
 * **核心原理**：不拷贝数百 MB 的原应用实体，仅构建一个轻量级的 `.app` 外壳，通过启动参数和软链接（Symlink）重定向数据。
 * **执行步骤与原理命令**：
-1. 创建伪应用目录结构：`mkdir -p ~/.atbclone/Apps/ChromeATB.app/Contents/MacOS`
+1. 创建伪应用目录结构：`mkdir -p ~/ATBClone/Apps/ChromeATB.app/Contents/MacOS`
 2. 生成独立的 `Info.plist`，赋予自定义名称和图标。
 3. 创建启动脚本并赋予执行权限 `chmod +x`：
 ```bash
 #!/bin/bash
 ORIGINAL_BIN="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-USER_DATA="$HOME/.atbclone/Data/ChromeATB"
+USER_DATA="$HOME/ATBClone/Data/ChromeATB"
 # 直接带参数启动原版二进制，瞬间秒开
 exec "$ORIGINAL_BIN" --user-data-dir="$USER_DATA" >/dev/null 2>&1 &
 
@@ -156,7 +156,7 @@ ATBClone 的终极壁垒不是代码，而是 **Recipes (配置规则)**。每�
 
 **ATB 解法：版本巡检与“数据-逻辑分离”架构**
 
-由于在之前的“壳劫持”设计中，我们已经将应用本体（`/Applications/WeChat_ATB.app`）与用户数据（`~/.atbclone/Data/WeChat/`）进行了**物理级解耦**，因此分身的升级其实可以做到“丝滑且无损”。
+由于在之前的“壳劫持”设计中，我们已经将应用本体（`/Applications/WeChat_ATB.app`）与用户数据（`~/ATBClone/Data/WeChat/`）进行了**物理级解耦**，因此分身的升级其实可以做到“丝滑且无损”。
 
 * **静默版本巡检 (Version Polling)**：
 * 在 ATBClone 主界面启动时，或后台驻留一个极轻量的 `QTimer` 轮询任务。
@@ -167,7 +167,7 @@ ATBClone 的终极壁垒不是代码，而是 **Recipes (配置规则)**。每�
 * 当检测到版本不一致时，UI 弹出提示：“检测到母体 [微信] 已升级至 v3.8.1，当前分身 [WeChat_ATB] 仍为 v3.8.0。是否一键同步更新？”
 * 用户点击“同步”后，ATBClone 在后台静默执行以下逻辑：
 1. 杀死当前运行的分身进程。
-2. 直接删除旧的 `/Applications/WeChat_ATB.app`（由于数据全在 `~/.atbclone/` 下，这个删除动作**完全不会丢失任何用户聊天记录和登录状态**）。
+2. 直接删除旧的 `/Applications/WeChat_ATB.app`（由于数据全在 `~/ATBClone/` 下，这个删除动作**完全不会丢失任何用户聊天记录和登录状态**）。
 3. 按照“硬分身”规则，重新走一遍 `拷贝 -> 篡改 -> 壳劫持 -> 剥离沙盒 -> 重签` 的自动化流程。
 4. 新分身启动，自动挂载原有的假 `$HOME` 数据目录，完美继承旧数据。
 

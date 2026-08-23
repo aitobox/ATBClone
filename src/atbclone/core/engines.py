@@ -49,6 +49,28 @@ class CloneEngine:
             f"[ -n \"$ICON_FILE\" ] && cp {custom_icon} {dst_resources}/\"$ICON_FILE\" || true\n"
         )
 
+    @staticmethod
+    def _build_display_name_cmd(effective_display_name: str, dst_plist: str, dst_resources: str) -> str:
+        """Return a shell snippet that applies display name to Info.plist and removes localized overrides."""
+        name_escaped = effective_display_name.replace('\\', '\\\\').replace('"', '\\"')
+        return textwrap.dedent(f"""
+            /usr/libexec/PlistBuddy -c "Set :CFBundleName {name_escaped}" {dst_plist} 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleName string {name_escaped}" {dst_plist}
+            /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName {name_escaped}" {dst_plist} 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string {name_escaped}" {dst_plist}
+            /usr/libexec/PlistBuddy -c "Delete :LSHasLocalizedDisplayName" {dst_plist} 2>/dev/null || true
+            if [ -d {dst_resources} ]; then
+                find {dst_resources} -name "InfoPlist.strings" -type f -print0 2>/dev/null | while IFS= read -r -d '' str_file; do
+                    /usr/libexec/PlistBuddy -c "Delete :CFBundleDisplayName" "$str_file" 2>/dev/null || true
+                    /usr/libexec/PlistBuddy -c "Delete :CFBundleName" "$str_file" 2>/dev/null || true
+                    /usr/libexec/PlistBuddy -c "Delete :CFBundleGetInfoString" "$str_file" 2>/dev/null || true
+                done
+            fi
+        """).strip()
+
+    @staticmethod
+    def _build_lsregister_cmd(dst_app: str) -> str:
+        """Return shell snippet to register the app bundle with LaunchServices."""
+        return f"/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f {dst_app} 2>/dev/null || true"
+
 
 class SoftCloneEngine(CloneEngine):
     """Creates a lightweight wrapper app that launches the original binary with custom args and environment."""
@@ -106,7 +128,9 @@ class SoftCloneEngine(CloneEngine):
 
         # Effective display name: explicit override > clone_name
         effective_display_name = task.display_name if task.display_name else task.clone_name
+        display_name_cmd = cls._build_display_name_cmd(effective_display_name, dst_plist, dst_resources)
         icon_cmd = cls._build_icon_cmd(task, dst_resources, dst_plist)
+        lsregister_cmd = cls._build_lsregister_cmd(dst_app)
 
         script = f"""set -e
 mkdir -p {dst_parent}
@@ -119,13 +143,12 @@ if [ -d {src_resources} ]; then
 fi
 cp {src_plist} {dst_plist}
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
-/usr/libexec/PlistBuddy -c "Set :CFBundleName {task.clone_name}" {dst_plist}
-/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName {effective_display_name}" {dst_plist} 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string {effective_display_name}" {dst_plist}
-/usr/libexec/PlistBuddy -c "Delete :LSHasLocalizedDisplayName" {dst_plist} 2>/dev/null || true
+{display_name_cmd}
 {icon_cmd}cat << 'WRAPPER_EOF' > {wrapper}
 {wrapper_body}
 WRAPPER_EOF
 chmod +x {wrapper}
+{lsregister_cmd}
 """
         try:
             Runner.run(script, needs_admin)
@@ -163,7 +186,9 @@ class HardCloneEngine(CloneEngine):
 
         # Effective display name: explicit override > clone_name
         effective_display_name = task.display_name if task.display_name else task.clone_name
+        display_name_cmd = cls._build_display_name_cmd(effective_display_name, dst_plist, dst_resources)
         icon_cmd = cls._build_icon_cmd(task, dst_resources, dst_plist)
+        lsregister_cmd = cls._build_lsregister_cmd(dst)
         dst_parent = shlex.quote(str(task.dest_path.parent))
         data_dir = shlex.quote(str(task.data_dir))
         orig_bin_name = (
@@ -219,9 +244,7 @@ mkdir -p {data_dir}
 rm -rf {dst}
 cp -R {src} {dst}
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
-/usr/libexec/PlistBuddy -c "Set :CFBundleName {task.clone_name}" {dst_plist}
-/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName {effective_display_name}" {dst_plist} 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string {effective_display_name}" {dst_plist}
-/usr/libexec/PlistBuddy -c "Delete :LSHasLocalizedDisplayName" {dst_plist} 2>/dev/null || true
+{display_name_cmd}
 {icon_cmd}mv {bin_orig} {bin_bak}
 cat << 'WRAPPER_EOF' > {wrapper}
 {wrapper_body}
@@ -229,6 +252,7 @@ WRAPPER_EOF
 chmod +x {wrapper}
 xattr -cr {dst}
 {codesign_cmds}codesign -vv --deep --strict {dst}
+{lsregister_cmd}
 """
 
         try:

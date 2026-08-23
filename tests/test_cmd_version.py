@@ -29,9 +29,9 @@ def test_cmd_version_detailed():
     assert "Python Runtime" in result.output
     assert "Platform" in result.output
     assert "State Storage" in result.output
-    assert ".atbclone/clones.yaml" in result.output
+    assert "ATBClone/clones.yaml" in result.output
     assert "Data Directory" in result.output
-    assert ".atbclone/Data" in result.output
+    assert "ATBClone/Data" in result.output
 
 
 def test_cmd_version_short_flag():

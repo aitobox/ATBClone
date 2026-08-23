@@ -35,7 +35,7 @@ Release 页面主要提供两个发布文件，**核心功能完全一致**：
   - **软克隆 (Soft Clone)**：面向现代代码编辑器与浏览器（Cursor、VS Code、Firefox、Brave、Tor、Zed 等）。生成轻量级启动器包装（Wrapper Bundle），自动注入 `--user-data-dir` / `--profile` 参数与独立代理环境变量。
 - 🔍 **智能应用探测 (App Prober)**：遇到未预设规则的任意 macOS 应用程序时，自动分析其 Mach-O 架构、Frameworks 与代码签名沙盒权限，动态决定软/硬克隆策略并提取推荐规则。
 - 🌐 **独立网络代理 (Isolated Network Proxies)**：为每个分身实例配置独立的 HTTP 或 SOCKS5 代理（支持认证），与系统主网络及母体应用互不干扰。
-- 📑 **规则引擎 (Recipe Engine)**：内置 33+ 常用应用与 AI Agent 工具分身规则，支持通过 `~/.atbclone/recipes/` 本地优先级覆盖自定义规则。
+- 📑 **规则引擎 (Recipe Engine)**：内置 33+ 常用应用与 AI Agent 工具分身规则，支持通过 `~/ATBClone/recipes/` 本地优先级覆盖自定义规则。
 - 🪄 **交互式向导 (Interactive Wizard)**：全流程引导式 CLI，支持终端拖拽 `.app` 路径、自动命名递增、自定义数据目录与快捷代理配置。
 - 🔄 **生命周期管理**：查看已有分身（`list`）、主应用升级后一键重克隆并保留用户数据（`update`）、安全删除分身（`remove` 支持 `--with-data` / `--keep-data` 与交互确认）。
 - 🛡️ **安全与提权机制**：默认克隆至 `~/Applications` 无需 root/sudo 权限；如需写入系统级 `/Applications` 采用原生单次 `osascript` 授权提权；严格使用 `shlex.quote` 保证路径转义安全。
@@ -161,7 +161,7 @@ atbclone update 微信2
 在终端中直接执行删除时，系统会交互式询问是否同时清理数据目录：
 ```bash
 atbclone remove 微信2
-# 交互提示：是否同时删除数据目录 /Users/.../.atbclone/Data/微信2？[y/N]
+# 交互提示：是否同时删除数据目录 /Users/.../ATBClone/Data/微信2？[y/N]
 ```
 
 #### 显式同时删除分身应用及数据目录 (`--with-data`)
@@ -191,9 +191,9 @@ atbclone recipe show com.tencent.xinWeChat
 ```
 
 #### 自定义与覆盖分身规则
-在 `~/.atbclone/recipes/<bundle_id>.yaml` 放置 YAML 规则文件即可自动优先加载覆盖：
+在 `~/ATBClone/recipes/<bundle_id>.yaml` 放置 YAML 规则文件即可自动优先加载覆盖：
 ```yaml
-# 示例：~/.atbclone/recipes/com.example.customapp.yaml
+# 示例：~/ATBClone/recipes/com.example.customapp.yaml
 bundle_id: com.example.customapp
 app_name: CustomApp
 strategy: hard_clone
@@ -219,7 +219,7 @@ proxy:
 atbclone probe /Applications/ATBCmder.app
 ```
 
-#### 探测并直接保存至本地规则库 (`~/.atbclone/recipes/<bundle_id>.yaml`)
+#### 探测并直接保存至本地规则库 (`~/ATBClone/recipes/<bundle_id>.yaml`)
 ```bash
 atbclone probe /Applications/ATBCmder.app --save
 ```
@@ -370,7 +370,7 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/ -v
 ## 📂 目录与数据存储架构
 
 ```
-~/.atbclone/
+~/ATBClone/
 ├── config.yaml           # 用户配置与偏好设置 (语言、托盘等)
 ├── clones.yaml           # 全局分身状态追踪记录
 ├── recipes/              # 用户自定义分身规则存放目录 (可选覆盖)

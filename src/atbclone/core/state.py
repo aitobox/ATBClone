@@ -22,6 +22,7 @@ class CloneRecord:
     proxy_summary: str = ""
     new_bundle_id: str = ""
     language: str = "system"
+    display_name: str | None = None
 
 
 class StateManager:

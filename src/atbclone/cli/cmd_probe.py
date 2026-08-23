@@ -20,7 +20,7 @@ logger = get_logger("cli.probe")
 
 @click.command()
 @click.argument("app_path", type=click.Path(exists=True))
-@click.option("--save", is_flag=True, help="Save recipe to local recipe repository (~/.atbclone/recipes/<bundle_id>.yaml).")
+@click.option("--save", is_flag=True, help="Save recipe to local recipe repository (~/ATBClone/recipes/<bundle_id>.yaml).")
 @click.option("-o", "--output", type=click.Path(), help="Save generated recipe YAML to specified file path.")
 @click.option("--json", "json_mode", is_flag=True, help="Output probe results in JSON format.")
 def probe(app_path: str, save: bool, output: str | None, json_mode: bool) -> None:

@@ -29,11 +29,11 @@ from atbclone.core.state import STATE_FILE, CloneRecord, StateManager
 
 
 def test_state_file_default():
-    assert DEFAULT_ATB_DIR == Path.home() / ".atbclone"
-    assert DEFAULT_STATE_FILE == Path.home() / ".atbclone" / "clones.yaml"
-    assert DEFAULT_DATA_DIR == Path.home() / ".atbclone" / "Data"
-    assert DEFAULT_RECIPES_DIR == Path.home() / ".atbclone" / "recipes"
-    assert DEFAULT_APPS_DIR == Path.home() / ".atbclone" / "Apps"
+    assert DEFAULT_ATB_DIR == Path.home() / "ATBClone"
+    assert DEFAULT_STATE_FILE == Path.home() / "ATBClone" / "clones.yaml"
+    assert DEFAULT_DATA_DIR == Path.home() / "ATBClone" / "Data"
+    assert DEFAULT_RECIPES_DIR == Path.home() / "ATBClone" / "recipes"
+    assert DEFAULT_APPS_DIR == Path.home() / "ATBClone" / "Apps"
     assert CONFIG_ATB_DIR == DEFAULT_ATB_DIR
     assert CONFIG_STATE_FILE == DEFAULT_STATE_FILE
     assert CONFIG_DATA_DIR == DEFAULT_DATA_DIR

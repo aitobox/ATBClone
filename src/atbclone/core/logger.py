@@ -30,7 +30,6 @@ def setup_logging(log_file: Path = DEFAULT_LOG_FILE) -> logging.Logger:
     """Initialize root logger with RotatingFileHandler and BroadcastHandler."""
     global _initialized_log_file
     _initialized_log_file = Path(log_file)
-    _initialized_log_file.parent.mkdir(parents=True, exist_ok=True)
 
     logger = logging.getLogger("atbclone")
     logger.setLevel(logging.INFO)

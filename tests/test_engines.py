@@ -308,16 +308,19 @@ class TestSoftCloneEngineCustomisation:
             SoftCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert 'Set :CFBundleDisplayName TestApp 2' in script
+            assert 'Set :CFBundleName TestApp 2' in script
 
     def test_custom_display_name_overrides_clone_name(self, sample_task):
-        """When display_name is set, CFBundleDisplayName should use it instead."""
+        """When display_name is set, CFBundleDisplayName and CFBundleName should use it instead."""
         sample_task.display_name = "我的测试App"
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
             SoftCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert "Set :CFBundleDisplayName 我的测试App" in script
-            # clone_name should NOT appear in the DisplayName line
+            assert "Set :CFBundleName 我的测试App" in script
+            # clone_name should NOT appear in the DisplayName or Name lines
             assert "Set :CFBundleDisplayName TestApp 2" not in script
+            assert "Set :CFBundleName TestApp 2" not in script
 
     def test_custom_icon_injects_copy_command(self, sample_task):
         """When icon_path is set, shell script should contain the icon copy snippet."""
@@ -336,12 +339,16 @@ class TestSoftCloneEngineCustomisation:
             script, _ = mock_run.call_args[0]
             assert "CFBundleIconFile" not in script
 
-    def test_lshaslocalizedname_deleted(self, sample_task):
-        """LSHasLocalizedDisplayName delete command must always be present."""
+    def test_lshaslocalizedname_deleted_and_strings_cleaned(self, sample_task):
+        """LSHasLocalizedDisplayName and localized InfoPlist.strings overrides must be cleaned."""
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
             SoftCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert "Delete :LSHasLocalizedDisplayName" in script
+            assert 'find /Applications/TestApp2.app/Contents/Resources -name "InfoPlist.strings"' in script
+            assert "Delete :CFBundleDisplayName" in script
+            assert "Delete :CFBundleName" in script
+            assert "lsregister -f /Applications/TestApp2.app" in script
 
 
 class TestHardCloneEngineCustomisation:
@@ -353,6 +360,7 @@ class TestHardCloneEngineCustomisation:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert "Set :CFBundleDisplayName TestApp 2" in script
+            assert "Set :CFBundleName TestApp 2" in script
 
     def test_custom_display_name_overrides_clone_name(self, sample_task):
         sample_task.display_name = "硬克隆App"
@@ -360,7 +368,9 @@ class TestHardCloneEngineCustomisation:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert "Set :CFBundleDisplayName 硬克隆App" in script
+            assert "Set :CFBundleName 硬克隆App" in script
             assert "Set :CFBundleDisplayName TestApp 2" not in script
+            assert "Set :CFBundleName TestApp 2" not in script
 
     def test_custom_icon_injects_copy_command(self, sample_task):
         sample_task.icon_path = Path("/icons/hard_custom.icns")
@@ -377,11 +387,15 @@ class TestHardCloneEngineCustomisation:
             script, _ = mock_run.call_args[0]
             assert "CFBundleIconFile" not in script
 
-    def test_lshaslocalizedname_deleted(self, sample_task):
+    def test_lshaslocalizedname_deleted_and_strings_cleaned(self, sample_task):
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert "Delete :LSHasLocalizedDisplayName" in script
+            assert 'find /Applications/TestApp2.app/Contents/Resources -name "InfoPlist.strings"' in script
+            assert "Delete :CFBundleDisplayName" in script
+            assert "Delete :CFBundleName" in script
+            assert "lsregister -f /Applications/TestApp2.app" in script
 
 
 class TestIOSEngines:

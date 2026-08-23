@@ -1661,15 +1661,15 @@ MESSAGES: dict[str, dict[str, str]] = {
         "es": "Directorio de datos aislados: {path}",
     },
     "settings_btn_open_finder": {
-        "en": "📂 Reveal in Finder (~/.atbclone)",
-        "zh": "📂 在 Finder 中打开数据目录 (~/.atbclone)",
-        "zh_TW": "📂 在 Finder 中打開資料目錄 (~/.atbclone)",
-        "ja": "📂 Finder で開く (~/.atbclone)",
-        "ko": "📂 Finder에서 열기 (~/.atbclone)",
-        "de": "📂 Im Finder anzeigen (~/.atbclone)",
-        "fr": "📂 Afficher dans le Finder (~/.atbclone)",
-        "ru": "📂 Открыть в Finder (~/.atbclone)",
-        "es": "📂 Mostrar en Finder (~/.atbclone)",
+        "en": "📂 Reveal in Finder (~/ATBClone)",
+        "zh": "📂 在 Finder 中打开数据目录 (~/ATBClone)",
+        "zh_TW": "📂 在 Finder 中打開資料目錄 (~/ATBClone)",
+        "ja": "📂 Finder で開く (~/ATBClone)",
+        "ko": "📂 Finder에서 열기 (~/ATBClone)",
+        "de": "📂 Im Finder anzeigen (~/ATBClone)",
+        "fr": "📂 Afficher dans le Finder (~/ATBClone)",
+        "ru": "📂 Открыть в Finder (~/ATBClone)",
+        "es": "📂 Mostrar en Finder (~/ATBClone)",
     },
     "settings_card_paths": {
         "en": "⚙️ Default Path Preferences",
@@ -2136,15 +2136,15 @@ MESSAGES: dict[str, dict[str, str]] = {
         "es": "Desactivado / Sin sandbox",
     },
     "probe_saved_success": {
-        "en": "✅ Saved to ~/.atbclone/recipes",
-        "zh": "✅ 已保存到 ~/.atbclone/recipes",
-        "zh_TW": "✅ 已儲存至 ~/.atbclone/recipes",
-        "ja": "✅ ~/.atbclone/recipes に保存完了",
-        "ko": "✅ ~/.atbclone/recipes에 저장되었습니다",
-        "de": "✅ Gespeichert unter ~/.atbclone/recipes",
-        "fr": "✅ Enregistré dans ~/.atbclone/recipes",
-        "ru": "✅ Сохранено в ~/.atbclone/recipes",
-        "es": "✅ Guardado en ~/.atbclone/recipes",
+        "en": "✅ Saved to ~/ATBClone/recipes",
+        "zh": "✅ 已保存到 ~/ATBClone/recipes",
+        "zh_TW": "✅ 已儲存至 ~/ATBClone/recipes",
+        "ja": "✅ ~/ATBClone/recipes に保存完了",
+        "ko": "✅ ~/ATBClone/recipes에 저장되었습니다",
+        "de": "✅ Gespeichert unter ~/ATBClone/recipes",
+        "fr": "✅ Enregistré dans ~/ATBClone/recipes",
+        "ru": "✅ Сохранено в ~/ATBClone/recipes",
+        "es": "✅ Guardado en ~/ATBClone/recipes",
     },
 
     # ── GUI: Recipe List View (view_recipes_*) ─────────────────────────── #
@@ -3367,7 +3367,7 @@ def detect_system_language() -> str:
     if override:
         return normalize_lang_code(override)
 
-    # 2. Persisted user configuration in ~/.atbclone/config.yaml
+    # 2. Persisted user configuration in ~/ATBClone/config.yaml
     cfg_lang = get_configured_language()
     if cfg_lang and cfg_lang != "auto":
         return normalize_lang_code(cfg_lang)

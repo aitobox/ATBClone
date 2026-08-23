@@ -35,7 +35,7 @@ ATBClone provides two distribution packages with **identical core functionality*
   - **Soft Clone**: Designed for modern code editors and browsers (Cursor, VS Code, Firefox, Brave, Tor, Zed, etc.). Generates a lightweight wrapper bundle, automatically injecting isolated `--user-data-dir` / `--profile` launch arguments and proxy environment variables.
 - 🔍 **Intelligent App Prober**: Automatically inspects Mach-O architectures, frameworks, and code signing sandbox entitlements for any application without a pre-configured recipe, dynamically determining the optimal soft/hard clone strategy and generating recommended recipes.
 - 🌐 **Isolated Network Proxies**: Configure dedicated HTTP or SOCKS5 proxies (with authentication support) per cloned application without interfering with host system or primary application traffic.
-- 📑 **Recipe Engine**: 33+ built-in recipes for popular apps and AI Agent tools, with local override support via `~/.atbclone/recipes/`.
+- 📑 **Recipe Engine**: 33+ built-in recipes for popular apps and AI Agent tools, with local override support via `~/ATBClone/recipes/`.
 - 🪄 **Interactive Wizard**: Step-by-step interactive CLI guide supporting terminal drag-and-drop application paths, automatic name incrementing, custom data directory configuration, and on-the-fly proxy setup.
 - 🔄 **Lifecycle Management**: View cloned apps (`list`), re-clone after primary app updates while preserving user and chat data (`update`), and safely remove clones with interactive prompts or flag controls (`remove` with `--with-data` / `--keep-data`).
 - 🛡️ **Security & Privilege Elevation**: Writing to `~/Applications` requires no admin privileges; writing to `/Applications` uses native single-prompt macOS `osascript` authorization; robust path escaping via `shlex.quote` throughout.
@@ -162,7 +162,7 @@ atbclone update WeChat2
 When executing remove in an interactive terminal, ATBClone prompts whether to also delete the data directory:
 ```bash
 atbclone remove WeChat2
-# Interactive prompt: Also delete data directory /Users/.../.atbclone/Data/WeChat2? [y/N]
+# Interactive prompt: Also delete data directory /Users/.../ATBClone/Data/WeChat2? [y/N]
 ```
 
 #### Explicitly Remove Application and Data Directory (`--with-data`)
@@ -192,9 +192,9 @@ atbclone recipe show com.tencent.xinWeChat
 ```
 
 #### Custom & Override Recipes
-Place a custom YAML recipe in `~/.atbclone/recipes/<bundle_id>.yaml` to automatically take precedence:
+Place a custom YAML recipe in `~/ATBClone/recipes/<bundle_id>.yaml` to automatically take precedence:
 ```yaml
-# Example: ~/.atbclone/recipes/com.example.customapp.yaml
+# Example: ~/ATBClone/recipes/com.example.customapp.yaml
 bundle_id: com.example.customapp
 app_name: CustomApp
 strategy: hard_clone
@@ -220,7 +220,7 @@ Perform deep architecture and code signing inspection on any local `.app` bundle
 atbclone probe /Applications/ATBCmder.app
 ```
 
-#### Probe and Save Directly to Local Repository (`~/.atbclone/recipes/<bundle_id>.yaml`)
+#### Probe and Save Directly to Local Repository (`~/ATBClone/recipes/<bundle_id>.yaml`)
 ```bash
 atbclone probe /Applications/ATBCmder.app --save
 ```
@@ -371,7 +371,7 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/ -v
 ## 📂 Directory & Storage Architecture
 
 ```
-~/.atbclone/
+~/ATBClone/
 ├── config.yaml           # User configuration & preferences (language, tray, etc.)
 ├── clones.yaml           # Global clone state tracking registry
 ├── recipes/              # User custom recipe directory (optional overrides)

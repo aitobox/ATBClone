@@ -139,6 +139,7 @@ def clone(
             proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",
             new_bundle_id=new_bundle_id,
             language=language,
+            display_name=display_name or None,
         )
         StateManager().add(record)
 

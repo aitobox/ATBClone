@@ -10,8 +10,8 @@ def test_clone_card_render_and_actions():
         source_path="/Applications/WeChat.app",
         bundle_id="com.tencent.xinWeChat",
         strategy="soft_clone",
-        dest_path="/Users/test/.atbclone/Apps/WeChat2.app",
-        data_dir="/Users/test/.atbclone/data/WeChat2",
+        dest_path="/Users/test/ATBClone/Apps/WeChat2.app",
+        data_dir="/Users/test/ATBClone/data/WeChat2",
         created_at="2026-08-20T10:00:00Z",
     )
 

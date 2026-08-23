@@ -64,7 +64,7 @@ def main(argv: list[str] | None = None) -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("app_path", type=Path, help="Path to the .app bundle (e.g. /Applications/WeChat.app)")
-    parser.add_argument("--save", action="store_true", help="Save generated recipe directly to ~/.atbclone/recipes/")
+    parser.add_argument("--save", action="store_true", help="Save generated recipe directly to ~/ATBClone/recipes/")
     parser.add_argument("--output", "-o", type=Path, help="Custom output path to save recipe YAML")
 
     args = parser.parse_args(argv)

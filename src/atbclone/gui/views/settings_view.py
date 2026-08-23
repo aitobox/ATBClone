@@ -217,7 +217,10 @@ class SettingsView(toga.Box):
         """Open default base directory in macOS Finder."""
         base_dir = Path(self.input_base_dir.value.strip() or str(DEFAULT_ATB_DIR))
         logger.info(f"Opening data directory in Finder: '{base_dir}'")
-        base_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            base_dir.mkdir(parents=True, exist_ok=True)
+        except (OSError, PermissionError):
+            pass
         loop = asyncio.get_running_loop()
         loop.run_in_executor(None, lambda: subprocess.Popen(["open", str(base_dir)]))
 

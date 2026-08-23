@@ -276,7 +276,7 @@ def test_settings_storage_labels_all_languages():
     """Verify settings storage labels format properly with both path and dir arguments."""
     from atbclone.core.i18n import t, set_language, SUPPORTED_LANGUAGES
 
-    test_path = "/Users/testuser/.atbclone"
+    test_path = "/Users/testuser/ATBClone"
     for lang in SUPPORTED_LANGUAGES:
         set_language(lang)
         root_txt = t("settings_label_root_dir", path=test_path)
@@ -295,7 +295,7 @@ def test_dialog_delete_data_confirm_msg_all_languages():
     """Verify dialog_delete_data_confirm_msg uses actual newlines rather than literal '\\n'."""
     from atbclone.core.i18n import t, set_language, SUPPORTED_LANGUAGES
 
-    test_path = "/Users/testuser/.atbclone/Data/WeChat3"
+    test_path = "/Users/testuser/ATBClone/Data/WeChat3"
     for lang in SUPPORTED_LANGUAGES:
         set_language(lang)
         msg = t("dialog_delete_data_confirm_msg", path=test_path)

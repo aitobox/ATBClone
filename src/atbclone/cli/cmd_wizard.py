@@ -161,6 +161,8 @@ def wizard() -> None:
             proxy_enabled=task.recipe.proxy.enabled,
             proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",
             new_bundle_id=new_bundle_id,
+            language=task.language,
+            display_name=display_name,
         )
         StateManager().add(record)
 

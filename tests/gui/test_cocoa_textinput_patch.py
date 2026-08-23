@@ -24,8 +24,8 @@ def test_patch_cocoa_widgets_idempotent():
 def test_cocoa_textinput_single_line_scrolling():
     """Verify TextInput on macOS Cocoa has single-line scrolling enabled to prevent cursor jumping."""
     patch_cocoa_widgets()
-    ti = toga.TextInput(value="/Users/brainzhang/.atbclone/Data/LongPathName")
-    assert ti.value == "/Users/brainzhang/.atbclone/Data/LongPathName"
+    ti = toga.TextInput(value="/Users/brainzhang/ATBClone/Data/LongPathName")
+    assert ti.value == "/Users/brainzhang/ATBClone/Data/LongPathName"
 
     if sys.platform == "darwin":
         native = getattr(getattr(ti, "_impl", None), "native", None)

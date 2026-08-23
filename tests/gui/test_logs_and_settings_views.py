@@ -43,7 +43,7 @@ def test_settings_view_open_finder_and_save():
         mock_app.main_window = MagicMock()
         view = SettingsView(app=mock_app)
 
-        assert ".atbclone" in view.input_base_dir.value
+        assert "ATBClone" in view.input_base_dir.value
 
         with patch("subprocess.Popen") as mock_popen:
             view.on_open_data_dir_in_finder(None)

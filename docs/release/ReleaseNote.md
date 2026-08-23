@@ -6,6 +6,38 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.9.6] - 2026-08-24
+
+### 🖱️ Native Cocoa Table Header Sorting
+- **Interactive Column Sorting in Lists**:
+  - Implemented native Cocoa `NSTableViewHeaderView` click-to-sort patch supporting column sorting across `CloneListView` and `RecipeListView`.
+  - Supports bidirectional sorting (ascending / descending) with visual sort indicators on table headers and toolbar sort controls synchronization.
+  - Automatically preserves active item selection across sort operations.
+
+### 📦 Multi-Selection & Batch Operations
+- **Batch Clones Management (`CloneListView`)**:
+  - Added multi-row selection support (`multiple_select=True`) with dynamic toolbar button state management.
+  - Supports batch clone updates and batch removals with purge data confirmation dialogs.
+- **Batch Recipe Deletion with Smart Protection (`RecipeListView`)**:
+  - Multi-selection deletion for custom recipes.
+  - Scenario-based confirmation dialogs: protects builtin read-only recipes, alerts users when mixing custom and builtin recipes, and accurately reports batch deletion progress.
+  - Integrated busy state locking to prevent concurrent operations during batch executions.
+
+### 🛠️ Xcode Command Line Tools Diagnostic & Doctor View Enhancement
+- **Startup Diagnostic Checks**:
+  - Added automated environment checks for Xcode Command Line Tools readiness (`xcode-select -p`, `codesign`, `lipo`, `otool`, `install_name_tool`).
+  - Provides clear diagnostic guidance and installation commands in the Doctor View when tools are missing.
+
+### ℹ️ Standard macOS About Dialog Metadata
+- **Cocoa About Dialog Fix**:
+  - Properly mapped version numbers, app name, and copyright metadata in the standard macOS "About ATBClone" dialog.
+
+### 🧪 Test Suite Expansion
+- **Comprehensive Coverage**:
+  - Expanded automated test suite to 369 unit and GUI integration tests.
+
+---
+
 ## [v0.9.5] - 2026-08-23
 
 ### 📝 Auto-Wrapping `WrappingLabel` Component & Text Formatting

@@ -6,6 +6,37 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.9.6] - 2026-08-24
+
+### 🖱️ Ordenación nativa al hacer clic en encabezados de tabla Cocoa
+- **Ordenación interactiva de columnas**:
+  - Implementación de ordenación en `NSTableViewHeaderView` para las tablas de `CloneListView` y `RecipeListView`.
+  - Alternancia entre orden ascendente y descendente con indicadores de flecha y sincronización bidireccional con la barra de herramientas.
+  - Mantenimiento automático de la selección al reordenar.
+
+### 📦 Selección múltiple y operaciones por lotes
+- **Gestión por lotes de clones (`CloneListView`)**:
+  - Selección de múltiples filas (`multiple_select=True`) con activación dinámica de botones de acción.
+  - Actualización y eliminación por lotes de clones (con confirmación de borrado de datos).
+- **Eliminación por lotes de recetas y protección (`RecipeListView`)**:
+  - Selección múltiple y eliminación de recetas personalizadas.
+  - Diálogos de confirmación inteligentes (protección de recetas integradas, filtrado de selecciones mixtas).
+  - Bloqueo de estado ocupado (busy lock) durante las operaciones en lote.
+
+### 🛠️ Diagnóstico de Xcode Command Line Tools en la vista Doctor
+- **Verificación del entorno de compilación**:
+  - Comprobación automática de las herramientas de Xcode (`xcode-select -p`, `codesign`, `lipo`, `otool`, `install_name_tool`) y guía de instalación en Doctor View.
+
+### ℹ️ Metadatos en el cuadro «Acerca de» nativo de macOS
+- **Visualización corregida en Cocoa About**:
+  - Envío adecuado de la versión y derechos de autor en `orderFrontStandardAboutPanelWithOptions:`.
+
+### 📦 Pruebas integrales
+- **Ampliación de pruebas**:
+  - Conjunto de pruebas ampliado a 369 pruebas automatizadas.
+
+---
+
 ## [v0.9.5] - 2026-08-23
 
 ### 📝 Nuevo componente `WrappingLabel` y ajuste automático de texto

@@ -6,6 +6,37 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.9.6] - 2026-08-24
+
+### 🖱️ Tri natif par clic sur l'en-tête de tableau Cocoa
+- **Tri interactif des colonnes**:
+  - Intégration du tri par clic d'en-tête `NSTableViewHeaderView` dans `CloneListView` et `RecipeListView`.
+  - Prise en charge du tri ascendant/descendant avec indicateurs visuels et synchronisation avec la barre d'outils.
+  - Préservation automatique de la sélection lors du tri.
+
+### 📦 Sélection multiple et opérations par lot
+- **Gestion groupée des clones (`CloneListView`)**:
+  - Prise en charge de la sélection multiple (`multiple_select=True`) et mise à jour dynamique des boutons d'action.
+  - Mises à jour groupées et suppressions par lot avec confirmation de purge des données.
+- **Suppression groupée de règles et protection (`RecipeListView`)**:
+  - Sélection multiple et suppression de règles personnalisées.
+  - Boîtes de dialogue adaptées selon le contexte (protection des règles intégrées en lecture seule, filtrage des sélections mixtes).
+  - Verrouillage d'état occupé (busy lock) pour sécuriser les traitements par lot.
+
+### 🛠️ Diagnostic Xcode Command Line Tools dans la vue Doctor
+- **Vérification de la chaîne d'outils**:
+  - Détection automatique de la présence des outils Xcode (`xcode-select -p`, `codesign`, `lipo`, `otool`, `install_name_tool`) avec instructions d'installation dans la vue Doctor.
+
+### ℹ️ Métadonnées de la boîte « À propos » macOS
+- **Affichage standardisé**:
+  - Transmission propre des numéros de version et des mentions légales dans `orderFrontStandardAboutPanelWithOptions:`.
+
+### 🧪 Tests
+- **Extension de la suite de tests**:
+  - Suite de tests portée à 369 tests automatisés.
+
+---
+
 ## [v0.9.5] - 2026-08-23
 
 ### 📝 Nouveau composant `WrappingLabel` & Retour à la ligne automatique

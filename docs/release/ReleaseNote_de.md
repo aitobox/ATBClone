@@ -6,6 +6,37 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.9.6] - 2026-08-24
+
+### 🖱️ Natives Cocoa-Tabellenkopf-Sortieren
+- **Interaktive Spaltensortierung**:
+  - Implementierung von Klick-Sortierung über `NSTableViewHeaderView` in `CloneListView` und `RecipeListView`.
+  - Unterstützt aufsteigende und absteigende Sortierung mit Sortierpfeilen im Header und Synchronisation mit der Symbolleiste.
+  - Automatische Beibehaltung der Zeilenauswahl bei Sortieroperationen.
+
+### 📦 Mehrfachauswahl & Stapelverarbeitung
+- **Klon-Stapelverwaltung (`CloneListView`)**:
+  - Unterstützung für Mehrfachzeilenauswahl (`multiple_select=True`) mit dynamischer Schaltflächenaktivierung.
+  - Gleichzeitiges Aktualisieren oder Löschen mehrerer Klone inklusive Datenlöschungsoption.
+- **Regellöschung mit Schutzmechanismen (`RecipeListView`)**:
+  - Mehrfachauswahl und Stapellöschung für benutzerdefinierte Regeln.
+  - Kontextbezogene Bestätigungsdialoge zum Schutz schreibgeschützter integrierter Regeln.
+  - Busy-Sperre zur Verhinderung gleichzeitiger Operationen während der Stapelverarbeitung.
+
+### 🛠️ Xcode Command Line Tools Diagnose & Doctor View
+- **Überprüfung der Build-Werkzeuge**:
+  - Automatische Überprüfung der Xcode-Befehlszeilenwerkzeuge (`xcode-select -p`, `codesign`, `lipo`, `otool`, `install_name_tool`) im `DoctorService`.
+
+### ℹ️ Standard-macOS-Infodialog-Metadaten
+- **Korrektur des Cocoa-Über-Dialogs**:
+  - Saubere Übergabe von Versionsnummern und Metadaten an `orderFrontStandardAboutPanelWithOptions:`.
+
+### 🧪 Test-Suite
+- **Umfassende Abdeckung**:
+  - Ausbau auf 369 automatisierte Tests.
+
+---
+
 ## [v0.9.5] - 2026-08-23
 
 ### 📝 Neue `WrappingLabel`-Komponente & Mehrzeiliger Textumbruch

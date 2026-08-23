@@ -12,6 +12,7 @@ from atbclone.core.i18n import t
 from atbclone.gui.services.probe_service import ProbeService
 from atbclone.gui.services.recipe_service import RecipeService
 from atbclone.gui.components.top_bar import TopHeaderBar
+from atbclone.gui.components.wrapping_label import WrappingLabel
 from atbclone.gui.theme import Theme
 
 
@@ -63,12 +64,12 @@ class ProbeView(toga.Box):
         inner_results = toga.Box(style=Pack(direction=COLUMN, margin=(14, 18, 14, 18)))
         inner_results.add(toga.Label(t("probe_card_results"), style=Pack(font_weight="bold", font_size=15, margin_bottom=12, color=Theme.TEXT_PRIMARY)))
 
-        self.label_app_name = toga.Label(f"{t('probe_row_app_name')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_bundle_id = toga.Label(f"{t('probe_row_bundle_id')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_sandbox = toga.Label(f"{t('probe_row_sandbox')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_frameworks = toga.Label(f"{t('probe_row_frameworks')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_reason = toga.Label(f"{t('probe_row_reason')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_strategy = toga.Label(f"{t('probe_row_strategy')}: —", style=Pack(font_weight="bold", font_size=13.5, color=Theme.ACCENT_BLUE, margin_bottom=12))
+        self.label_app_name = WrappingLabel(f"{t('probe_row_app_name')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_bundle_id = WrappingLabel(f"{t('probe_row_bundle_id')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_sandbox = WrappingLabel(f"{t('probe_row_sandbox')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_frameworks = WrappingLabel(f"{t('probe_row_frameworks')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_reason = WrappingLabel(f"{t('probe_row_reason')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_strategy = WrappingLabel(f"{t('probe_row_strategy')}: —", style=Pack(font_weight="bold", font_size=13.5, color=Theme.ACCENT_BLUE, margin_bottom=12))
 
         inner_results.add(self.label_app_name)
         inner_results.add(self.label_bundle_id)

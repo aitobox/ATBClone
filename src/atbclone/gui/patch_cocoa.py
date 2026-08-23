@@ -60,6 +60,27 @@ def configure_cocoa_table(native_table: Any, row_height: float = 34.0) -> None:
         pass
 
 
+def configure_cocoa_wrapping_label(native_label: Any) -> None:
+    """Configure an NSTextField for multiline text wrapping, word breaking, and natural bounds calculation."""
+    if sys.platform != "darwin" or native_label is None:
+        return
+    try:
+        cell = getattr(native_label, "cell", None)
+        if cell is not None:
+            if hasattr(cell, "setWraps_"):
+                cell.setWraps_(True)
+            if hasattr(cell, "setLineBreakMode_"):
+                cell.setLineBreakMode_(0)  # NSLineBreakByWordWrapping
+            if hasattr(cell, "setScrollable_"):
+                cell.setScrollable_(False)
+        if hasattr(native_label, "setUsesSingleLineMode_"):
+            native_label.setUsesSingleLineMode_(False)
+        if hasattr(native_label, "setMaximumNumberOfLines_"):
+            native_label.setMaximumNumberOfLines_(0)
+    except Exception:
+        pass
+
+
 def patch_cocoa_widgets() -> None:
     """Apply monkeypatches to toga_cocoa widget implementations on macOS.
 

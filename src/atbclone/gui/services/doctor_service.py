@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import sys
 
+from atbclone.core.i18n import t
 from atbclone.core.logger import get_logger
 
 logger = get_logger("gui.doctor_service")
@@ -19,6 +20,53 @@ class DoctorCheckItem:
 
 
 class DoctorService:
+    async def check_xcode_select_installed(self) -> bool:
+        """Non-blocking defensive check for active Xcode Command Line Tools."""
+        loop = asyncio.get_running_loop()
+
+        def _check() -> bool:
+            try:
+                out = subprocess.check_output(
+                    "xcode-select -p", shell=True, stderr=subprocess.STDOUT, text=True
+                ).strip()
+                return bool(out)
+            except Exception as e:
+                logger.debug(f"xcode-select -p check failed: {e}")
+                return False
+
+        return await loop.run_in_executor(None, _check)
+
+    async def trigger_xcode_install(self) -> tuple[bool, str]:
+        """Trigger macOS native Xcode Command Line Tools installer dialog."""
+        loop = asyncio.get_running_loop()
+
+        def _install() -> tuple[bool, str]:
+            logger.info("Triggering macOS native 'xcode-select --install' command")
+            try:
+                res = subprocess.run(
+                    ["xcode-select", "--install"],
+                    capture_output=True,
+                    text=True,
+                )
+                stdout = (res.stdout or "").strip()
+                stderr = (res.stderr or "").strip()
+                combined = f"{stdout}\n{stderr}".lower()
+
+                if res.returncode == 0 or "install requested" in combined:
+                    logger.info("xcode-select --install successfully requested")
+                    return True, "launched"
+                if "already installed" in combined:
+                    logger.info("xcode-select tools are already installed or in progress")
+                    return True, "already_installed"
+                err_msg = stderr or stdout or f"Return code {res.returncode}"
+                logger.warning(f"xcode-select --install failed: {err_msg}")
+                return False, err_msg
+            except Exception as e:
+                logger.error(f"Exception invoking xcode-select --install: {e}")
+                return False, str(e)
+
+        return await loop.run_in_executor(None, _install)
+
     async def check_environment(self) -> list[DoctorCheckItem]:
         loop = asyncio.get_running_loop()
         logger.info("Running GUI environment diagnostic checks")
@@ -39,7 +87,7 @@ class DoctorService:
                     name="codesign",
                     passed=False,
                     details="Not found",
-                    hint="Install Xcode Command Line Tools: xcode-select --install",
+                    hint=t("doctor_hint_xcode_select"),
                 ))
 
             # 2. xcode-select
@@ -55,7 +103,7 @@ class DoctorService:
                     name="xcode-select",
                     passed=False,
                     details="Not found",
-                    hint="Run: xcode-select --install",
+                    hint=t("doctor_hint_xcode_select"),
                 ))
 
             # 3. PlistBuddy

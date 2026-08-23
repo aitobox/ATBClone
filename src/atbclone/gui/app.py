@@ -173,6 +173,26 @@ class ATBCloneApp(toga.App):
         # Initial refresh
         self.safe_create_task(self.clone_view.refresh_clones())
 
+        # Defensive startup check for xcode-select developer tools
+        self.safe_create_task(self._startup_environment_check())
+
+    async def _startup_environment_check(self) -> bool:
+        """Defensively verify xcode-select toolchain on startup and auto-navigate to Doctor if missing."""
+        try:
+            logger.info("Executing defensive startup check for Xcode Command Line Tools...")
+            is_installed = await self.doctor_service.check_xcode_select_installed()
+            if not is_installed:
+                logger.warning("Xcode Command Line Tools missing or unconfigured! Redirecting to doctor view.")
+                if hasattr(self, "sidebar") and self.sidebar:
+                    self.sidebar.select_item("doctor")
+                else:
+                    self.switch_view("doctor")
+                return False
+            return True
+        except Exception as e:
+            logger.warning(f"Unexpected error in _startup_environment_check: {e}")
+            return True
+
     def _on_window_hide(self, window: Any) -> None:
         """Handle window minimize/hide event when tray mode is active."""
         if hasattr(self, "tray_service") and self.tray_service and self.tray_service.is_enabled:

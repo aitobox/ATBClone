@@ -243,6 +243,35 @@ def test_app_show_about_dialog():
         assert "Brain Zhang" in str(opts["Copyright"])
 
 
+def test_startup_environment_check_redirects_on_missing():
+    import asyncio
+    async def _test():
+        app = ATBCloneApp("ATBClone", "com.atbclone.app")
+        app.startup()
+        app.doctor_service.check_xcode_select_installed = AsyncMock(return_value=False)
+        app.sidebar.select_item = MagicMock()
+
+        await app._startup_environment_check()
+        app.sidebar.select_item.assert_called_once_with("doctor")
+
+    asyncio.run(_test())
+
+
+def test_startup_environment_check_stays_on_normal():
+    import asyncio
+    async def _test():
+        app = ATBCloneApp("ATBClone", "com.atbclone.app")
+        app.startup()
+        app.doctor_service.check_xcode_select_installed = AsyncMock(return_value=True)
+        app.sidebar.select_item = MagicMock()
+
+        await app._startup_environment_check()
+        app.sidebar.select_item.assert_not_called()
+
+    asyncio.run(_test())
+
+
+
 
 
 

@@ -215,3 +215,50 @@ def test_doctor_service():
         assert "PlistBuddy" in names
 
     asyncio.run(_test())
+
+
+def test_doctor_service_check_xcode_select_installed():
+    async def _test():
+        service = DoctorService()
+        with patch("subprocess.check_output", return_value="/Library/Developer/CommandLineTools\n"):
+            assert await service.check_xcode_select_installed() is True
+
+        with patch("subprocess.check_output", side_effect=Exception("xcode-select: error: unable to get active developer directory")):
+            assert await service.check_xcode_select_installed() is False
+
+    asyncio.run(_test())
+
+
+def test_doctor_service_trigger_xcode_install():
+    async def _test():
+        service = DoctorService()
+
+        # Case 1: Successfully launched
+        mock_ok = MagicMock(returncode=0, stdout="xcode-select: note: install requested for command line developer tools\n", stderr="")
+        with patch("subprocess.run", return_value=mock_ok):
+            success, status = await service.trigger_xcode_install()
+            assert success is True
+            assert status == "launched"
+
+        # Case 2: Already installed
+        mock_already = MagicMock(returncode=1, stdout="", stderr="xcode-select: error: command line tools are already installed, use \"Software Update\" in System Settings to update\n")
+        with patch("subprocess.run", return_value=mock_already):
+            success, status = await service.trigger_xcode_install()
+            assert success is True
+            assert status == "already_installed"
+
+        # Case 3: Error
+        mock_err = MagicMock(returncode=2, stdout="", stderr="xcode-select: error: something went wrong")
+        with patch("subprocess.run", return_value=mock_err):
+            success, status = await service.trigger_xcode_install()
+            assert success is False
+            assert "something went wrong" in status
+
+        # Case 4: Exception
+        with patch("subprocess.run", side_effect=OSError("Command not found")):
+            success, status = await service.trigger_xcode_install()
+            assert success is False
+            assert "Command not found" in status
+
+    asyncio.run(_test())
+

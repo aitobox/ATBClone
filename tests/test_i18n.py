@@ -302,3 +302,24 @@ def test_dialog_delete_data_confirm_msg_all_languages():
         assert test_path in msg
         assert "\\n" not in msg, f"Literal '\\n' found in dialog_delete_data_confirm_msg for lang '{lang}'"
         assert "\n" in msg, f"Expected actual newline in dialog_delete_data_confirm_msg for lang '{lang}'"
+
+
+def test_doctor_install_i18n_keys():
+    """Verify all doctor repair and install dialog translation keys are present in all supported languages."""
+    from atbclone.core.i18n import t, set_language, SUPPORTED_LANGUAGES
+
+    keys = [
+        "doctor_btn_install_xcode",
+        "doctor_hint_xcode_select",
+        "doctor_dialog_install_title",
+        "doctor_dialog_install_msg",
+        "doctor_dialog_install_already_msg",
+        "doctor_dialog_install_error_msg",
+    ]
+    for lang in SUPPORTED_LANGUAGES:
+        set_language(lang)
+        for k in keys:
+            val = t(k, error="test_err")
+            assert val != k, f"Missing translation for key '{k}' in language '{lang}'"
+            assert len(val) > 0
+

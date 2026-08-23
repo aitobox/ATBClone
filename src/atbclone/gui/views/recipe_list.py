@@ -82,6 +82,7 @@ class RecipeListView(toga.Box):
                 t("recipe_col_strategy"),
                 t("view_recipes_col_origin"),
             ],
+            multiple_select=True,
             on_select=self.on_table_select,
             on_activate=self.on_table_activate,
             style=Pack(flex=1),
@@ -207,8 +208,8 @@ class RecipeListView(toga.Box):
                 self.grid_box.add(row_box)
             self.content_container.add(self.grid_scroll)
         else:
-            prev_sel_item = self.get_selected_recipe_item()
-            prev_sel_bundle_id = prev_sel_item["bundle_id"] if prev_sel_item else None
+            prev_sel_items = self.get_selected_recipe_items()
+            prev_sel_bundle_ids = {r["bundle_id"] for r in prev_sel_items}
 
             table_data = []
             for r in self._filtered_recipes:
@@ -222,17 +223,19 @@ class RecipeListView(toga.Box):
             self.table.data = table_data
             self.content_container.add(self.table_box)
 
-            if prev_sel_bundle_id:
-                for idx, r in enumerate(self._filtered_recipes):
-                    if r["bundle_id"] == prev_sel_bundle_id:
-                        try:
-                            from toga_cocoa.libs import NSIndexSet
-                            native = getattr(getattr(self.table, "_impl", None), "native_table", None)
-                            if native is not None:
-                                native.selectRowIndexes_byExtendingSelection_(NSIndexSet.indexSetWithIndex(idx), False)
-                        except Exception:
-                            pass
-                        break
+            if prev_sel_bundle_ids:
+                try:
+                    from rubicon.objc import ObjCClass
+                    NSMutableIndexSet = ObjCClass("NSMutableIndexSet")
+                    index_set = NSMutableIndexSet.alloc().init()
+                    for idx, r in enumerate(self._filtered_recipes):
+                        if r["bundle_id"] in prev_sel_bundle_ids:
+                            index_set.addIndex_(idx)
+                    native = getattr(getattr(self.table, "_impl", None), "native_table", None)
+                    if native is not None and index_set.count > 0:
+                        native.selectRowIndexes_byExtendingSelection_(index_set, False)
+                except Exception:
+                    pass
 
             self.on_table_select(self.table)
 
@@ -271,13 +274,32 @@ class RecipeListView(toga.Box):
         return card
 
     def on_table_select(self, widget: toga.Table):
-        selected = self.get_selected_recipe_item()
-        if selected is None:
+        selected_items = self.get_selected_recipe_items()
+        if not selected_items:
+            single = self.get_selected_recipe_item()
+            if single:
+                selected_items = [single]
+
+        count = len(selected_items)
+        custom_items = [r for r in selected_items if not r.get("is_builtin", False)]
+        custom_count = len(custom_items)
+
+        if count == 0:
             self.btn_edit.enabled = False
             self.btn_delete.enabled = False
-        else:
+            self.btn_delete.text = t("btn_delete")
+        elif count == 1:
             self.btn_edit.enabled = True
-            self.btn_delete.enabled = not selected.get("is_builtin", False)
+            self.btn_delete.enabled = (custom_count == 1)
+            self.btn_delete.text = t("btn_delete")
+        else:  # count >= 2
+            self.btn_edit.enabled = False
+            if custom_count > 0:
+                self.btn_delete.enabled = True
+                self.btn_delete.text = t("btn_batch_delete", count=custom_count)
+            else:
+                self.btn_delete.enabled = False
+                self.btn_delete.text = t("btn_delete")
 
     def on_table_activate(self, widget: toga.Table, row=None, **kwargs):
         item = self.get_selected_recipe_item(row)
@@ -285,26 +307,50 @@ class RecipeListView(toga.Box):
             return
         self._open_edit_dialog(item["recipe"])
 
-    def get_selected_recipe_item(self, row=None) -> Optional[dict]:
-        selection = row if row is not None else self.table.selection
-        if not selection:
+    def _extract_bundle_id(self, item, known_bundle_ids: set[str]) -> Optional[str]:
+        if item is None:
             return None
-        bundle_id = getattr(selection, "bundle_id", None) or getattr(selection, t("recipe_col_bundle_id"), None)
-        if not bundle_id:
-            if hasattr(selection, "_raw"):
-                bundle_id = selection._raw[1]
-        if not bundle_id and isinstance(selection, (tuple, list)) and len(selection) > 1:
-            bundle_id = selection[1]
-        if not bundle_id and hasattr(selection, "__dict__"):
-            known_bundle_ids = {r["bundle_id"] for r in self._filtered_recipes}
-            for k, v in selection.__dict__.items():
+        if isinstance(item, str):
+            return item if item in known_bundle_ids else None
+        bundle_id = getattr(item, "bundle_id", None) or getattr(item, t("recipe_col_bundle_id"), None)
+        if bundle_id and bundle_id in known_bundle_ids:
+            return bundle_id
+        if hasattr(item, "_raw") and item._raw and len(item._raw) > 1 and isinstance(item._raw[1], str) and item._raw[1] in known_bundle_ids:
+            return item._raw[1]
+        if isinstance(item, (tuple, list)) and len(item) > 1:
+            if isinstance(item[1], str) and item[1] in known_bundle_ids:
+                return item[1]
+        if hasattr(item, "__dict__"):
+            for k, v in item.__dict__.items():
                 if not k.startswith("_") and isinstance(v, str) and v in known_bundle_ids:
-                    bundle_id = v
-                    break
-        for r in self._filtered_recipes:
-            if r["bundle_id"] == bundle_id:
-                return r
+                    return v
         return None
+
+    def get_selected_recipe_items(self, selection=None) -> list[dict]:
+        sel = selection if selection is not None else self.table.selection
+        if sel is None:
+            return []
+
+        known_bundle_ids = {r["bundle_id"] for r in self._filtered_recipes}
+        selected_ids: set[str] = set()
+
+        single_id = self._extract_bundle_id(sel, known_bundle_ids)
+        if single_id:
+            selected_ids.add(single_id)
+        elif isinstance(sel, (list, tuple, set)):
+            for item in sel:
+                bid = self._extract_bundle_id(item, known_bundle_ids)
+                if bid:
+                    selected_ids.add(bid)
+
+        return [r for r in self._filtered_recipes if r["bundle_id"] in selected_ids]
+
+    def get_selected_recipe_item(self, row=None) -> Optional[dict]:
+        if row is not None:
+            items = self.get_selected_recipe_items(row)
+            return items[0] if len(items) == 1 else None
+        items = self.get_selected_recipe_items()
+        return items[0] if len(items) == 1 else None
 
     async def refresh_recipes(self):
         self._raw_recipes = await self.recipe_service.list_all_recipes()

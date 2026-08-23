@@ -141,3 +141,54 @@ def test_recipe_list_view_table_header_sort():
     assert [r["is_builtin"] for r in view._filtered_recipes] == [True, False]
 
 
+def test_recipe_list_view_multi_select_and_button_states():
+    view = RecipeListView()
+    view._filtered_recipes = [
+        {"app_name": "CustomApp1", "bundle_id": "com.custom.app1", "strategy": "hard_clone", "is_builtin": False, "recipe": MagicMock()},
+        {"app_name": "CustomApp2", "bundle_id": "com.custom.app2", "strategy": "soft_clone", "is_builtin": False, "recipe": MagicMock()},
+        {"app_name": "BuiltinApp1", "bundle_id": "com.builtin.app1", "strategy": "hard_clone", "is_builtin": True, "recipe": MagicMock()},
+    ]
+
+    # 1. Zero selection
+    with patch.object(view, "get_selected_recipe_items", return_value=[]):
+        view.on_table_select(view.table)
+        assert view.btn_edit.enabled is False
+        assert view.btn_delete.enabled is False
+        assert "🗑️" in view.btn_delete.text
+
+    # 2. Single custom selection
+    with patch.object(view, "get_selected_recipe_items", return_value=[view._filtered_recipes[0]]):
+        view.on_table_select(view.table)
+        assert view.btn_edit.enabled is True
+        assert view.btn_delete.enabled is True
+        assert "🗑️" in view.btn_delete.text
+
+    # 3. Single built-in selection
+    with patch.object(view, "get_selected_recipe_items", return_value=[view._filtered_recipes[2]]):
+        view.on_table_select(view.table)
+        assert view.btn_edit.enabled is True
+        assert view.btn_delete.enabled is False
+
+    # 4. Multiple custom selection (2 items)
+    with patch.object(view, "get_selected_recipe_items", return_value=[view._filtered_recipes[0], view._filtered_recipes[1]]):
+        view.on_table_select(view.table)
+        assert view.btn_edit.enabled is False
+        assert view.btn_delete.enabled is True
+        assert "(2)" in view.btn_delete.text
+
+    # 5. Mixed selection (1 custom + 1 built-in)
+    with patch.object(view, "get_selected_recipe_items", return_value=[view._filtered_recipes[0], view._filtered_recipes[2]]):
+        view.on_table_select(view.table)
+        assert view.btn_edit.enabled is False
+        assert view.btn_delete.enabled is True
+        assert "(1)" in view.btn_delete.text
+
+    # 6. All built-in multi selection (2 built-in items)
+    builtin2 = {"app_name": "BuiltinApp2", "bundle_id": "com.builtin.app2", "strategy": "hard_clone", "is_builtin": True, "recipe": MagicMock()}
+    with patch.object(view, "get_selected_recipe_items", return_value=[view._filtered_recipes[2], builtin2]):
+        view.on_table_select(view.table)
+        assert view.btn_edit.enabled is False
+        assert view.btn_delete.enabled is False
+
+
+

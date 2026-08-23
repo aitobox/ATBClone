@@ -52,6 +52,7 @@ def test_clone_soft_success(tmp_path: Path, mock_app_info: AppInfo, mock_soft_re
          patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)) as mock_next_name, \
          patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
          patch("atbclone.cli.cmd_clone.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.load", return_value=[]), \
          patch("atbclone.cli.cmd_clone.StateManager.add"):
 
         result = runner.invoke(
@@ -146,6 +147,7 @@ def test_clone_name_override(tmp_path: Path, mock_app_info: AppInfo, mock_soft_r
          patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
          patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WorkChat2", 2)) as mock_next_name, \
          patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.load", return_value=[]), \
          patch("atbclone.cli.cmd_clone.StateManager.add"):
 
         result = runner.invoke(

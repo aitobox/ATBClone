@@ -26,8 +26,12 @@ class CloneRecord:
 
 
 class StateManager:
-    def __init__(self, state_file: Path = STATE_FILE):
-        self.state_file = Path(state_file)
+    def __init__(self, state_file: Path | None = None):
+        if state_file is not None:
+            self.state_file = Path(state_file)
+        else:
+            from atbclone.core.config import DEFAULT_STATE_FILE
+            self.state_file = DEFAULT_STATE_FILE
 
     def load(self) -> list[CloneRecord]:
         """Load all records from YAML file. Returns empty list if file missing or corrupt."""

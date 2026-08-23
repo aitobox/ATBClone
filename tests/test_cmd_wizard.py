@@ -66,6 +66,7 @@ def test_wizard_complete_hard_clone(tmp_path: Path, mock_app_info: AppInfo, mock
          patch("atbclone.cli.cmd_wizard.AppInspector.next_available_name", return_value=("WeChat2", 2)) as mock_next_name, \
          patch("atbclone.cli.cmd_wizard.SoftCloneEngine.execute") as mock_soft_exec, \
          patch("atbclone.cli.cmd_wizard.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_wizard.StateManager.load", return_value=[]), \
          patch("atbclone.cli.cmd_wizard.StateManager.add") as mock_state_add:
 
         result = runner.invoke(cli, ["wizard"], input=inputs)

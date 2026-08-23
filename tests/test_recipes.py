@@ -214,7 +214,8 @@ def test_load_builtin_cursor():
     assert "--user-data-dir={{ATB_DATA_DIR}}" in recipe.launch_args
 
 
-def test_all_builtin_recipes_valid():
+def test_all_builtin_recipes_valid(monkeypatch, tmp_path):
+    monkeypatch.setattr("atbclone.recipes.loader.RecipeLoader.LOCAL_DIR", tmp_path)
     builtin_dir = RecipeLoader.BUILTIN_DIR
     assert builtin_dir.exists()
     yaml_files = list(builtin_dir.glob("*.yaml"))

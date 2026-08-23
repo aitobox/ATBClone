@@ -8,6 +8,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 
+from atbclone import __version__
 from atbclone.core.config import get_config_value
 from atbclone.core.logger import get_logger
 from atbclone.core.resources import get_app_icon_path
@@ -79,13 +80,34 @@ def set_macos_dock_visible(visible: bool) -> bool:
 class ATBCloneApp(toga.App):
     """Main BeeWare Toga application entry point and view coordinator."""
 
-    def __init__(self, formal_name: str = "ATBClone", app_id: str = "com.atbclone.app", **kwargs):
+    def __init__(
+        self,
+        formal_name: str = "ATBClone",
+        app_id: str = "com.atbclone.app",
+        app_name: str = "atbclone",
+        version: Optional[str] = None,
+        author: str = "Brain Zhang",
+        description: str = "macOS App Cloning Engine",
+        home_page: str = "https://github.com/aitobox/ATBClone",
+        **kwargs,
+    ):
         patch_cocoa_widgets()
         if "icon" not in kwargs or kwargs["icon"] is None:
             icon_path = get_app_icon_path("png")
             if icon_path:
                 kwargs["icon"] = icon_path
-        super().__init__(formal_name, app_id, **kwargs)
+        if version is None:
+            version = __version__
+        super().__init__(
+            formal_name=formal_name,
+            app_id=app_id,
+            app_name=app_name,
+            version=version,
+            author=author,
+            description=description,
+            home_page=home_page,
+            **kwargs,
+        )
 
 
     def safe_create_task(self, coro):

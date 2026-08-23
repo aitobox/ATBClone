@@ -215,6 +215,35 @@ def test_main_entry_clean_exit():
         mock_os_exit.assert_called_once_with(0)
 
 
+def test_app_version_and_metadata():
+    from atbclone import __version__
+    app = ATBCloneApp()
+    assert app.version == __version__
+    assert app.author == "Brain Zhang"
+    assert app.app_name == "atbclone"
+    assert app.description == "macOS App Cloning Engine"
+    assert app.home_page == "https://github.com/aitobox/ATBClone"
+
+
+def test_app_show_about_dialog():
+    from atbclone import __version__
+    app = ATBCloneApp()
+    with patch.object(app._impl, "native") as mock_native:
+        app.about()
+        mock_native.orderFrontStandardAboutPanelWithOptions.assert_called_once()
+        opts = mock_native.orderFrontStandardAboutPanelWithOptions.call_args[0][0]
+        from toga_cocoa.libs import (
+            NSAboutPanelOptionApplicationName,
+            NSAboutPanelOptionApplicationVersion,
+            NSAboutPanelOptionVersion,
+        )
+        assert str(opts[NSAboutPanelOptionApplicationName]) == "ATBClone"
+        assert str(opts[NSAboutPanelOptionApplicationVersion]) == __version__
+        assert str(opts[NSAboutPanelOptionVersion]) == "1"
+        assert "Brain Zhang" in str(opts["Copyright"])
+
+
+
 
 
 

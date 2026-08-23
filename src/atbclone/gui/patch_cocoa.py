@@ -95,6 +95,7 @@ def patch_cocoa_widgets() -> None:
         return
 
     try:
+        import toga_cocoa.libs.appkit
         from toga_cocoa.widgets.textinput import TextInput as CocoaTextInput
         from toga_cocoa.widgets.switch import Switch as CocoaSwitch
         from toga_cocoa.widgets.selection import Selection as CocoaSelection
@@ -179,6 +180,42 @@ def patch_cocoa_widgets() -> None:
                 return True
 
             AppDelegate.applicationShouldHandleReopen_hasVisibleWindows_ = _applicationShouldHandleReopen_hasVisibleWindows_
+        except Exception:
+            pass
+
+        # 6. About Dialog Patch (ensure version and copyright information are always populated)
+        try:
+            from toga_cocoa.app import App as CocoaApp
+            from toga_cocoa.libs import (
+                NSAboutPanelOptionApplicationIcon,
+                NSAboutPanelOptionApplicationName,
+                NSAboutPanelOptionApplicationVersion,
+                NSAboutPanelOptionVersion,
+                NSMutableDictionary,
+            )
+
+            def _patched_show_about_dialog(self):
+                from atbclone import __version__
+                options = NSMutableDictionary.alloc().init()
+
+                if (
+                    self.interface.icon
+                    and hasattr(self.interface.icon, "_impl")
+                    and getattr(self.interface.icon._impl, "native", None)
+                ):
+                    options[NSAboutPanelOptionApplicationIcon] = self.interface.icon._impl.native
+                options[NSAboutPanelOptionApplicationName] = self.interface.formal_name or "ATBClone"
+
+                app_ver = self.interface.version or __version__
+                options[NSAboutPanelOptionApplicationVersion] = app_ver
+                options[NSAboutPanelOptionVersion] = "1"
+
+                author = self.interface.author or "Brain Zhang"
+                options["Copyright"] = f"Copyright © {author}"
+
+                self.native.orderFrontStandardAboutPanelWithOptions(options)
+
+            CocoaApp.show_about_dialog = _patched_show_about_dialog
         except Exception:
             pass
 

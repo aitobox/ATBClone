@@ -267,7 +267,7 @@ class RecipeListView(toga.Box):
         actions.add(btn_edit)
 
         if not is_builtin:
-            btn_del = toga.Button("🗑️", on_press=lambda w: asyncio.create_task(self._delete_recipe_direct(recipe.bundle_id)), style=Pack(width=34, height=30))
+            btn_del = toga.Button("🗑️", on_press=lambda w: asyncio.create_task(self._delete_recipe_direct(recipe.bundle_id, recipe.app_name)), style=Pack(width=34, height=30))
             actions.add(btn_del)
 
         card.add(actions)
@@ -378,14 +378,99 @@ class RecipeListView(toga.Box):
             return
         self._open_edit_dialog(item["recipe"])
 
-    async def _delete_recipe_direct(self, bundle_id: str):
+    async def _delete_recipe_direct(self, bundle_id: str, app_name: Optional[str] = None):
+        if self.app_instance and hasattr(self.app_instance, "main_window"):
+            name = app_name or bundle_id
+            confirmed = await self.app_instance.main_window.confirm_dialog(
+                t("dialog_recipe_delete_confirm_title"),
+                t("dialog_recipe_delete_confirm_msg", name=name),
+            )
+            if not confirmed:
+                return
         deleted = await self.recipe_service.delete_custom_recipe(bundle_id)
         if deleted:
             await self.refresh_recipes()
 
     async def on_delete_recipe(self, widget: toga.Button):
-        item = self.get_selected_recipe_item()
-        if not item or item.get("is_builtin"):
+        selected_items = self.get_selected_recipe_items()
+        if not selected_items:
+            single = self.get_selected_recipe_item()
+            if single:
+                selected_items = [single]
+
+        custom_items = [r for r in selected_items if not r.get("is_builtin", False)]
+        builtin_items = [r for r in selected_items if r.get("is_builtin", False)]
+
+        if not custom_items:
             return
-        await self._delete_recipe_direct(item["bundle_id"])
+
+        total_custom = len(custom_items)
+        total_builtin = len(builtin_items)
+
+        if self.app_instance and hasattr(self.app_instance, "main_window"):
+            if total_custom == 1 and total_builtin == 0:
+                item = custom_items[0]
+                confirmed = await self.app_instance.main_window.confirm_dialog(
+                    t("dialog_recipe_delete_confirm_title"),
+                    t("dialog_recipe_delete_confirm_msg", name=item["app_name"]),
+                )
+                if not confirmed:
+                    return
+            elif total_builtin == 0:
+                names_summary = ", ".join(r["app_name"] for r in custom_items[:6])
+                if total_custom > 6:
+                    names_summary += f" ... (+{total_custom - 6})"
+                confirmed = await self.app_instance.main_window.confirm_dialog(
+                    t("dialog_recipe_batch_delete_confirm_title"),
+                    t("dialog_recipe_batch_delete_confirm_msg", count=total_custom, names=names_summary),
+                )
+                if not confirmed:
+                    return
+            else:  # Mixed selection: total_custom >= 1 and total_builtin >= 1
+                names_summary = ", ".join(r["app_name"] for r in custom_items[:6])
+                if total_custom > 6:
+                    names_summary += f" ... (+{total_custom - 6})"
+                confirmed = await self.app_instance.main_window.confirm_dialog(
+                    t("dialog_recipe_batch_delete_confirm_mixed_title"),
+                    t(
+                        "dialog_recipe_batch_delete_confirm_mixed_msg",
+                        custom_count=total_custom,
+                        builtin_count=total_builtin,
+                        names=names_summary,
+                    ),
+                )
+                if not confirmed:
+                    return
+
+        failed_list: list[tuple[str, str]] = []
+        self.btn_delete.enabled = False
+
+        try:
+            for idx, r in enumerate(custom_items, 1):
+                if total_custom > 1:
+                    self.btn_delete.text = t("btn_deleting_progress", current=idx, total=total_custom)
+                else:
+                    self.btn_delete.text = t("btn_delete")
+                try:
+                    await self.recipe_service.delete_custom_recipe(r["bundle_id"])
+                except Exception as e:
+                    failed_list.append((r["app_name"], str(e)))
+            await self.refresh_recipes()
+        finally:
+            self.btn_delete.text = t("btn_delete")
+            self.on_table_select(self.table)
+
+        if failed_list and self.app_instance and hasattr(self.app_instance, "main_window"):
+            succ_count = total_custom - len(failed_list)
+            err_details = "\n".join(f"- {name}: {err}" for name, err in failed_list)
+            if total_custom > 1:
+                await self.app_instance.main_window.error_dialog(
+                    t("dialog_batch_summary_title"),
+                    t("dialog_batch_summary_msg", success=succ_count, failed=len(failed_list), errors=err_details),
+                )
+            else:
+                await self.app_instance.main_window.error_dialog(
+                    t("dialog_error_title"),
+                    failed_list[0][1],
+                )
 

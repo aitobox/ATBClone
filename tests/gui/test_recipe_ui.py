@@ -191,4 +191,59 @@ def test_recipe_list_view_multi_select_and_button_states():
         assert view.btn_delete.enabled is False
 
 
+def test_recipe_list_view_delete_workflows():
+    async def _test():
+        service_mock = MagicMock()
+        service_mock.delete_custom_recipe = AsyncMock(return_value=True)
+        service_mock.list_all_recipes = AsyncMock(return_value=[])
+
+        app_mock = MagicMock()
+        main_window_mock = MagicMock()
+        main_window_mock.confirm_dialog = AsyncMock(return_value=True)
+        main_window_mock.error_dialog = AsyncMock()
+        app_mock.main_window = main_window_mock
+
+        view = RecipeListView(recipe_service=service_mock, app=app_mock)
+        custom1 = {"app_name": "Custom1", "bundle_id": "com.c1", "strategy": "hard_clone", "is_builtin": False, "recipe": MagicMock()}
+        custom2 = {"app_name": "Custom2", "bundle_id": "com.c2", "strategy": "soft_clone", "is_builtin": False, "recipe": MagicMock()}
+        builtin1 = {"app_name": "Builtin1", "bundle_id": "com.b1", "strategy": "hard_clone", "is_builtin": True, "recipe": MagicMock()}
+        view._filtered_recipes = [custom1, custom2, builtin1]
+
+        # Test Case 1: Single custom delete confirmed
+        with patch.object(view, "get_selected_recipe_items", return_value=[custom1]):
+            await view.on_delete_recipe(view.btn_delete)
+            service_mock.delete_custom_recipe.assert_called_once_with("com.c1")
+            assert main_window_mock.confirm_dialog.call_count == 1
+        service_mock.delete_custom_recipe.reset_mock()
+        main_window_mock.confirm_dialog.reset_mock()
+
+        # Test Case 2: Pure batch delete (2 custom recipes)
+        with patch.object(view, "get_selected_recipe_items", return_value=[custom1, custom2]):
+            await view.on_delete_recipe(view.btn_delete)
+            assert service_mock.delete_custom_recipe.call_count == 2
+            service_mock.delete_custom_recipe.assert_any_call("com.c1")
+            service_mock.delete_custom_recipe.assert_any_call("com.c2")
+        service_mock.delete_custom_recipe.reset_mock()
+        main_window_mock.confirm_dialog.reset_mock()
+
+        # Test Case 3: Mixed batch delete (1 custom + 1 built-in) -> only deletes custom
+        with patch.object(view, "get_selected_recipe_items", return_value=[custom1, builtin1]):
+            await view.on_delete_recipe(view.btn_delete)
+            service_mock.delete_custom_recipe.assert_called_once_with("com.c1")
+            # Check confirmation message contains custom and builtin notices
+            call_args = main_window_mock.confirm_dialog.call_args[0]
+            assert "com.c1" in call_args[1] or "Custom1" in call_args[1]
+        service_mock.delete_custom_recipe.reset_mock()
+        main_window_mock.confirm_dialog.reset_mock()
+
+        # Test Case 4: Pure built-in selection -> no-op
+        with patch.object(view, "get_selected_recipe_items", return_value=[builtin1]):
+            await view.on_delete_recipe(view.btn_delete)
+            service_mock.delete_custom_recipe.assert_not_called()
+            main_window_mock.confirm_dialog.assert_not_called()
+
+    asyncio.run(_test())
+
+
+
 

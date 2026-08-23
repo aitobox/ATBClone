@@ -18,6 +18,7 @@ from atbclone.gui.services.probe_service import ProbeService
 from atbclone.recipes.loader import RecipeLoader
 from atbclone.recipes.loader import RecipeLoader
 from atbclone.recipes.models import Recipe, ProxyConfig, supports_data_dir
+from atbclone.gui.components.wrapping_label import WrappingLabel
 from atbclone.gui.patch_cocoa import patch_cocoa_widgets, configure_cocoa_window
 from atbclone.gui.theme import Theme
 
@@ -77,12 +78,12 @@ class WizardWindow(toga.Window):
         self.btn_browse_app = toga.Button(t("btn_browse_app"), on_press=self._on_browse_app, style=Pack(width=96, height=30, font_size=13))
 
         # Step 2: Recipe Info
-        self.label_recipe_app = toga.Label(f"{t('probe_row_app_name')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
-        self.label_recipe_bundle = toga.Label(f"{t('probe_row_bundle_id')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
-        self.label_recipe_strat = toga.Label(f"{t('probe_row_strategy')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
+        self.label_recipe_app = WrappingLabel(f"{t('probe_row_app_name')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
+        self.label_recipe_bundle = WrappingLabel(f"{t('probe_row_bundle_id')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
+        self.label_recipe_strat = WrappingLabel(f"{t('probe_row_strategy')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
         self.select_recipe_strat = toga.Selection(items=["hard_clone", "soft_clone"], style=Pack(width=160, font_size=12.0))
         # Shows whether recipe came from built-in library or Probe analysis
-        self.label_recipe_origin = toga.Label("", style=Pack(font_size=11.5, font_style="italic", margin_bottom=6))
+        self.label_recipe_origin = WrappingLabel("", style=Pack(font_size=11.5, font_style="italic", margin_bottom=6))
 
         # Step 3: Naming & Language
         self._display_name_customized = False
@@ -113,7 +114,7 @@ class WizardWindow(toga.Window):
         self.btn_browse_dest = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_dest, style=Pack(width=96, height=30, font_size=13))
 
         # Step 5: Data Directory
-        self.label_data_dir_support = toga.Label(t("win_wizard_step5_supported"), style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=6))
+        self.label_data_dir_support = WrappingLabel(t("win_wizard_step5_supported"), style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=6))
         self.input_data_dir = toga.TextInput(style=Pack(flex=1, margin_right=8, font_size=13.5))
         self.btn_browse_data = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_data, style=Pack(width=96, height=30, font_size=13))
 
@@ -124,7 +125,7 @@ class WizardWindow(toga.Window):
         self.input_proxy_port = toga.TextInput(value="7890", style=Pack(width=90, font_size=13.5))
 
         # Step 7: Confirmation & Execution
-        self.label_summary = toga.Label("", style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=10))
+        self.label_summary = WrappingLabel("", style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=10))
         self.label_status = toga.Label(t("win_wizard_status_ready"), style=Pack(font_size=13.5, font_weight="bold", margin_bottom=8, color=Theme.TEXT_PRIMARY))
         self.progress_bar = toga.ProgressBar(max=None, style=Pack(flex=1, margin_top=4))  # indeterminate
 

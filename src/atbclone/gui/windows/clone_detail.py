@@ -6,6 +6,7 @@ from toga.style.pack import COLUMN, ROW, CENTER
 
 from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord
+from atbclone.gui.components.wrapping_label import WrappingLabel
 from atbclone.gui.patch_cocoa import configure_cocoa_window
 from atbclone.gui.theme import Theme
 
@@ -23,17 +24,17 @@ class CloneDetailWindow(toga.Window):
         lang_key = SUPPORTED_LANGUAGES.get(record.language, {}).get("label_key", "lang_system")
         lang_str = t(lang_key)
 
-        self.label_clone_name = toga.Label(record.clone_name, style=Pack(font_weight="bold", font_size=16, margin_bottom=10, color=Theme.TEXT_PRIMARY))
-        self.label_source_app = toga.Label(t("win_detail_source_app", source_app=record.source_app), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_source_path = toga.Label(t("win_detail_source_path", path=record.source_path), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_bundle_id = toga.Label(t("win_detail_bundle_id", bundle_id=record.bundle_id), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_new_bundle_id = toga.Label(t("win_detail_new_bundle_id", new_bundle_id=record.new_bundle_id or "—"), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_strategy = toga.Label(t("win_detail_strategy", strategy=strat_badge), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_language = toga.Label(f"{t('detail_label_language')}: {lang_str}", style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_dest_path = toga.Label(t("win_detail_dest_path", dest_path=record.dest_path), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_data_dir = toga.Label(t("win_detail_data_dir", data_dir=record.data_dir), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_created_at = toga.Label(t("win_detail_created_at", created_at=record.created_at), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
-        self.label_proxy = toga.Label(t("win_detail_proxy", proxy=proxy_str), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_clone_name = WrappingLabel(record.clone_name, style=Pack(font_weight="bold", font_size=16, margin_bottom=10, color=Theme.TEXT_PRIMARY))
+        self.label_source_app = WrappingLabel(t("win_detail_source_app", source_app=record.source_app), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_source_path = WrappingLabel(t("win_detail_source_path", path=record.source_path), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_bundle_id = WrappingLabel(t("win_detail_bundle_id", bundle_id=record.bundle_id), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_new_bundle_id = WrappingLabel(t("win_detail_new_bundle_id", new_bundle_id=record.new_bundle_id or "—"), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_strategy = WrappingLabel(t("win_detail_strategy", strategy=strat_badge), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_language = WrappingLabel(f"{t('detail_label_language')}: {lang_str}", style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_dest_path = WrappingLabel(t("win_detail_dest_path", dest_path=record.dest_path), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_data_dir = WrappingLabel(t("win_detail_data_dir", data_dir=record.data_dir), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_created_at = WrappingLabel(t("win_detail_created_at", created_at=record.created_at), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
+        self.label_proxy = WrappingLabel(t("win_detail_proxy", proxy=proxy_str), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5))
 
         self.btn_close = toga.Button(t("btn_close"), on_press=lambda w: self.close(), style=Pack(margin_top=14, width=100, height=30, font_size=13))
 

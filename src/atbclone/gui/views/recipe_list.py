@@ -86,6 +86,7 @@ class RecipeListView(toga.Box):
             on_activate=self.on_table_activate,
             style=Pack(flex=1),
         )
+        self.table.on_header_sort = self.on_table_header_sort
         self.table_box.add(self.table)
 
         self.btn_edit = toga.Button(t("btn_edit"), on_press=self.on_edit_recipe, enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5, font_weight="bold"))
@@ -119,6 +120,27 @@ class RecipeListView(toga.Box):
     def on_sort_changed(self, sort_val: str):
         self.selected_sort = sort_val
         self._apply_filter()
+
+    def on_table_header_sort(self, col_index: int, column, ascending: bool):
+        """Handle header click sorting for Table view and synchronize with toolbar."""
+        if col_index == 0:  # App Name
+            self._filtered_recipes.sort(key=lambda r: r["app_name"].lower(), reverse=not ascending)
+            target_sort = self.sort_name_asc if ascending else self.sort_name_desc
+            self.selected_sort = target_sort
+            if hasattr(self.top_bar, "select_sort") and self.top_bar.select_sort:
+                self.top_bar.select_sort.value = target_sort
+        elif col_index == 1:  # Bundle ID
+            self._filtered_recipes.sort(key=lambda r: r["bundle_id"].lower(), reverse=not ascending)
+        elif col_index == 2:  # Strategy
+            self._filtered_recipes.sort(key=lambda r: (r["strategy"].lower(), r["app_name"].lower()), reverse=not ascending)
+            if ascending:
+                self.selected_sort = self.sort_strategy
+                if hasattr(self.top_bar, "select_sort") and self.top_bar.select_sort:
+                    self.top_bar.select_sort.value = self.sort_strategy
+        elif col_index == 3:  # Origin
+            self._filtered_recipes.sort(key=lambda r: (not r.get("is_builtin", False), r["app_name"].lower()), reverse=not ascending)
+
+        self._render_current_view()
 
     def _apply_filter(self):
         items = list(self._raw_recipes)

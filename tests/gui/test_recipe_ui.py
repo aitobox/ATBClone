@@ -108,3 +108,36 @@ def test_recipe_edit_window_bundle_id_readonly_behavior():
     win2 = RecipeEditWindow(title="New", recipe=None)
     assert win2.input_bundle_id.readonly is False
 
+
+def test_recipe_list_view_table_header_sort():
+    view = RecipeListView()
+    view._raw_recipes = [
+        {"app_name": "Zed", "bundle_id": "dev.zed.Zed", "strategy": "hard_clone", "is_builtin": True, "recipe": None},
+        {"app_name": "Ableton", "bundle_id": "com.ableton.live", "strategy": "soft_clone", "is_builtin": False, "recipe": None},
+    ]
+    view._apply_filter()
+
+    # Sort column 0 (App Name) ASC
+    view.on_table_header_sort(0, view.table.columns[0], ascending=True)
+    assert [r["app_name"] for r in view._filtered_recipes] == ["Ableton", "Zed"]
+    assert view.top_bar.select_sort.value == view.sort_name_asc
+
+    # Sort column 0 (App Name) DESC
+    view.on_table_header_sort(0, view.table.columns[0], ascending=False)
+    assert [r["app_name"] for r in view._filtered_recipes] == ["Zed", "Ableton"]
+    assert view.top_bar.select_sort.value == view.sort_name_desc
+
+    # Sort column 1 (Bundle ID) ASC
+    view.on_table_header_sort(1, view.table.columns[1], ascending=True)
+    assert [r["bundle_id"] for r in view._filtered_recipes] == ["com.ableton.live", "dev.zed.Zed"]
+
+    # Sort column 2 (Strategy) ASC
+    view.on_table_header_sort(2, view.table.columns[2], ascending=True)
+    assert [r["strategy"] for r in view._filtered_recipes] == ["hard_clone", "soft_clone"]
+    assert view.top_bar.select_sort.value == view.sort_strategy
+
+    # Sort column 3 (Origin) ASC (Builtin first)
+    view.on_table_header_sort(3, view.table.columns[3], ascending=True)
+    assert [r["is_builtin"] for r in view._filtered_recipes] == [True, False]
+
+

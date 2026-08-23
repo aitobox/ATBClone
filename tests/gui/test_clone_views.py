@@ -177,4 +177,114 @@ def test_clone_list_view_table_header_sort():
     assert view.top_bar.select_sort.value == view.sort_oldest
 
 
+def test_clone_list_view_multi_selection():
+    view = CloneListView()
+    r1 = CloneRecord(clone_name="App1", source_app="A1", source_path="/p1", bundle_id="b1", strategy="hard_clone", dest_path="/d1", data_dir="/data1", created_at="2026-08-20T10:00:00")
+    r2 = CloneRecord(clone_name="App2", source_app="A2", source_path="/p2", bundle_id="b2", strategy="soft_clone", dest_path="/d2", data_dir="/data2", created_at="2026-08-20T11:00:00")
+    view._filtered_clones = [r1, r2]
+
+    # Case 1: 0 items selected
+    with patch.object(view, "get_selected_records", return_value=[]):
+        view.on_table_select(view.table)
+        assert view.btn_launch_table.enabled is False
+        assert view.btn_open_dir_table.enabled is False
+        assert view.btn_update_table.enabled is False
+        assert view.btn_edit_table.enabled is False
+        assert view.btn_detail_table.enabled is False
+        assert view.btn_delete_table.enabled is False
+
+    # Case 2: 1 item selected
+    with patch.object(view, "get_selected_records", return_value=[r1]):
+        view.on_table_select(view.table)
+        assert view.btn_launch_table.enabled is True
+        assert view.btn_open_dir_table.enabled is True
+        assert view.btn_update_table.enabled is True
+        assert view.btn_edit_table.enabled is True
+        assert view.btn_detail_table.enabled is True
+        assert view.btn_delete_table.enabled is True
+        assert "(" not in view.btn_update_table.text
+
+    # Case 3: 2 items selected (Multi-select)
+    with patch.object(view, "get_selected_records", return_value=[r1, r2]):
+        view.on_table_select(view.table)
+        assert view.btn_launch_table.enabled is False
+        assert view.btn_open_dir_table.enabled is False
+        assert view.btn_edit_table.enabled is False
+        assert view.btn_detail_table.enabled is False
+        assert view.btn_update_table.enabled is True
+        assert view.btn_delete_table.enabled is True
+        assert "2" in view.btn_update_table.text
+        assert "2" in view.btn_delete_table.text
+
+
+def test_clone_list_view_get_selected_records_parsing():
+    view = CloneListView()
+    r1 = CloneRecord(clone_name="App1", source_app="A1", source_path="/p1", bundle_id="b1", strategy="hard_clone", dest_path="/d1", data_dir="/data1", created_at="2026-08-20T10:00:00")
+    r2 = CloneRecord(clone_name="App2", source_app="A2", source_path="/p2", bundle_id="b2", strategy="soft_clone", dest_path="/d2", data_dir="/data2", created_at="2026-08-20T11:00:00")
+    view._filtered_clones = [r1, r2]
+
+    # None selection
+    assert view.get_selected_records(None) == []
+
+    # Single tuple
+    assert view.get_selected_records(("App1", "A1", "hard_clone")) == [r1]
+
+    # Multiple tuples / list
+    assert view.get_selected_records([("App1",), ("App2",)]) == [r1, r2]
+
+    # Single Row object mock
+    mock_row1 = MagicMock()
+    mock_row1.Name = "App1"
+    mock_row2 = MagicMock()
+    mock_row2.clone_name = "App2"
+    assert view.get_selected_records([mock_row1, mock_row2]) == [r1, r2]
+
+
+def test_clone_list_view_batch_update_flow(tmp_path):
+    async def _test():
+        state_file = tmp_path / "clones.yaml"
+        service = CloneService(state_file=state_file)
+        r1 = CloneRecord(clone_name="A1", source_app="App1", source_path="/p1", bundle_id="b1", strategy="hard_clone", dest_path="/d1", data_dir="/data1", created_at="2026-08-20T10:00:00")
+        r2 = CloneRecord(clone_name="A2", source_app="App2", source_path="/p2", bundle_id="b2", strategy="soft_clone", dest_path="/d2", data_dir="/data2", created_at="2026-08-20T11:00:00")
+        service.state_manager.add(r1)
+        service.state_manager.add(r2)
+
+        view = CloneListView(clone_service=service)
+        await view.refresh_clones()
+
+        with patch.object(service, "update_clone", new_callable=AsyncMock) as mock_up:
+            await view.on_update_clone([r1, r2])
+            assert mock_up.await_count == 2
+            mock_up.assert_any_await("A1")
+            mock_up.assert_any_await("A2")
+
+    asyncio.run(_test())
+
+
+def test_clone_list_view_batch_delete_flow(tmp_path):
+    async def _test():
+        state_file = tmp_path / "clones.yaml"
+        service = CloneService(state_file=state_file)
+        r1 = CloneRecord(clone_name="A1", source_app="App1", source_path="/p1", bundle_id="b1", strategy="hard_clone", dest_path="/d1", data_dir="/data1", created_at="2026-08-20T10:00:00")
+        r2 = CloneRecord(clone_name="A2", source_app="App2", source_path="/p2", bundle_id="b2", strategy="soft_clone", dest_path="/d2", data_dir="/data2", created_at="2026-08-20T11:00:00")
+        service.state_manager.add(r1)
+        service.state_manager.add(r2)
+
+        view = CloneListView(clone_service=service)
+        mock_app = MagicMock()
+        mock_win = MagicMock()
+        mock_win.confirm_dialog = AsyncMock(side_effect=[True, True])
+        mock_app.main_window = mock_win
+        view.app_instance = mock_app
+        await view.refresh_clones()
+
+        with patch.object(service, "remove_clone", new_callable=AsyncMock) as mock_rm:
+            await view.on_delete_clone([r1, r2])
+            assert mock_rm.await_count == 2
+            mock_rm.assert_any_await("A1", with_data=True)
+            mock_rm.assert_any_await("A2", with_data=True)
+
+    asyncio.run(_test())
+
+
 

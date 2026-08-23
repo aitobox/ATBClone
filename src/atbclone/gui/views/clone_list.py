@@ -92,6 +92,7 @@ class CloneListView(toga.Box):
                 t("list_col_proxy"),
                 t("list_col_created_at"),
             ],
+            multiple_select=True,
             on_select=self.on_table_select,
             on_activate=self.on_table_activate,
             style=Pack(flex=1),
@@ -101,10 +102,10 @@ class CloneListView(toga.Box):
 
         self.btn_launch_table = toga.Button(t("btn_launch"), on_press=lambda w: asyncio.create_task(self.on_launch_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5, font_weight="bold"))
         self.btn_open_dir_table = toga.Button(t("btn_open_clone_dir"), on_press=lambda w: asyncio.create_task(self.on_open_clone_dir(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
-        self.btn_update_table = toga.Button(t("btn_update"), on_press=lambda w: asyncio.create_task(self.on_update_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
+        self.btn_update_table = toga.Button(t("btn_update"), on_press=lambda w: asyncio.create_task(self.on_update_clone(self.get_selected_records())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
         self.btn_edit_table = toga.Button(t("btn_edit"), on_press=lambda w: asyncio.create_task(self.on_edit_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
         self.btn_detail_table = toga.Button(t("btn_detail"), on_press=lambda w: asyncio.create_task(self.on_detail_clone(self.get_selected_record())), enabled=False, style=Pack(margin_right=6, height=28, font_size=12.5))
-        self.btn_delete_table = toga.Button(t("btn_delete"), on_press=lambda w: asyncio.create_task(self.on_delete_clone(self.get_selected_record())), enabled=False, style=Pack(height=28, font_size=12.5))
+        self.btn_delete_table = toga.Button(t("btn_delete"), on_press=lambda w: asyncio.create_task(self.on_delete_clone(self.get_selected_records())), enabled=False, style=Pack(height=28, font_size=12.5))
 
         actions_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=8))
         actions_box.add(self.btn_launch_table)
@@ -243,8 +244,8 @@ class CloneListView(toga.Box):
 
             self.content_container.add(self.grid_scroll)
         else:
-            prev_sel_record = self.get_selected_record()
-            prev_sel_name = prev_sel_record.clone_name if prev_sel_record else None
+            prev_sel_records = self.get_selected_records()
+            prev_sel_names = {r.clone_name for r in prev_sel_records}
 
             table_data = []
             for r in self._filtered_clones:
@@ -259,55 +260,109 @@ class CloneListView(toga.Box):
             self.table.data = table_data
             self.content_container.add(self.table_box)
 
-            if prev_sel_name:
-                for idx, r in enumerate(self._filtered_clones):
-                    if r.clone_name == prev_sel_name:
-                        try:
-                            from toga_cocoa.libs import NSIndexSet
-                            native = getattr(getattr(self.table, "_impl", None), "native_table", None)
-                            if native is not None:
-                                native.selectRowIndexes_byExtendingSelection_(NSIndexSet.indexSetWithIndex(idx), False)
-                        except Exception:
-                            pass
-                        break
+            if prev_sel_names:
+                try:
+                    from rubicon.objc import ObjCClass
+                    NSMutableIndexSet = ObjCClass("NSMutableIndexSet")
+                    index_set = NSMutableIndexSet.alloc().init()
+                    for idx, r in enumerate(self._filtered_clones):
+                        if r.clone_name in prev_sel_names:
+                            index_set.addIndex_(idx)
+                    native = getattr(getattr(self.table, "_impl", None), "native_table", None)
+                    if native is not None and index_set.count > 0:
+                        native.selectRowIndexes_byExtendingSelection_(index_set, False)
+                except Exception:
+                    pass
 
             self.on_table_select(self.table)
 
     def on_table_select(self, widget: toga.Table):
-        record = self.get_selected_record()
-        has_sel = record is not None
-        is_busy = bool(record and record.clone_name in self._busy_clones)
-        self.btn_launch_table.enabled = has_sel and not is_busy
-        self.btn_open_dir_table.enabled = has_sel
-        self.btn_update_table.enabled = has_sel and not is_busy
-        self.btn_edit_table.enabled = has_sel and not is_busy
-        self.btn_detail_table.enabled = has_sel
-        self.btn_delete_table.enabled = has_sel and not is_busy
+        records = self.get_selected_records()
+        if not records:
+            single = self.get_selected_record()
+            if single:
+                records = [single]
+
+        count = len(records)
+        has_busy = any(r.clone_name in self._busy_clones for r in records)
+
+        if count == 0:
+            self.btn_launch_table.enabled = False
+            self.btn_open_dir_table.enabled = False
+            self.btn_update_table.enabled = False
+            self.btn_update_table.text = t("btn_update")
+            self.btn_edit_table.enabled = False
+            self.btn_detail_table.enabled = False
+            self.btn_delete_table.enabled = False
+            self.btn_delete_table.text = t("btn_delete")
+        elif count == 1:
+            self.btn_launch_table.enabled = not has_busy
+            self.btn_open_dir_table.enabled = True
+            self.btn_update_table.enabled = not has_busy
+            self.btn_update_table.text = t("btn_update")
+            self.btn_edit_table.enabled = not has_busy
+            self.btn_detail_table.enabled = True
+            self.btn_delete_table.enabled = not has_busy
+            self.btn_delete_table.text = t("btn_delete")
+        else:  # count >= 2
+            self.btn_launch_table.enabled = False
+            self.btn_open_dir_table.enabled = False
+            self.btn_update_table.enabled = not has_busy
+            self.btn_update_table.text = t("btn_batch_update", count=count)
+            self.btn_edit_table.enabled = False
+            self.btn_detail_table.enabled = False
+            self.btn_delete_table.enabled = not has_busy
+            self.btn_delete_table.text = t("btn_batch_delete", count=count)
 
     async def on_table_activate(self, widget: toga.Table, row=None, **kwargs):
         record = self.get_selected_record(row)
         if record:
             await self.on_edit_clone(record)
 
-    def get_selected_record(self, row=None) -> Optional[CloneRecord]:
-        selection = row if row is not None else self.table.selection
-        if selection is None:
+    def _extract_clone_name(self, item, known_names: set[str]) -> Optional[str]:
+        if item is None:
             return None
-        clone_name = getattr(selection, "Name", None) or getattr(selection, "clone_name", None) or getattr(selection, t("list_col_name"), None)
-        if not clone_name and hasattr(selection, "_raw"):
-            clone_name = selection._raw[0]
-        if not clone_name and isinstance(selection, (tuple, list)) and len(selection) > 0:
-            clone_name = selection[0]
-        if not clone_name and hasattr(selection, "__dict__"):
-            known_names = {r.clone_name for r in self._filtered_clones}
-            for k, v in selection.__dict__.items():
+        if isinstance(item, str):
+            return item if item in known_names else None
+        name = getattr(item, "Name", None) or getattr(item, "clone_name", None) or getattr(item, t("list_col_name"), None)
+        if name and name in known_names:
+            return name
+        if hasattr(item, "_raw") and item._raw and isinstance(item._raw[0], str) and item._raw[0] in known_names:
+            return item._raw[0]
+        if isinstance(item, (tuple, list)) and len(item) > 0:
+            if isinstance(item[0], str) and item[0] in known_names:
+                return item[0]
+        if hasattr(item, "__dict__"):
+            for k, v in item.__dict__.items():
                 if not k.startswith("_") and isinstance(v, str) and v in known_names:
-                    clone_name = v
-                    break
-        for r in self._filtered_clones:
-            if r.clone_name == clone_name:
-                return r
+                    return v
         return None
+
+    def get_selected_records(self, selection=None) -> list[CloneRecord]:
+        sel = selection if selection is not None else self.table.selection
+        if sel is None:
+            return []
+
+        known_names = {r.clone_name for r in self._filtered_clones}
+        selected_names: set[str] = set()
+
+        single_name = self._extract_clone_name(sel, known_names)
+        if single_name:
+            selected_names.add(single_name)
+        elif isinstance(sel, (list, tuple, set)):
+            for item in sel:
+                name = self._extract_clone_name(item, known_names)
+                if name:
+                    selected_names.add(name)
+
+        return [r for r in self._filtered_clones if r.clone_name in selected_names]
+
+    def get_selected_record(self, row=None) -> Optional[CloneRecord]:
+        if row is not None:
+            records = self.get_selected_records(row)
+            return records[0] if len(records) == 1 else None
+        records = self.get_selected_records()
+        return records[0] if len(records) == 1 else None
 
     async def refresh_clones(self):
         self._raw_clones = await self.clone_service.list_clones()
@@ -385,32 +440,85 @@ class CloneListView(toga.Box):
         win = CloneEditWindow(record=record, on_save=_save_cb)
         win.show()
 
-    async def on_update_clone(self, record: Optional[CloneRecord]):
-        if not record or record.clone_name in self._busy_clones:
+    async def on_update_clone(self, target: Optional[CloneRecord | list[CloneRecord]] = None):
+        if target is None:
+            records = self.get_selected_records()
+        elif isinstance(target, CloneRecord):
+            records = [target]
+        else:
+            records = list(target)
+
+        if not records:
             return
-        self._busy_clones.add(record.clone_name)
+
+        active_records = [r for r in records if r.clone_name not in self._busy_clones]
+        if not active_records:
+            return
+
+        for r in active_records:
+            self._busy_clones.add(r.clone_name)
+
+        total = len(active_records)
+        failed_list: list[tuple[str, str]] = []
+
         if hasattr(self, "btn_update_table") and self.btn_update_table:
-            self.btn_update_table.text = t("btn_updating")
             self.btn_update_table.enabled = False
+
         try:
-            await self.clone_service.update_clone(record.clone_name)
+            for idx, r in enumerate(active_records, 1):
+                if hasattr(self, "btn_update_table") and self.btn_update_table:
+                    if total > 1:
+                        self.btn_update_table.text = t("btn_updating_progress", current=idx, total=total)
+                    else:
+                        self.btn_update_table.text = t("btn_updating")
+                try:
+                    await self.clone_service.update_clone(r.clone_name)
+                except Exception as e:
+                    logger.error(f"Failed to update clone '{r.clone_name}': {e}")
+                    failed_list.append((r.clone_name, str(e)))
             await self.refresh_clones()
-        except Exception as e:
-            if self.app_instance and hasattr(self.app_instance, "main_window"):
-                await self.app_instance.main_window.error_dialog(t("dialog_update_error_title"), str(e))
         finally:
-            self._busy_clones.discard(record.clone_name)
+            for r in active_records:
+                self._busy_clones.discard(r.clone_name)
             if hasattr(self, "btn_update_table") and self.btn_update_table:
                 self.btn_update_table.text = t("btn_update")
             self.on_table_select(self.table)
 
-    async def on_delete_clone(self, record: Optional[CloneRecord]):
-        if not record or record.clone_name in self._busy_clones:
+        if failed_list and self.app_instance and hasattr(self.app_instance, "main_window"):
+            succ_count = total - len(failed_list)
+            err_details = "\n".join(f"- {name}: {err}" for name, err in failed_list)
+            if total > 1:
+                await self.app_instance.main_window.error_dialog(
+                    t("dialog_batch_summary_title"),
+                    t("dialog_batch_summary_msg", success=succ_count, failed=len(failed_list), errors=err_details),
+                )
+            else:
+                await self.app_instance.main_window.error_dialog(
+                    t("dialog_update_error_title"),
+                    failed_list[0][1],
+                )
+
+    async def on_delete_clone(self, target: Optional[CloneRecord | list[CloneRecord]] = None):
+        if target is None:
+            records = self.get_selected_records()
+        elif isinstance(target, CloneRecord):
+            records = [target]
+        else:
+            records = list(target)
+
+        if not records:
             return
-        self._busy_clones.add(record.clone_name)
-        try:
-            delete_data = False
-            if self.app_instance and hasattr(self.app_instance, "main_window"):
+
+        active_records = [r for r in records if r.clone_name not in self._busy_clones]
+        if not active_records:
+            return
+
+        total = len(active_records)
+        delete_data = False
+
+        if self.app_instance and hasattr(self.app_instance, "main_window"):
+            if total == 1:
+                record = active_records[0]
                 confirmed = await self.app_instance.main_window.confirm_dialog(
                     t("dialog_delete_confirm_title"),
                     t("dialog_delete_confirm_msg", name=record.clone_name),
@@ -422,10 +530,60 @@ class CloneListView(toga.Box):
                     t("dialog_delete_data_confirm_title"),
                     t("dialog_delete_data_confirm_msg", path=record.data_dir),
                 )
+            else:
+                names_summary = ", ".join(r.clone_name for r in active_records[:6])
+                if total > 6:
+                    names_summary += f" ... (+{total - 6})"
+                confirmed = await self.app_instance.main_window.confirm_dialog(
+                    t("dialog_batch_delete_confirm_title"),
+                    t("dialog_batch_delete_confirm_msg", count=total, names=names_summary),
+                )
+                if not confirmed:
+                    return
 
-            await self.clone_service.remove_clone(record.clone_name, with_data=delete_data)
+                delete_data = await self.app_instance.main_window.confirm_dialog(
+                    t("dialog_batch_delete_data_confirm_title"),
+                    t("dialog_batch_delete_data_confirm_msg", count=total),
+                )
+
+        for r in active_records:
+            self._busy_clones.add(r.clone_name)
+
+        failed_list: list[tuple[str, str]] = []
+        if hasattr(self, "btn_delete_table") and self.btn_delete_table:
+            self.btn_delete_table.enabled = False
+
+        try:
+            for idx, r in enumerate(active_records, 1):
+                if hasattr(self, "btn_delete_table") and self.btn_delete_table:
+                    if total > 1:
+                        self.btn_delete_table.text = t("btn_deleting_progress", current=idx, total=total)
+                    else:
+                        self.btn_delete_table.text = t("btn_delete")
+                try:
+                    await self.clone_service.remove_clone(r.clone_name, with_data=delete_data)
+                except Exception as e:
+                    logger.error(f"Failed to delete clone '{r.clone_name}': {e}")
+                    failed_list.append((r.clone_name, str(e)))
             await self.refresh_clones()
         finally:
-            self._busy_clones.discard(record.clone_name)
+            for r in active_records:
+                self._busy_clones.discard(r.clone_name)
+            if hasattr(self, "btn_delete_table") and self.btn_delete_table:
+                self.btn_delete_table.text = t("btn_delete")
             self.on_table_select(self.table)
+
+        if failed_list and self.app_instance and hasattr(self.app_instance, "main_window"):
+            succ_count = total - len(failed_list)
+            err_details = "\n".join(f"- {name}: {err}" for name, err in failed_list)
+            if total > 1:
+                await self.app_instance.main_window.error_dialog(
+                    t("dialog_batch_summary_title"),
+                    t("dialog_batch_summary_msg", success=succ_count, failed=len(failed_list), errors=err_details),
+                )
+            else:
+                await self.app_instance.main_window.error_dialog(
+                    t("dialog_error_title"),
+                    failed_list[0][1],
+                )
 

@@ -6,6 +6,24 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.9.5] - 2026-08-23
+
+### 📝 Auto-Wrapping `WrappingLabel` Component & Text Formatting
+- **Multiline Text Wrapping Support**:
+  - Implemented the `WrappingLabel` component to solve macOS Cocoa Toga single-line text constraint limitations.
+  - Automatically calculates dynamic intrinsic height based on the container width (`cellSizeForBounds_`) while leaving width unconstrained, completely preventing long pathnames and text from expanding windows horizontally.
+- **Prober & Detail View Formatting**:
+  - Applied `WrappingLabel` across `ProbeView` (Prober analysis reports, compatibility evaluations, sandbox status), `CloneDetailWindow` (launch arguments, bundle id, data directories), and `WizardWindow` (strategy descriptions and advice).
+
+### 🧪 Test Hermeticity & State Isolation
+- **Dynamic Configuration & Test Isolation**:
+  - Enhanced `StateManager` and `RecipeLoader` to dynamically evaluate configuration paths at runtime rather than module import time.
+  - Ensured unit tests remain strictly hermetic and isolated from local user state and custom recipe files.
+- **Testing**:
+  - Expanded automated test suite to 347 unit and GUI integration tests.
+
+---
+
 ## [v0.9.4] - 2026-08-23
 
 ### 📁 Visible Default Data Directory Migration (`~/ATBClone`)

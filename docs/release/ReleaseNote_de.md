@@ -6,6 +6,23 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.9.5] - 2026-08-23
+
+### 📝 Neue `WrappingLabel`-Komponente & Mehrzeiliger Textumbruch
+- **Automatischer Textumbruch für macOS**:
+  - Implementierung der `WrappingLabel`-Komponente zur Behebung von einzeiligen Layout-Einschränkungen unter Cocoa Toga.
+  - Dynamische Höhenberechnung (`cellSizeForBounds_`) basierend auf der zugewiesenen Breite verhindert das unschöne Verbreitern von Fenstern bei langen Pfaden oder Argumenten.
+- **Optimierung von Diagnoseberichten & Detailansichten**:
+  - Anwendung von `WrappingLabel` in `ProbeView` (Prober-Analyseberichte, Kompatibilitätsprüfung), `CloneDetailWindow` und `WizardWindow`.
+
+### 🧪 Test-Hermetizität & Zustandsisolierung
+- **Dynamische Pfadauflösung**:
+  - Überarbeitung von `StateManager` und `RecipeLoader` zur dynamischen Auswertung von Konfigurationspfaden zur Laufzeit, wodurch Unit-Tests vollständig isoliert von lokalen Benutzerzuständen laufen.
+- **Test-Suite**:
+  - Ausbau auf 347 automatisierte Tests.
+
+---
+
 ## [v0.9.4] - 2026-08-23
 
 ### 📁 Migration des Standard-Datenverzeichnisses nach `~/ATBClone`

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atbclone"
-version = "0.9.4"
+version = "0.9.5"
 description = "macOS App Cloning Engine"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
@@ -29,7 +29,7 @@ gui = ["toga>=0.4.0"]
 [tool.briefcase]
 project_name = "ATBClone"
 bundle = "com.atbclone"
-version = "0.9.4"
+version = "0.9.5"
 url = "https://github.com/aitobox/ATBClone"
 author = "Brain Zhang"
 author_email = "brainzhang@example.com"

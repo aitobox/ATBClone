@@ -243,6 +243,9 @@ class CloneListView(toga.Box):
 
             self.content_container.add(self.grid_scroll)
         else:
+            prev_sel_record = self.get_selected_record()
+            prev_sel_name = prev_sel_record.clone_name if prev_sel_record else None
+
             table_data = []
             for r in self._filtered_clones:
                 proxy_str = r.proxy_summary if r.proxy_enabled else t("list_proxy_disabled")
@@ -255,6 +258,19 @@ class CloneListView(toga.Box):
                 ))
             self.table.data = table_data
             self.content_container.add(self.table_box)
+
+            if prev_sel_name:
+                for idx, r in enumerate(self._filtered_clones):
+                    if r.clone_name == prev_sel_name:
+                        try:
+                            from toga_cocoa.libs import NSIndexSet
+                            native = getattr(getattr(self.table, "_impl", None), "native_table", None)
+                            if native is not None:
+                                native.selectRowIndexes_byExtendingSelection_(NSIndexSet.indexSetWithIndex(idx), False)
+                        except Exception:
+                            pass
+                        break
+
             self.on_table_select(self.table)
 
     def on_table_select(self, widget: toga.Table):

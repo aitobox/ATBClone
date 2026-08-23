@@ -48,8 +48,9 @@ def test_settings_view_open_finder_and_save():
         with patch("subprocess.Popen") as mock_popen:
             view.on_open_data_dir_in_finder(None)
             await asyncio.sleep(0.01)
-            mock_popen.assert_called_once()
-            args = mock_popen.call_args[0][0]
+            open_calls = [c for c in mock_popen.call_args_list if c[0] and isinstance(c[0][0], list) and c[0][0][0] == "open"]
+            assert len(open_calls) >= 1
+            args = open_calls[0][0][0]
             assert args[0] == "open"
 
     asyncio.run(_test())

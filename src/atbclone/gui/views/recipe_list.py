@@ -207,6 +207,9 @@ class RecipeListView(toga.Box):
                 self.grid_box.add(row_box)
             self.content_container.add(self.grid_scroll)
         else:
+            prev_sel_item = self.get_selected_recipe_item()
+            prev_sel_bundle_id = prev_sel_item["bundle_id"] if prev_sel_item else None
+
             table_data = []
             for r in self._filtered_recipes:
                 origin = t("view_recipes_origin_builtin") if r["is_builtin"] else t("view_recipes_origin_custom")
@@ -218,6 +221,19 @@ class RecipeListView(toga.Box):
                 ))
             self.table.data = table_data
             self.content_container.add(self.table_box)
+
+            if prev_sel_bundle_id:
+                for idx, r in enumerate(self._filtered_recipes):
+                    if r["bundle_id"] == prev_sel_bundle_id:
+                        try:
+                            from toga_cocoa.libs import NSIndexSet
+                            native = getattr(getattr(self.table, "_impl", None), "native_table", None)
+                            if native is not None:
+                                native.selectRowIndexes_byExtendingSelection_(NSIndexSet.indexSetWithIndex(idx), False)
+                        except Exception:
+                            pass
+                        break
+
             self.on_table_select(self.table)
 
     def _create_recipe_card(self, item: dict) -> toga.Box:

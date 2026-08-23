@@ -15,6 +15,7 @@ class RecipeLoader:
     def get_local_dir(cls) -> Path:
         if cls.LOCAL_DIR is not None:
             return cls.LOCAL_DIR
+        from atbclone.core.config import DEFAULT_RECIPES_DIR
         return DEFAULT_RECIPES_DIR
 
     @classmethod

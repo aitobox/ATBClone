@@ -1,7 +1,9 @@
 """Clone engines for creating soft (wrapper) and hard (physical) app clones."""
 
 from pathlib import Path
+import os
 import shlex
+import struct
 import textwrap
 
 from atbclone.core.clone_task import CloneTask
@@ -251,6 +253,149 @@ class HardCloneEngine(CloneEngine):
         """)
 
     @classmethod
+    def _build_singleton_patch_cmd(cls, dest_path: Path) -> str:
+        """Return a shell snippet that patches ProcessSingleton in embedded frameworks if present.
+
+        Some Electron/Chromium apps (e.g. Feishu/Lark) contain custom ProcessSingleton logic
+        in embedded framework binaries (like Lark Framework.framework). When launched as a second
+        instance, they call ProcessSingleton::NotifyOtherProcessOrCreate() which immediately signals
+        the first instance and exits (exit code 34). This command scans embedded Mach-O binaries in
+        Contents/Frameworks/ and patches the bl NotifyOtherProcessOrCreate call with `mov w0, #0; nop`
+        so every clone runs concurrently as an independent primary instance.
+        """
+        dest_quoted = shlex.quote(str(dest_path))
+        return textwrap.dedent(f"""\
+            # Patch ProcessSingleton in embedded frameworks if present (e.g. Feishu/Lark)
+            python3 -c '
+import os, glob, struct
+frameworks_dir = os.path.join({dest_quoted}, "Contents", "Frameworks")
+target_str = b"Failed to create a ProcessSingleton for your profile directory."
+if os.path.isdir(frameworks_dir):
+    for root, _, files in os.walk(frameworks_dir):
+        for fname in files:
+            fpath = os.path.join(root, fname)
+            if os.path.islink(fpath) or not os.path.isfile(fpath):
+                continue
+            try:
+                if os.path.getsize(fpath) < 1000000:
+                    continue
+                with open(fpath, "rb") as f:
+                    header = f.read(4)
+                    if header not in (b"\\xcf\\xfa\\xed\\xfe", b"\\xfe\\xed\\xfa\\xcf"):
+                        continue
+                    f.seek(0)
+                    data = bytearray(f.read())
+                str_idx = data.find(target_str)
+                if str_idx == -1:
+                    continue
+                page = str_idx & ~0xFFF
+                page_offset = str_idx & 0xFFF
+                found_pc = None
+                for i in range(0, len(data) - 8, 4):
+                    w1, w2 = struct.unpack_from("<II", data, i)
+                    if (w1 & 0x9F000000) == 0x90000000:
+                        immlo = (w1 >> 29) & 3
+                        immhi = (w1 >> 5) & 0x7FFFF
+                        imm = (immhi << 2) | immlo
+                        if imm & (1 << 20): imm -= (1 << 21)
+                        if (i & ~0xFFF) + (imm << 12) == page:
+                            if (w2 & 0xFFC00000) == 0x91000000 and ((w2 >> 10) & 0xFFF) == page_offset:
+                                found_pc = i
+                                break
+                if found_pc is None:
+                    continue
+                cmp_pos = None
+                for pos in range(found_pc - 4, max(0, found_pc - 200), -4):
+                    w, = struct.unpack_from("<I", data, pos)
+                    if w == 0x7100001F:
+                        cmp_pos = pos
+                        break
+                if cmp_pos is None:
+                    continue
+                bl_pos = cmp_pos - 4
+                w_bl, = struct.unpack_from("<I", data, bl_pos)
+                if (w_bl & 0xFC000000) == 0x94000000:
+                    struct.pack_into("<II", data, bl_pos, 0x52800000, 0xD503201F)
+                    with open(fpath, "wb") as f:
+                        f.write(data)
+            except Exception:
+                pass
+' 2>/dev/null || true
+        """)
+
+    @staticmethod
+    def patch_framework_singletons(dest_path: Path) -> bool:
+        """Python helper to patch ProcessSingleton in embedded frameworks for testing and tools."""
+        import struct
+        patched_any = False
+        target_str = b"Failed to create a ProcessSingleton for your profile directory."
+
+        frameworks_dir = dest_path / "Contents" / "Frameworks"
+        if not frameworks_dir.is_dir():
+            return False
+
+        for root, _, files in os.walk(frameworks_dir):
+            for fname in files:
+                fpath = Path(root) / fname
+                if fpath.is_symlink() or not fpath.is_file():
+                    continue
+                try:
+                    if fpath.stat().st_size < 1_000_000:
+                        continue
+                    with open(fpath, "rb") as f:
+                        header = f.read(4)
+                        if header not in (b"\xcf\xfa\xed\xfe", b"\xfe\xed\xfa\xcf"):
+                            continue
+                        f.seek(0)
+                        data = bytearray(f.read())
+
+                    str_idx = data.find(target_str)
+                    if str_idx == -1:
+                        continue
+
+                    page = str_idx & ~0xFFF
+                    page_offset = str_idx & 0xFFF
+
+                    found_pc = None
+                    for i in range(0, len(data) - 8, 4):
+                        w1, w2 = struct.unpack_from("<II", data, i)
+                        if (w1 & 0x9F000000) == 0x90000000:
+                            immlo = (w1 >> 29) & 3
+                            immhi = (w1 >> 5) & 0x7FFFF
+                            imm = (immhi << 2) | immlo
+                            if imm & (1 << 20):
+                                imm -= 1 << 21
+                            if (i & ~0xFFF) + (imm << 12) == page:
+                                if (w2 & 0xFFC00000) == 0x91000000 and ((w2 >> 10) & 0xFFF) == page_offset:
+                                    found_pc = i
+                                    break
+
+                    if found_pc is None:
+                        continue
+
+                    cmp_pos = None
+                    for pos in range(found_pc - 4, max(0, found_pc - 200), -4):
+                        (w,) = struct.unpack_from("<I", data, pos)
+                        if w == 0x7100001F:
+                            cmp_pos = pos
+                            break
+
+                    if cmp_pos is None:
+                        continue
+
+                    bl_pos = cmp_pos - 4
+                    (w_bl,) = struct.unpack_from("<I", data, bl_pos)
+                    if (w_bl & 0xFC000000) == 0x94000000:
+                        struct.pack_into("<II", data, bl_pos, 0x52800000, 0xD503201F)
+                        with open(fpath, "wb") as f:
+                            f.write(data)
+                        patched_any = True
+                except Exception:
+                    continue
+
+        return patched_any
+
+    @classmethod
     def execute(cls, task: CloneTask, needs_admin: bool = False) -> None:
         """Execute hard clone script.
 
@@ -349,6 +494,9 @@ class HardCloneEngine(CloneEngine):
             else ""
         )
 
+        # Build framework singleton patcher command for Electron/Chromium apps
+        singleton_patch_cmd = cls._build_singleton_patch_cmd(task.dest_path)
+
         if task.recipe.strip_sandbox:
             ent_plist = shlex.quote(str(task.dest_path / "Contents" / "atb_entitlements.plist"))
             codesign_cmds = (
@@ -376,7 +524,7 @@ cp -R {src} {dst}
 {wrapper_body}
 WRAPPER_EOF
 chmod +x {wrapper}
-xattr -cr {dst}
+{singleton_patch_cmd}xattr -cr {dst}
 {codesign_cmds}codesign -vv --deep --strict {dst}
 {lsregister_cmd}
 """

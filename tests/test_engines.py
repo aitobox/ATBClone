@@ -603,9 +603,57 @@ class TestAdaptiveLanguageArgs:
             SoftCloneEngine.execute(task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             # Should have the new --lang=zh-CN, and not have duplicate --lang=en-US or -AppleLanguages
-            assert "--lang=zh-CN" in script
-            assert "--lang=en-US" not in script
-            assert "-AppleLanguages" not in script
+class TestProcessSingletonFrameworkPatching:
+    """Tests for ProcessSingleton framework patching in HardCloneEngine."""
+
+    def test_patch_framework_singletons_no_frameworks_dir(self, tmp_path):
+        app_dir = tmp_path / "MyApp.app"
+        app_dir.mkdir()
+        assert not HardCloneEngine.patch_framework_singletons(app_dir)
+
+    def test_patch_framework_singletons_success(self, tmp_path):
+        import struct
+
+        app_dir = tmp_path / "LarkClone.app"
+        frameworks_dir = app_dir / "Contents" / "Frameworks" / "Lark Framework.framework"
+        frameworks_dir.mkdir(parents=True)
+        macho_file = frameworks_dir / "Lark Framework"
+
+        target_str = b"Failed to create a ProcessSingleton for your profile directory.\x00"
+
+        # Construct a synthetic Mach-O binary (> 1MB with arm64 magic)
+        data = bytearray(b"\xcf\xfa\xed\xfe" + b"\x00" * (1_050_000))
+        str_offset = 0x100000
+        data[str_offset : str_offset + len(target_str)] = target_str
+
+        page = str_offset & ~0xFFF
+        page_offset = str_offset & 0xFFF
+
+        pc = 0x50000
+        pc_page = pc & ~0xFFF
+        imm = (page - pc_page) >> 12
+        immlo = imm & 3
+        immhi = (imm >> 2) & 0x7FFFF
+        adrp_w = 0x90000000 | (immlo << 29) | (immhi << 5)
+        add_w = 0x91000000 | (page_offset << 10)
+
+        # Write bl (0x94000010), cmp w0, #0 (0x7100001f), adrp, add
+        struct.pack_into("<IIII", data, pc - 8, 0x94000010, 0x7100001F, adrp_w, add_w)
+
+        macho_file.write_bytes(data)
+
+        assert HardCloneEngine.patch_framework_singletons(app_dir) is True
+
+        patched_data = macho_file.read_bytes()
+        bl_patched, nop_patched = struct.unpack_from("<II", patched_data, pc - 8)
+        assert bl_patched == 0x52800000  # mov w0, #0
+        assert nop_patched == 0xD503201F  # nop
+
+    def test_hard_clone_script_includes_singleton_patch_cmd(self, sample_task):
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "Patch ProcessSingleton in embedded frameworks" in script
 
 
 

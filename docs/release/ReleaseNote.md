@@ -6,6 +6,26 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.9.8] - 2026-08-24
+
+### 🔒 Sandbox Entitlements Extraction & Hard Clone Stability
+- **Source App Entitlements Preservation**:
+  - Enhanced `HardCloneEngine` to extract and preserve original entitlements directly from source Mach-O binaries via `codesign -d --entitlements :-`.
+  - Added robust validation to guard against generating empty or corrupt entitlements during ad-hoc and Developer ID re-signing.
+- **Built-in Recipes Sandbox Container Isolation**:
+  - Refined built-in recipe configurations by enforcing `strip_sandbox: false` across hard-clone applications (including WeChat, QQ, WeWork, WPS Office, LINE, Skype, and CapCut).
+  - Ensures complete sandbox container isolation (`~/Library/Containers/<new_bundle_id>`) to prevent credential leakage and cross-instance interference.
+
+### 📚 Documentation & Schema Modernization
+- **Multilingual Documentation Updates**:
+  - Synchronized English (`README.md`) and Simplified Chinese (`README_zh.md`) documentation with current schema standards, including `app_type`, `strip_sandbox`, runtime architecture classifications, and CLI/GUI workflows.
+
+### 🧪 Test Suite & Quality Assurance
+- **Robust Verification**:
+  - Verified all 428 unit, core engine, and GUI integration tests pass with 100% success rate.
+
+---
+
 ## [v0.9.7] - 2026-08-24
 
 ### 🔍 Intelligent Application Architecture Detection & Language Adaptation

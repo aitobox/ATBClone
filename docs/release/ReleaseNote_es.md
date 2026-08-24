@@ -6,6 +6,26 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.9.8] - 2026-08-24
+
+### 🔒 Extracción precisa de Entitlements y estabilidad de Hard Clone
+- **Preservación de permisos de la aplicación de origen**:
+  - Mejora de `HardCloneEngine` para extraer y mantener los derechos del binario Mach-O mediante `codesign -d --entitlements :-`.
+  - Detección y prevención de archivos de permisos vacíos o corruptos al volver a firmar el clon.
+- **Aislamiento estricto de contenedores de sandbox**:
+  - Ajuste de `strip_sandbox: false` en todas las recetas integradas de hard clone (WeChat, QQ, WeWork, WPS Office, LINE, Skype, CapCut, etc.).
+  - Garantiza la ejecución en contenedores independientes (`~/Library/Containers/<new_bundle_id>`) para evitar colisiones de datos o credenciales.
+
+### 📚 Actualización de documentación
+- **Sincronización de guías**:
+  - Actualización de `README.md` y `README_zh.md` reflejando las nuevas opciones de `app_type`, `strip_sandbox` y flujos de trabajo.
+
+### 📦 Calidad del software
+- **Validación completa**:
+  - Superadas satisfactoriamente las 428 pruebas automatizadas.
+
+---
+
 ## [v0.9.7] - 2026-08-24
 
 ### 🔍 Detección inteligente de arquitectura y adaptación de idioma

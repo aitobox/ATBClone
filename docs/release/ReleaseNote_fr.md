@@ -6,6 +6,26 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.9.8] - 2026-08-24
+
+### 🔒 Extraction des autorisations (Entitlements) & Stabilité du moteur Hard Clone
+- **Préservation des autorisations de l'application source**:
+  - Amélioration de `HardCloneEngine` pour extraire fidèlement les autorisations Mach-O d'origine avec `codesign -d --entitlements :-`.
+  - Protection contre la génération d'autorisations vides ou corrompues lors de la resignature.
+- **Isolation renforcée des conteneurs sandbox**:
+  - Configuration de `strip_sandbox: false` sur l'ensemble des recettes en hard clone (WeChat, QQ, WeWork, WPS Office, LINE, Skype, CapCut, etc.).
+  - Assure l'isolation stricte des conteneurs macOS (`~/Library/Containers/<new_bundle_id>`), évitant toute interférence de session.
+
+### 📚 Documentation & Synchronisation des schémas
+- **Mise à jour des documentations**:
+  - Synchronisation de `README.md` et `README_zh.md` avec les nouvelles options `app_type`, `strip_sandbox` et les guides CLI/GUI.
+
+### 🧪 Tests
+- **Fiabilité**:
+  - Validation réussie des 428 tests automatisés.
+
+---
+
 ## [v0.9.7] - 2026-08-24
 
 ### 🔍 Détection intelligente d'architecture & Adaptation linguistique

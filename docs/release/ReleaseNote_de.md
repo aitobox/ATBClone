@@ -6,6 +6,26 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.9.8] - 2026-08-24
+
+### 🔒 Entitlements-Extraktion & Stabilität der Hard-Clone-Engine
+- **Erhaltung der Sandbox-Berechtigungen (Entitlements)**:
+  - Verbesserung der `HardCloneEngine`, um native Entitlements direkt aus der Quell-Mach-O-Binärdatei via `codesign -d --entitlements :-` zu extrahieren.
+  - Zusätzliche Sicherheitsüberprüfungen verhindern leere oder beschädigte Berechtigungsdateien beim erneuten Signieren.
+- **Strikte Sandbox-Container-Isolierung in integrierten Rezepten**:
+  - Standardisierung von `strip_sandbox: false` für alle Hard-Clone-Rezepte (u. a. WeChat, QQ, WeWork, WPS Office, LINE, Skype, CapCut).
+  - Gewährleistet getrennte Container-Verzeichnisse (`~/Library/Containers/<new_bundle_id>`) zur Vermeidung von Datenkonflikten zwischen Instanzen.
+
+### 📚 Dokumentation & Schemasynchronisation
+- **Aktualisierung der Projektdokumentation**:
+  - Angleichung der englischen (`README.md`) und chinesischen (`README_zh.md`) Dokumentation an aktuelle `app_type`- und `strip_sandbox`-Spezifikationen.
+
+### 🧪 Test-Suite
+- **Umfassende Qualitätssicherung**:
+  - Alle 428 Tests der Test-Suite erfolgreich validiert.
+
+---
+
 ## [v0.9.7] - 2026-08-24
 
 ### 🔍 Intelligente Erkennung der App-Architektur & Sprachparameter-Anpassung

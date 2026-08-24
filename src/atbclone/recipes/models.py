@@ -32,6 +32,7 @@ class Recipe(BaseModel):
     language: str = "system"
     app_type: AppType | None = None
     patch_framework_singleton: bool = False
+    patch_cef: bool = False
 
 
 def supports_data_dir(recipe: Recipe) -> bool:

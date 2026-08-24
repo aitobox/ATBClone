@@ -3,6 +3,7 @@ app_name: 企业微信
 strategy: hard_clone
 app_type: chromium
 strip_sandbox: true
+patch_cef: true
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'
   TMPDIR: '{{ATB_DATA_DIR}}/Tmp'

@@ -522,8 +522,35 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
             if needs_singleton_patch
             else ""
         )
-        cef_patch_cmd = cls._build_cef_patch_cmd(task.dest_path)
 
+        # Build CEF patcher command ONLY when explicitly enabled by recipe
+        # or when cloning WeCom which requires custom Chromium Embedded Framework patching.
+        needs_cef_patch = (
+            getattr(task.recipe, "patch_cef", False)
+            or getattr(task.source, "bundle_id", "") == "com.tencent.WeWorkMac"
+        )
+        cef_patch_cmd = (
+            cls._build_cef_patch_cmd(task.dest_path)
+            if needs_cef_patch
+            else ""
+        )
+
+        if needs_cef_patch:
+            helper_bundle_id_cmd = f"""if [ -d {dst}/Contents/Frameworks ]; then
+    find {dst}/Contents/Frameworks -name "*.app" -type d 2>/dev/null | while read -r helper_app; do
+        h_plist="$helper_app/Contents/Info.plist"
+        if [ -f "$h_plist" ]; then
+            cur_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$h_plist" 2>/dev/null || true)
+            if [[ "$cur_id" =~ ^[A-Z0-9]{{10}}\\. ]]; then
+                new_id=$(echo "$cur_id" | sed -E 's/^[A-Z0-9]{{10}}\\.//')
+                /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $new_id.{task.new_bundle_id}" "$h_plist" 2>/dev/null || true
+            fi
+        fi
+    done
+fi
+"""
+        else:
+            helper_bundle_id_cmd = ""
 
         if task.recipe.strip_sandbox:
             strip_sandbox_snippet = '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true\n'
@@ -552,19 +579,7 @@ mkdir -p {data_dir}
 rm -rf {dst}
 cp -R {src} {dst}
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
-if [ -d {dst}/Contents/Frameworks ]; then
-    find {dst}/Contents/Frameworks -name "*.app" -type d 2>/dev/null | while read -r helper_app; do
-        h_plist="$helper_app/Contents/Info.plist"
-        if [ -f "$h_plist" ]; then
-            cur_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$h_plist" 2>/dev/null || true)
-            if [[ "$cur_id" =~ ^[A-Z0-9]{{10}}\\. ]]; then
-                new_id=$(echo "$cur_id" | sed -E 's/^[A-Z0-9]{{10}}\\.//')
-                /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $new_id.{task.new_bundle_id}" "$h_plist" 2>/dev/null || true
-            fi
-        fi
-    done
-fi
-{display_name_cmd}
+{helper_bundle_id_cmd}{display_name_cmd}
 {icon_cmd}mv {bin_orig} {bin_bak}
 cat << 'WRAPPER_EOF' > {wrapper}
 {wrapper_body}

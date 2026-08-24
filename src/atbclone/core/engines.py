@@ -284,10 +284,10 @@ if os.path.isdir(frameworks_dir):
 
     @classmethod
     def _build_cef_patch_cmd(cls, dest_path: Path) -> str:
-        """Patch Chromium Embedded Framework to set no_sandbox=1 in cef_initialize when present."""
+        """Patch Chromium Embedded Framework to disable Seatbelt sandbox and set no_sandbox=1."""
         dest_quoted = shlex.quote(str(dest_path))
         return textwrap.dedent(f"""\
-            # Patch CEF framework no_sandbox if present
+            # Patch CEF framework no_sandbox and bypass child process Seatbelt sandbox if present
             python3 -c '
 import os
 dst = {dest_quoted}
@@ -298,14 +298,31 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
     try:
         with open(cef_path, "rb") as f:
             data = bytearray(f.read())
-        needle = bytes.fromhex("f50302aaf30301aaf40300aa080840b9280800b9")
-        pos = data.find(needle)
-        if pos != -1:
-            patch_off = pos + 12
-            if data[patch_off:patch_off+4] == bytes.fromhex("080840b9"):
-                data[patch_off:patch_off+4] = bytes.fromhex("28008052")
-                with open(cef_path, "wb") as f:
-                    f.write(data)
+        # 1. Patch cef_initialize settings copy to force no_sandbox = 1
+        needle1 = bytes.fromhex("f50302aaf30301aaf40300aa080840b9280800b9")
+        pos1 = data.find(needle1)
+        if pos1 != -1:
+            patch_off1 = pos1 + 12
+            if data[patch_off1:patch_off1+4] == bytes.fromhex("080840b9"):
+                data[patch_off1:patch_off1+4] = bytes.fromhex("28008052")
+        # 2. Patch ChildProcessLauncherHelper to bypass Seatbelt sandbox branches
+        needle2 = bytes.fromhex("010a005448260035e8c343391f05007180250054")
+        pos2 = data.find(needle2)
+        if pos2 != -1:
+            data[pos2+4:pos2+8] = bytes.fromhex("1f2003d5")
+            data[pos2+16:pos2+20] = bytes.fromhex("1f2003d5")
+        # 3. Patch ChildProcessLauncherHelper Seatbelt compile entry to directly branch to launch
+        needle3 = bytes.fromhex("e00315aae4010094f80300aa40e5054f")
+        pos3 = data.find(needle3)
+        if pos3 != -1:
+            data[pos3:pos3+4] = bytes.fromhex("34000014")
+        # 4. Patch FallBackToNextGpuMode FATAL abort ("GPU process isn'\''t usable. Goodbye.") to safe return
+        needle4 = bytes.fromhex("ff4305d1f44f13a9fd7b14a9fd030591")
+        pos4 = data.find(needle4)
+        if pos4 != -1:
+            data[pos4:pos4+4] = bytes.fromhex("d0ffff17")
+        with open(cef_path, "wb") as f:
+            f.write(data)
     except Exception:
         pass
 ' 2>/dev/null || true
@@ -535,6 +552,18 @@ mkdir -p {data_dir}
 rm -rf {dst}
 cp -R {src} {dst}
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
+if [ -d {dst}/Contents/Frameworks ]; then
+    find {dst}/Contents/Frameworks -name "*.app" -type d 2>/dev/null | while read -r helper_app; do
+        h_plist="$helper_app/Contents/Info.plist"
+        if [ -f "$h_plist" ]; then
+            cur_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$h_plist" 2>/dev/null || true)
+            if [[ "$cur_id" =~ ^[A-Z0-9]{{10}}\\. ]]; then
+                new_id=$(echo "$cur_id" | sed -E 's/^[A-Z0-9]{{10}}\\.//')
+                /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $new_id.{task.new_bundle_id}" "$h_plist" 2>/dev/null || true
+            fi
+        fi
+    done
+fi
 {display_name_cmd}
 {icon_cmd}mv {bin_orig} {bin_bak}
 cat << 'WRAPPER_EOF' > {wrapper}

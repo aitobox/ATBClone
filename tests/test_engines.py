@@ -674,5 +674,48 @@ class TestProcessSingletonFrameworkPatching:
             assert "Patch ProcessSingleton in embedded frameworks" in script
 
 
+class TestCefFrameworkPatchingAndSymlinks:
+    """Tests for Chromium Embedded Framework (CEF) patch gating and symlink whitelist generation."""
+
+    def test_hard_clone_script_omits_cef_patch_by_default(self, sample_task):
+        sample_task.source.bundle_id = "com.google.Chrome"
+        sample_task.recipe.patch_cef = False
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "Patch CEF framework no_sandbox" not in script
+            assert "CFBundleIdentifier $new_id." not in script
+
+    def test_hard_clone_script_includes_cef_patch_for_wework(self, sample_task):
+        sample_task.source.bundle_id = "com.tencent.WeWorkMac"
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "Patch CEF framework no_sandbox" in script
+            assert "CFBundleIdentifier $new_id." in script
+
+    def test_hard_clone_script_includes_cef_patch_when_recipe_flag_true(self, sample_task):
+        sample_task.source.bundle_id = "com.custom.cefapp"
+        sample_task.recipe.patch_cef = True
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "Patch CEF framework no_sandbox" in script
+            assert "CFBundleIdentifier $new_id." in script
+
+    def test_symlink_whitelist_snippet_generation_empty(self, sample_task):
+        sample_task.recipe.symlink_whitelist = []
+        snippet = HardCloneEngine._build_symlink_whitelist_snippet(sample_task)
+        assert snippet == ""
+
+    def test_symlink_whitelist_snippet_generation_populated(self, sample_task):
+        sample_task.recipe.symlink_whitelist = ["Library/Keychains", ".ssh", "/Library/Preferences/foo.plist"]
+        snippet = HardCloneEngine._build_symlink_whitelist_snippet(sample_task)
+        assert "Library/Keychains" in snippet
+        assert ".ssh" in snippet
+        assert "Library/Preferences/foo.plist" in snippet
+        assert "ln -s" in snippet
+
+
 
 

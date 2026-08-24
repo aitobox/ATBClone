@@ -75,12 +75,44 @@ def configure_cocoa_wrapping_label(native_label: Any, selectable: bool = True) -
                 cell.setScrollable_(False)
             if hasattr(cell, "setSelectable_"):
                 cell.setSelectable_(selectable)
-        if hasattr(native_label, "setSelectable_"):
-            native_label.setSelectable_(selectable)
-        if hasattr(native_label, "setUsesSingleLineMode_"):
-            native_label.setUsesSingleLineMode_(False)
         if hasattr(native_label, "setMaximumNumberOfLines_"):
             native_label.setMaximumNumberOfLines_(0)
+    except Exception:
+        pass
+
+
+def configure_cocoa_card(native_view: Any, corner_radius: float = 10.0, border_width: float = 0.5) -> None:
+    """Configure an NSView container to display as an elevated macOS card with rounded corners and hairline border."""
+    if sys.platform != "darwin" or native_view is None:
+        return
+    try:
+        from toga_cocoa.libs.appkit import NSColor
+        if hasattr(native_view, "setWantsLayer_"):
+            native_view.setWantsLayer_(True)
+        elif hasattr(native_view, "wantsLayer"):
+            native_view.wantsLayer = True
+        layer = getattr(native_view, "layer", None)
+        if layer is not None:
+            if hasattr(layer, "setCornerRadius_"):
+                layer.setCornerRadius_(corner_radius)
+            elif hasattr(layer, "cornerRadius"):
+                layer.cornerRadius = corner_radius
+            if hasattr(layer, "setMasksToBounds_"):
+                layer.setMasksToBounds_(True)
+            elif hasattr(layer, "masksToBounds"):
+                layer.masksToBounds = True
+            if hasattr(layer, "setBorderWidth_"):
+                layer.setBorderWidth_(border_width)
+            elif hasattr(layer, "borderWidth"):
+                layer.borderWidth = border_width
+
+            border_color = NSColor.colorWithRed_green_blue_alpha_(0.88, 0.88, 0.90, 1.0)
+            if hasattr(border_color, "CGColor"):
+                cg_color = border_color.CGColor
+                if hasattr(layer, "setBorderColor_"):
+                    layer.setBorderColor_(cg_color)
+                elif hasattr(layer, "borderColor"):
+                    layer.borderColor = cg_color
     except Exception:
         pass
 
@@ -312,7 +344,23 @@ def patch_cocoa_widgets() -> None:
 
         TogaIconView.setup = _patched_icon_setup
 
-        # 5. AppDelegate reopen patch (clicking Dock icon restores window)
+        # 5. Box / Card Surface Patch
+        try:
+            from toga_cocoa.widgets.box import Box as CocoaBox
+            _orig_box_set_bg = CocoaBox.set_background_color
+
+            def _patched_box_set_bg(self, color):
+                _orig_box_set_bg(self, color)
+                if color is not None:
+                    c_str = str(color).upper()
+                    if "#FFFFFF" in c_str or "RGBA(255, 255, 255" in c_str or "RGB(255, 255, 255" in c_str or c_str == "WHITE":
+                        configure_cocoa_card(self.native, corner_radius=10.0, border_width=0.5)
+
+            CocoaBox.set_background_color = _patched_box_set_bg
+        except Exception:
+            pass
+
+        # 6. AppDelegate reopen patch (clicking Dock icon restores window)
         try:
             import toga_cocoa.libs.appkit
             from toga_cocoa.app import AppDelegate

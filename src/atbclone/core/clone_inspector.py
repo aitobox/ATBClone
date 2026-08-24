@@ -111,7 +111,7 @@ class CloneInspector:
     @classmethod
     def reconstruct_from_recipe(cls, record: CloneRecord) -> InjectedDetails:
         """Fallback reconstruction using Recipe and CloneRecord properties."""
-        recipe = RecipeLoader.match(record.bundle_id)
+        recipe = RecipeLoader.match(record.bundle_id, app_path=record.source_path)
         env_vars: dict[str, str] = {}
         launch_args: list[str] = []
 

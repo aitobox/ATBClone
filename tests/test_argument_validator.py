@@ -68,3 +68,25 @@ def test_validator_empty_args(tmp_path: Path):
     valid, pruned = LaunchArgumentValidator.validate_and_filter(dummy_bin, [], app_type="generic")
     assert valid == []
     assert pruned == []
+
+
+def test_validator_with_app_bundle_dir(tmp_path: Path):
+    app_dir = tmp_path / "CustomApp.app"
+    macos_dir = app_dir / "Contents" / "MacOS"
+    macos_dir.mkdir(parents=True)
+    exe = macos_dir / "CustomApp"
+    exe.write_bytes(b"MachO_HEADER\x00--my-custom-flag\x00")
+    plist = app_dir / "Contents" / "Info.plist"
+    plist.write_bytes(b"""<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key><string>CustomApp</string>
+</dict>
+</plist>""")
+
+    args = ["--my-custom-flag=1", "--bad-flag=2"]
+    valid, pruned = LaunchArgumentValidator.validate_and_filter(app_dir, args, app_type="generic")
+    assert valid == ["--my-custom-flag=1"]
+    assert pruned == ["--bad-flag=2"]
+

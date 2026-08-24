@@ -66,3 +66,41 @@ def test_probe_nonexistent_binary(tmp_path: Path):
     res = BinaryArgumentProber.probe_data_dir_argument(tmp_path / "nonexistent")
     assert res.flag is None
     assert res.template is None
+
+
+def test_probe_data_dir_argument_from_app_bundle_dir(tmp_path: Path):
+    app_dir = tmp_path / "DirectApp.app"
+    macos_dir = app_dir / "Contents" / "MacOS"
+    macos_dir.mkdir(parents=True)
+    exe = macos_dir / "DirectApp"
+    exe.write_bytes(b"MachO_HEADER\x00--config-path=\x00")
+    plist = app_dir / "Contents" / "Info.plist"
+    plist.write_bytes(b"""<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key><string>DirectApp</string>
+</dict>
+</plist>""")
+
+    # Pass app bundle directory directly
+    res = BinaryArgumentProber.probe_data_dir_argument(app_dir)
+    assert res.flag == "--config-path"
+    assert res.template == "--config-path={{ATB_DATA_DIR}}"
+
+
+def test_probe_profile_directory_does_not_falsely_match_profile(tmp_path: Path):
+    dummy_bin = tmp_path / "app_profile_dir"
+    dummy_bin.write_bytes(b"MachO_HEADER\x00--profile-directory=\x00")
+    res = BinaryArgumentProber.probe_data_dir_argument(dummy_bin)
+    assert res.flag == "--profile-directory"
+    assert res.template == "--profile-directory={{ATB_DATA_DIR}}"
+
+
+def test_probe_double_dash_profile_does_not_match_single_dash(tmp_path: Path):
+    dummy_bin = tmp_path / "app_double_profile"
+    dummy_bin.write_bytes(b"MachO_HEADER\x00--profile=\x00")
+    res = BinaryArgumentProber.probe_data_dir_argument(dummy_bin)
+    assert res.flag == "--profile"
+    assert res.template == "--profile={{ATB_DATA_DIR}}"
+

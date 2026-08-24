@@ -94,7 +94,7 @@ class BinaryArgumentProber:
     @classmethod
     def probe_data_dir_argument(cls, binary_path: Path | str) -> ArgumentProbeResult:
         """Inspect binary to find candidate data directory arguments."""
-        path = Path(binary_path).expanduser().resolve()
+        path = cls.resolve_executable_path(binary_path)
         if not path.is_file():
             return ArgumentProbeResult(reason="Binary file not found.")
 
@@ -102,12 +102,20 @@ class BinaryArgumentProber:
         if not strings:
             return ArgumentProbeResult(reason="No printable strings extracted from binary.")
 
-        # Match candidates in priority order
+        # Match candidates in priority order with precise boundary checking
         for flag, template, syntax in cls.CANDIDATE_PATTERNS:
-            # Check if flag exists in any extracted string
-            flag_token = flag.lstrip("-")
+            if flag.startswith("--"):
+                flag_regex = re.compile(rf"(?<![\w-]){re.escape(flag)}(?:[=\s\:\>\<\"\'\`]|$)", re.IGNORECASE)
+            elif flag.startswith("-D"):
+                flag_regex = re.compile(rf"(?<![\w-]){re.escape(flag)}(?:[=\s\:\>\<\"\'\`]|$)", re.IGNORECASE)
+            elif flag.startswith("-"):
+                # Single dash flag: must not be preceded by another dash (i.e. not --flag)
+                flag_regex = re.compile(rf"(?<!-){re.escape(flag)}(?:[=\s\:\>\<\"\'\`]|$)", re.IGNORECASE)
+            else:
+                flag_regex = re.compile(rf"\b{re.escape(flag)}\b", re.IGNORECASE)
+
             for s in strings:
-                if flag in s or (flag_token in s and (f"--{flag_token}" in s or f"-{flag_token}" in s)):
+                if flag_regex.search(s):
                     reason = f"Detected CLI data directory parameter '{flag}' via binary static analysis."
                     logger.info(f"Probed argument for '{path.name}': {flag} ({reason})")
                     return ArgumentProbeResult(
@@ -214,7 +222,7 @@ class LaunchArgumentValidator:
 
         # Extract binary strings if needed for unknown flags
         binary_strings: set[str] | None = None
-        path = Path(binary_path).expanduser().resolve()
+        path = BinaryArgumentProber.resolve_executable_path(binary_path)
 
         validated: list[str] = []
         pruned: list[str] = []
@@ -244,17 +252,24 @@ class LaunchArgumentValidator:
                 i += 1
                 continue
 
-            # 3. If app_type is a known framework (chromium/electron/firefox) and flag starts with standard prefix, check whitelist
-            # For custom/unknown apps or custom flags: check binary strings
+            # 3. For custom/unknown apps or custom flags: check binary strings
             if binary_strings is None:
                 binary_strings = BinaryArgumentProber.extract_binary_strings(path)
 
-            flag_token = flag.lstrip("-")
             is_supported = False
             if binary_strings:
-                # Check if flag exists in binary strings
+                flag_clean = flag.strip().strip('"\'')
+                if flag_clean.startswith("--"):
+                    flag_regex = re.compile(rf"(?<![\w-]){re.escape(flag_clean)}(?:[=\s\:\>\<\"\'\`]|$)", re.IGNORECASE)
+                elif flag_clean.startswith("-D"):
+                    flag_regex = re.compile(rf"(?<![\w-]){re.escape(flag_clean)}(?:[=\s\:\>\<\"\'\`]|$)", re.IGNORECASE)
+                elif flag_clean.startswith("-"):
+                    flag_regex = re.compile(rf"(?<!-){re.escape(flag_clean)}(?:[=\s\:\>\<\"\'\`]|$)", re.IGNORECASE)
+                else:
+                    flag_regex = re.compile(rf"\b{re.escape(flag_clean)}\b", re.IGNORECASE)
+
                 for s in binary_strings:
-                    if flag in s or (flag_token and flag_token in s and (f"--{flag_token}" in s or f"-{flag_token}" in s)):
+                    if flag_regex.search(s):
                         is_supported = True
                         break
 

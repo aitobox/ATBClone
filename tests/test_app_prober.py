@@ -133,3 +133,42 @@ def test_app_prober_ios_app(tmp_path: Path):
         assert result.recipe.environment_injection == {}
         assert "iOS" in result.reason
 
+
+def test_detect_app_type_chromium(tmp_path: Path):
+    assert AppProber.detect_app_type(tmp_path, bundle_id="com.google.Chrome") == "chromium"
+    assert AppProber.detect_app_type(tmp_path, bundle_id="com.microsoft.edgemac") == "chromium"
+    assert AppProber.detect_app_type(tmp_path, frameworks=["Chromium Framework.framework"]) == "chromium"
+
+
+def test_detect_app_type_electron(tmp_path: Path):
+    assert AppProber.detect_app_type(tmp_path, bundle_id="com.microsoft.VSCode") == "electron"
+    assert AppProber.detect_app_type(tmp_path, frameworks=["Electron Framework.framework"]) == "electron"
+
+
+def test_detect_app_type_firefox(tmp_path: Path):
+    assert AppProber.detect_app_type(tmp_path, bundle_id="org.mozilla.firefox") == "firefox"
+    assert AppProber.detect_app_type(tmp_path, frameworks=["XUL.framework"]) == "firefox"
+
+
+def test_detect_app_type_cocoa(tmp_path: Path):
+    app_dir = tmp_path / "WeChat.app"
+    (app_dir / "Contents" / "MacOS").mkdir(parents=True)
+    assert AppProber.detect_app_type(app_dir, bundle_id="com.tencent.xinWeChat") == "cocoa"
+    assert AppProber.detect_app_type(app_dir, bundle_id="ru.keepcoder.Telegram") == "cocoa"
+
+
+def test_app_prober_analyze_sets_recipe_app_type(tmp_path: Path):
+    app_dir = tmp_path / "Google Chrome.app"
+    app_dir.mkdir()
+    mock_info = AppInfo(
+        path=app_dir,
+        bundle_id="com.google.Chrome",
+        app_name="Google Chrome",
+        executable=app_dir / "Contents" / "MacOS" / "Google Chrome",
+        has_sandbox=False,
+    )
+    with patch.object(AppProber, "inspect_entitlements", return_value={}), \
+         patch.object(AppProber, "detect_frameworks", return_value=[]):
+        res = AppProber.analyze(app_dir, app_info=mock_info)
+        assert res.recipe.app_type == "chromium"
+

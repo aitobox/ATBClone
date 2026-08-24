@@ -8,7 +8,7 @@ from typing import Any
 
 from atbclone.core.app_inspector import AppInspector
 from atbclone.core.models import AppInfo
-from atbclone.recipes.models import Recipe
+from atbclone.recipes.models import AppType, Recipe
 
 
 @dataclass
@@ -60,6 +60,49 @@ class AppProber:
         ]
 
     @classmethod
+    def detect_app_type(
+        cls,
+        app_path: Path | str = "",
+        bundle_id: str = "",
+        frameworks: list[str] | None = None,
+    ) -> AppType:
+        """Detect the application runtime framework / app type."""
+        if frameworks is None and app_path:
+            frameworks = cls.detect_frameworks(app_path)
+        if frameworks is None:
+            frameworks = []
+
+        bid_lower = bundle_id.lower()
+        fw_lower = [f.lower() for f in frameworks]
+
+        # 1. Electron detection (Framework or bundle ID)
+        if any("electron" in f for f in fw_lower) or any(
+            k in bid_lower for k in ["electron", "vscode", "com.microsoft.vscode", "slack", "discord", "lark", "notion"]
+        ):
+            return "electron"
+
+        # 2. Chromium detection (Framework or bundle ID)
+        if any("chromium" in f or "google chrome" in f for f in fw_lower) or any(
+            k in bid_lower for k in ["chrome", "chromium", "microsoft.edge", "arc", "brave"]
+        ):
+            return "chromium"
+
+        # 3. Firefox / Gecko detection
+        if any("xul" in f for f in fw_lower) or "firefox" in bid_lower or "torbrowser" in bid_lower:
+            return "firefox"
+
+        # 4. Standard Cocoa (AppKit / SwiftUI) vs Generic
+        if app_path:
+            path = Path(app_path).expanduser().resolve()
+            if (path / "Contents" / "MacOS").is_dir() or (path / "Contents" / "Info.plist").is_file():
+                return "cocoa"
+
+        if bundle_id:
+            return "cocoa"
+
+        return "generic"
+
+    @classmethod
     def analyze(
         cls,
         app_path: Path | str,
@@ -80,7 +123,7 @@ class AppProber:
         if not has_sandbox and app_info.has_sandbox:
             has_sandbox = True
 
-        bid_lower = app_info.bundle_id.lower()
+        app_type = cls.detect_app_type(path, bundle_id=app_info.bundle_id, frameworks=frameworks)
 
         # iOS/iPadOS app on Apple Silicon Mac detection
         if getattr(app_info, "is_ios_app", False):
@@ -90,15 +133,13 @@ class AppProber:
             env_injection: dict[str, str] = {}
             reason = "iOS/iPadOS Wrapper application on Mac (not supported for cloning)."
         # Chromium / Electron detection
-        elif any(k in bid_lower for k in ["chrome", "chromium", "microsoft.edge", "arc"]) or (
-            any("Electron" in fw or "Chromium" in fw for fw in frameworks) or "electron" in bid_lower
-        ):
+        elif app_type in ("chromium", "electron"):
             strategy = "soft_clone"
             strip_sandbox = False
             launch_args = ["--user-data-dir={{ATB_DATA_DIR}}"]
             env_injection = {}
             reason = "Chromium/Electron framework detected; supports --user-data-dir parameter."
-        elif "firefox" in bid_lower:
+        elif app_type == "firefox":
             strategy = "soft_clone"
             strip_sandbox = False
             launch_args = ["-profile", "{{ATB_DATA_DIR}}"]
@@ -124,6 +165,7 @@ class AppProber:
             strip_sandbox=strip_sandbox,
             environment_injection=env_injection,
             launch_args=launch_args,
+            app_type=app_type,
         )
 
         return ProbeResult(

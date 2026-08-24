@@ -102,6 +102,19 @@ class CloneDetailWindow(toga.Window):
         if cmd and copy_to_clipboard(cmd):
             self.btn_copy_cmd.text = t("win_detail_cmd_copied")
 
+            import asyncio
+
+            try:
+                loop = asyncio.get_running_loop()
+
+                async def _reset_text():
+                    await asyncio.sleep(2)
+                    self.btn_copy_cmd.text = t("win_detail_btn_copy_cmd")
+
+                loop.create_task(_reset_text())
+            except RuntimeError:
+                pass
+
     def _build_content(self) -> toga.Box:
         root = toga.Box(style=Pack(direction=COLUMN, margin=(14, 16, 14, 16), background_color=Theme.BG_WINDOW))
 

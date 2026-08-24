@@ -37,14 +37,41 @@ class BinaryArgumentProber:
         ("-Didea.config.path", "-Didea.config.path={{ATB_DATA_DIR}}/config", "equals"),
     ]
 
-    @staticmethod
+    @classmethod
+    def resolve_executable_path(cls, target_path: Path | str) -> Path:
+        """Resolve a path (which may be a .app directory or a direct binary) to the executable Mach-O binary."""
+        path = Path(target_path).expanduser().resolve()
+        if path.is_dir():
+            plist_path = path / "Contents" / "Info.plist"
+            if plist_path.is_file():
+                try:
+                    import plistlib
+
+                    with plist_path.open("rb") as f:
+                        plist_data = plistlib.load(f)
+                    exe_name = plist_data.get("CFBundleExecutable")
+                    if exe_name:
+                        candidate = path / "Contents" / "MacOS" / exe_name
+                        if candidate.is_file():
+                            return candidate
+                except Exception:
+                    pass
+            macos_dir = path / "Contents" / "MacOS"
+            if macos_dir.is_dir():
+                for c in macos_dir.iterdir():
+                    if c.is_file() and not c.name.startswith(".") and not c.name.endswith(".bin"):
+                        return c
+        return path
+
+    @classmethod
     def extract_binary_strings(
+        cls,
         binary_path: Path | str,
         min_len: int = 3,
         max_bytes: int = 15_000_000,
     ) -> set[str]:
         """Extract printable ASCII strings from a binary executable file."""
-        path = Path(binary_path).expanduser().resolve()
+        path = cls.resolve_executable_path(binary_path)
         if not path.is_file():
             return set()
 
@@ -101,6 +128,8 @@ class LaunchArgumentValidator:
     FRAMEWORK_WHITELISTS: dict[str, set[str]] = {
         "chromium": {
             "--user-data-dir",
+            "--no-first-run",
+            "--no-default-browser-check",
             "--lang",
             "--disk-cache-dir",
             "--profile-directory",
@@ -110,9 +139,13 @@ class LaunchArgumentValidator:
             "--disable-features",
             "--remote-debugging-port",
             "--app",
+            "--incognito",
+            "--guest",
         },
         "electron": {
             "--user-data-dir",
+            "--no-first-run",
+            "--no-default-browser-check",
             "--lang",
             "--disk-cache-dir",
             "--profile-directory",
@@ -122,6 +155,8 @@ class LaunchArgumentValidator:
             "--disable-features",
             "--remote-debugging-port",
             "--app",
+            "--incognito",
+            "--guest",
         },
         "firefox": {
             "-profile",
@@ -130,6 +165,9 @@ class LaunchArgumentValidator:
             "-no-remote",
             "-headless",
             "-private",
+            "-new-instance",
+            "-new-window",
+            "-new-tab",
         },
         "cocoa": {
             "-AppleLanguages",

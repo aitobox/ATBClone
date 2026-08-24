@@ -112,3 +112,30 @@ def test_probe_invalid_app_path(tmp_path: Path):
     result = runner.invoke(cli, ["probe", str(not_app)])
     assert result.exit_code != 0
     assert "not a valid macOS" in result.output
+
+
+def test_probe_unknown_app_probes_cli_data_dir_argument(tmp_path: Path):
+    app_dir = tmp_path / "CustomCLI.app"
+    macos_dir = app_dir / "Contents" / "MacOS"
+    macos_dir.mkdir(parents=True)
+    exe = macos_dir / "CustomCLI"
+    exe.write_bytes(b"MachO_HEADER\x00--data-dir=\x00--other\x00")
+    plist = app_dir / "Contents" / "Info.plist"
+    plist.write_bytes(b"""<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key><string>com.custom.cli</string>
+    <key>CFBundleExecutable</key><string>CustomCLI</string>
+    <key>CFBundleName</key><string>CustomCLI</string>
+</dict>
+</plist>""")
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["probe", str(app_dir), "--json"])
+    assert result.exit_code == 0
+    data = json.loads(result.output)
+    assert data["strategy"] == "soft_clone"
+    assert data["recipe"]["launch_args"] == ["--data-dir={{ATB_DATA_DIR}}"]
+    assert "--data-dir" in data["reason"]
+

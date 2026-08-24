@@ -42,6 +42,10 @@ def test_clone_detail_window_initializes(tmp_path):
     assert win.content is not None
     assert win.label_clone_name.text == "TestApp_Clone"
     assert "com.google.Chrome" in win.label_bundle_id.text
+    assert isinstance(win.text_content, toga.MultilineTextInput)
+    assert win.text_content.readonly is True
+    assert "com.google.Chrome" in win.text_content.value
+    assert "TestApp" in win.text_content.value
 
 
 def test_clone_detail_copy_button_action(tmp_path, monkeypatch):
@@ -74,17 +78,13 @@ def test_clone_detail_copy_button_action(tmp_path, monkeypatch):
 
 
 def test_clone_detail_get_summary_text_and_copy_all(tmp_path, monkeypatch):
-    copied_data = []
+    copied = []
 
-    class DummyPopen:
-        def __init__(self, *args, **kwargs):
-            self.returncode = 0
+    def mock_copy(text):
+        copied.append(text)
+        return True
 
-        def communicate(self, data):
-            copied_data.append(data.decode("utf-8"))
-            return (b"", b"")
-
-    monkeypatch.setattr(subprocess, "Popen", lambda *args, **kwargs: DummyPopen())
+    monkeypatch.setattr("atbclone.gui.windows.clone_detail.copy_to_clipboard", mock_copy)
 
     record = CloneRecord(
         clone_name="TestApp_Clone",
@@ -112,8 +112,8 @@ def test_clone_detail_get_summary_text_and_copy_all(tmp_path, monkeypatch):
 
     assert win.btn_copy_all is not None
     win._on_copy_all(win.btn_copy_all)
-    assert len(copied_data) == 1
-    assert "TestApp_Clone" in copied_data[0]
+    assert len(copied) == 1
+    assert "TestApp_Clone" in copied[0]
     assert win.btn_copy_all.text != ""
 
 

@@ -81,6 +81,30 @@ def configure_cocoa_wrapping_label(native_label: Any, selectable: bool = True) -
         pass
 
 
+def configure_cocoa_multiline_text_view(native_scroll_view: Any, font_size: float = 12.5, readonly: bool = False) -> None:
+    """Configure an NSTextView inside an NSScrollView for crisp typography, selection, and readonly support."""
+    if sys.platform != "darwin" or native_scroll_view is None:
+        return
+    try:
+        tv = getattr(native_scroll_view, "documentView", None)
+        if tv is not None:
+            if hasattr(tv, "setSelectable_"):
+                tv.setSelectable_(True)
+            if hasattr(tv, "setEditable_"):
+                tv.setEditable_(not readonly)
+            from toga_cocoa.libs import NSFont
+            if hasattr(tv, "setFont_"):
+                try:
+                    tv.setFont_(NSFont.monospacedSystemFontOfSize_weight_(font_size, 0.0))
+                except Exception:
+                    try:
+                        tv.setFont_(NSFont.userFixedPitchFontOfSize_(font_size))
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+
+
 def configure_cocoa_card(native_view: Any, corner_radius: float = 10.0, border_width: float = 0.5) -> None:
     """Configure an NSView container to display as an elevated macOS card with rounded corners and hairline border."""
     if sys.platform != "darwin" or native_view is None:

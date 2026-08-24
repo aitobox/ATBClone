@@ -31,6 +31,7 @@ class Recipe(BaseModel):
     launch_args: list[str] = Field(default_factory=list)
     language: str = "system"
     app_type: AppType | None = None
+    patch_framework_singleton: bool = False
 
 
 def supports_data_dir(recipe: Recipe) -> bool:

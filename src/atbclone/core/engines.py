@@ -424,8 +424,17 @@ if os.path.isdir(frameworks_dir):
         wrapper_lines.append(f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"')
         wrapper_body = "\n".join(wrapper_lines)
 
-        # Build framework singleton patcher command for Electron/Chromium apps
-        singleton_patch_cmd = cls._build_singleton_patch_cmd(task.dest_path)
+        # Build framework singleton patcher command ONLY when explicitly enabled by recipe
+        # or when cloning Feishu/Lark which requires custom ProcessSingleton handling.
+        needs_singleton_patch = (
+            getattr(task.recipe, "patch_framework_singleton", False)
+            or getattr(task.source, "bundle_id", "") == "com.electron.lark"
+        )
+        singleton_patch_cmd = (
+            cls._build_singleton_patch_cmd(task.dest_path)
+            if needs_singleton_patch
+            else ""
+        )
 
 
         if task.recipe.strip_sandbox:

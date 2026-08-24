@@ -649,7 +649,24 @@ class TestProcessSingletonFrameworkPatching:
         assert bl_patched == 0x52800000  # mov w0, #0
         assert nop_patched == 0xD503201F  # nop
 
-    def test_hard_clone_script_includes_singleton_patch_cmd(self, sample_task):
+    def test_hard_clone_script_omits_singleton_patch_by_default(self, sample_task):
+        sample_task.source.bundle_id = "com.example.normalapp"
+        sample_task.recipe.patch_framework_singleton = False
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "Patch ProcessSingleton in embedded frameworks" not in script
+
+    def test_hard_clone_script_includes_singleton_patch_for_lark(self, sample_task):
+        sample_task.source.bundle_id = "com.electron.lark"
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "Patch ProcessSingleton in embedded frameworks" in script
+
+    def test_hard_clone_script_includes_singleton_patch_when_recipe_flag_true(self, sample_task):
+        sample_task.source.bundle_id = "com.other.electronapp"
+        sample_task.recipe.patch_framework_singleton = True
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]

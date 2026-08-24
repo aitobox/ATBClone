@@ -154,6 +154,7 @@ class TestSoftCloneEngine:
             assert "-AppleLocale" not in script
 
     def test_soft_clone_with_launch_args_and_proxy(self, sample_task):
+        sample_task.recipe.app_type = "chromium"
         sample_task.recipe.launch_args = [
             "--user-data-dir={{ATB_DATA_DIR}}",
             "--no-first-run",
@@ -171,7 +172,6 @@ class TestSoftCloneEngine:
             assert 'export HTTP_PROXY="http://127.0.0.1:8080"' in script
             assert '--user-data-dir=/Users/test/Library/Application Support/TestApp2' in script
             assert "exec /Applications/TestApp.app/Contents/MacOS/TestApp '--user-data-dir=/Users/test/Library/Application Support/TestApp2' --no-first-run" in script
-            assert "-AppleLanguages" in script
 
     def test_soft_clone_failure_cleans_up_and_reraises(self, sample_task):
         with patch("atbclone.executor.runner.Runner.run", side_effect=[CloneError("Permission denied"), None]) as mock_run:
@@ -261,13 +261,14 @@ class TestHardCloneEngine:
             assert 'export LANG=' in script
 
     def test_hard_clone_with_launch_args(self, sample_task):
+        sample_task.recipe.app_type = "chromium"
         sample_task.recipe.launch_args = ["--user-data-dir={{ATB_DATA_DIR}}", "--no-first-run"]
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
             assert 'exec "$(dirname "$0")/TestApp.bin" \'--user-data-dir=/Users/test/Library/Application Support/TestApp2\' --no-first-run' in script
-            assert "-AppleLanguages" in script
+            assert "--lang=" in script
 
     def test_hard_clone_failure_cleans_up_and_reraises(self, sample_task):
 
@@ -504,6 +505,82 @@ class TestAdaptiveLanguageArgs:
             assert "-AppleLanguages" in script
             assert "-AppleLocale" in script
             assert "--lang=" not in script
+
+    def test_soft_clone_engine_prunes_unsupported_args(self, tmp_path, base_recipe):
+        app_dir = tmp_path / "MyNative.app"
+        (app_dir / "Contents" / "MacOS").mkdir(parents=True)
+        exe = app_dir / "Contents" / "MacOS" / "MyNative"
+        exe.write_bytes(b"MachO_HEADER\x00--supported-flag\x00")
+
+        app_info = AppInfo(
+            path=app_dir,
+            bundle_id="com.example.mynative",
+            app_name="MyNative",
+            executable=exe,
+            has_sandbox=False,
+        )
+
+        base_recipe.app_type = "cocoa"
+        base_recipe.launch_args = [
+            "--supported-flag=foo",
+            "--unsupported-flag=bar",
+            "--user-data-dir={{ATB_DATA_DIR}}",
+        ]
+
+        task = CloneTask(
+            source=app_info,
+            dest_path=tmp_path / "MyNative2.app",
+            data_dir=tmp_path / "Data",
+            recipe=base_recipe,
+            clone_name="MyNative2",
+            new_bundle_id="com.example.mynative.clone2",
+        )
+
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            SoftCloneEngine.execute(task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "--supported-flag=foo" in script
+            assert "--unsupported-flag=bar" not in script
+            assert "--user-data-dir=" not in script
+
+    def test_hard_clone_engine_prunes_unsupported_args_and_falls_back_to_env(self, tmp_path, base_recipe):
+        app_dir = tmp_path / "MyNative.app"
+        (app_dir / "Contents" / "MacOS").mkdir(parents=True)
+        exe = app_dir / "Contents" / "MacOS" / "MyNative"
+        exe.write_bytes(b"MachO_HEADER\x00CocoaApp\x00")
+
+        app_info = AppInfo(
+            path=app_dir,
+            bundle_id="com.example.mynative",
+            app_name="MyNative",
+            executable=exe,
+            has_sandbox=False,
+        )
+
+        base_recipe.app_type = "cocoa"
+        base_recipe.strategy = "hard_clone"
+        # Faulty recipe specified --user-data-dir for Cocoa app that doesn't support it
+        base_recipe.launch_args = ["--user-data-dir={{ATB_DATA_DIR}}"]
+        base_recipe.environment_injection = {}
+
+        task = CloneTask(
+            source=app_info,
+            dest_path=tmp_path / "MyNative2.app",
+            data_dir=tmp_path / "Data",
+            recipe=base_recipe,
+            clone_name="MyNative2",
+            new_bundle_id="com.example.mynative.clone2",
+        )
+
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            # Argument must be pruned
+            assert "--user-data-dir=" not in script
+            # Must fall back to HOME & TMPDIR
+            assert f"{tmp_path}/Data/Home" in script
+            assert f"{tmp_path}/Data/Tmp" in script
+
 
 
 

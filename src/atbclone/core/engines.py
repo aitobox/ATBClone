@@ -40,6 +40,25 @@ class CloneEngine:
             export no_proxy="$NO_PROXY"
         """).strip()
 
+    @classmethod
+    def _get_validated_launch_args(cls, task: CloneTask) -> list[str]:
+        """Validate launch_args against app_type and executable binary strings, pruning unsupported args."""
+        from atbclone.core.argument_prober import LaunchArgumentValidator
+        app_type = getattr(task.recipe, "app_type", None)
+        if not app_type and hasattr(task, "source") and task.source and getattr(task.source, "path", None):
+            from atbclone.core.app_prober import AppProber
+            app_type = AppProber.detect_app_type(
+                task.source.path,
+                bundle_id=getattr(task.source, "bundle_id", ""),
+            )
+        exe_path = getattr(task.source, "executable", None) or task.source.path
+        valid_args, _ = LaunchArgumentValidator.validate_and_filter(
+            exe_path,
+            task.recipe.launch_args,
+            app_type=app_type or "generic",
+        )
+        return valid_args
+
     @staticmethod
     def _build_icon_cmd(task: CloneTask, dst_resources: str, dst_plist: str) -> str:
         """Return a shell snippet that applies icon customisation after Resources are in place.
@@ -108,10 +127,11 @@ class SoftCloneEngine(CloneEngine):
         wrapper = shlex.quote(str(task.dest_path / "Contents" / "MacOS" / bin_name))
 
         lang_env, lang_args = cls._build_language_env_and_args(task)
+        valid_launch_args = cls._get_validated_launch_args(task)
 
         args_list = [
             shlex.quote(arg.replace("{{ATB_DATA_DIR}}", str(task.data_dir)))
-            for arg in task.recipe.launch_args
+            for arg in valid_launch_args
         ]
         for larg in lang_args:
             args_list.append(shlex.quote(larg))
@@ -208,17 +228,26 @@ class HardCloneEngine(CloneEngine):
         wrapper = bin_orig
 
         lang_env, lang_args = cls._build_language_env_and_args(task)
+        valid_launch_args = cls._get_validated_launch_args(task)
+
+        # Fallback environment isolation if no valid launch args isolate data dir and no env vars are set
+        effective_env = dict(task.recipe.environment_injection)
+        has_data_in_args = any("{{ATB_DATA_DIR}}" in a for a in valid_launch_args)
+        has_data_in_env = any("{{ATB_DATA_DIR}}" in v for v in effective_env.values())
+        if not has_data_in_args and not has_data_in_env:
+            effective_env["HOME"] = "{{ATB_DATA_DIR}}/Home"
+            effective_env["TMPDIR"] = "{{ATB_DATA_DIR}}/Tmp"
 
         env_vars = "\n".join([
             f"export {k}={shlex.quote(v.replace('{{ATB_DATA_DIR}}', str(task.data_dir)))}"
-            for k, v in task.recipe.environment_injection.items()
+            for k, v in effective_env.items()
         ])
         proxy_env = cls._build_proxy_env(task)
 
         # Inject launch_args (e.g. --user-data-dir=... for Chromium apps)
         args_list = [
             shlex.quote(arg.replace("{{ATB_DATA_DIR}}", str(task.data_dir)))
-            for arg in task.recipe.launch_args
+            for arg in valid_launch_args
         ]
         for larg in lang_args:
             args_list.append(shlex.quote(larg))

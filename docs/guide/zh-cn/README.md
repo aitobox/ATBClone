@@ -15,7 +15,7 @@
 | **[第一章](01-basic-operations.md)** | **[基础操作与分身管理](01-basic-operations.md)** | 👶 **小白用户 / 普通用户** | 7 步交互式向导创建分身、快捷启动、一键直达数据目录、母体升级**无损同步更新**、表格视图**批量更新与批量删除**、安全删除（保留数据 vs 彻底清理）。 |
 | **[第二章](02-advanced-custom-recipes.md)** | **[冷门应用规则定制与基础参数](02-advanced-custom-recipes.md)** | ⚡ **进阶用户** | 使用 **App Prober (智能探针)** 深度扫描未知应用、可视化规则编辑器、**基础参数全解**（`bundle_id`、`strategy`、`strip_sandbox`、`proxy`）。 |
 | **[第三章](03-under-the-hood-and-internals.md)** | **[实现原理解析与高级参数全解](03-under-the-hood-and-internals.md)** | 🔬 **极客玩家 / 开发者** | 软分身与硬分身底层机制、**硬分身“三板斧”与二进制壳劫持 (Wrapper Hijack)** 深度剖析、数据-逻辑分离架构、**高级参数详解**（`environment_injection`、`symlink_whitelist`、动态路径宏）。 |
-| **[第四章](04-faq-and-troubleshooting.md)** | **[常见问题 (FAQ)、系统体检与反馈](04-faq-and-troubleshooting.md)** | 🩺 **全体用户** | 高频 FAQ（数据安全隔离、存放路径与备份迁移、封号风险与防关联原理解析、免 Root 权限机制）、Doctor 系统体检、**一键复制诊断信息提报 GitHub Issue 标准指引**。 |
+| **[第四章](04-faq-and-troubleshooting.md)** | **[常见问题 (FAQ)、系统体检与反馈](04-faq-and-troubleshooting.md)** | 🩺 **全体用户** | 高频 FAQ（数据安全隔离、存放路径与备份迁移、封号风险与防关联原理解析、免 Root 权限机制）、Doctor 系统体检、**分身详情信息提取与提报 GitHub Issue 标准指引**。 |
 
 ---
 

@@ -13,7 +13,7 @@ Whether you are a beginner looking to run two instances of WeChat or Telegram, o
 | **[Chapter 1](01-basic-operations.md)** | **[Basic Operations & Clone Management](01-basic-operations.md)** | 👶 **Beginners / Everyday Users** | 7-step creation wizard, launching apps, opening data folders, updating clones after host upgrades, batch updates, and safe deletion. |
 | **[Chapter 2](02-advanced-custom-recipes.md)** | **[Custom Recipes for Niche Apps](02-advanced-custom-recipes.md)** | ⚡ **Intermediate Users** | Using **App Prober** to scan unlisted apps, visual Recipe Editor, and basic parameters reference (`bundle_id`, `strategy`, `strip_sandbox`, `proxy`). |
 | **[Chapter 3](03-under-the-hood-and-internals.md)** | **[Under the Hood & Advanced Parameters](03-under-the-hood-and-internals.md)** | 🔬 **Power Users / Geeks** | Soft vs. Hard clone mechanics, Sandbox stripping, Binary Wrapper Hijack, data-logic separation, and advanced YAML macros (`environment_injection`, `symlink_whitelist`). |
-| **[Chapter 4](04-faq-and-troubleshooting.md)** | **[FAQ & Diagnostic Troubleshooting](04-faq-and-troubleshooting.md)** | 🩺 **All Users** | High-frequency questions (data safety, account ban risks, storage paths), Doctor system diagnostics, and 1-click GitHub Issue reporting. |
+| **[Chapter 4](04-faq-and-troubleshooting.md)** | **[FAQ & Diagnostic Troubleshooting](04-faq-and-troubleshooting.md)** | 🩺 **All Users** | High-frequency questions (data safety, account ban risks, storage paths), Doctor system diagnostics, and GitHub Issue reporting via Clone Details. |
 
 ---
 

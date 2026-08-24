@@ -1,6 +1,6 @@
 # Chapter 4: FAQ & Diagnostic Troubleshooting
 
-This chapter answers frequently asked questions regarding data privacy, account safety, storage paths, and macOS permissions. It also provides a step-by-step guide for using the built-in **Doctor** diagnostic tool and extracting diagnostic data to submit a GitHub Issue.
+This chapter answers frequently asked questions regarding data privacy, account safety, storage paths, and macOS permissions. It also provides a step-by-step guide for using the built-in **Doctor** diagnostic tool and copying diagnostic data from the Clone Details dialog to submit a GitHub Issue.
 
 ---
 
@@ -16,9 +16,8 @@ This chapter answers frequently asked questions regarding data privacy, account 
 - [System Diagnostics (Doctor Tab)](#system-diagnostics-doctor-tab)
 - [Reporting Issues to GitHub (Step-by-Step Guide)](#reporting-issues-to-github-step-by-step-guide)
   - [Step 1: Open Clone Details](#step-1-open-clone-details)
-  - [Step 2: Inspect Injected Parameters](#step-2-inspect-injected-parameters)
-  - [Step 3: Copy Diagnostic Command & Info](#step-3-copy-diagnostic-command--info)
-  - [Step 4: Submit Issue on GitHub](#step-4-submit-issue-on-github)
+  - [Step 2: Copy Application Information from Clone Details](#step-2-copy-application-information-from-clone-details)
+  - [Step 3: Submit Issue on GitHub](#step-3-submit-issue-on-github)
 - [Community & Support](#community--support)
 
 ---
@@ -125,12 +124,12 @@ If you encounter unexpected behavior during cloning or signing, run our built-in
 
 ## 🐛 Reporting Issues to GitHub (Step-by-Step Guide)
 
-If you find an application that fails to clone, or crashes upon opening after cloning, please report it to our GitHub repository. ATBClone includes a dedicated **Clone Details** inspector that allows you to capture full diagnostic parameters with one click.
+If you find an application that fails to clone, or crashes upon opening after cloning, please report it to our GitHub repository:
 
 ### Step 1: Open Clone Details
 1. Open the ATBClone main window.
 2. In either **Card Grid View** or **Table View**, select the problematic clone.
-3. Click the **"Details"** (`ℹ️` / `详情`) button.
+3. Click the **"Details"** (`ℹ️` / `详情`) button to open the Clone Details dialog.
 
 ```text
 +-------------------------------------------------------------+
@@ -149,7 +148,6 @@ If you find an application that fails to clone, or crashes upon opening after cl
 |  • Launch Args:     --user-data-dir=...                     |
 |  • Env Vars:        HOME=..., TMPDIR=...                    |
 |  • Exec Command:    env HOME=... /path/to/WeChat.bin        |
-|                     [ Copy Command 📋 ]                     |
 |                                                             |
 |  [ Close ]                                                  |
 +-------------------------------------------------------------+
@@ -157,22 +155,18 @@ If you find an application that fails to clone, or crashes upon opening after cl
 
 ---
 
-### Step 2: Inspect Injected Parameters
-The Details window reveals:
+### Step 2: Copy Application Information from Clone Details
+The Clone Details dialog displays all critical runtime parameters:
 * **Basic Information**: Exact source path, mutated bundle identifier, strategy, and directory destinations.
 * **Launch Arguments**: Injected command-line parameters.
 * **Environment Variables**: Injected `$HOME`, `$TMPDIR`, and proxy configurations.
-* **Execution Command**: The exact terminal command used to launch the binary wrapper.
+* **Execution Command**: The exact startup command.
+
+Simply select and copy the configuration and environment text from the dialog.
 
 ---
 
-### Step 3: Copy Diagnostic Command & Info
-1. Click the **"Copy Command"** button to copy the exact startup command to your clipboard.
-2. Test running the copied command in macOS Terminal to see if any specific Mach-O error or crash log is printed.
-
----
-
-### Step 4: Submit Issue on GitHub
+### Step 3: Submit Issue on GitHub
 1. Navigate to the official ATBClone Issues page:
    👉 **[https://github.com/aitobox/ATBClone/issues](https://github.com/aitobox/ATBClone/issues)**
 2. Click **"New Issue"**.
@@ -180,8 +174,7 @@ The Details window reveals:
    * **App Name & Version**: e.g., WeChat v3.8.7.
    * **macOS Version & Chip**: e.g., macOS 14.5 Sonoma on M2 Max.
    * **Cloning Strategy**: `hard_clone` or `soft_clone`.
-   * **Clone Details Information**: Paste the data copied from the Details window.
-   * **Error Logs / Terminal Output**: Paste any error messages from the Terminal or the ATBClone **Logs** tab.
+   * **Clone Details Information**: Paste the text copied from the Clone Details dialog directly into the issue description, along with any error messages from the ATBClone **Logs** tab.
 
 Our core maintainers will review the issue and release an updated recipe or fix in the next version!
 

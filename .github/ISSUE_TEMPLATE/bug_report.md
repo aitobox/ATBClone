@@ -29,10 +29,11 @@ If applicable, add screenshots to help explain your problem.
  - Version [e.g. 22]
 
 **Clone APP Desc:**
-Please Use "APP Probe" to check APP info:
+Please Use "My Clones"->"Details" to copy APP info:
 
  - App Name: [e. g. WeChat]
  - BundleID: [e. g. com.tencent.xinWeChat]
+ - ...
 
 **Additional context**
 Add any other context about the problem here.

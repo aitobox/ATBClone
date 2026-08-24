@@ -172,3 +172,51 @@ def test_app_prober_analyze_sets_recipe_app_type(tmp_path: Path):
         res = AppProber.analyze(app_dir, app_info=mock_info)
         assert res.recipe.app_type == "chromium"
 
+
+def test_app_prober_unknown_app_probed_data_dir_flag(tmp_path: Path):
+    app_dir = tmp_path / "UnknownTool.app"
+    macos_dir = app_dir / "Contents" / "MacOS"
+    macos_dir.mkdir(parents=True)
+    exe = macos_dir / "UnknownTool"
+    exe.write_bytes(b"MachO_HEADER\x00--data-dir=\x00--other\x00")
+
+    mock_info = AppInfo(
+        path=app_dir,
+        bundle_id="com.unknown.tool",
+        app_name="UnknownTool",
+        executable=exe,
+        has_sandbox=False,
+    )
+
+    with patch.object(AppProber, "inspect_entitlements", return_value={}), \
+         patch.object(AppProber, "detect_frameworks", return_value=[]):
+        res = AppProber.analyze(app_dir, app_info=mock_info)
+        assert res.strategy == "soft_clone"
+        assert res.recipe.launch_args == ["--data-dir={{ATB_DATA_DIR}}"]
+        assert res.recipe.environment_injection == {}
+        assert "CLI data directory parameter '--data-dir'" in res.reason
+
+
+def test_app_prober_unknown_app_probed_data_dir_sandboxed(tmp_path: Path):
+    app_dir = tmp_path / "UnknownSandboxed.app"
+    macos_dir = app_dir / "Contents" / "MacOS"
+    macos_dir.mkdir(parents=True)
+    exe = macos_dir / "UnknownSandboxed"
+    exe.write_bytes(b"MachO_HEADER\x00--config-dir\x00")
+
+    mock_info = AppInfo(
+        path=app_dir,
+        bundle_id="com.unknown.sandboxed",
+        app_name="UnknownSandboxed",
+        executable=exe,
+        has_sandbox=True,
+    )
+
+    with patch.object(AppProber, "inspect_entitlements", return_value={"com.apple.security.app-sandbox": True}), \
+         patch.object(AppProber, "detect_frameworks", return_value=[]):
+        res = AppProber.analyze(app_dir, app_info=mock_info)
+        assert res.strategy == "hard_clone"
+        assert res.recipe.strip_sandbox is True
+        assert res.recipe.launch_args == ["--config-dir={{ATB_DATA_DIR}}"]
+
+

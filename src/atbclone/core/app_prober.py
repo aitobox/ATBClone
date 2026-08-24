@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from atbclone.core.app_inspector import AppInspector
+from atbclone.core.argument_prober import BinaryArgumentProber
 from atbclone.core.models import AppInfo
 from atbclone.recipes.models import AppType, Recipe
 
@@ -146,17 +147,33 @@ class AppProber:
             env_injection = {}
             reason = "Firefox/Gecko framework detected; supports -profile parameter."
         else:
-            strategy = "hard_clone"
-            strip_sandbox = has_sandbox
-            launch_args = []
-            env_injection = {
-                "HOME": "{{ATB_DATA_DIR}}/Home",
-                "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
-            }
-            reason = (
-                f"Native macOS application ({'Sandboxed' if has_sandbox else 'Non-sandboxed'}); "
-                f"requires binary wrapper hijack with HOME/TMPDIR isolation."
-            )
+            # Probe binary for custom data directory CLI argument (e.g. --data-dir, --config-dir)
+            arg_probe = BinaryArgumentProber.probe_data_dir_argument(app_info.executable)
+            if arg_probe.template:
+                if has_sandbox:
+                    strategy = "hard_clone"
+                    strip_sandbox = True
+                    launch_args = [arg_probe.template]
+                    env_injection = {}
+                    reason = f"Sandboxed application with CLI data directory parameter '{arg_probe.flag}'; requires hard clone with sandbox stripping."
+                else:
+                    strategy = "soft_clone"
+                    strip_sandbox = False
+                    launch_args = [arg_probe.template]
+                    env_injection = {}
+                    reason = f"CLI data directory parameter '{arg_probe.flag}' detected via binary analysis."
+            else:
+                strategy = "hard_clone"
+                strip_sandbox = has_sandbox
+                launch_args = []
+                env_injection = {
+                    "HOME": "{{ATB_DATA_DIR}}/Home",
+                    "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
+                }
+                reason = (
+                    f"Native macOS application ({'Sandboxed' if has_sandbox else 'Non-sandboxed'}); "
+                    f"requires binary wrapper hijack with HOME/TMPDIR isolation."
+                )
 
         recipe = Recipe(
             bundle_id=app_info.bundle_id,

@@ -60,8 +60,8 @@ def configure_cocoa_table(native_table: Any, row_height: float = 34.0) -> None:
         pass
 
 
-def configure_cocoa_wrapping_label(native_label: Any) -> None:
-    """Configure an NSTextField for multiline text wrapping, word breaking, and natural bounds calculation."""
+def configure_cocoa_wrapping_label(native_label: Any, selectable: bool = True) -> None:
+    """Configure an NSTextField for multiline text wrapping, selectable text, word breaking, and natural bounds calculation."""
     if sys.platform != "darwin" or native_label is None:
         return
     try:
@@ -73,6 +73,10 @@ def configure_cocoa_wrapping_label(native_label: Any) -> None:
                 cell.setLineBreakMode_(0)  # NSLineBreakByWordWrapping
             if hasattr(cell, "setScrollable_"):
                 cell.setScrollable_(False)
+            if hasattr(cell, "setSelectable_"):
+                cell.setSelectable_(selectable)
+        if hasattr(native_label, "setSelectable_"):
+            native_label.setSelectable_(selectable)
         if hasattr(native_label, "setUsesSingleLineMode_"):
             native_label.setUsesSingleLineMode_(False)
         if hasattr(native_label, "setMaximumNumberOfLines_"):

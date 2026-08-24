@@ -89,6 +89,11 @@ class CloneDetailWindow(toga.Window):
             on_press=self._on_copy_cmd,
             style=Pack(width=90, height=24, font_size=11),
         )
+        self.btn_copy_all = toga.Button(
+            t("win_detail_btn_copy_all"),
+            on_press=self._on_copy_all,
+            style=Pack(width=135, height=30, font_size=13, margin_right=10),
+        )
         self.btn_close = toga.Button(
             t("btn_close"),
             on_press=lambda w: self.close(),
@@ -96,6 +101,67 @@ class CloneDetailWindow(toga.Window):
         )
 
         self.content = self._build_content()
+
+    def get_summary_text(self) -> str:
+        """Generate a complete formatted text report of clone details for easy copying/reporting."""
+        proxy_str = self.record.proxy_summary if self.record.proxy_enabled else t("list_proxy_disabled")
+        strat_badge = t("card_strategy_soft") if self.record.strategy == "soft_clone" else t("card_strategy_hard")
+
+        from atbclone.core.locale import SUPPORTED_LANGUAGES
+        lang_key = SUPPORTED_LANGUAGES.get(self.record.language, {}).get("label_key", "lang_system")
+        lang_str = t(lang_key)
+
+        lines = [
+            f"=== {self.record.clone_name} ({t('win_detail_section_basic')}) ===",
+            t("win_detail_source_app", source_app=self.record.source_app),
+            t("win_detail_source_path", path=self.record.source_path),
+            t("win_detail_bundle_id", bundle_id=self.record.bundle_id),
+            t("win_detail_new_bundle_id", new_bundle_id=self.record.new_bundle_id or "—"),
+            t("win_detail_strategy", strategy=strat_badge),
+            f"{t('detail_label_language')}: {lang_str}",
+            t("win_detail_dest_path", dest_path=self.record.dest_path),
+            t("win_detail_data_dir", data_dir=self.record.data_dir),
+            t("win_detail_created_at", created_at=self.record.created_at),
+            t("win_detail_proxy", proxy=proxy_str),
+            "",
+            f"=== {t('win_detail_section_injected')} ===",
+            f"[{t('win_detail_launch_args')}]",
+        ]
+        if self.details.launch_args:
+            for arg in self.details.launch_args:
+                lines.append(f"  • {arg}")
+        else:
+            lines.append(f"  {t('win_detail_none')}")
+
+        lines.append(f"[{t('win_detail_env_vars')}]")
+        if self.details.env_vars:
+            for k, v in self.details.env_vars.items():
+                lines.append(f"  • {k}={v}")
+        else:
+            lines.append(f"  {t('win_detail_none')}")
+
+        lines.append(f"[{t('win_detail_exec_cmd')}]")
+        lines.append(f"  {self.details.exec_command or t('win_detail_none')}")
+
+        return "\n".join(lines)
+
+    def _on_copy_all(self, widget: toga.Button) -> None:
+        summary = self.get_summary_text()
+        if summary and copy_to_clipboard(summary):
+            self.btn_copy_all.text = t("win_detail_all_copied")
+
+            import asyncio
+
+            try:
+                loop = asyncio.get_running_loop()
+
+                async def _reset_text():
+                    await asyncio.sleep(2)
+                    self.btn_copy_all.text = t("win_detail_btn_copy_all")
+
+                loop.create_task(_reset_text())
+            except RuntimeError:
+                pass
 
     def _on_copy_cmd(self, widget: toga.Button) -> None:
         cmd = self.details.exec_command
@@ -227,6 +293,7 @@ class CloneDetailWindow(toga.Window):
 
         btn_row = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=8))
         btn_row.add(toga.Box(style=Pack(flex=1)))
+        btn_row.add(self.btn_copy_all)
         btn_row.add(self.btn_close)
         root.add(btn_row)
         return root

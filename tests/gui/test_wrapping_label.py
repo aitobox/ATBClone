@@ -27,6 +27,7 @@ def test_wrapping_label_init():
 
 def test_wrapping_label_cocoa_configuration():
     label = WrappingLabel("Test Wrapping Cocoa Label")
+    assert label.selectable is True
     if sys.platform == "darwin":
         native = getattr(getattr(label, "_impl", None), "native", None)
         if native is not None:
@@ -35,8 +36,19 @@ def test_wrapping_label_cocoa_configuration():
                 assert cell.wraps is True
                 assert cell.lineBreakMode == 0  # NSLineBreakByWordWrapping
                 assert cell.isScrollable() is False
+                assert cell.isSelectable() is True
             assert native.usesSingleLineMode is False
             assert native.maximumNumberOfLines == 0
+            assert native.isSelectable() is True
+
+
+def test_wrapping_label_non_selectable():
+    label = WrappingLabel("Non selectable", selectable=False)
+    assert label.selectable is False
+    if sys.platform == "darwin":
+        native = getattr(getattr(label, "_impl", None), "native", None)
+        if native is not None:
+            assert native.isSelectable() is False
 
 
 def test_wrapping_label_dynamic_rehint():

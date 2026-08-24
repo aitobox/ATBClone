@@ -10,6 +10,8 @@ def test_detail_injected_i18n_keys():
         "win_detail_exec_cmd",
         "win_detail_btn_copy_cmd",
         "win_detail_cmd_copied",
+        "win_detail_btn_copy_all",
+        "win_detail_all_copied",
         "win_detail_none",
     ]
     for key in keys:

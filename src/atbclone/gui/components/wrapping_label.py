@@ -19,7 +19,8 @@ class WrappingLabel(toga.Label):
     allocated layout or window width.
     """
 
-    def __init__(self, text: str = "", **kwargs: Any):
+    def __init__(self, text: str = "", selectable: bool = True, **kwargs: Any):
+        self.selectable = selectable
         super().__init__(text, **kwargs)
         self._last_layout_width: float = 0.0
         self._configure_wrapping()
@@ -29,7 +30,7 @@ class WrappingLabel(toga.Label):
             return
         try:
             native = getattr(getattr(self, "_impl", None), "native", None)
-            configure_cocoa_wrapping_label(native)
+            configure_cocoa_wrapping_label(native, selectable=self.selectable)
 
             impl = getattr(self, "_impl", None)
             if impl is not None:

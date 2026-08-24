@@ -6,6 +6,36 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v1.0.0] - 2026-08-24
+
+### 🚀 Offizieller Meilenstein: ATBClone 1.0.0
+- **Produktionsreife macOS-App-Klonlösung**:
+  - ATBClone erreicht Version 1.0.0 und bietet ein ausgereiftes, hochperformantes Ökosystem für Multi-Instanz-Anwendungen unter macOS (Apple Silicon & Intel).
+  - Umfassende Dual-Engine-Architektur: speicherschonende Soft Clones und vollständig isolierte Hard Clones mit nativer Mach-O-Manipulation und Sandbox-Virtualisierung.
+
+### 🧬 Tiefgreifendes CEF-Patching & WeCom-Unterstützung
+- **Unterstützung komplexer Hybrid-Frameworks**:
+  - Spezielles CEF-Binär-Patching für komplexe Enterprise-Anwendungen wie WeCom (企业微信).
+  - Behebt den `GpuDataManager`-FATAL-Absturz in Helper-Prozessen und bereinigt verschachtelte Helper-Bundle-IDs (`.helper.atbclone.X`).
+  - Integration von Symlink-Whitelists und Vermeidung interner Sandbox-Konflikte für stabilen Dauerbetrieb.
+
+### 🛡️ Vollständige rekursive Neusignierung & Singleton-Patching
+- **Rekursive Signierung aller eingebetteten Komponenten**:
+  - `HardCloneEngine` signiert alle verschachtelten Binärdateien, Frameworks, Helper-Apps, XPC-Dienste und dylibs tiefgreifend neu.
+  - Erhält JIT- und Hardened-Runtime-Entitlements ohne Verschmutzung der Signaturstrukturen.
+- **Framework-ProcessSingleton-Patch**:
+  - Neues Rezept-Attribut `patch_framework_singleton` zur Deaktivierung von Prozess-Singleton-Sperren direkt in der Mach-O-Binärdatei.
+
+### 📋 Erweiterte Detailansicht & Zwischenablagen-Integration
+- **Diagnose-Export & Textauswahl**:
+  - Überarbeitung von `CloneDetailWindow` mit nativen Cocoa-Mehrzeilen-Textansichten und direkter `NSPasteboard`-Anbindung.
+
+### 🧪 Test-Suite & Qualitätssicherung
+- **Umfassende Abdeckung**:
+  - Ausbau der automatisierten Test-Suite auf 441 Tests mit 100 % Erfolgsquote.
+
+---
+
 ## [v0.9.9] - 2026-08-24
 
 ### 📋 Textauswahl & „Alle Details kopieren“ im Klon-Detailfenster

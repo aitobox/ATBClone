@@ -6,6 +6,36 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v1.0.0] - 2026-08-24
+
+### 🚀 Lanzamiento oficial de la versión 1.0.0
+- **Ecosistema maduro de clonación de aplicaciones en macOS**:
+  - ATBClone alcanza la versión 1.0.0, consolidando una solución completa y de alto rendimiento para macOS (Apple Silicon e Intel).
+  - Arquitectura de doble motor: Soft Clone (sin consumo de espacio en disco) y Hard Clone (aislamiento absoluto de datos, binarios Mach-O y sandbox).
+
+### 🧬 Parche avanzado para CEF y compatibilidad con WeCom
+- **Ejecución multi-instancia en aplicaciones híbridas**:
+  - Parcheo binario específico para Chromium Embedded Framework (CEF) enfocado en aplicaciones complejas como WeCom (企业微信).
+  - Corrección de bloqueos críticos de `GpuDataManager` en subprocesos auxiliares y serialización de identificadores de Helper (`.helper.atbclone.X`).
+  - Listas blancas de enlaces simbólicos y eliminación de colisiones internas de sandbox.
+
+### 🛡️ Re-firma recursiva integral y neutralización de ProcessSingleton
+- **Firma profunda de binarios y dependencias**:
+  - `HardCloneEngine` vuelve a firmar de forma recursiva todos los binarios, Frameworks, procesos Helper, servicios XPC y dylibs.
+  - Preservación de privilegios JIT y Hardened Runtime con extracción limpia de entitlements en `/tmp`.
+- **Desactivación de bloqueo de instancia única**:
+  - Parámetro `patch_framework_singleton` en recetas para eliminar el bloqueo de ProcessSingleton directamente en el binario Mach-O.
+
+### 📋 Ventana de detalles mejorada e integración con el portapapeles
+- **Exportación de diagnósticos**:
+  - `CloneDetailWindow` incorpora vistas de texto multilínea de Cocoa y `NSPasteboard` para seleccionar y copiar información de diagnóstico al instante.
+
+### 📦 Calidad garantizada
+- **Cobertura exhaustiva**:
+  - Ampliación de la suite de pruebas a 441 casos automatizados con un 100 % de éxito.
+
+---
+
 ## [v0.9.9] - 2026-08-24
 
 ### 📋 Texto seleccionable y «Copiar toda la información» en la ventana de detalles

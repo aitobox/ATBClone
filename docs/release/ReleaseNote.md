@@ -6,6 +6,36 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v1.0.0] - 2026-08-24
+
+### 🚀 Official 1.0.0 Milestone Release
+- **Production-Ready macOS App Cloning**:
+  - ATBClone reaches version 1.0.0, establishing a complete, mature, and zero-compromise application cloning ecosystem for macOS (Apple Silicon & Intel).
+  - Offers seamless dual-engine architectures: zero-disk-overhead Soft Clones (CLI-wrapper & bundle virtualization) and completely isolated Hard Clones (Mach-O binary manipulation, deep signing, container virtualization).
+
+### 🧬 Deep CEF (Chromium Embedded Framework) Patching & WeCom Support
+- **Hybrid Framework Multi-Instance Engine**:
+  - Implemented scoped Chromium Embedded Framework (CEF) binary patching specifically designed for complex enterprise hybrid applications such as WeCom (企业微信).
+  - Resolved `GpuDataManager` FATAL crashes across helper subprocesses and sanitized nested helper bundle identifiers (`.helper.atbclone.X`).
+  - Integrated symlink whitelists and disabled internal sandbox collisions to guarantee reliable multi-instance execution.
+
+### 🛡️ Full-Bundle Recursive Re-Signing & Entitlements Sanitization
+- **Nested Binary & Framework Security**:
+  - `HardCloneEngine` now performs thorough recursive re-signing across all nested binaries, embedded Frameworks, Helper apps, XPC services, and dynamic libraries (`.dylib`).
+  - Preserves JIT and hardened runtime entitlements while generating clean temporary entitlements outside bundle structures to prevent code signature verification pollution.
+- **Framework ProcessSingleton Binary Patching**:
+  - Introduced `patch_framework_singleton` recipe field to dynamically patch framework-level process singleton locks directly in Mach-O binary structures without unstable dynamic library interposing.
+
+### 📋 Enhanced Detail Views & Native Clipboard Integration
+- **Diagnostic Export**:
+  - Re-architected `CloneDetailWindow` using multiline Cocoa text views and direct `NSPasteboard` integration for selectable text and instantaneous markdown diagnostic summary exporting.
+
+### 🧪 Comprehensive Quality Assurance
+- **Full Test Coverage**:
+  - Automated test suite expanded to 441 unit, engine, recipe, prober, and GUI integration tests with 100% pass rate.
+
+---
+
 ## [v0.9.9] - 2026-08-24
 
 ### 📋 Selectable Text & "Copy All Details" in Clone Details Window

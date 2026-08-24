@@ -6,6 +6,36 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v1.0.0] - 2026-08-24
+
+### 🚀 Version majeure officielle 1.0.0
+- **Solution de clonage d'applications mature pour macOS**:
+  - ATBClone atteint sa version 1.0.0, établissant un écosystème robuste et complet pour l'exécution multi-instance sur macOS (Apple Silicon et Intel).
+  - Deux moteurs complémentaires : Soft Clone (ultra-rapide, sans surcoût disque) et Hard Clone (isolation totale des données, binaire Mach-O et bac à sable).
+
+### 🧬 Patch approfondi CEF (Chromium Embedded Framework) & Support WeCom
+- **Moteur multi-instance pour architectures hybrides**:
+  - Patch binaire ciblé pour le framework CEF, conçu pour les applications d'entreprise telles que WeCom (企业微信).
+  - Résolution des plantages `GpuDataManager` FATAL dans les sous-processus Helper et sérialisation des identifiants (`.helper.atbclone.X`).
+  - Listes blanches de liens symboliques et suppression des conflits de bac à sable interne.
+
+### 🛡️ Re-signature récursive intégrale & Neutralisation du Singleton
+- **Sécurité et intégrité des sous-composants**:
+  - `HardCloneEngine` re-signe récursivement tous les exécutables, Frameworks, services XPC et bibliothèques dynamiques (`.dylib`).
+  - Préservation des autorisations JIT et Hardened Runtime sans pollution du bundle.
+- **Patch de ProcessSingleton au niveau framework**:
+  - Introduction du champ `patch_framework_singleton` dans les recettes pour désactiver les verrous d'instance unique directement dans les binaires.
+
+### 📋 Amélioration des vues de détails & Presse-papiers natif
+- **Export de diagnostic**:
+  - `CloneDetailWindow` intègre désormais des vues texte Cocoa multilignes et `NSPasteboard` pour une copie fluide des informations de diagnostic.
+
+### 🧪 Tests
+- **Excellence opérationnelle**:
+  - Suite de tests portée à 441 tests automatisés avec 100 % de réussite.
+
+---
+
 ## [v0.9.9] - 2026-08-24
 
 ### 📋 Texte sélectionnable & « Copier toutes les infos » dans les détails du clone

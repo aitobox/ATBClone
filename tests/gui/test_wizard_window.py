@@ -205,3 +205,48 @@ def test_wizard_step1_ios_app_shows_error_dialog(tmp_path: Path):
     asyncio.run(_test())
 
 
+def test_wizard_step1_non_builtin_app_triggers_probe(tmp_path: Path):
+    async def _test():
+        clone_service = CloneService(state_file=tmp_path / "clones.yaml")
+        probe_service = ProbeService()
+        wizard = WizardWindow(clone_service=clone_service, probe_service=probe_service)
+        wizard.input_app_path.value = "/Applications/CustomBrowser.app"
+
+        mock_info = AppInfo(
+            path=Path("/Applications/CustomBrowser.app"),
+            bundle_id="com.custom.browser",
+            app_name="CustomBrowser",
+            executable=Path("/Applications/CustomBrowser.app/Contents/MacOS/CustomBrowser"),
+            has_sandbox=False,
+        )
+
+        mock_probed_recipe = Recipe(
+            bundle_id="com.custom.browser",
+            app_name="CustomBrowser",
+            strategy="soft_clone",
+            app_type="chromium",
+            launch_args=["--user-data-dir={{ATB_DATA_DIR}}"],
+        )
+
+        from atbclone.core.app_prober import ProbeResult
+        mock_probe_result = ProbeResult(
+            app_info=mock_info,
+            has_sandbox=False,
+            frameworks=["Chromium Framework.framework"],
+            strategy="soft_clone",
+            reason="Chromium detected",
+            recipe=mock_probed_recipe,
+        )
+
+        with patch("atbclone.core.app_inspector.AppInspector.inspect", return_value=mock_info), \
+             patch.object(probe_service, "probe_app", return_value=mock_probe_result) as mock_probe_app:
+            await wizard.go_next()
+            assert wizard.current_step == 2
+            assert wizard._recipe_from_probe is True
+            assert wizard.recipe.strategy == "soft_clone"
+            assert wizard.recipe.app_type == "chromium"
+            mock_probe_app.assert_called_once_with(mock_info.path)
+
+    asyncio.run(_test())
+
+

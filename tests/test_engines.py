@@ -581,6 +581,30 @@ class TestAdaptiveLanguageArgs:
             assert f"{tmp_path}/Data/Home" in script
             assert f"{tmp_path}/Data/Tmp" in script
 
+    def test_launch_args_deduplication_removes_duplicate_lang_flags(self, mock_app_info_with_spaces, base_recipe):
+        base_recipe.app_type = "chromium"
+        base_recipe.launch_args = [
+            "--user-data-dir={{ATB_DATA_DIR}}",
+            "--lang=en-US",
+            "-AppleLanguages",
+        ]
+        task = CloneTask(
+            source=mock_app_info_with_spaces,
+            dest_path=Path("/Applications/Google Chrome 2.app"),
+            data_dir=Path("/Users/test/Library/Application Support/Google Chrome 2"),
+            recipe=base_recipe,
+            clone_name="Google Chrome 2",
+            new_bundle_id="com.google.Chrome.clone2",
+            language="zh-Hans",
+        )
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            SoftCloneEngine.execute(task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            # Should have the new --lang=zh-CN, and not have duplicate --lang=en-US or -AppleLanguages
+            assert "--lang=zh-CN" in script
+            assert "--lang=en-US" not in script
+            assert "-AppleLanguages" not in script
+
 
 
 

@@ -107,7 +107,7 @@ class CloneService:
                 Runner.run(script, needs_admin)
 
                 info = AppInspector.inspect(record.source_path)
-                recipe = RecipeLoader.match(info.bundle_id)
+                recipe = RecipeLoader.match(info.bundle_id, app_path=record.source_path)
                 data_dir = Path(record.data_dir)
                 existing_records = self.state_manager.load()
                 existing_bundle_ids = {r.new_bundle_id for r in existing_records if r.new_bundle_id and r.clone_name != clone_name}

@@ -54,6 +54,34 @@ SUPPORTED_LANGUAGES: dict[str, dict[str, Any]] = {
         "posix_lang": "ko_KR.UTF-8",
         "chromium_lang": "ko-KR",
     },
+    "de": {
+        "label_key": "lang_de",
+        "apple_locale": "de_DE",
+        "apple_languages": ["de-DE", "de", "en"],
+        "posix_lang": "de_DE.UTF-8",
+        "chromium_lang": "de",
+    },
+    "fr": {
+        "label_key": "lang_fr",
+        "apple_locale": "fr_FR",
+        "apple_languages": ["fr-FR", "fr", "en"],
+        "posix_lang": "fr_FR.UTF-8",
+        "chromium_lang": "fr",
+    },
+    "es": {
+        "label_key": "lang_es",
+        "apple_locale": "es_ES",
+        "apple_languages": ["es-ES", "es", "en"],
+        "posix_lang": "es_ES.UTF-8",
+        "chromium_lang": "es",
+    },
+    "ru": {
+        "label_key": "lang_ru",
+        "apple_locale": "ru_RU",
+        "apple_languages": ["ru-RU", "ru", "en"],
+        "posix_lang": "ru_RU.UTF-8",
+        "chromium_lang": "ru",
+    },
 }
 
 
@@ -127,6 +155,18 @@ def resolve_language_config(language: str | None) -> LanguageConfig:
         elif "en" in primary_lang.lower():
             posix = "en_US.UTF-8"
             chrom = "en-US"
+        elif "de" in primary_lang.lower():
+            posix = "de_DE.UTF-8"
+            chrom = "de"
+        elif "fr" in primary_lang.lower():
+            posix = "fr_FR.UTF-8"
+            chrom = "fr"
+        elif "es" in primary_lang.lower():
+            posix = "es_ES.UTF-8"
+            chrom = "es"
+        elif "ru" in primary_lang.lower():
+            posix = "ru_RU.UTF-8"
+            chrom = "ru"
         else:
             posix = f"{sys_loc}.UTF-8" if sys_loc else "zh_CN.UTF-8"
             chrom = primary_lang

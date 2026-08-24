@@ -83,7 +83,7 @@ def test_wizard_complete_hard_clone(tmp_path: Path, mock_app_info: AppInfo, mock
         assert "Success! Clone created at" in result.output or "成功！" in result.output
 
         mock_inspect.assert_called_once_with(str(mock_app_info.path))
-        mock_match.assert_called_once_with(mock_app_info.bundle_id)
+        mock_match.assert_called_once_with(mock_app_info.bundle_id, app_path=mock_app_info.path)
         mock_hard_exec.assert_called_once()
         mock_soft_exec.assert_not_called()
         mock_state_add.assert_called_once()

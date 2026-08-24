@@ -322,11 +322,10 @@ class WizardWindow(toga.Window):
 
             # Recipe matching: try built-in library first (consistent with CLI cmd_clone logic),
             # fall back to Probe auto-analysis only when no built-in recipe exists.
-            self._recipe_from_probe = False
-            try:
-                self.recipe = RecipeLoader.match(self.app_info.bundle_id)
+            if RecipeLoader.has_recipe(self.app_info.bundle_id):
+                self.recipe = RecipeLoader.match(self.app_info.bundle_id, app_path=self.app_info.path)
                 self._recipe_from_probe = False
-            except Exception:
+            else:
                 # No built-in recipe found — run Probe to auto-generate one
                 probe_res = await self.probe_service.probe_app(self.app_info.path)
                 self.recipe = probe_res.recipe

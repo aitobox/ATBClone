@@ -19,6 +19,42 @@ def test_supported_languages_contains_presets():
     assert "en" in SUPPORTED_LANGUAGES
     assert "ja" in SUPPORTED_LANGUAGES
     assert "ko" in SUPPORTED_LANGUAGES
+    assert "de" in SUPPORTED_LANGUAGES
+    assert "fr" in SUPPORTED_LANGUAGES
+    assert "es" in SUPPORTED_LANGUAGES
+    assert "ru" in SUPPORTED_LANGUAGES
+
+
+def test_resolve_language_de():
+    config = resolve_language_config("de")
+    assert config.apple_locale == "de_DE"
+    assert "de-DE" in config.apple_languages
+    assert config.posix_lang == "de_DE.UTF-8"
+    assert config.chromium_lang == "de"
+
+
+def test_resolve_language_fr():
+    config = resolve_language_config("fr")
+    assert config.apple_locale == "fr_FR"
+    assert "fr-FR" in config.apple_languages
+    assert config.posix_lang == "fr_FR.UTF-8"
+    assert config.chromium_lang == "fr"
+
+
+def test_resolve_language_es():
+    config = resolve_language_config("es")
+    assert config.apple_locale == "es_ES"
+    assert "es-ES" in config.apple_languages
+    assert config.posix_lang == "es_ES.UTF-8"
+    assert config.chromium_lang == "es"
+
+
+def test_resolve_language_ru():
+    config = resolve_language_config("ru")
+    assert config.apple_locale == "ru_RU"
+    assert "ru-RU" in config.apple_languages
+    assert config.posix_lang == "ru_RU.UTF-8"
+    assert config.chromium_lang == "ru"
 
 
 def test_resolve_language_zh_hans():

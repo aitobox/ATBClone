@@ -93,6 +93,29 @@ class CloneEngine:
         """).strip()
 
     @staticmethod
+    def _combine_launch_args(valid_launch_args: list[str], lang_args: list[str], data_dir: Path) -> list[str]:
+        """Combine recipe launch args with language args, deduplicating conflicting language flags."""
+        args_list: list[str] = []
+        lang_prefixes: set[str] = set()
+        for larg in lang_args:
+            if larg.startswith("--lang="):
+                lang_prefixes.add("--lang=")
+            elif larg in ("-AppleLanguages", "-AppleLocale"):
+                lang_prefixes.add(larg)
+
+        for arg in valid_launch_args:
+            if any(arg.startswith(k) for k in lang_prefixes if k.startswith("--")):
+                continue
+            if arg in ("-AppleLanguages", "-AppleLocale"):
+                continue
+            args_list.append(shlex.quote(arg.replace("{{ATB_DATA_DIR}}", str(data_dir))))
+
+        for larg in lang_args:
+            args_list.append(shlex.quote(larg))
+
+        return args_list
+
+    @staticmethod
     def _build_lsregister_cmd(dst_app: str) -> str:
         """Return shell snippet to register the app bundle with LaunchServices."""
         return f"/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f {dst_app} 2>/dev/null || true"
@@ -129,12 +152,7 @@ class SoftCloneEngine(CloneEngine):
         lang_env, lang_args = cls._build_language_env_and_args(task)
         valid_launch_args = cls._get_validated_launch_args(task)
 
-        args_list = [
-            shlex.quote(arg.replace("{{ATB_DATA_DIR}}", str(task.data_dir)))
-            for arg in valid_launch_args
-        ]
-        for larg in lang_args:
-            args_list.append(shlex.quote(larg))
+        args_list = cls._combine_launch_args(valid_launch_args, lang_args, task.data_dir)
 
         args_str = f" {' '.join(args_list)}" if args_list else ""
         exec_cmd = f'exec {src_bin}{args_str} "$@"'
@@ -245,12 +263,7 @@ class HardCloneEngine(CloneEngine):
         proxy_env = cls._build_proxy_env(task)
 
         # Inject launch_args (e.g. --user-data-dir=... for Chromium apps)
-        args_list = [
-            shlex.quote(arg.replace("{{ATB_DATA_DIR}}", str(task.data_dir)))
-            for arg in valid_launch_args
-        ]
-        for larg in lang_args:
-            args_list.append(shlex.quote(larg))
+        args_list = cls._combine_launch_args(valid_launch_args, lang_args, task.data_dir)
 
         args_str = f" {' '.join(args_list)}" if args_list else ""
 

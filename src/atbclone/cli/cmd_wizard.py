@@ -40,7 +40,7 @@ def wizard() -> None:
         console.print(t("clone_err_ios_wrapper_unsupported_cli"), soft_wrap=True)
         sys.exit(1)
 
-    recipe = RecipeLoader.match(info.bundle_id)
+    recipe = RecipeLoader.match(info.bundle_id, app_path=app_path)
     console.print(t("wizard_app_info", app_name=info.app_name, bundle_id=info.bundle_id))
     console.print(t("wizard_strategy_info", strategy=recipe.strategy))
 

@@ -148,7 +148,7 @@ def test_update_success_hard_clone(
 
         # Verify step 2: inspect and clone
         mock_inspect.assert_called_once_with(mock_record_user_dir.source_path)
-        mock_match.assert_called_once_with(mock_app_info.bundle_id)
+        mock_match.assert_called_once_with(mock_app_info.bundle_id, app_path=mock_record_user_dir.source_path)
         mock_hard_exec.assert_called_once()
         mock_soft_exec.assert_not_called()
 

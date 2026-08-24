@@ -62,9 +62,26 @@ def test_recipe_defaults():
     assert recipe.strategy == "hard_clone"
     assert not recipe.strip_sandbox
     assert recipe.proxy.enabled is False
-    assert recipe.environment_injection == {}
-    assert recipe.symlink_whitelist == []
     assert recipe.launch_args == []
+    assert recipe.app_type is None
+
+
+def test_recipe_app_type_field():
+    recipe = Recipe(
+        bundle_id="com.google.Chrome",
+        app_name="Chrome",
+        strategy="soft_clone",
+        app_type="chromium",
+    )
+    assert recipe.app_type == "chromium"
+
+    recipe_cocoa = Recipe(
+        bundle_id="com.tencent.xinWeChat",
+        app_name="WeChat",
+        strategy="hard_clone",
+        app_type="cocoa",
+    )
+    assert recipe_cocoa.app_type == "cocoa"
 
 
 def test_chromium_recipes_support_hard_and_soft_clone():

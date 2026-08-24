@@ -17,6 +17,9 @@ class ProxyConfig(BaseModel):
         return f"{self.type}://{auth}{self.host}:{self.port}"
 
 
+AppType = Literal["cocoa", "chromium", "electron", "firefox", "generic"]
+
+
 class Recipe(BaseModel):
     bundle_id: str
     app_name: str
@@ -27,6 +30,7 @@ class Recipe(BaseModel):
     symlink_whitelist: list[str] = Field(default_factory=list)
     launch_args: list[str] = Field(default_factory=list)
     language: str = "system"
+    app_type: AppType | None = None
 
 
 def supports_data_dir(recipe: Recipe) -> bool:

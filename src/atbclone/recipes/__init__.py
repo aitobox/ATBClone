@@ -1,5 +1,5 @@
-from .models import ProxyConfig, Recipe, supports_data_dir
+from .models import AppType, ProxyConfig, Recipe, supports_data_dir
 from .loader import RecipeLoader
 
-__all__ = ["ProxyConfig", "Recipe", "RecipeLoader", "supports_data_dir"]
+__all__ = ["AppType", "ProxyConfig", "Recipe", "RecipeLoader", "supports_data_dir"]
 

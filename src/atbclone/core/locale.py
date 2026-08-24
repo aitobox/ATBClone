@@ -149,8 +149,11 @@ def resolve_language_config(language: str | None) -> LanguageConfig:
     )
 
 
-def build_language_wrapper_snippet(language: str | None) -> tuple[str, list[str]]:
-    """Build shell export commands and launch arguments for wrapper script."""
+def build_language_wrapper_snippet(
+    language: str | None,
+    app_type: str = "cocoa",
+) -> tuple[str, list[str]]:
+    """Build shell export commands and launch arguments for wrapper script based on app_type."""
     cfg = resolve_language_config(language)
 
     env_lines = [
@@ -174,16 +177,20 @@ def build_language_wrapper_snippet(language: str | None) -> tuple[str, list[str]
 
     env_snippet = "\n".join(env_lines) + "\n" + pref_sync_block
 
-    # Format Cocoa -AppleLanguages array argument: '("zh-Hans-CN", "zh-Hans", "en")'
-    quoted_langs = ", ".join(f'"{l}"' for l in cfg.apple_languages)
-    apple_langs_arg = f"({quoted_langs})"
-
-    launch_args = [
-        "-AppleLanguages",
-        apple_langs_arg,
-        "-AppleLocale",
-        cfg.apple_locale,
-        f"--lang={cfg.chromium_lang}",
-    ]
+    normalized_type = (app_type or "cocoa").lower()
+    if normalized_type in ("chromium", "electron"):
+        launch_args = [f"--lang={cfg.chromium_lang}"]
+    elif normalized_type == "cocoa":
+        # Format Cocoa -AppleLanguages array argument: '("zh-Hans-CN", "zh-Hans", "en")'
+        quoted_langs = ", ".join(f'"{l}"' for l in cfg.apple_languages)
+        apple_langs_arg = f"({quoted_langs})"
+        launch_args = [
+            "-AppleLanguages",
+            apple_langs_arg,
+            "-AppleLocale",
+            cfg.apple_locale,
+        ]
+    else:  # firefox, generic, etc.
+        launch_args = []
 
     return env_snippet, launch_args

@@ -79,7 +79,7 @@ def test_resolve_language_zh_hant():
     assert config.chromium_lang == "zh-TW"
 
 
-def test_build_language_wrapper_snippet():
+def test_build_language_wrapper_snippet_default_cocoa():
     env_snippet, args = build_language_wrapper_snippet("zh-Hans")
     assert "export LANG=\"zh_CN.UTF-8\"" in env_snippet
     assert "export LC_ALL=\"zh_CN.UTF-8\"" in env_snippet
@@ -87,10 +87,45 @@ def test_build_language_wrapper_snippet():
     assert "-AppleLanguages" in args
     assert "-AppleLocale" in args
     assert "zh_CN" in args
+    assert "--lang=" not in " ".join(args)
+
+
+def test_build_language_wrapper_snippet_chromium():
+    env_snippet, args = build_language_wrapper_snippet("zh-Hans", app_type="chromium")
+    assert "export LANG=\"zh_CN.UTF-8\"" in env_snippet
     assert "--lang=zh-CN" in args
+    assert "-AppleLanguages" not in args
+    assert "-AppleLocale" not in args
+
+
+def test_build_language_wrapper_snippet_electron():
+    env_snippet, args = build_language_wrapper_snippet("en", app_type="electron")
+    assert "export LANG=\"en_US.UTF-8\"" in env_snippet
+    assert "--lang=en-US" in args
+    assert "-AppleLanguages" not in args
+    assert "-AppleLocale" not in args
+
+
+def test_build_language_wrapper_snippet_cocoa():
+    env_snippet, args = build_language_wrapper_snippet("zh-Hans", app_type="cocoa")
+    assert "-AppleLanguages" in args
+    assert "-AppleLocale" in args
+    assert "--lang=" not in " ".join(args)
+
+
+def test_build_language_wrapper_snippet_firefox():
+    env_snippet, args = build_language_wrapper_snippet("zh-Hans", app_type="firefox")
+    assert "export LANG=\"zh_CN.UTF-8\"" in env_snippet
+    assert args == []
+
+
+def test_build_language_wrapper_snippet_generic():
+    env_snippet, args = build_language_wrapper_snippet("zh-Hans", app_type="generic")
+    assert "export LANG=\"zh_CN.UTF-8\"" in env_snippet
+    assert args == []
 
 
 def test_build_language_wrapper_snippet_system_none():
-    env_snippet, args = build_language_wrapper_snippet(None)
+    env_snippet, args = build_language_wrapper_snippet(None, app_type="cocoa")
     assert "export LANG=" in env_snippet
     assert "-AppleLanguages" in args

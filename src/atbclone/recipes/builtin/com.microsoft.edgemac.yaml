@@ -3,5 +3,4 @@ app_name: Edge
 strategy: hard_clone
 app_type: chromium
 launch_args:
-  - "--user-data-dir={{ATB_DATA_DIR}}"
-
+- --user-data-dir={{ATB_DATA_DIR}}

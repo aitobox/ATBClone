@@ -1,6 +1,7 @@
 bundle_id: com.lemon.lvpro
 app_name: 剪映专业版
 strategy: hard_clone
+app_type: chromium
 strip_sandbox: true
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'

@@ -1,7 +1,8 @@
 bundle_id: com.tencent.qq
 app_name: QQ
 strategy: hard_clone
-strip_sandbox: false
+app_type: electron
+strip_sandbox: true
 environment_injection:
-  HOME: "{{ATB_DATA_DIR}}/Home"
-  TMPDIR: "{{ATB_DATA_DIR}}/Tmp"
+  HOME: '{{ATB_DATA_DIR}}/Home'
+  TMPDIR: '{{ATB_DATA_DIR}}/Tmp'

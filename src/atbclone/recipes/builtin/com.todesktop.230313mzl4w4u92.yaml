@@ -1,5 +1,6 @@
 bundle_id: com.todesktop.230313mzl4w4u92
 app_name: Cursor
 strategy: soft_clone
+app_type: electron
 launch_args:
-  - "--user-data-dir={{ATB_DATA_DIR}}"
+- --user-data-dir={{ATB_DATA_DIR}}

@@ -1,6 +1,7 @@
 bundle_id: com.valvesoftware.steam
 app_name: Steam
 strategy: hard_clone
+app_type: cocoa
 strip_sandbox: false
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'

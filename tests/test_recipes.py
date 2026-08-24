@@ -122,7 +122,7 @@ def test_load_builtin_wechat():
     assert recipe.bundle_id == "com.tencent.xinWeChat"
     assert recipe.app_name == "微信"
     assert recipe.strategy == "hard_clone"
-    assert not recipe.strip_sandbox
+    assert recipe.strip_sandbox is True
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
     assert "Library/Keychains" in recipe.symlink_whitelist
@@ -197,7 +197,7 @@ def test_load_builtin_qq():
     assert recipe.bundle_id == "com.tencent.qq"
     assert recipe.app_name == "QQ"
     assert recipe.strategy == "hard_clone"
-    assert not recipe.strip_sandbox
+    assert recipe.strip_sandbox is True
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
 
@@ -240,9 +240,9 @@ def test_all_builtin_recipes_valid(monkeypatch, tmp_path):
     assert len(yaml_files) >= 18
 
     expected_recipes = {
-        "com.tencent.xinWeChat": ("微信", "hard_clone", False),
+        "com.tencent.xinWeChat": ("微信", "hard_clone", True),
         "com.google.Chrome": ("Chrome", "hard_clone", False),
-        "com.tencent.qq": ("QQ", "hard_clone", False),
+        "com.tencent.qq": ("QQ", "hard_clone", True),
         "ru.keepcoder.Telegram": ("Telegram", "hard_clone", False),
         "org.telegram.desktop": ("Telegram Desktop", "hard_clone", False),
         "jp.naver.line.mac": ("LINE", "hard_clone", True),
@@ -336,6 +336,22 @@ def test_supports_data_dir_unsupported():
         environment_injection={},
     )
     assert supports_data_dir(recipe) is False
+
+
+def test_all_builtin_recipes_have_explicit_app_type():
+    from atbclone.recipes.loader import RecipeLoader
+    builtin_dir = RecipeLoader.BUILTIN_DIR
+    yaml_files = list(builtin_dir.glob("*.yaml"))
+    assert len(yaml_files) >= 30
+
+    missing_app_type = []
+    for yf in yaml_files:
+        recipe = RecipeLoader._load_file(yf)
+        if not recipe.app_type:
+            missing_app_type.append(yf.name)
+
+    assert not missing_app_type, f"Builtin recipes missing explicit app_type: {missing_app_type}"
+
 
 
 

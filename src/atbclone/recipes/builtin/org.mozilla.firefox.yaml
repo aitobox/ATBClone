@@ -3,5 +3,5 @@ app_name: Firefox
 strategy: soft_clone
 app_type: firefox
 launch_args:
-  - "-profile"
-  - "{{ATB_DATA_DIR}}"
+- -profile
+- '{{ATB_DATA_DIR}}'

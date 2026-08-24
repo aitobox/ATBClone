@@ -1,7 +1,8 @@
 bundle_id: com.google.antigravity-ide
 app_name: Antigravity IDE
 strategy: hard_clone
+app_type: electron
 strip_sandbox: false
 environment_injection:
-  HOME: "{{ATB_DATA_DIR}}/Home"
-  TMPDIR: "{{ATB_DATA_DIR}}/Tmp"
+  HOME: '{{ATB_DATA_DIR}}/Home'
+  TMPDIR: '{{ATB_DATA_DIR}}/Tmp'

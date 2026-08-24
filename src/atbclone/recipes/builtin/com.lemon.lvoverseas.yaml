@@ -1,6 +1,7 @@
 bundle_id: com.lemon.lvoverseas
 app_name: CapCut
 strategy: hard_clone
+app_type: chromium
 strip_sandbox: true
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'

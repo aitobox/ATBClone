@@ -1,6 +1,7 @@
 bundle_id: com.google.android.studio
 app_name: Android Studio
 strategy: hard_clone
+app_type: generic
 strip_sandbox: false
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'

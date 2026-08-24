@@ -233,10 +233,11 @@ class TestHardCloneEngine:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert "codesign -d --entitlements - --xml /Applications/TestApp.app > /Applications/TestApp2.app/Contents/atb_entitlements.plist 2>/dev/null || true" in script
-            assert "if [ -s /Applications/TestApp2.app/Contents/atb_entitlements.plist ]; then" in script
-            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" /Applications/TestApp2.app/Contents/atb_entitlements.plist 2>/dev/null || true' in script
-            assert "codesign --force --sign - --entitlements /Applications/TestApp2.app/Contents/atb_entitlements.plist /Applications/TestApp2.app" in script
+            assert 'ent_plist=$(mktemp /tmp/atb_ent_XXXXXX.plist)' in script
+            assert 'codesign -d --entitlements - --xml /Applications/TestApp.app > "$ent_plist" 2>/dev/null || true' in script
+            assert 'if [ -s "$ent_plist" ]; then' in script
+            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true' in script
+            assert 'codesign --force --deep --sign - --entitlements "$ent_plist" /Applications/TestApp2.app' in script
             assert "codesign --force --deep --sign - /Applications/TestApp2.app" in script
             assert "codesign -vv --deep --strict /Applications/TestApp2.app" in script
 

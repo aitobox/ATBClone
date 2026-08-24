@@ -1,6 +1,4 @@
-"""Test clone detail injected parameters i18n keys."""
-
-from atbclone.core.i18n import t
+from atbclone.core.i18n import set_language, t
 
 
 def test_detail_injected_i18n_keys():
@@ -15,7 +13,10 @@ def test_detail_injected_i18n_keys():
         "win_detail_none",
     ]
     for key in keys:
-        val_en = t(key, lang="en")
-        val_zh = t(key, lang="zh")
+        set_language("en")
+        val_en = t(key)
+        set_language("zh")
+        val_zh = t(key)
         assert val_en != key, f"Missing en translation for {key}"
         assert val_zh != key, f"Missing zh translation for {key}"
+

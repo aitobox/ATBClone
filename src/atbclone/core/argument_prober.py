@@ -93,3 +93,148 @@ class BinaryArgumentProber:
         return ArgumentProbeResult(
             reason="No custom data directory CLI argument detected. Degraded to HOME/TMPDIR environment isolation.",
         )
+
+
+class LaunchArgumentValidator:
+    """Validates and filters launch arguments against framework whitelists and binary capabilities."""
+
+    FRAMEWORK_WHITELISTS: dict[str, set[str]] = {
+        "chromium": {
+            "--user-data-dir",
+            "--lang",
+            "--disk-cache-dir",
+            "--profile-directory",
+            "--no-sandbox",
+            "--disable-gpu",
+            "--enable-features",
+            "--disable-features",
+            "--remote-debugging-port",
+            "--app",
+        },
+        "electron": {
+            "--user-data-dir",
+            "--lang",
+            "--disk-cache-dir",
+            "--profile-directory",
+            "--no-sandbox",
+            "--disable-gpu",
+            "--enable-features",
+            "--disable-features",
+            "--remote-debugging-port",
+            "--app",
+        },
+        "firefox": {
+            "-profile",
+            "--profile",
+            "-P",
+            "-no-remote",
+            "-headless",
+            "-private",
+        },
+        "cocoa": {
+            "-AppleLanguages",
+            "-AppleLocale",
+            "-NSDocumentRevisionsDebugMode",
+        },
+    }
+
+    # System-level arguments accepted by almost all macOS Cocoa runtimes
+    UNIVERSAL_SYSTEM_FLAGS: set[str] = {
+        "-AppleLanguages",
+        "-AppleLocale",
+        "-NSDocumentRevisionsDebugMode",
+    }
+
+    @classmethod
+    def _extract_flag_name(cls, arg: str) -> str:
+        """Extract the base flag from an argument (e.g. '--data-dir=/tmp' -> '--data-dir')."""
+        if arg.startswith("--"):
+            return arg.split("=")[0]
+        elif arg.startswith("-D"):
+            return arg.split("=")[0]
+        elif arg.startswith("-"):
+            return arg.split("=")[0]
+        return arg
+
+    @classmethod
+    def validate_and_filter(
+        cls,
+        binary_path: Path | str,
+        launch_args: list[str],
+        app_type: str | None = None,
+    ) -> tuple[list[str], list[str]]:
+        """Validate launch arguments and prune any unsupported flags.
+
+        Returns:
+            tuple[list[str], list[str]]: (validated_args, pruned_args)
+        """
+        if not launch_args:
+            return [], []
+
+        app_type_norm = (app_type or "generic").lower()
+        fw_whitelist = cls.FRAMEWORK_WHITELISTS.get(app_type_norm, set())
+
+        # Extract binary strings if needed for unknown flags
+        binary_strings: set[str] | None = None
+        path = Path(binary_path).expanduser().resolve()
+
+        validated: list[str] = []
+        pruned: list[str] = []
+
+        i = 0
+        while i < len(launch_args):
+            arg = launch_args[i]
+            flag = cls._extract_flag_name(arg)
+
+            # 1. Universal macOS flags
+            if flag in cls.UNIVERSAL_SYSTEM_FLAGS:
+                validated.append(arg)
+                # Check if this flag expects a following value argument (e.g. -AppleLanguages '("zh-Hans")')
+                if i + 1 < len(launch_args) and not launch_args[i + 1].startswith("-"):
+                    validated.append(launch_args[i + 1])
+                    i += 1
+                i += 1
+                continue
+
+            # 2. Known framework whitelist flags
+            if flag in fw_whitelist or any(arg.startswith(f"{w}=") or arg == w for w in fw_whitelist):
+                validated.append(arg)
+                # If flag is separated like "-profile" "/path"
+                if i + 1 < len(launch_args) and not launch_args[i + 1].startswith("-") and flag in {"-profile", "-P"}:
+                    validated.append(launch_args[i + 1])
+                    i += 1
+                i += 1
+                continue
+
+            # 3. If app_type is a known framework (chromium/electron/firefox) and flag starts with standard prefix, check whitelist
+            # For custom/unknown apps or custom flags: check binary strings
+            if binary_strings is None:
+                binary_strings = BinaryArgumentProber.extract_binary_strings(path)
+
+            flag_token = flag.lstrip("-")
+            is_supported = False
+            if binary_strings:
+                # Check if flag exists in binary strings
+                for s in binary_strings:
+                    if flag in s or (flag_token and flag_token in s and (f"--{flag_token}" in s or f"-{flag_token}" in s)):
+                        is_supported = True
+                        break
+
+            if is_supported:
+                validated.append(arg)
+                if i + 1 < len(launch_args) and not launch_args[i + 1].startswith("-") and not "=" in arg:
+                    validated.append(launch_args[i + 1])
+                    i += 1
+            else:
+                logger.warning(
+                    f"Pruned unsupported launch argument '{arg}' for executable '{path.name}' (app_type='{app_type_norm}')"
+                )
+                pruned.append(arg)
+                # If next token was an argument value for this unsupported flag, skip it as well
+                if i + 1 < len(launch_args) and not launch_args[i + 1].startswith("-") and not "=" in arg:
+                    i += 1
+
+            i += 1
+
+        return validated, pruned
+

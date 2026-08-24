@@ -122,7 +122,7 @@ def test_load_builtin_wechat():
     assert recipe.bundle_id == "com.tencent.xinWeChat"
     assert recipe.app_name == "微信"
     assert recipe.strategy == "hard_clone"
-    assert recipe.strip_sandbox is True
+    assert recipe.strip_sandbox is False
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
     assert "Library/Keychains" in recipe.symlink_whitelist
@@ -197,7 +197,7 @@ def test_load_builtin_qq():
     assert recipe.bundle_id == "com.tencent.qq"
     assert recipe.app_name == "QQ"
     assert recipe.strategy == "hard_clone"
-    assert recipe.strip_sandbox is True
+    assert recipe.strip_sandbox is False
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
 
@@ -240,9 +240,9 @@ def test_all_builtin_recipes_valid(monkeypatch, tmp_path):
     assert len(yaml_files) >= 18
 
     expected_recipes = {
-        "com.tencent.xinWeChat": ("微信", "hard_clone", True),
+        "com.tencent.xinWeChat": ("微信", "hard_clone", False),
         "com.google.Chrome": ("Chrome", "hard_clone", False),
-        "com.tencent.qq": ("QQ", "hard_clone", True),
+        "com.tencent.qq": ("QQ", "hard_clone", False),
         "ru.keepcoder.Telegram": ("Telegram", "hard_clone", False),
         "org.telegram.desktop": ("Telegram Desktop", "hard_clone", False),
         "jp.naver.line.mac": ("LINE", "hard_clone", True),
@@ -261,7 +261,7 @@ def test_all_builtin_recipes_valid(monkeypatch, tmp_path):
         "com.todesktop.230313mzl4w4u92": ("Cursor", "soft_clone", False),
         "com.microsoft.VSCode": ("VS Code", "soft_clone", False),
         "dev.zed.Zed": ("Zed", "soft_clone", False),
-        "com.tencent.WeWorkMac": ("企业微信", "hard_clone", True),
+        "com.tencent.WeWorkMac": ("企业微信", "hard_clone", False),
         "com.electron.lark": ("飞书", "hard_clone", False),
         "com.bilibili.bilibiliPC": ("哔哩哔哩", "hard_clone", False),
         "com.bytedance.douyin.desktop": ("抖音", "hard_clone", True),

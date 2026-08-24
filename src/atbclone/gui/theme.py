@@ -49,9 +49,20 @@ class Theme:
     FONT_MINI = 10                # Version tags, tiny badges
     FONT_MONO = 12                # Monospace logs / code
 
-    # macOS Standard Interactive Heights
+    # macOS Standard Interactive Heights & Sizing
     HEIGHT_BTN_PRIMARY = 30       # Primary action buttons
     HEIGHT_BTN_COMPACT = 28       # Toolbar & secondary buttons
     HEIGHT_INPUT = 28             # Standard text inputs & selectors
+    CORNER_RADIUS_CARD = 10.0     # Standard macOS card corner radius
+    CORNER_RADIUS_BUTTON = 6.0    # Standard macOS button corner radius
+    BORDER_WIDTH_HAIRLINE = 0.5   # macOS subtle retina hairline border
+
+    # Spacing Tokens (8pt Grid)
+    SPACING_XS = 4
+    SPACING_SM = 8
+    SPACING_MD = 12
+    SPACING_LG = 16
+    SPACING_XL = 20
+    SPACING_XXL = 24
 
 

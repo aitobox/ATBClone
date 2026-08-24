@@ -415,10 +415,26 @@ src/atbclone/
     └── models.py         # Pydantic 校验模型
 ```
 
+## 📖 用户使用手册 (User Guide)
+
+如需查阅小白入门图文教程、规则定制指南、底层原理解析与常见问题解答，请访问完整手册：
+
+- 🇨🇳 **[简体中文用户使用手册](docs/guide/zh-cn/README.md)**
+  - [第一章：基础操作与分身管理](docs/guide/zh-cn/01-basic-operations.md)（7 步向导、无损更新、批量操作、安全删除）
+  - [第二章：冷门应用规则定制与基础参数详解](docs/guide/zh-cn/02-advanced-custom-recipes.md)（智能探针 Prober、规则编辑器、基础参数）
+  - [第三章：实现原理解析与高级参数全解](docs/guide/zh-cn/03-under-the-hood-and-internals.md)（软硬分身机制、壳劫持、高级参数与路径宏）
+  - [第四章：常见问题 (FAQ)、系统体检与反馈](docs/guide/zh-cn/04-faq-and-troubleshooting.md)（数据安全、防封号原理解析、Doctor 体检、GitHub 提报指引）
+- 🇺🇸 **[English User Guide](docs/guide/en/README.md)**
+  - [Chapter 1: Basic Operations & Clone Management](docs/guide/en/01-basic-operations.md)
+  - [Chapter 2: Custom Recipes for Niche Apps](docs/guide/en/02-advanced-custom-recipes.md)
+  - [Chapter 3: Under the Hood & Advanced Parameters](docs/guide/en/03-under-the-hood-and-internals.md)
+  - [Chapter 4: FAQ & Diagnostic Troubleshooting](docs/guide/en/04-faq-and-troubleshooting.md)
+
 ---
 
 ## 📄 License 与 Release Notes
 
+- **使用手册 (Guide)**: [简体中文手册](docs/guide/zh-cn/README.md) | [English Guide](docs/guide/en/README.md)
 - **开源协议**: GPL-3.0 License.
 - **更新日志 (Release Notes)**: [English](docs/release/ReleaseNote.md) | [简体中文](docs/release/ReleaseNote_zh.md) | [繁體中文](docs/release/ReleaseNote_zh_TW.md) | [日本語](docs/release/ReleaseNote_ja.md) | [한국어](docs/release/ReleaseNote_ko.md) | [Deutsch](docs/release/ReleaseNote_de.md) | [Français](docs/release/ReleaseNote_fr.md) | [Русский](docs/release/ReleaseNote_ru.md) | [Español](docs/release/ReleaseNote_es.md)
 

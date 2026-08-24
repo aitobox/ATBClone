@@ -6,6 +6,37 @@
 
 ---
 
+## [v0.9.7] - 2026-08-24
+
+### 🔍 지능형 앱 아키텍처 감지 및 맞춤형 언어 인자 주입
+- **런타임 프레임워크 자동 인식 (`app_type`)**:
+  - Recipe 모델에 `app_type` 필드(`electron`, `chromium`, `qt`, `flutter`, `native_cocoa`, `java`, `unknown`)를 추가했습니다.
+  - `AppProber.detect_app_type`을 통해 앱 내부 Frameworks, dylib, JVM 구조를 분석하여 아키텍처를 자동 판별합니다.
+  - 내장된 34개 레시피의 `app_type` 및 `strip_sandbox` 설정을 표준화했습니다.
+- **프레임워크 적응형 언어 인자 주입**:
+  - 앱 프레임워크에 맞춰 최적화된 언어 실행 인자를 동적으로 주입합니다 (Chromium/Electron: `--lang=`, Native Cocoa: `-AppleLanguages`, Java: `-user.language`).
+
+### 🧬 Mach-O 바이너리 인자 지능형 탐색 및 검증
+- **미지원 앱 데이터 디렉토리 인자 자동 탐지**:
+  - `BinaryArgumentProber`를 구현하여 Mach-O 실행 파일의 문자열을 스캔하고 지원되는 데이터 디렉토리 인자(`--user-data-dir`, `--profile-directory`, `--datadir` 등)를 자동 감지합니다.
+- **실행 인자 안정성 검증**:
+  - `LaunchArgumentValidator`를 도입하여 복제본 생성 시 충돌하거나 지원되지 않는 플래그를 사전에 필터링합니다.
+
+### 📋 복제본 주입 파라미터 상세 분석 및 원클릭 복사
+- **주입 파라미터 인스펙터 (`CloneInspector`)**:
+  - `CloneInspector`를 구현하여 복제본에 주입된 환경 변수, 프록시 설정, 다국어 설정 및 실행 인자를 상세하게 파싱합니다.
+  - `CloneDetailWindow`에 "주입된 파라미터" 카드를 추가하고 원클릭 복사 기능을 제공합니다.
+
+### ⚙️ 레시피 편집기 고급 설정 지원
+- **시각화 레시피 편집기 확장 (`RecipeEditWindow`)**:
+  - 앱 프레임워크 유형 선택, 실행 인자 편집, 프록시 설정, 환경 변수 주입 및 심볼릭 링크 화이트리스트 설정을 지원합니다.
+
+### 🧪 테스트 확장
+- **안정성 강화**:
+  - 전체 단위 및 GUI 통합 테스트를 428개로 확대했습니다.
+
+---
+
 ## [v0.9.6] - 2026-08-24
 
 ### 🖱️ 네이티브 Cocoa 테이블 헤더 클릭 정렬 지원

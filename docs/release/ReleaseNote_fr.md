@@ -6,6 +6,37 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v0.9.7] - 2026-08-24
+
+### 🔍 Détection intelligente d'architecture & Adaptation linguistique
+- **Reconnaissance du framework d'exécution (`app_type`)**:
+  - Introduction du champ `app_type` (`electron`, `chromium`, `qt`, `flutter`, `native_cocoa`, `java`, `unknown`) dans le modèle Recipe.
+  - `AppProber.detect_app_type` analyse les frameworks, dylibs et structures JVM pour détecter le moteur sous-jacent.
+  - Standardisation des 34 recettes intégrées avec configuration explicite de `app_type` et `strip_sandbox`.
+- **Injection linguistique adaptative selon le framework**:
+  - Paramètres linguistiques personnalisés (`--lang=` pour Chromium/Electron, `-AppleLanguages` pour Native Cocoa, `-user.language` pour Java).
+
+### 🧬 Analyse et validation des arguments binaires Mach-O
+- **Détection automatique des arguments de données**:
+  - Implémentation de `BinaryArgumentProber` pour scanner les exécutables Mach-O et détecter les arguments de répertoire de données (`--user-data-dir`, `--profile-directory`, `--datadir`, etc.).
+- **Validation des arguments de lancement**:
+  - `LaunchArgumentValidator` filtre les arguments incompatibles ou conflictuels lors de la création du clone.
+
+### 📋 Inspection et copie des paramètres injectés
+- **Inspecteur de paramètres injectés (`CloneInspector`)**:
+  - `CloneInspector` extrait les variables d'environnement, proxys, remplacements de langue et arguments de lancement des bundles clones.
+  - Nouvelle section « Paramètres injectés » dans `CloneDetailWindow` avec bouton de copie rapide.
+
+### ⚙️ Personnalisation avancée dans l'éditeur de recettes
+- **Édition visuelle enrichie (`RecipeEditWindow`)**:
+  - Sélection du type de framework, personnalisation des arguments de lancement, configuration proxy, variables d'environnement et listes blanches de liens symboliques.
+
+### 🧪 Tests
+- **Extension de la suite de tests**:
+  - Suite de tests portée à 428 tests automatisés.
+
+---
+
 ## [v0.9.6] - 2026-08-24
 
 ### 🖱️ Tri natif par clic sur l'en-tête de tableau Cocoa

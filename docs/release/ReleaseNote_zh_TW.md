@@ -6,6 +6,37 @@
 
 ---
 
+## [v0.9.7] - 2026-08-24
+
+### 🔍 智慧應用架構探測與框架自適應多語言注入
+- **應用程式執行階段架構辨識 (`app_type`)**：
+  - 在 Recipe 規則模型中引入 `app_type` 欄位（`electron`、`chromium`、`qt`、`flutter`、`native_cocoa`、`java`、`unknown`）。
+  - `AppProber.detect_app_type` 透過解析 Frameworks、動態連結庫與 JVM 結構自動辨識應用程式底層架構。
+  - 標準化全部 34 個內建規則檔案，補充宣告 `app_type` 與 `strip_sandbox` 屬性。
+- **框架自適應多語言參數注入**：
+  - 依據應用程式架構動態注入相符的語言啟動參數（Chromium/Electron 使用 `--lang=`、原生 Cocoa 使用 `-AppleLanguages`、Java 使用 `-user.language` 等）。
+
+### 🧬 Mach-O 二進位參數智慧探測與校驗
+- **未知應用程式資料目錄參數探測**：
+  - 實作 `BinaryArgumentProber` 掃描 Mach-O 執行檔字串表，自動探測支援的使用者資料目錄啟動參數（`--user-data-dir`、`--profile-directory`、`--datadir` 等）。
+- **啟動參數合規性校驗**：
+  - 新增 `LaunchArgumentValidator`，在分身建置時過濾不支援或衝突的啟動參數，保障分身穩定執行。
+
+### 📋 分身注入參數深度解析與一鍵複製
+- **分身注入參數詳細資料 (`CloneInspector`)**：
+  - 實作 `CloneInspector` 解析分身應用程式套件中的執行階段注入環境變數、代理規則、多語言覆寫及啟動參數。
+  - 在 `CloneDetailWindow` 中新增「注入參數」資訊卡，提供一鍵複製到剪貼簿與狀態回饋。
+
+### ⚙️ 規則編輯視窗進階參數設定
+- **視覺化規則編輯升級 (`RecipeEditWindow`)**：
+  - 支援應用程式架構類型選取、自訂啟動參數編輯、代理設定、環境變數注入及符號連結白名單設定。
+
+### 🧪 測試套件擴充
+- **全面品質保障**：
+  - 自動化測試案例擴充至 428 項，涵蓋架構辨識、二進位參數探測、參數校驗與分身詳細資料解析。
+
+---
+
 ## [v0.9.6] - 2026-08-24
 
 ### 🖱️ 原生 Cocoa 表格標頭點擊排序

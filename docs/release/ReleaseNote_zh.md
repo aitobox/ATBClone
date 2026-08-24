@@ -6,6 +6,37 @@
 
 ---
 
+## [v0.9.7] - 2026-08-24
+
+### 🔍 智能应用架构探测与框架自适应多语言注入
+- **应用运行时框架识别 (`app_type`)**：
+  - 在 Recipe 规则模型中引入 `app_type` 字段（`electron`、`chromium`、`qt`、`flutter`、`native_cocoa`、`java`、`unknown`）。
+  - `AppProber.detect_app_type` 通过解析 Frameworks、动态链接库和 JVM 结构自动识别应用底层架构。
+  - 标准化全部 34 个内置规则文件，补充声明 `app_type` 与 `strip_sandbox` 属性。
+- **框架自适应多语言参数注入**：
+  - 依据应用架构动态注入匹配的语言启动参数（Chromium/Electron 使用 `--lang=`、原生 Cocoa 使用 `-AppleLanguages`、Java 使用 `-user.language` 等）。
+
+### 🧬 Mach-O 二进制参数智能探测与校验
+- **未知应用数据目录参数探测**：
+  - 实现 `BinaryArgumentProber` 扫描 Mach-O 可执行文件字符串表，自动探测支持的用户数据目录启动参数（`--user-data-dir`、`--profile-directory`、`--datadir` 等）。
+- **启动参数合规性校验**：
+  - 新增 `LaunchArgumentValidator`，在分身构建时过滤不支持或冲突的启动参数，保障分身稳定运行。
+
+### 📋 分身注入参数深度解析与一键复制
+- **分身注入参数详情 (`CloneInspector`)**：
+  - 实现 `CloneInspector` 解析分身应用包中的运行时注入环境变量、代理规则、多语言重写及启动参数。
+  - 在 `CloneDetailWindow` 中新增“注入参数”卡片，提供一键复制到剪贴板与状态反馈。
+
+### ⚙️ 规则编辑窗口高级参数配置
+- **可视化规则编辑升级 (`RecipeEditWindow`)**：
+  - 支持应用框架类型选择、自定义启动参数编辑、代理配置、环境变量注入及软链接白名单设置。
+
+### 🧪 测试套件扩充
+- **全面质量保障**：
+  - 自动化测试用例扩充至 428 项，覆盖架构识别、二进制参数探测、参数校验与分身详情解析。
+
+---
+
 ## [v0.9.6] - 2026-08-24
 
 ### 🖱️ 原生 Cocoa 表格表头点击排序

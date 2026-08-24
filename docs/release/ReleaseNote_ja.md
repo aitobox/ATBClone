@@ -6,6 +6,37 @@
 
 ---
 
+## [v0.9.7] - 2026-08-24
+
+### 🔍 アプリケーションアーキテクチャの自動認識と適応型言語注入
+- **フレームワーク種別の認識 (`app_type`)**:
+  - Recipe モデルに `app_type` フィールド（`electron`、`chromium`、`qt`、`flutter`、`native_cocoa`、`java`、`unknown`）を追加。
+  - `AppProber.detect_app_type` により、Frameworks や dylib、JVM 構成を解析してアプリのランタイムを自動判定。
+  - 全 34 種類の組み込みレシピで `app_type` および `strip_sandbox` を標準化。
+- **アーキテクチャ適応型言語パラメータ注入**:
+  - フレームワークに応じて最適な言語引数を動的適用（Chromium/Electron では `--lang=`、Native Cocoa では `-AppleLanguages`、Java では `-user.language`）。
+
+### 🧬 Mach-O バイナリ引数の自動診断と検証
+- **未知アプリのデータディレクトリ引数自動検出**:
+  - `BinaryArgumentProber` を実装し、Mach-O バイナリの文字列テーブルをスキャンしてサポートされている引数（`--user-data-dir`、`--profile-directory`、`--datadir` など）を自動検出。
+- **起動引数の検証とサニタイズ**:
+  - `LaunchArgumentValidator` により、非対応または競合する起動引数を自動除外して安定動作を保証。
+
+### 📋 クローン注入パラメータの詳細表示とコピー機能
+- **注入パラメータ解析 (`CloneInspector`)**:
+  - `CloneInspector` により、クローン内の環境変数、プロキシ設定、言語オーバーライド、起動引数を抽出。
+  - `CloneDetailWindow` に「注入パラメータ」カードを追加し、ワンクリックでクリップボードにコピー可能に。
+
+### ⚙️ レシピ編集ウィンドウの高度な設定機能
+- **GUI レシピ編集の強化 (`RecipeEditWindow`)**:
+  - アプリタイプ選択、起動引数編集、プロキシ設定、環境変数、シンボリックリンクのホワイトリスト設定に対応。
+
+### 🧪 テストスイート拡充
+- **網羅的な品質検証**:
+  - 自動テストスイートを 428 件に拡大。
+
+---
+
 ## [v0.9.6] - 2026-08-24
 
 ### 🖱️ ネイティブ Cocoa テーブルヘッダーのクリックソート

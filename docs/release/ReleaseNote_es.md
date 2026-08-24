@@ -6,6 +6,37 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.9.7] - 2026-08-24
+
+### 🔍 Detección inteligente de arquitectura y adaptación de idioma
+- **Reconocimiento del framework de la aplicación (`app_type`)**:
+  - Incorporación del campo `app_type` (`electron`, `chromium`, `qt`, `flutter`, `native_cocoa`, `java`, `unknown`) en el modelo Recipe.
+  - `AppProber.detect_app_type` inspecciona los frameworks, dylibs y estructuras JVM para identificar el motor de la aplicación.
+  - Estandarización de las 34 recetas integradas con `app_type` y `strip_sandbox` declarados.
+- **Inyección adaptativa de argumentos de idioma**:
+  - Configuración dinámica de opciones de idioma según el entorno (`--lang=` para Chromium/Electron, `-AppleLanguages` para Native Cocoa, `-user.language` para Java).
+
+### 🧬 Detección y validación de argumentos en binarios Mach-O
+- **Detección automática de argumentos de directorio de datos**:
+  - Implementación de `BinaryArgumentProber` para escanear ejecutables Mach-O y encontrar flags compatibles (`--user-data-dir`, `--profile-directory`, `--datadir`, etc.) en aplicaciones no registradas.
+- **Validación de argumentos de inicio**:
+  - `LaunchArgumentValidator` descarta parámetros incompatibles antes de crear el clon.
+
+### 📋 Inspección y copia de parámetros inyectados
+- **Análisis de parámetros inyectados (`CloneInspector`)**:
+  - `CloneInspector` desglosa variables de entorno, configuración de proxy, idioma e instrucciones de arranque de cada clon.
+  - Nueva tarjeta «Parámetros inyectados» en `CloneDetailWindow` con botón de copia rápida al portapapeles.
+
+### ⚙️ Opciones avanzadas en el editor de recetas
+- **Edición visual de recetas (`RecipeEditWindow`)**:
+  - Ajuste de tipo de framework, argumentos de inicio personalizados, configuración de proxy, variables de entorno y listas de enlaces simbólicos permitidos.
+
+### 📦 Pruebas integrales
+- **Ampliación de pruebas**:
+  - Conjunto de pruebas ampliado a 428 pruebas automatizadas.
+
+---
+
 ## [v0.9.6] - 2026-08-24
 
 ### 🖱️ Ordenación nativa al hacer clic en encabezados de tabla Cocoa

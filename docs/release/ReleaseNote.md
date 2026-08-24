@@ -6,6 +6,37 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.9.7] - 2026-08-24
+
+### 🔍 Intelligent Application Architecture Detection & Language Adaptation
+- **`app_type` Architecture Recognition**:
+  - Introduced `app_type` field (`electron`, `chromium`, `qt`, `flutter`, `native_cocoa`, `java`, `unknown`) to the Recipe model.
+  - Automatically recognizes application runtime frameworks via `AppProber.detect_app_type` by inspecting bundle frameworks, dylibs, and JVM structures.
+  - Standardized all 34 built-in recipes with explicit `app_type` and `strip_sandbox` configurations.
+- **Framework-Adaptive Language Injection**:
+  - Dynamically injects locale flags customized per runtime framework (`--lang=` for Chromium/Electron, `-AppleLanguages` for Native Cocoa, `-user.language` for Java).
+
+### 🧬 Mach-O Binary Argument Probing & Validation
+- **Intelligent Data Directory Probing**:
+  - Implemented `BinaryArgumentProber` to scan Mach-O executable string tables, automatically extracting supported user data directory CLI flags (`--user-data-dir`, `--profile-directory`, `--datadir`, etc.) for unknown applications.
+- **Launch Argument Validation**:
+  - Added `LaunchArgumentValidator` to prune unsupported or conflicting CLI flags during clone creation, preventing application crashes.
+
+### 📋 Clone Injected Parameters Inspection & Copy
+- **`CloneInspector` & Details View Enhancement**:
+  - Implemented `CloneInspector` to parse and extract runtime injected environment variables, proxy settings, language overrides, and launch flags from clone bundles.
+  - Added an "Injected Parameters" card in `CloneDetailWindow` with a one-click copy button and visual feedback.
+
+### ⚙️ Recipe Editor Window Advanced Customization
+- **GUI Recipe Editing (`RecipeEditWindow`)**:
+  - Added advanced configuration fields including application framework type selection, launch arguments editor, proxy settings, environment variables, and symlink whitelists.
+
+### 🧪 Test Suite Expansion
+- **Comprehensive Coverage**:
+  - Expanded automated test suite to 428 unit and GUI integration tests.
+
+---
+
 ## [v0.9.6] - 2026-08-24
 
 ### 🖱️ Native Cocoa Table Header Sorting

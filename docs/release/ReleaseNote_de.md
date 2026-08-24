@@ -6,6 +6,37 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.9.7] - 2026-08-24
+
+### 🔍 Intelligente Erkennung der App-Architektur & Sprachparameter-Anpassung
+- **Erkennung des Runtime-Frameworks (`app_type`)**:
+  - Einführung des Feldes `app_type` (`electron`, `chromium`, `qt`, `flutter`, `native_cocoa`, `java`, `unknown`) im Recipe-Modell.
+  - `AppProber.detect_app_type` analysiert Frameworks, dylibs und JVM-Strukturen zur automatischen Architekturbestimmung.
+  - Standardisierung aller 34 integrierten Rezepte mit expliziten `app_type`- und `strip_sandbox`-Attributen.
+- **Framework-spezifische Sprachparameter-Injektion**:
+  - Dynamische Injektion passender Sprachflags je nach Framework (`--lang=` für Chromium/Electron, `-AppleLanguages` für Native Cocoa, `-user.language` für Java).
+
+### 🧬 Mach-O-Binärargument-Analyse & Validierung
+- **Automatische Erkennung von Datenpfad-Argumenten**:
+  - `BinaryArgumentProber` durchsucht Mach-O-Binärdateien nach unterstützten CLI-Flags (`--user-data-dir`, `--profile-directory`, `--datadir` etc.) für unbekannte Anwendungen.
+- **Validierung von Startargumenten**:
+  - `LaunchArgumentValidator` filtert inkompatible oder fehlerhafte Flags vor der Klonerstellung heraus.
+
+### 📋 Inspektion & Kopieren injizierter Parameter
+- **Parameter-Inspektion (`CloneInspector`)**:
+  - `CloneInspector` extrahiert injizierte Umgebungsvariablen, Proxyeinstellungen, Sprachüberschreibungen und Startargumente aus Klon-Bundles.
+  - Neue Karte „Injizierte Parameter“ im `CloneDetailWindow` mit praktischem Kopier-Button.
+
+### ⚙️ Erweiterte Rezepteinstellungen im GUI-Editor
+- **Erweiterter Rezeptideitor (`RecipeEditWindow`)**:
+  - Konfiguration von Anwendungs-Framework-Typen, Startargumenten, Proxyregeln, Umgebungsvariablen und Symlink-Whitelists.
+
+### 🧪 Test-Suite
+- **Umfassende Abdeckung**:
+  - Ausbau auf 428 automatisierte Tests.
+
+---
+
 ## [v0.9.6] - 2026-08-24
 
 ### 🖱️ Natives Cocoa-Tabellenkopf-Sortieren

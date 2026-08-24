@@ -221,8 +221,10 @@ class SettingsView(toga.Box):
             base_dir.mkdir(parents=True, exist_ok=True)
         except (OSError, PermissionError):
             pass
-        loop = asyncio.get_running_loop()
-        loop.run_in_executor(None, lambda: subprocess.Popen(["open", str(base_dir)]))
+        try:
+            subprocess.Popen(["open", str(base_dir)])
+        except Exception as e:
+            logger.warning(f"Failed to open directory in Finder: {e}")
 
     async def _on_browse_base(self, widget: toga.Button):
         if self.app_instance and hasattr(self.app_instance, "main_window"):

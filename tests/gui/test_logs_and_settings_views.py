@@ -38,22 +38,18 @@ def test_logs_view_file_backed_and_live_sync(tmp_path):
 
 
 def test_settings_view_open_finder_and_save():
-    async def _test():
-        mock_app = MagicMock()
-        mock_app.main_window = MagicMock()
-        view = SettingsView(app=mock_app)
+    mock_app = MagicMock()
+    mock_app.main_window = MagicMock()
+    view = SettingsView(app=mock_app)
 
-        assert "ATBClone" in view.input_base_dir.value
+    assert "ATBClone" in view.input_base_dir.value
 
-        with patch("subprocess.Popen") as mock_popen:
-            view.on_open_data_dir_in_finder(None)
-            await asyncio.sleep(0.01)
-            open_calls = [c for c in mock_popen.call_args_list if c[0] and isinstance(c[0][0], list) and c[0][0][0] == "open"]
-            assert len(open_calls) >= 1
-            args = open_calls[0][0][0]
-            assert args[0] == "open"
-
-    asyncio.run(_test())
+    with patch("subprocess.Popen") as mock_popen:
+        view.on_open_data_dir_in_finder(None)
+        open_calls = [c for c in mock_popen.call_args_list if c[0] and isinstance(c[0][0], list) and c[0][0][0] == "open"]
+        assert len(open_calls) >= 1
+        args = open_calls[0][0][0]
+        assert args[0] == "open"
 
 
 def test_settings_view_root_dir_sync_subdirectories(tmp_path):

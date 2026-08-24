@@ -1,6 +1,7 @@
 bundle_id: company.thebrowser.Browser
 app_name: Arc
 strategy: hard_clone
+app_type: chromium
 launch_args:
   - "--user-data-dir={{ATB_DATA_DIR}}"
 

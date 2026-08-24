@@ -307,6 +307,24 @@ def test_supports_data_dir_with_env_injection():
     assert supports_data_dir(recipe) is True
 
 
+def test_builtin_recipes_have_valid_app_types():
+    chrome_recipe = RecipeLoader.get("com.google.Chrome")
+    assert chrome_recipe is not None
+    assert chrome_recipe.app_type == "chromium"
+
+    vscode_recipe = RecipeLoader.get("com.microsoft.VSCode")
+    assert vscode_recipe is not None
+    assert vscode_recipe.app_type == "electron"
+
+    firefox_recipe = RecipeLoader.get("org.mozilla.firefox")
+    assert firefox_recipe is not None
+    assert firefox_recipe.app_type == "firefox"
+
+    wechat_recipe = RecipeLoader.get("com.tencent.xinWeChat")
+    assert wechat_recipe is not None
+    assert wechat_recipe.app_type == "cocoa"
+
+
 def test_supports_data_dir_unsupported():
     from atbclone.recipes.models import Recipe, supports_data_dir
 

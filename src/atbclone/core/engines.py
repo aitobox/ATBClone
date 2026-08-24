@@ -282,6 +282,55 @@ if os.path.isdir(frameworks_dir):
 ' 2>/dev/null || true
         """)
 
+    @classmethod
+    def _build_cef_patch_cmd(cls, dest_path: Path) -> str:
+        """Patch Chromium Embedded Framework to set no_sandbox=1 in cef_initialize when present."""
+        dest_quoted = shlex.quote(str(dest_path))
+        return textwrap.dedent(f"""\
+            # Patch CEF framework no_sandbox if present
+            python3 -c '
+import os
+dst = {dest_quoted}
+cef_path = os.path.join(dst, "Contents", "Frameworks", "Chromium Embedded Framework.framework", "Versions", "A", "Chromium Embedded Framework")
+if not os.path.exists(cef_path):
+    cef_path = os.path.join(dst, "Contents", "Frameworks", "Chromium Embedded Framework.framework", "Chromium Embedded Framework")
+if os.path.exists(cef_path) and not os.path.islink(cef_path):
+    try:
+        with open(cef_path, "rb") as f:
+            data = bytearray(f.read())
+        needle = bytes.fromhex("f50302aaf30301aaf40300aa080840b9280800b9")
+        pos = data.find(needle)
+        if pos != -1:
+            patch_off = pos + 12
+            if data[patch_off:patch_off+4] == bytes.fromhex("080840b9"):
+                data[patch_off:patch_off+4] = bytes.fromhex("28008052")
+                with open(cef_path, "wb") as f:
+                    f.write(data)
+    except Exception:
+        pass
+' 2>/dev/null || true
+        """)
+
+    @staticmethod
+    def _build_symlink_whitelist_snippet(task: CloneTask) -> str:
+        """Return a shell snippet that creates symlinks for items in symlink_whitelist."""
+        whitelist = getattr(task.recipe, "symlink_whitelist", [])
+        if not whitelist:
+            return ""
+        lines = []
+        for item in whitelist:
+            item_clean = item.strip().strip("/")
+            if not item_clean:
+                continue
+            item_quoted = shlex.quote(item_clean)
+            lines.append(
+                f'    if [ ! -e "$HOME"/{item_quoted} ] && [ -e "$REAL_USER_HOME"/{item_quoted} ]; then\n'
+                f'        mkdir -p "$(dirname "$HOME"/{item_quoted})"\n'
+                f'        ln -s "$REAL_USER_HOME"/{item_quoted} "$HOME"/{item_quoted} 2>/dev/null || true\n'
+                f'    fi'
+            )
+        return "\n".join(lines)
+
     @staticmethod
     def patch_framework_singletons(dest_path: Path) -> bool:
         """Python helper to patch ProcessSingleton in embedded frameworks for testing and tools."""
@@ -413,7 +462,16 @@ if os.path.isdir(frameworks_dir):
 
         args_str = f" {' '.join(args_list)}" if args_list else ""
 
-        wrapper_lines = ["#!/bin/bash", 'REAL_USER_HOME="$HOME"']
+        symlink_snippet = cls._build_symlink_whitelist_snippet(task)
+        if symlink_snippet:
+            symlink_snippet_block = f"\n{symlink_snippet}"
+        else:
+            symlink_snippet_block = ""
+
+        wrapper_lines = [
+            "#!/bin/bash",
+            'REAL_USER_HOME="$HOME"',
+        ]
         if env_vars:
             wrapper_lines.append(env_vars)
         if lang_env:
@@ -421,7 +479,19 @@ if os.path.isdir(frameworks_dir):
         if proxy_env:
             wrapper_lines.append(proxy_env)
 
-        wrapper_lines.append(f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"')
+        wrapper_lines.extend([
+            'REAL_USER_HOME="${REAL_USER_HOME:-$HOME}"',
+            'if [ -n "$HOME" ] && [ "$HOME" != "$REAL_USER_HOME" ]; then',
+            '    mkdir -p "$HOME/Library/Preferences"',
+            '    if [ ! -f "$HOME/Library/Preferences/.GlobalPreferences.plist" ] && [ -f "$REAL_USER_HOME/Library/Preferences/.GlobalPreferences.plist" ]; then',
+            '        cp "$REAL_USER_HOME/Library/Preferences/.GlobalPreferences.plist" "$HOME/Library/Preferences/.GlobalPreferences.plist" 2>/dev/null || true',
+            '    fi',
+            '    if [ ! -f "$HOME/.CFUserTextEncoding" ] && [ -f "$REAL_USER_HOME/.CFUserTextEncoding" ]; then',
+            '        cp "$REAL_USER_HOME/.CFUserTextEncoding" "$HOME/.CFUserTextEncoding" 2>/dev/null || true',
+            '    fi' + symlink_snippet_block,
+            'fi',
+            f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"',
+        ])
         wrapper_body = "\n".join(wrapper_lines)
 
         # Build framework singleton patcher command ONLY when explicitly enabled by recipe
@@ -435,6 +505,7 @@ if os.path.isdir(frameworks_dir):
             if needs_singleton_patch
             else ""
         )
+        cef_patch_cmd = cls._build_cef_patch_cmd(task.dest_path)
 
 
         if task.recipe.strip_sandbox:
@@ -470,7 +541,7 @@ cat << 'WRAPPER_EOF' > {wrapper}
 {wrapper_body}
 WRAPPER_EOF
 chmod +x {wrapper}
-{singleton_patch_cmd}xattr -cr {dst}
+{singleton_patch_cmd}{cef_patch_cmd}xattr -cr {dst}
 {codesign_cmds}codesign -vv --deep --strict {dst}
 {lsregister_cmd}
 """

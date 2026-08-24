@@ -6,6 +6,29 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v0.9.9] - 2026-08-24
+
+### 📋 Selectable Text & "Copy All Details" in Clone Details Window
+- **Interactive Information Extraction**:
+  - Enabled Cocoa native text selectable mode across all labels in `CloneDetailWindow` so users can highlight and copy any individual path, bundle ID, or argument directly.
+  - Added a dedicated "Copy All Details" button in the footer to copy a complete markdown-formatted diagnostic report of the clone to the clipboard with visual feedback.
+
+### 🎨 macOS Native UI Design & Token Refinements
+- **Theme & Component Optimization**:
+  - Polished color palette tokens in `Theme` for light and dark modes (`BG_APP`, `BG_CARD`, `BG_HOVER`, `BORDER`, `TEXT_PRIMARY`, `TEXT_MUTED`, `ACCENT`).
+  - Improved card containers, rounded borders, and consistent widget spacing across `CloneListView`, `RecipeListView`, `ProbeView`, `DoctorView`, `SettingsView`, and dialog windows.
+
+### 📖 Comprehensive Multilingual User Manual (`docs/guide/`)
+- **Complete End-to-End User Documentation**:
+  - Published comprehensive user manuals in English (`docs/guide/en/`) and Simplified Chinese (`docs/guide/zh-cn/`).
+  - Covers Chapter 1 (Basic Operations & Lifecycle), Chapter 2 (Advanced Custom Recipes), Chapter 3 (Under the Hood & Framework Architecture), and Chapter 4 (FAQ, Troubleshooting, & Diagnostics).
+
+### 🧪 Test Suite & Quality Assurance
+- **Extended Test Coverage**:
+  - Automated test suite expanded to 431 tests with 100% pass rate.
+
+---
+
 ## [v0.9.8] - 2026-08-24
 
 ### 🔒 Sandbox Entitlements Extraction & Hard Clone Stability

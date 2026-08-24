@@ -6,6 +6,29 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v0.9.9] - 2026-08-24
+
+### 📋 Textauswahl & „Alle Details kopieren“ im Klon-Detailfenster
+- **Interaktive Textkopie & Export**:
+  - Aktivierung des nativen Textauswahlmodus (`setSelectable_`) in `CloneDetailWindow` zum direkten Kopieren beliebiger Pfade, Bundle-IDs oder Parameter.
+  - Neue Schaltfläche „Alle Details kopieren“ in der Fußzeile zum Exportieren des vollständigen Diagnoseberichts in die Zwischenablage.
+
+### 🎨 macOS-natives UI-Design & Abstandsoptimierungen
+- **Design-Token & Karten-Layout**:
+  - Überarbeitung der Farb-Tokens in `Theme` für den Hell- und Dunkelmodus (`BG_APP`, `BG_CARD`, `BG_HOVER`, `BORDER`, `TEXT_PRIMARY`, `TEXT_MUTED`, `ACCENT`).
+  - Harmonisierte Eckenradien, Innenabstände und Widget-Größen in allen Ansichten.
+
+### 📖 Umfassendes mehrsprachiges Benutzerhandbuch (`docs/guide/`)
+- **Offizielle Handbücher**:
+  - Bereitstellung detaillierter Benutzerhandbücher auf Englisch (`docs/guide/en/`) und Chinesisch (`docs/guide/zh-cn/`).
+  - Deckt Kapitel 1 (Grundfunktionen), Kapitel 2 (Benutzerdefinierte Rezepte), Kapitel 3 (Architektur & Interna) und Kapitel 4 (FAQ & Diagnose) ab.
+
+### 🧪 Test-Suite
+- **Erweiterte Abdeckung**:
+  - Test-Suite auf 431 automatisierte Tests erweitert.
+
+---
+
 ## [v0.9.8] - 2026-08-24
 
 ### 🔒 Entitlements-Extraktion & Stabilität der Hard-Clone-Engine

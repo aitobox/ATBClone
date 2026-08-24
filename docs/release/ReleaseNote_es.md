@@ -6,6 +6,29 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v0.9.9] - 2026-08-24
+
+### 📋 Texto seleccionable y «Copiar toda la información» en la ventana de detalles
+- **Copia y exportación interactiva**:
+  - Activación del modo de texto seleccionable nativo de Cocoa (`setSelectable_`) en `CloneDetailWindow`.
+  - Incorporación del botón «Copiar toda la información» para copiar un resumen de diagnóstico completo en Markdown al portapapeles.
+
+### 🎨 Diseño visual nativo de macOS y ajuste de espaciados
+- **Optimización de temas y tarjetas**:
+  - Ajuste fino de la paleta de colores en `Theme` para los modos claro y oscuro (`BG_APP`, `BG_CARD`, `BG_HOVER`, `BORDER`, `TEXT_PRIMARY`, `TEXT_MUTED`, `ACCENT`).
+  - Estandarización de bordes redondeados, márgenes y espaciado de controles en todas las ventanas.
+
+### 📖 Manual de usuario multilingüe completo (`docs/guide/`)
+- **Documentación exhaustiva**:
+  - Publicación del manual de usuario completo en inglés (`docs/guide/en/`) y chino (`docs/guide/zh-cn/`).
+  - Incluye el Capítulo 1 (Operaciones básicas), Capítulo 2 (Recetas personalizadas), Capítulo 3 (Arquitectura interna) y Capítulo 4 (Preguntas frecuentes y diagnóstico).
+
+### 📦 Pruebas integrales
+- **Ampliación de pruebas**:
+  - Conjunto de pruebas ampliado a 431 pruebas automatizadas.
+
+---
+
 ## [v0.9.8] - 2026-08-24
 
 ### 🔒 Extracción precisa de Entitlements y estabilidad de Hard Clone

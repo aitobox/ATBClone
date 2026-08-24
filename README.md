@@ -1,8 +1,10 @@
-[中文版](Readme_zh.md)  [English](Readme.md)
+[中文版](Readme_zh.md)  [English](Readme.md) | 📖 **[User Guide / Manual](docs/guide/en/README.md)**
 
 # ATBClone (macOS Application Cloning Engine)
 
 > 🚀 **ATBClone** is a modern application multi-instancing and clone management engine designed for macOS. It supports isolated user data directories, independent network proxies (HTTP / SOCKS5), automated recipe matching, ad-hoc code re-signing, and sandbox removal.
+>
+> 📖 **Looking for a beginner-friendly tutorial?** Check out the complete **[ATBClone English User Manual](docs/guide/en/README.md)**.
 
 <p align="center">
   <img src="resource/images/screenshot-20260821-110121.png" alt="ATBClone Clones Dashboard" width="49%">

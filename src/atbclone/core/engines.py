@@ -208,6 +208,48 @@ chmod +x {wrapper}
 class HardCloneEngine(CloneEngine):
     """Creates a full physical clone of the app bundle with binary renaming, wrapper, and re-signing."""
 
+    _NSHOME_HOOK_DYLIB_NAME = "atb_nshome.dylib"
+
+    @staticmethod
+    def _get_nshome_hook_src_path() -> "Path | None":
+        """Return the absolute path to atb_nshome_interpose.m bundled with ATBClone.
+
+        Resolves from executor/hooks relative to this module file.  Returns None when
+        the source file is absent so callers can skip the hook non-fatally.
+        """
+        hooks_dir = Path(__file__).resolve().parent.parent / "executor" / "hooks"
+        candidate = hooks_dir / "atb_nshome_interpose.m"
+        return candidate if candidate.is_file() else None
+
+    @classmethod
+    def _build_electron_hook_cmd(cls, dst_macos: Path) -> str:
+        """Return a shell snippet that compiles atb_nshome.dylib into the clone's MacOS dir.
+
+        On macOS, Cocoa's NSHomeDirectory() reads from the password database and ignores
+        the HOME env var.  Electron/Chromium uses NSHomeDirectory() (via
+        NSSearchPathForDirectoriesInDomains) to derive the ProcessSingleton socket path,
+        so two clone instances share the same socket and the second one immediately defers
+        to the first.  Compiling and injecting this interpose dylib makes NSHomeDirectory()
+        return the HOME env var, giving each clone an isolated singleton socket.
+
+        Returns an empty string if clang or the source file is unavailable (non-fatal).
+        """
+        src_path = cls._get_nshome_hook_src_path()
+        if src_path is None:
+            return ""
+        src_quoted = shlex.quote(str(src_path))
+        dst_dylib = shlex.quote(str(dst_macos / cls._NSHOME_HOOK_DYLIB_NAME))
+        install_name = f"@executable_path/{cls._NSHOME_HOOK_DYLIB_NAME}"
+        return textwrap.dedent(f"""\
+            # Compile NSHomeDirectory interpose hook for Electron singleton isolation
+            if command -v clang >/dev/null 2>&1; then
+                clang -arch "$(uname -m)" -dynamiclib \\
+                    -framework Foundation \\
+                    -install_name {shlex.quote(install_name)} \\
+                    -o {dst_dylib} {src_quoted} 2>/dev/null || true
+            fi
+        """)
+
     @classmethod
     def execute(cls, task: CloneTask, needs_admin: bool = False) -> None:
         """Execute hard clone script.
@@ -267,6 +309,17 @@ class HardCloneEngine(CloneEngine):
 
         args_str = f" {' '.join(args_list)}" if args_list else ""
 
+        # Determine whether to compile and inject the NSHomeDirectory interpose hook.
+        # Electron/Chromium apps using HOME isolation need this because macOS Cocoa APIs
+        # (NSHomeDirectory, NSSearchPathForDirectoriesInDomains) ignore the HOME env var.
+        app_type_norm = (getattr(task.recipe, "app_type", None) or "generic").lower()
+        has_home_isolation = "HOME" in effective_env
+        needs_nshome_hook = (
+            app_type_norm in ("electron", "chromium")
+            and has_home_isolation
+            and cls._get_nshome_hook_src_path() is not None
+        )
+
         wrapper_lines = ["#!/bin/bash", 'REAL_USER_HOME="$HOME"']
         if env_vars:
             wrapper_lines.append(env_vars)
@@ -274,8 +327,27 @@ class HardCloneEngine(CloneEngine):
             wrapper_lines.append(lang_env)
         if proxy_env:
             wrapper_lines.append(proxy_env)
+
+        if needs_nshome_hook:
+            wrapper_lines.append(
+                "# Ensure Application Support exists so the singleton socket lands in the isolated home"
+            )
+            wrapper_lines.append('mkdir -p "$HOME/Library/Application Support"')
+            wrapper_lines.append(
+                "# DYLD interpose: NSHomeDirectory() returns HOME so Cocoa paths are clone-isolated"
+            )
+            wrapper_lines.append(
+                f'export DYLD_INSERT_LIBRARIES="$(dirname "$0")/{cls._NSHOME_HOOK_DYLIB_NAME}"'
+            )
+
         wrapper_lines.append(f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"')
         wrapper_body = "\n".join(wrapper_lines)
+
+        electron_hook_cmd = (
+            cls._build_electron_hook_cmd(task.dest_path / "Contents" / "MacOS")
+            if needs_nshome_hook
+            else ""
+        )
 
         if task.recipe.strip_sandbox:
             ent_plist = shlex.quote(str(task.dest_path / "Contents" / "atb_entitlements.plist"))
@@ -300,7 +372,7 @@ cp -R {src} {dst}
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
 {display_name_cmd}
 {icon_cmd}mv {bin_orig} {bin_bak}
-cat << 'WRAPPER_EOF' > {wrapper}
+{electron_hook_cmd}cat << 'WRAPPER_EOF' > {wrapper}
 {wrapper_body}
 WRAPPER_EOF
 chmod +x {wrapper}
@@ -317,3 +389,4 @@ xattr -cr {dst}
             except (CloneError, OSError):
                 pass
             raise
+

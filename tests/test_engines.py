@@ -233,9 +233,11 @@ class TestHardCloneEngine:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert "codesign -d --entitlements :- /Applications/TestApp2.app > /Applications/TestApp2.app/Contents/atb_entitlements.plist 2>/dev/null || true" in script
-            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" /Applications/TestApp2.app/Contents/atb_entitlements.plist || true' in script
+            assert "codesign -d --entitlements :- /Applications/TestApp.app > /Applications/TestApp2.app/Contents/atb_entitlements.plist 2>/dev/null || true" in script
+            assert "if [ -s /Applications/TestApp2.app/Contents/atb_entitlements.plist ]; then" in script
+            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" /Applications/TestApp2.app/Contents/atb_entitlements.plist 2>/dev/null || true' in script
             assert "codesign --force --deep --sign - --entitlements /Applications/TestApp2.app/Contents/atb_entitlements.plist /Applications/TestApp2.app" in script
+            assert "codesign --force --deep --sign - /Applications/TestApp2.app" in script
             assert "codesign -vv --deep --strict /Applications/TestApp2.app" in script
 
     def test_hard_clone_with_env_injection_and_proxy(self, sample_task):

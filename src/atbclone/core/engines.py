@@ -280,9 +280,14 @@ class HardCloneEngine(CloneEngine):
         if task.recipe.strip_sandbox:
             ent_plist = shlex.quote(str(task.dest_path / "Contents" / "atb_entitlements.plist"))
             codesign_cmds = (
-                f"codesign -d --entitlements :- {dst} > {ent_plist} 2>/dev/null || true\n"
-                f'/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" {ent_plist} || true\n'
-                f"codesign --force --deep --sign - --entitlements {ent_plist} {dst}\n"
+                f"codesign -d --entitlements :- {src} > {ent_plist} 2>/dev/null || true\n"
+                f"if [ -s {ent_plist} ]; then\n"
+                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" {ent_plist} 2>/dev/null || true\n'
+                f"    codesign --force --deep --sign - --entitlements {ent_plist} {dst}\n"
+                f"else\n"
+                f"    rm -f {ent_plist}\n"
+                f"    codesign --force --deep --sign - {dst}\n"
+                f"fi\n"
             )
         else:
             codesign_cmds = f"codesign --force --deep --sign - {dst}\n"

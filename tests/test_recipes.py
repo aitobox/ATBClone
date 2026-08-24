@@ -261,7 +261,7 @@ def test_all_builtin_recipes_valid(monkeypatch, tmp_path):
         "com.todesktop.230313mzl4w4u92": ("Cursor", "soft_clone", False),
         "com.microsoft.VSCode": ("VS Code", "soft_clone", False),
         "dev.zed.Zed": ("Zed", "soft_clone", False),
-        "com.tencent.WeWorkMac": ("企业微信", "hard_clone", False),
+        "com.tencent.WeWorkMac": ("企业微信", "hard_clone", True),
         "com.electron.lark": ("飞书", "hard_clone", False),
         "com.bilibili.bilibiliPC": ("哔哩哔哩", "hard_clone", False),
         "com.bytedance.douyin.desktop": ("抖音", "hard_clone", False),

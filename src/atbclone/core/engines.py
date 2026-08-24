@@ -437,20 +437,32 @@ if os.path.isdir(frameworks_dir):
         )
 
 
+        ent_plist = shlex.quote(str(task.dest_path / "Contents" / "atb_entitlements.plist"))
         if task.recipe.strip_sandbox:
-            ent_plist = shlex.quote(str(task.dest_path / "Contents" / "atb_entitlements.plist"))
-            codesign_cmds = (
-                f"codesign -d --entitlements :- {src} > {ent_plist} 2>/dev/null || true\n"
-                f"if [ -s {ent_plist} ]; then\n"
-                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" {ent_plist} 2>/dev/null || true\n'
-                f"    codesign --force --deep --sign - --entitlements {ent_plist} {dst}\n"
-                f"else\n"
-                f"    rm -f {ent_plist}\n"
-                f"    codesign --force --deep --sign - {dst}\n"
-                f"fi\n"
-            )
+            strip_sandbox_snippet = f'/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" {ent_plist} 2>/dev/null || true\n'
         else:
-            codesign_cmds = f"codesign --force --deep --sign - {dst}\n"
+            strip_sandbox_snippet = ""
+
+        codesign_cmds = (
+            f"codesign -d --entitlements - --xml {src} > {ent_plist} 2>/dev/null || true\n"
+            f"if [ -s {ent_plist} ]; then\n"
+            f"    {strip_sandbox_snippet}"
+            f"    if [ -d {dst}/Contents/Frameworks ]; then\n"
+            f"        find {dst}/Contents/Frameworks -name '*.dylib' -exec codesign --force --sign - {{}} + 2>/dev/null || true\n"
+            f"        for h in {dst}/Contents/Frameworks/*.app; do\n"
+            f'            [ -d "$h" ] && codesign --force --deep --sign - --entitlements {ent_plist} "$h" 2>/dev/null || true\n'
+            f"        done\n"
+            f"        for f in {dst}/Contents/Frameworks/*.framework; do\n"
+            f'            [ -d "$f" ] && codesign --force --deep --sign - "$f" 2>/dev/null || true\n'
+            f"        done\n"
+            f"    fi\n"
+            f"    codesign --force --sign - --entitlements {ent_plist} {dst}\n"
+            f"    rm -f {ent_plist}\n"
+            f"else\n"
+            f"    rm -f {ent_plist}\n"
+            f"    codesign --force --deep --sign - {dst}\n"
+            f"fi\n"
+        )
 
         script = f"""set -e
 mkdir -p {dst_parent}

@@ -149,7 +149,9 @@ class TestSoftCloneEngine:
             assert "mkdir -p '/Applications/Google Chrome 2.app/Contents/MacOS'" in script
             assert "cp '/Applications/Google Chrome.app/Contents/Info.plist' '/Applications/Google Chrome 2.app/Contents/Info.plist'" in script
             assert "exec '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'" in script
-            assert "-AppleLanguages" in script
+            assert "--lang=" in script
+            assert "-AppleLanguages" not in script
+            assert "-AppleLocale" not in script
 
     def test_soft_clone_with_launch_args_and_proxy(self, sample_task):
         sample_task.recipe.launch_args = [
@@ -220,7 +222,9 @@ class TestHardCloneEngine:
             assert "cp -R '/Applications/Google Chrome.app' '/Applications/Google Chrome 2.app'" in script
             assert "mv '/Applications/Google Chrome 2.app/Contents/MacOS/Google Chrome' '/Applications/Google Chrome 2.app/Contents/MacOS/Google Chrome.bin'" in script
             assert 'exec "$(dirname "$0")/Google Chrome.bin"' in script
-            assert "-AppleLanguages" in script
+            assert "--lang=" in script
+            assert "-AppleLanguages" not in script
+            assert "-AppleLocale" not in script
 
 
     def test_hard_clone_with_strip_sandbox(self, sample_task):
@@ -442,6 +446,64 @@ class TestIOSEngines:
         with pytest.raises(CloneError) as exc_info:
             SoftCloneEngine.execute(ios_task, needs_admin=False)
         assert "iOS on Mac Wrapper" in str(exc_info.value)
+
+
+class TestAdaptiveLanguageArgs:
+    """Verify that CloneEngine adaptively injects framework-appropriate language args."""
+
+    def test_chrome_soft_clone_emits_lang_flag_without_apple_languages(self, mock_app_info_with_spaces, base_recipe):
+        base_recipe.app_type = "chromium"
+        task = CloneTask(
+            source=mock_app_info_with_spaces,
+            dest_path=Path("/Applications/Google Chrome 2.app"),
+            data_dir=Path("/Users/test/Library/Application Support/Google Chrome 2"),
+            recipe=base_recipe,
+            clone_name="Google Chrome 2",
+            new_bundle_id="com.google.Chrome.clone2",
+            language="zh-Hans",
+        )
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            SoftCloneEngine.execute(task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "--lang=zh-CN" in script
+            assert "-AppleLanguages" not in script
+            assert "-AppleLocale" not in script
+
+    def test_chrome_hard_clone_emits_lang_flag_without_apple_languages(self, mock_app_info_with_spaces, base_recipe):
+        base_recipe.app_type = "chromium"
+        task = CloneTask(
+            source=mock_app_info_with_spaces,
+            dest_path=Path("/Applications/Google Chrome 2.app"),
+            data_dir=Path("/Users/test/Library/Application Support/Google Chrome 2"),
+            recipe=base_recipe,
+            clone_name="Google Chrome 2",
+            new_bundle_id="com.google.Chrome.clone2",
+            language="en",
+        )
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "--lang=en-US" in script
+            assert "-AppleLanguages" not in script
+            assert "-AppleLocale" not in script
+
+    def test_native_cocoa_emits_apple_languages(self, mock_app_info, base_recipe):
+        base_recipe.app_type = "cocoa"
+        task = CloneTask(
+            source=mock_app_info,
+            dest_path=Path("/Applications/TestApp2.app"),
+            data_dir=Path("/Users/test/Library/Application Support/TestApp2"),
+            recipe=base_recipe,
+            clone_name="TestApp 2",
+            new_bundle_id="com.example.testapp.clone2",
+            language="zh-Hans",
+        )
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            SoftCloneEngine.execute(task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "-AppleLanguages" in script
+            assert "-AppleLocale" in script
+            assert "--lang=" not in script
 
 
 

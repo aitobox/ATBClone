@@ -16,7 +16,14 @@ class CloneEngine:
     def _build_language_env_and_args(task: CloneTask) -> tuple[str, list[str]]:
         """Generate shell exports and launch arguments for language/locale configuration."""
         lang = getattr(task, "language", None) or getattr(task.recipe, "language", "system")
-        return build_language_wrapper_snippet(lang)
+        app_type = getattr(task.recipe, "app_type", None)
+        if not app_type and hasattr(task, "source") and task.source and getattr(task.source, "path", None):
+            from atbclone.core.app_prober import AppProber
+            app_type = AppProber.detect_app_type(
+                task.source.path,
+                bundle_id=getattr(task.source, "bundle_id", ""),
+            )
+        return build_language_wrapper_snippet(lang, app_type=app_type or "cocoa")
 
     @staticmethod
     def _build_proxy_env(task: CloneTask) -> str:

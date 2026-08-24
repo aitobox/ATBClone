@@ -19,7 +19,7 @@ ATBClone provides two distribution packages with **identical core functionality*
 
 | Distribution Package | Target Audience | Description |
 | :--- | :--- | :--- |
-| **`ATBClone-arm-0.8.0.dmg`** | 👶 **General Users (Strongly Recommended)** | macOS Native GUI desktop application installer (`.dmg`). Provides a modern, visual card-based interface with zero terminal knowledge required. |
+| **`ATBClone-arm-0.9.7.dmg`** | 👶 **General Users (Strongly Recommended)** | macOS Native GUI desktop application installer (`.dmg`). Provides a modern, visual card-based interface with zero terminal knowledge required. |
 | **`ATBCloneCli.tar.gz`** | ⚡ **Power Users / Developers** | Standalone binary command-line tool archive (`ATBCloneCli`). Zero Python dependencies required; ideal for terminal power users, automation scripts, and CI/CD pipelines. |
 
 > 💡 **User Guidance**:
@@ -45,7 +45,7 @@ ATBClone provides two distribution packages with **identical core functionality*
 
 ## 🖥️ Graphical User Interface (GUI — Recommended for General Users)
 
-> 💡 **Tip for Everyday Users**: If you prefer not to use the terminal, download `ATBClone-arm-0.8.0.dmg` from [GitHub Releases](https://github.com/aitobox/ATBClone/releases), open the DMG, drag `ATBClone.app` to your `Applications` folder, and launch it directly.
+> 💡 **Tip for Everyday Users**: If you prefer not to use the terminal, download `ATBClone-arm-0.9.7.dmg` from [GitHub Releases](https://github.com/aitobox/ATBClone/releases), open the DMG, drag `ATBClone.app` to your `Applications` folder, and launch it directly.
 
 The native macOS desktop interface provides a visual, streamlined experience:
 
@@ -198,10 +198,11 @@ Place a custom YAML recipe in `~/ATBClone/recipes/<bundle_id>.yaml` to automatic
 bundle_id: com.example.customapp
 app_name: CustomApp
 strategy: hard_clone
-strip_sandbox: true
+app_type: cocoa # Options: cocoa, electron, chromium, firefox, generic
+strip_sandbox: false # false (recommended): utilizes macOS native container isolation; true: strips App Sandbox
 environment_injection:
-  HOME: "{{ATB_DATA_DIR}}/Home"
-  TMPDIR: "{{ATB_DATA_DIR}}/Tmp"
+  HOME: '{{ATB_DATA_DIR}}/Home'
+  TMPDIR: '{{ATB_DATA_DIR}}/Tmp'
 proxy:
   enabled: true
   type: http
@@ -253,41 +254,41 @@ atbclone --version
 
 ## 📋 Built-in Recipes
 
-| Category | Application | Bundle Identifier | Strategy | Strip Sandbox |
-| :--- | :--- | :--- | :--- | :---: |
-| **Instant Messaging & Collaboration** | WeChat | `com.tencent.xinWeChat` | Hard Clone | ✘ |
-| | QQ | `com.tencent.qq` | Hard Clone | ✘ |
-| | WeCom (企业微信) | `com.tencent.WeWorkMac` | Hard Clone | ✅ |
-| | Lark (飞书) | `com.electron.lark` | Hard Clone | ✘ |
-| | Telegram (Native Swift) | `ru.keepcoder.Telegram` | Hard Clone | ✘ |
-| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | ✘ |
-| | LINE | `jp.naver.line.mac` | Hard Clone | ✅ |
-| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | ✘ |
-| | Discord | `com.hnc.Discord` | Hard Clone | ✘ |
-| | Skype | `com.skype.skype` | Hard Clone | ✅ |
-| **AI Clients** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | ✘ |
-| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
-| | ChatGPT (Standard) | `com.openai.chat` | Hard Clone | ✅ |
-| | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
-| | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |
-| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | ✘ |
-| **Browsers** | Google Chrome | `com.google.Chrome` | Hard Clone | ✘ |
-| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | ✘ |
-| | Brave Browser | `com.brave.Browser` | Soft Clone | — |
-| | Firefox | `org.mozilla.firefox` | Soft Clone | — |
-| | Tor Browser | `org.torproject.torbrowser` | Soft Clone | — |
-| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | ✘ |
-| **Media & Entertainment** | Bilibili (哔哩哔哩) | `com.bilibili.bilibiliPC` | Hard Clone | ✘ |
-| | Douyin (抖音) | `com.bytedance.douyin.desktop` | Hard Clone | ✅ |
-| | Netease Music (网易云音乐) | `com.netease.163music` | Hard Clone | ✅ |
-| | Steam | `com.valvesoftware.steam` | Hard Clone | ✘ |
-| **Productivity & Utilities** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | ✅ |
-| | VideoFusion (剪映专业版) | `com.lemon.lvpro` | Hard Clone | ✅ |
-| | CapCut | `com.lemon.lvoverseas` | Hard Clone | ✅ |
-| **Developer Tools** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | — |
-| | VS Code | `com.microsoft.VSCode` | Soft Clone | — |
-| | Android Studio | `com.google.android.studio` | Hard Clone | ✘ |
-| | Zed | `dev.zed.Zed` | Soft Clone | — |
+| Category | Application | Bundle Identifier | Strategy | App Type | Strip Sandbox |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **Instant Messaging & Collaboration** | WeChat | `com.tencent.xinWeChat` | Hard Clone | `cocoa` | ✘ |
+| | QQ | `com.tencent.qq` | Hard Clone | `electron` | ✘ |
+| | WeCom (企业微信) | `com.tencent.WeWorkMac` | Hard Clone | `chromium` | ✘ |
+| | Lark (飞书) | `com.electron.lark` | Hard Clone | `electron` | ✘ |
+| | Telegram (Native Swift) | `ru.keepcoder.Telegram` | Hard Clone | `cocoa` | ✘ |
+| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | `generic` | ✘ |
+| | LINE | `jp.naver.line.mac` | Hard Clone | `cocoa` | ✘ |
+| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | `electron` | ✘ |
+| | Discord | `com.hnc.Discord` | Hard Clone | `electron` | ✘ |
+| | Skype | `com.skype.skype` | Hard Clone | `electron` | ✘ |
+| **AI Clients** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | `electron` | ✘ |
+| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | `cocoa` | ✘ |
+| | ChatGPT (Standard) | `com.openai.chat` | Hard Clone | `cocoa` | ✘ |
+| | Gemini | `com.google.GeminiMacOS` | Hard Clone | `cocoa` | ✘ |
+| | Antigravity | `com.google.antigravity` | Hard Clone | `electron` | ✘ |
+| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | `electron` | ✘ |
+| **Browsers** | Google Chrome | `com.google.Chrome` | Hard Clone | `chromium` | ✘ |
+| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | `chromium` | ✘ |
+| | Brave Browser | `com.brave.Browser` | Soft Clone | `chromium` | — |
+| | Firefox | `org.mozilla.firefox` | Soft Clone | `firefox` | — |
+| | Tor Browser | `org.torproject.torbrowser` | Soft Clone | `firefox` | — |
+| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | `chromium` | ✘ |
+| **Media & Entertainment** | Bilibili (哔哩哔哩) | `com.bilibili.bilibiliPC` | Hard Clone | `electron` | ✘ |
+| | Douyin (抖音) | `com.bytedance.douyin.desktop` | Hard Clone | `electron` | ✘ |
+| | Netease Music (网易云音乐) | `com.netease.163music` | Hard Clone | `chromium` | ✘ |
+| | Steam | `com.valvesoftware.steam` | Hard Clone | `cocoa` | ✘ |
+| **Productivity & Utilities** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | `cocoa` | ✘ |
+| | VideoFusion (剪映专业版) | `com.lemon.lvpro` | Hard Clone | `chromium` | ✘ |
+| | CapCut | `com.lemon.lvoverseas` | Hard Clone | `chromium` | ✘ |
+| **Developer Tools** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | `electron` | — |
+| | VS Code | `com.microsoft.VSCode` | Soft Clone | `electron` | — |
+| | Android Studio | `com.google.android.studio` | Hard Clone | `generic` | ✘ |
+| | Zed | `dev.zed.Zed` | Soft Clone | `generic` | — |
 
 ---
 
@@ -313,19 +314,19 @@ atbclone doctor
 
 ## 🏷️ Semantic Version Management
 
-The project adheres to semantic versioning `x.y.z` (current version: `0.8.0`) and provides a dedicated version management script at `scripts/manage_version.py`:
+The project adheres to semantic versioning `x.y.z` (current version: `0.9.7`) and provides a dedicated version management script at `scripts/manage_version.py`:
 
 ```bash
 # 1. Check version consistency across configuration files
 python scripts/manage_version.py --show
 
-# 2. Bump semantic version (patch: 0.8.0 -> 0.8.1, minor: 0.8.0 -> 0.9.0, major: 0.8.0 -> 1.0.0)
+# 2. Bump semantic version (patch: 0.9.7 -> 0.9.8, minor: 0.9.7 -> 0.10.0, major: 0.9.7 -> 1.0.0)
 python scripts/manage_version.py --bump patch
 python scripts/manage_version.py --bump minor
 python scripts/manage_version.py --bump major
 
 # 3. Set an explicit version
-python scripts/manage_version.py 0.8.0
+python scripts/manage_version.py 0.9.7
 
 # 4. Preview changes without writing to disk
 python scripts/manage_version.py --bump patch --dry-run
@@ -343,7 +344,7 @@ The project includes automated build scripts to package both the CLI and GUI int
 # 1. Build CLI standalone binary (dist/ATBCloneCli)
 bash scripts/build_cli.sh
 
-# 2. Build GUI DMG installer (dist/ATBClone-0.8.0.dmg)
+# 2. Build GUI DMG installer (dist/ATBClone-0.9.7.dmg)
 bash scripts/build_gui.sh
 ```
 

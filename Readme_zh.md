@@ -19,7 +19,7 @@ Release 页面主要提供两个发布文件，**核心功能完全一致**：
 
 | 发布包 | 适用人群 | 说明 |
 | :--- | :--- | :--- |
-| **`ATBClone-arm-0.8.0.dmg`** | 👶 **普通用户 / 小白用户（强烈推荐）** | macOS 原生 GUI 桌面客户端安装包 (`.dmg`)。提供现代化卡片式图形界面，零终端操作门槛，开箱即用。 |
+| **`ATBClone-arm-0.9.7.dmg`** | 👶 **普通用户 / 小白用户（强烈推荐）** | macOS 原生 GUI 桌面客户端安装包 (`.dmg`)。提供现代化卡片式图形界面，零终端操作门槛，开箱即用。 |
 | **`ATBCloneCli.tar.gz`** | ⚡ **专业用户 / 开发者** | 独立二进制命令行工具归档（`ATBCloneCli`）。无需安装 Python 环境，专为终端极客、脚本自动化与高级运维场景打造。 |
 
 > 💡 **使用建议与指引**：
@@ -45,7 +45,7 @@ Release 页面主要提供两个发布文件，**核心功能完全一致**：
 
 ## 🖥️ 图形化界面使用指南 (GUI — 推荐普通用户使用)
 
-> 💡 **新手与普通用户提示**：如果您不习惯终端命令行操作，请直接从 [GitHub Releases](https://github.com/aitobox/ATBClone/releases) 下载 `ATBClone-arm-0.8.0.dmg` 安装包，将 `ATBClone.app` 拖入 `应用程序` 文件夹即可直接运行使用！
+> 💡 **新手与普通用户提示**：如果您不习惯终端命令行操作，请直接从 [GitHub Releases](https://github.com/aitobox/ATBClone/releases) 下载 `ATBClone-arm-0.9.7.dmg` 安装包，将 `ATBClone.app` 拖入 `应用程序` 文件夹即可直接运行使用！
 
 macOS 原生桌面图形客户端提供直观、全功能的应用分身管理：
 
@@ -197,10 +197,11 @@ atbclone recipe show com.tencent.xinWeChat
 bundle_id: com.example.customapp
 app_name: CustomApp
 strategy: hard_clone
-strip_sandbox: true
+app_type: cocoa # 可选类型：cocoa, electron, chromium, firefox, generic
+strip_sandbox: false # false (推荐): 依托 macOS 原生容器沙盒隔离；true: 强制剥离沙盒
 environment_injection:
-  HOME: "{{ATB_DATA_DIR}}/Home"
-  TMPDIR: "{{ATB_DATA_DIR}}/Tmp"
+  HOME: '{{ATB_DATA_DIR}}/Home'
+  TMPDIR: '{{ATB_DATA_DIR}}/Tmp'
 proxy:
   enabled: true
   type: http
@@ -252,41 +253,41 @@ atbclone --version
 
 ## 📋 内置分身规则 (Built-in Recipes)
 
-| 类别 | 应用名称 | Bundle Identifier | 克隆策略 | 沙盒解除 (Strip Sandbox) |
-| :--- | :--- | :--- | :--- | :---: |
-| **即时通讯 & 协同办公** | 微信 (WeChat) | `com.tencent.xinWeChat` | Hard Clone | ✘ |
-| | QQ | `com.tencent.qq` | Hard Clone | ✘ |
-| | 企业微信 (WeCom) | `com.tencent.WeWorkMac` | Hard Clone | ✅ |
-| | 飞书 (Lark) | `com.electron.lark` | Hard Clone | ✘ |
-| | Telegram (原生 Swift) | `ru.keepcoder.Telegram` | Hard Clone | ✘ |
-| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | ✘ |
-| | LINE | `jp.naver.line.mac` | Hard Clone | ✅ |
-| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | ✘ |
-| | Discord | `com.hnc.Discord` | Hard Clone | ✘ |
-| | Skype | `com.skype.skype` | Hard Clone | ✅ |
-| **AI 客户端** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | ✘ |
-| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | ✅ |
-| | ChatGPT (标准版) | `com.openai.chat` | Hard Clone | ✅ |
-| | Gemini | `com.google.GeminiMacOS` | Hard Clone | ✅ |
-| | Antigravity | `com.google.antigravity` | Hard Clone | ✘ |
-| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | ✘ |
-| **浏览器** | Google Chrome | `com.google.Chrome` | Hard Clone | ✘ |
-| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | ✘ |
-| | Brave Browser | `com.brave.Browser` | Soft Clone | — |
-| | Firefox | `org.mozilla.firefox` | Soft Clone | — |
-| | Tor Browser | `org.torproject.torbrowser` | Soft Clone | — |
-| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | ✘ |
-| **音视频与社交娱乐** | 哔哩哔哩 (Bilibili) | `com.bilibili.bilibiliPC` | Hard Clone | ✘ |
-| | 抖音 (Douyin) | `com.bytedance.douyin.desktop` | Hard Clone | ✅ |
-| | 网易云音乐 | `com.netease.163music` | Hard Clone | ✅ |
-| | Steam | `com.valvesoftware.steam` | Hard Clone | ✘ |
-| **生产力与实用工具** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | ✅ |
-| | 剪映专业版 | `com.lemon.lvpro` | Hard Clone | ✅ |
-| | CapCut | `com.lemon.lvoverseas` | Hard Clone | ✅ |
-| **开发工具** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | — |
-| | VS Code | `com.microsoft.VSCode` | Soft Clone | — |
-| | Android Studio | `com.google.android.studio` | Hard Clone | ✘ |
-| | Zed | `dev.zed.Zed` | Soft Clone | — |
+| 类别 | 应用名称 | Bundle Identifier | 克隆策略 | 应用类型 (App Type) | 沙盒解除 (Strip Sandbox) |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **即时通讯 & 协同办公** | 微信 (WeChat) | `com.tencent.xinWeChat` | Hard Clone | `cocoa` | ✘ |
+| | QQ | `com.tencent.qq` | Hard Clone | `electron` | ✘ |
+| | 企业微信 (WeCom) | `com.tencent.WeWorkMac` | Hard Clone | `chromium` | ✘ |
+| | 飞书 (Lark) | `com.electron.lark` | Hard Clone | `electron` | ✘ |
+| | Telegram (原生 Swift) | `ru.keepcoder.Telegram` | Hard Clone | `cocoa` | ✘ |
+| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | `generic` | ✘ |
+| | LINE | `jp.naver.line.mac` | Hard Clone | `cocoa` | ✘ |
+| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | `electron` | ✘ |
+| | Discord | `com.hnc.Discord` | Hard Clone | `electron` | ✘ |
+| | Skype | `com.skype.skype` | Hard Clone | `electron` | ✘ |
+| **AI 客户端** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | `electron` | ✘ |
+| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | `cocoa` | ✘ |
+| | ChatGPT (标准版) | `com.openai.chat` | Hard Clone | `cocoa` | ✘ |
+| | Gemini | `com.google.GeminiMacOS` | Hard Clone | `cocoa` | ✘ |
+| | Antigravity | `com.google.antigravity` | Hard Clone | `electron` | ✘ |
+| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | `electron` | ✘ |
+| **浏览器** | Google Chrome | `com.google.Chrome` | Hard Clone | `chromium` | ✘ |
+| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | `chromium` | ✘ |
+| | Brave Browser | `com.brave.Browser` | Soft Clone | `chromium` | — |
+| | Firefox | `org.mozilla.firefox` | Soft Clone | `firefox` | — |
+| | Tor Browser | `org.torproject.torbrowser` | Soft Clone | `firefox` | — |
+| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | `chromium` | ✘ |
+| **音视频与社交娱乐** | 哔哩哔哩 (Bilibili) | `com.bilibili.bilibiliPC` | Hard Clone | `electron` | ✘ |
+| | 抖音 (Douyin) | `com.bytedance.douyin.desktop` | Hard Clone | `electron` | ✘ |
+| | 网易云音乐 | `com.netease.163music` | Hard Clone | `chromium` | ✘ |
+| | Steam | `com.valvesoftware.steam` | Hard Clone | `cocoa` | ✘ |
+| **生产力与实用工具** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | `cocoa` | ✘ |
+| | 剪映专业版 | `com.lemon.lvpro` | Hard Clone | `chromium` | ✘ |
+| | CapCut | `com.lemon.lvoverseas` | Hard Clone | `chromium` | ✘ |
+| **开发工具** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | `electron` | — |
+| | VS Code | `com.microsoft.VSCode` | Soft Clone | `electron` | — |
+| | Android Studio | `com.google.android.studio` | Hard Clone | `generic` | ✘ |
+| | Zed | `dev.zed.Zed` | Soft Clone | `generic` | — |
 
 ---
 
@@ -312,19 +313,19 @@ atbclone doctor
 
 ## 🏷️ 语义化版本管理 (Version Management)
 
-项目采用标准的语义化版本号格式 `x.y.z`（当前版本：`0.8.0`），并提供了专用的版本管理脚本 `scripts/manage_version.py`：
+项目采用标准的语义化版本号格式 `x.y.z`（当前版本：`0.9.7`），并提供了专用的版本管理脚本 `scripts/manage_version.py`：
 
 ```bash
 # 1. 检查各配置文件版本是否一致
 python scripts/manage_version.py --show
 
-# 2. 语义化升级版本 (patch: 0.8.0 -> 0.8.1, minor: 0.8.0 -> 0.9.0, major: 0.8.0 -> 1.0.0)
+# 2. 语义化升级版本 (patch: 0.9.7 -> 0.9.8, minor: 0.9.7 -> 0.10.0, major: 0.9.7 -> 1.0.0)
 python scripts/manage_version.py --bump patch
 python scripts/manage_version.py --bump minor
 python scripts/manage_version.py --bump major
 
 # 3. 指定显式版本
-python scripts/manage_version.py 0.8.0
+python scripts/manage_version.py 0.9.7
 
 # 4. 预览变更（不实际写入文件）
 python scripts/manage_version.py --bump patch --dry-run
@@ -342,7 +343,7 @@ python scripts/manage_version.py --bump patch --dry-run
 # 1. 构建 CLI 独立二进制 (生成于 dist/ATBCloneCli)
 bash scripts/build_cli.sh
 
-# 2. 构建 GUI 原生安装包 (生成于 dist/ATBClone-0.8.0.dmg)
+# 2. 构建 GUI 原生安装包 (生成于 dist/ATBClone-0.9.7.dmg)
 bash scripts/build_gui.sh
 ```
 

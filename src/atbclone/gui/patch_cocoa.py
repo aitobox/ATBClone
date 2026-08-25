@@ -137,6 +137,75 @@ def configure_cocoa_card(native_view: Any, corner_radius: float = 10.0, border_w
                     layer.setBorderColor_(cg_color)
                 elif hasattr(layer, "borderColor"):
                     layer.borderColor = cg_color
+
+            # Subtle drop shadow for visual depth (macOS card style)
+            if hasattr(native_view, "setShadow_"):
+                try:
+                    from rubicon.objc import ObjCClass
+                    NSShadow = ObjCClass("NSShadow")
+                    shadow = NSShadow.alloc().init()
+                    shadow.shadowOffset = (0, -1)
+                    shadow.shadowBlurRadius = 4.0
+                    if hasattr(NSColor, "colorWithRed_green_blue_alpha_"):
+                        shadow.shadowColor = NSColor.colorWithRed_green_blue_alpha_(0.0, 0.0, 0.0, 0.08)
+                    native_view.setShadow_(shadow)
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+
+def configure_cocoa_sidebar_active(native_btn: Any, active: bool) -> None:
+    """Set or clear the Cocoa-level background highlight on a sidebar button NSView for active state.
+
+    Uses the NSView layer backgroundColor to paint Theme.BG_SIDEBAR_ACTIVE (#DFE1E8)
+    behind the active nav item, matching native macOS sidebar selection styling.
+    """
+    if sys.platform != "darwin" or native_btn is None:
+        return
+    try:
+        from toga_cocoa.libs.appkit import NSColor
+        if hasattr(native_btn, "setWantsLayer_"):
+            native_btn.setWantsLayer_(True)
+        layer = getattr(native_btn, "layer", None)
+        if layer is None:
+            return
+        if active:
+            # #DFE1E8 → r=0.875 g=0.882 b=0.910 a=1.0
+            bg = NSColor.colorWithRed_green_blue_alpha_(0.875, 0.882, 0.910, 1.0)
+        else:
+            bg = NSColor.clearColor
+        if hasattr(bg, "CGColor"):
+            cg = bg.CGColor
+            if hasattr(layer, "setBackgroundColor_"):
+                layer.setBackgroundColor_(cg)
+            elif hasattr(layer, "backgroundColor"):
+                layer.backgroundColor = cg
+        # Rounded corners for the active highlight pill
+        if active:
+            if hasattr(layer, "setCornerRadius_"):
+                layer.setCornerRadius_(6.0)
+        else:
+            if hasattr(layer, "setCornerRadius_"):
+                layer.setCornerRadius_(0.0)
+    except Exception:
+        pass
+
+
+def configure_cocoa_window_movable(window: Any) -> None:
+    """Enable window drag from any background area (movableByWindowBackground) on the NSWindow.
+
+    This allows users to drag the window by clicking and dragging in the top bar or content
+    area — matching standard macOS single-pane utility app behavior.
+    """
+    if sys.platform != "darwin" or window is None:
+        return
+    try:
+        native = getattr(getattr(window, "_impl", None), "native", None)
+        if native is None:
+            native = getattr(window, "native", None)
+        if native is not None and hasattr(native, "setMovableByWindowBackground_"):
+            native.setMovableByWindowBackground_(True)
     except Exception:
         pass
 

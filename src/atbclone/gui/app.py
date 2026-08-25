@@ -29,7 +29,7 @@ from atbclone.gui.views.logs_view import LogsView
 from atbclone.gui.views.settings_view import SettingsView
 from atbclone.gui.windows.wizard import WizardWindow
 from atbclone.gui.theme import Theme
-from atbclone.gui.patch_cocoa import patch_cocoa_widgets
+from atbclone.gui.patch_cocoa import patch_cocoa_widgets, configure_cocoa_window_movable
 
 
 def set_macos_dock_icon(icon_path: Optional[Path] = None) -> bool:
@@ -164,6 +164,8 @@ class ATBCloneApp(toga.App):
         self.main_window.on_close = self._on_window_close
         self.on_exit = self._on_app_exit
         self.main_window.show()
+        # Enable window drag from top bar background (macOS HIG drag zone)
+        configure_cocoa_window_movable(self.main_window)
 
         # Initialize native system tray service
         self.tray_service = TrayService(app=self)

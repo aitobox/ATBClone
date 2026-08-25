@@ -116,11 +116,18 @@ class CloneListView(toga.Box):
         actions_box.add(self.btn_delete_table)
         self.table_box.add(actions_box)
 
-        # Empty state label
-        self.label_empty = toga.Label(
+        # Empty state — centered, HIG-compliant two-line layout
+        self._empty_box = toga.Box(style=Pack(direction=COLUMN, flex=1, align_items=CENTER))
+        self._empty_box.add(toga.Box(style=Pack(flex=1)))  # top spacer
+        self._empty_box.add(toga.Label(
             t("view_clones_empty_hint"),
-            style=Pack(margin=(40, 20, 40, 20), font_size=14, color=Theme.TEXT_MUTED),
-        )
+            style=Pack(font_size=16, font_weight="bold", color=Theme.TEXT_MUTED, margin_bottom=8),
+        ))
+        self._empty_box.add(toga.Label(
+            t("view_clones_empty_cta"),
+            style=Pack(font_size=13, color=Theme.TEXT_TERTIARY),
+        ))
+        self._empty_box.add(toga.Box(style=Pack(flex=2)))  # bottom spacer (2x = shift slightly above center)
 
         self._render_current_view()
 
@@ -217,7 +224,7 @@ class CloneListView(toga.Box):
             self.top_bar.update_title(t("view_clones_title", count=total_count))
 
         if not self._filtered_clones:
-            self.content_container.add(self.label_empty)
+            self.content_container.add(self._empty_box)
             return
 
         if self.view_mode == "grid":

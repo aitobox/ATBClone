@@ -8,6 +8,7 @@ from atbclone import __version__
 from atbclone.core.i18n import t
 from atbclone.core.resources import get_app_icon_path
 from atbclone.gui.theme import Theme
+from atbclone.gui.patch_cocoa import configure_cocoa_sidebar_active
 
 
 class SidebarNav(toga.Box):
@@ -88,8 +89,11 @@ class SidebarNav(toga.Box):
 
     def _update_button_styles(self):
         for key, btn in self.buttons.items():
-            if key == self.active_key:
-                btn.style.font_weight = "bold"
-            else:
-                btn.style.font_weight = "normal"
+            is_active = (key == self.active_key)
+            btn.style.font_weight = "bold" if is_active else "normal"
+            try:
+                native_btn = getattr(getattr(btn, "_impl", None), "native", None)
+                configure_cocoa_sidebar_active(native_btn, is_active)
+            except Exception:
+                pass
 

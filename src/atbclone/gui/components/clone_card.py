@@ -34,7 +34,7 @@ class CloneCard(toga.Box):
             style=Pack(font_weight="bold", font_size=15, flex=1, color=Theme.TEXT_PRIMARY),
         )
         is_soft = record.strategy == "soft_clone"
-        strat_badge = t("card_strategy_soft") if is_soft else t("card_strategy_hard")
+        strat_badge = ("● " + t("card_strategy_soft")) if is_soft else ("▲ " + t("card_strategy_hard"))
         strat_color = Theme.BTN_SUCCESS if is_soft else Theme.ACCENT_BLUE
         self.label_strategy = toga.Label(
             strat_badge,
@@ -61,10 +61,10 @@ class CloneCard(toga.Box):
             on_press=lambda w: on_launch(record) if on_launch else None,
             style=Pack(font_weight="bold", font_size=13, height=30, margin_right=6, flex=1),
         )
-        btn_open_dir = toga.Button(t("btn_open_dir_short"), on_press=lambda w: on_open_dir(record) if on_open_dir else None, style=Pack(margin_right=4, width=50, height=30, font_size=12))
-        btn_update = toga.Button(t("btn_update_short"), on_press=lambda w: on_update(record) if on_update else None, style=Pack(margin_right=4, width=50, height=30, font_size=12))
-        btn_edit = toga.Button(t("btn_edit_short"), on_press=lambda w: on_edit(record) if on_edit else None, style=Pack(margin_right=4, width=50, height=30, font_size=12))
-        btn_detail = toga.Button(t("btn_detail_short"), on_press=lambda w: on_detail(record) if on_detail else None, style=Pack(margin_right=4, width=50, height=30, font_size=12))
+        btn_open_dir = toga.Button(t("btn_open_dir_short"), on_press=lambda w: on_open_dir(record) if on_open_dir else None, style=Pack(margin_right=6, width=50, height=30, font_size=12))
+        btn_update = toga.Button(t("btn_update_short"), on_press=lambda w: on_update(record) if on_update else None, style=Pack(margin_right=6, width=50, height=30, font_size=12))
+        btn_edit = toga.Button(t("btn_edit_short"), on_press=lambda w: on_edit(record) if on_edit else None, style=Pack(margin_right=6, width=50, height=30, font_size=12))
+        btn_detail = toga.Button(t("btn_detail_short"), on_press=lambda w: on_detail(record) if on_detail else None, style=Pack(margin_right=6, width=50, height=30, font_size=12))
         btn_delete = toga.Button(t("btn_delete_short"), on_press=lambda w: on_delete(record) if on_delete else None, style=Pack(width=50, height=30, font_size=12))
 
         actions.add(btn_launch)

@@ -16,7 +16,7 @@ class Theme:
     TEXT_PRIMARY = "#1D1D1F"      # Apple standard primary label color
     TEXT_SECONDARY = "#6E6E73"    # Apple secondary label color (neutral muted)
     TEXT_MUTED = "#6E6E73"        # Alias for secondary label
-    TEXT_TERTIARY = "#86868B"     # Apple tertiary label / footnote color
+    TEXT_TERTIARY = "#6C6C70"     # Apple tertiary label / footnote color — darkened for 4.8:1 contrast on #F5F5F7 (WCAG AA)
     TEXT_ACTIVE = "#007AFF"       # Apple system blue text for active links
 
     # Accents & Semantic Colors
@@ -46,7 +46,7 @@ class Theme:
     FONT_BODY = 13                # Standard readable macOS body text & form labels
     FONT_BODY_SECONDARY = 12.5    # Secondary metadata / list items
     FONT_CAPTION = 11.5           # Small captions, hints, footnotes
-    FONT_MINI = 10                # Version tags, tiny badges
+    FONT_MINI = 11                # Version tags, tiny badges (HIG desktop min: 10pt; 11pt preferred for common use)
     FONT_MONO = 12                # Monospace logs / code
 
     # macOS Standard Interactive Heights & Sizing

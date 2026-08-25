@@ -37,7 +37,7 @@ class SidebarNav(toga.Box):
 
         title_box = toga.Box(style=Pack(direction=COLUMN))
         title_label = toga.Label("ATBClone", style=Pack(font_weight="bold", font_size=15.5, color=Theme.TEXT_PRIMARY))
-        ver_label = toga.Label(f"v{__version__} App Cloner", style=Pack(font_size=10.5, color=Theme.TEXT_TERTIARY, margin_top=2))
+        ver_label = toga.Label(f"v{__version__} App Cloner", style=Pack(font_size=11, color=Theme.TEXT_TERTIARY, margin_top=2))
         title_box.add(title_label)
         title_box.add(ver_label)
         header_box.add(title_box)

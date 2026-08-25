@@ -105,7 +105,7 @@ class ReleaseNotesWindow(toga.Window):
         self.btn_close = toga.Button(
             t("release_notes_btn_close"),
             on_press=lambda w: self.close(),
-            style=Pack(width=72, height=30, font_size=13),
+            style=Pack(height=30, font_size=13),
         )
         top_bar.add(self.btn_close)
 

@@ -52,7 +52,7 @@ class ProbeView(toga.Box):
             placeholder=t("probe_input_placeholder"),
             style=Pack(flex=1, margin_right=8, font_size=13.5),
         )
-        self.btn_browse = toga.Button(t("btn_browse_app"), on_press=self.on_browse_press, style=Pack(width=100, height=30, font_size=13))
+        self.btn_browse = toga.Button(t("btn_browse_app"), on_press=self.on_browse_press, style=Pack(height=30, font_size=13))
         row_input.add(self.input_path)
         row_input.add(self.btn_browse)
         inner_target.add(row_input)

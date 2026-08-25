@@ -75,7 +75,7 @@ class WizardWindow(toga.Window):
     def _init_step_widgets(self):
         # Step 1: Select App
         self.input_app_path = toga.TextInput(placeholder="/Applications/Example.app", style=Pack(flex=1, margin_right=8, font_size=13.5))
-        self.btn_browse_app = toga.Button(t("btn_browse_app"), on_press=self._on_browse_app, style=Pack(width=96, height=30, font_size=13))
+        self.btn_browse_app = toga.Button(t("btn_browse_app"), on_press=self._on_browse_app, style=Pack(height=30, font_size=13))
 
         # Step 2: Recipe Info
         self.label_recipe_app = WrappingLabel(f"{t('probe_row_app_name')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
@@ -111,12 +111,12 @@ class WizardWindow(toga.Window):
 
         # Step 4: Destination Directory
         self.input_dest_dir = toga.TextInput(value=str(DEFAULT_APPS_DIR), style=Pack(flex=1, margin_right=8, font_size=13.5))
-        self.btn_browse_dest = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_dest, style=Pack(width=96, height=30, font_size=13))
+        self.btn_browse_dest = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_dest, style=Pack(height=30, font_size=13))
 
         # Step 5: Data Directory
         self.label_data_dir_support = WrappingLabel(t("win_wizard_step5_supported"), style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=6))
         self.input_data_dir = toga.TextInput(style=Pack(flex=1, margin_right=8, font_size=13.5))
-        self.btn_browse_data = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_data, style=Pack(width=96, height=30, font_size=13))
+        self.btn_browse_data = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_data, style=Pack(height=30, font_size=13))
 
         # Step 6: Proxy Settings
         self.switch_proxy = toga.Switch(t("win_wizard_step6_switch"), value=False, style=Pack(margin_bottom=8, font_size=13.5))

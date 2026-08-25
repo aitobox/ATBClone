@@ -123,17 +123,17 @@ class CloneDetailWindow(toga.Window):
         self.btn_copy_cmd = toga.Button(
             t("win_detail_btn_copy_cmd"),
             on_press=self._on_copy_cmd,
-            style=Pack(width=100, height=30, font_size=12, margin_right=8),
+            style=Pack(height=30, font_size=12, margin_right=8),
         )
         self.btn_copy_all = toga.Button(
             t("win_detail_btn_copy_all"),
             on_press=self._on_copy_all,
-            style=Pack(width=135, height=30, font_size=12, margin_right=8),
+            style=Pack(height=30, font_size=12, margin_right=8),
         )
         self.btn_close = toga.Button(
             t("btn_close"),
             on_press=lambda w: self.close(),
-            style=Pack(width=90, height=30, font_size=12),
+            style=Pack(height=30, font_size=12),
         )
 
         self.content = self._build_content()

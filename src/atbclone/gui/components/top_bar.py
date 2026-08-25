@@ -92,7 +92,7 @@ class TopHeaderBar(toga.Box):
             self.select_filter = toga.Selection(
                 items=filter_items,
                 on_change=self._handle_filter,
-                style=Pack(width=145, margin_right=10),
+                style=Pack(width=150, margin_right=10),
             )
             toolbar_row.add(self.select_filter)
 
@@ -101,7 +101,7 @@ class TopHeaderBar(toga.Box):
             self.select_sort = toga.Selection(
                 items=sort_items,
                 on_change=self._handle_sort,
-                style=Pack(width=135, margin_right=10),
+                style=Pack(width=160, margin_right=10),
             )
             toolbar_row.add(self.select_sort)
 
@@ -120,7 +120,7 @@ class TopHeaderBar(toga.Box):
 
         # (f) Refresh Button at far right
         if on_refresh:
-            self.btn_refresh = toga.Button(t("topbar_btn_refresh"), on_press=on_refresh, style=Pack(width=76, height=28, font_size=13))
+            self.btn_refresh = toga.Button(t("topbar_btn_refresh"), on_press=on_refresh, style=Pack(height=28, font_size=13))
             toolbar_row.add(self.btn_refresh)
 
         if len(toolbar_row.children) > 1 or (len(toolbar_row.children) == 1 and on_refresh):

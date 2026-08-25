@@ -53,18 +53,19 @@ class LogsView(toga.Box):
         add_log_listener(self._on_live_log_entry)
 
     def reload_from_disk(self):
-        """Read all log entries from the persistent log file on disk."""
+        """Read all log entries from the persistent log file on disk (reversed, latest first)."""
         content = read_logs()
         if content:
-            self._raw_log_lines = [line for line in content.strip().split("\n") if line.strip()]
+            lines = [line for line in content.strip().split("\n") if line.strip()]
+            self._raw_log_lines = list(reversed(lines))
         else:
             self._raw_log_lines = []
         self._update_log_display()
 
     def _on_live_log_entry(self, entry: str):
-        """Listener callback for new log messages emitted anywhere in the app."""
+        """Listener callback for new log messages emitted anywhere in the app (inserted at top)."""
         if entry.strip():
-            self._raw_log_lines.append(entry.strip())
+            self._raw_log_lines.insert(0, entry.strip())
             self._update_log_display()
 
     def _update_log_display(self):

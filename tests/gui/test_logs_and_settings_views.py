@@ -11,30 +11,36 @@ def test_logs_view_file_backed_and_live_sync(tmp_path):
     log_file = tmp_path / "test_logsview.log"
     setup_logging(log_file=log_file)
     logger = get_logger("ui_test")
-    logger.info("Pre-existing log entry on disk")
+    logger.info("Log entry 1 (Oldest)")
+    logger.info("Log entry 2 (Older)")
 
     view = LogsView()
-    # Verify disk content loaded
-    assert "Pre-existing log entry on disk" in view.log_text.value
+    # Verify disk content loaded in reverse chronological order (newest on top)
+    assert "Log entry 1 (Oldest)" in view.log_text.value
+    assert "Log entry 2 (Older)" in view.log_text.value
+    assert view.log_text.value.index("Log entry 2 (Older)") < view.log_text.value.index("Log entry 1 (Oldest)")
 
-    # Verify live streaming
-    logger.info("New live streamed event")
-    assert "New live streamed event" in view.log_text.value
+    # Verify live streaming prepends to top
+    logger.info("Log entry 3 (Newest live)")
+    assert "Log entry 3 (Newest live)" in view.log_text.value
+    assert view.log_text.value.index("Log entry 3 (Newest live)") < view.log_text.value.index("Log entry 2 (Older)")
 
     # Verify filter
     view.on_filter_logs("live")
-    assert "New live streamed event" in view.log_text.value
-    assert "Pre-existing" not in view.log_text.value
+    assert "Log entry 3 (Newest live)" in view.log_text.value
+    assert "Log entry 1" not in view.log_text.value
 
     # Reset filter
     view.on_filter_logs("")
-    assert "Pre-existing" in view.log_text.value
+    assert "Log entry 1 (Oldest)" in view.log_text.value
+    assert view.log_text.value.index("Log entry 3 (Newest live)") < view.log_text.value.index("Log entry 1 (Oldest)")
 
     # Verify clear
     view.on_clear_logs(None)
-    assert "Pre-existing" not in view.log_text.value
+    assert "Log entry 1" not in view.log_text.value
     assert "Log file cleared by user" in view.log_text.value
     assert "Log file cleared by user" in read_logs(log_file=log_file)
+
 
 
 def test_settings_view_open_finder_and_save():

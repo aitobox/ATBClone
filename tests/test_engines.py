@@ -123,6 +123,7 @@ class TestSoftCloneEngine:
             assert "set -e" in script
             assert "mkdir -p /Applications/TestApp2.app/Contents/MacOS" in script
             assert "cp /Applications/TestApp.app/Contents/Info.plist /Applications/TestApp2.app/Contents/Info.plist" in script
+            assert "chmod -R u+w /Applications/TestApp2.app 2>/dev/null || true" in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.example.testapp.clone2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleName TestApp 2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert "cat << 'WRAPPER_EOF' > /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
@@ -192,6 +193,7 @@ class TestHardCloneEngine:
             assert needs_admin is False
             assert "set -e" in script
             assert "cp -R /Applications/TestApp.app /Applications/TestApp2.app" in script
+            assert "chmod -R u+w /Applications/TestApp2.app 2>/dev/null || true" in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.example.testapp.clone2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleName TestApp 2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert "mv /Applications/TestApp2.app/Contents/MacOS/TestApp /Applications/TestApp2.app/Contents/MacOS/TestApp.bin" in script
@@ -202,7 +204,7 @@ class TestHardCloneEngine:
             assert "-AppleLanguages" in script
             assert "-AppleLocale" in script
             assert "chmod +x /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
-            assert "xattr -cr /Applications/TestApp2.app" in script
+            assert "xattr -cr /Applications/TestApp2.app 2>/dev/null || true" in script
             assert "codesign --force --deep --sign - /Applications/TestApp2.app" in script
             assert "codesign -vv --deep --strict /Applications/TestApp2.app" in script
 
@@ -715,6 +717,26 @@ class TestCefFrameworkPatchingAndSymlinks:
         assert ".ssh" in snippet
         assert "Library/Preferences/foo.plist" in snippet
         assert "ln -s" in snippet
+
+
+class TestEnginePermissionsAndXattrTolerance:
+    """Tests to ensure read-only files in source apps don't fail clone creation due to xattr or PlistBuddy."""
+
+    def test_hard_clone_ensures_writable_and_tolerant_xattr(self, sample_task):
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            # Must ensure user write permission on destination
+            assert f"chmod -R u+w {sample_task.dest_path} 2>/dev/null || true" in script
+            # Must tolerate errors from xattr -cr
+            assert f"xattr -cr {sample_task.dest_path} 2>/dev/null || true" in script
+
+    def test_soft_clone_ensures_writable_destination(self, sample_task):
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            SoftCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert f"chmod -R u+w {sample_task.dest_path} 2>/dev/null || true" in script
+
 
 
 

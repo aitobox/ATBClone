@@ -189,6 +189,7 @@ if [ -d {src_resources} ]; then
     cp -R {src_resources} {dst_resources}
 fi
 cp {src_plist} {dst_plist}
+chmod -R u+w {dst_app} 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
 {display_name_cmd}
 {icon_cmd}cat << 'WRAPPER_EOF' > {wrapper}
@@ -578,6 +579,7 @@ mkdir -p {dst_parent}
 mkdir -p {data_dir}
 rm -rf {dst}
 cp -R {src} {dst}
+chmod -R u+w {dst} 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
 {helper_bundle_id_cmd}{display_name_cmd}
 {icon_cmd}mv {bin_orig} {bin_bak}
@@ -585,7 +587,7 @@ cat << 'WRAPPER_EOF' > {wrapper}
 {wrapper_body}
 WRAPPER_EOF
 chmod +x {wrapper}
-{singleton_patch_cmd}{cef_patch_cmd}xattr -cr {dst}
+{singleton_patch_cmd}{cef_patch_cmd}xattr -cr {dst} 2>/dev/null || true
 {codesign_cmds}codesign -vv --deep --strict {dst}
 {lsregister_cmd}
 """

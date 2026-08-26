@@ -6,6 +6,32 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v1.0.1] - 2026-08-26
+
+### 🎨 Apple Design HIG-Konformität & Visuelle Optimierungen
+- **Einhaltung der macOS Human Interface Guidelines**:
+  - Umfassendes Apple Design HIG-Audit für alle Ansichten und Dialoge.
+  - Bereinigung von Emoji-Dekorationen zugunsten nativer SF Pro-Typografie und klarer visueller Hierarchien.
+  - Verbesserte Seitenleistennavigation mit nativer Cocoa-Auswahlhervorhebung.
+  - Kontrastverhältnisse für Hell- und Dunkelmodus optimiert (erfüllt WCAG 2.1 AA).
+  - Verbesserte Leerzustandsanzeigen, Kartenschatten, Fenster-Ziehbereiche und einheitliche Abstände.
+
+### 📜 Chronologisch umgekehrte Protokollanzeige & Layout-Anpassungen
+- **Echtzeit-Diagnose (`LogsView`)**:
+  - Protokolleinträge werden jetzt in umgekehrter Reihenfolge (neueste Einträge ganz oben) angezeigt.
+  - Feste Breitenbeschränkungen für „Aktualisieren“- und „Durchsuchen“-Schaltflächen entfernt, um Textkürzungen in allen Sprachen zu verhindern.
+
+### 🛡️ Klon-Engine-Stabilität & Fehlerbehandlung bei erweiterten Attributen
+- **Schreibberechtigungen & `xattr`-Fehlertoleranz**:
+  - Stellt sicher, dass Klon-Pakete vor der Mach-O-Bearbeitung und Signierung Schreibrechte (`chmod -R u+w`) besitzen.
+  - Fehlertolerante Bereinigung erweiterter Attribute (`xattr -cr`) verhindert Abbrüche auf schreibgeschützten System-Snapshots.
+
+### 🧪 Test-Suite
+- **Erweiterte Abdeckung**:
+  - Test-Suite auf 443 automatisierte Tests ausgebaut.
+
+---
+
 ## [v1.0.0] - 2026-08-24
 
 ### 🚀 Offizieller Meilenstein: ATBClone 1.0.0

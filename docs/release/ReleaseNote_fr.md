@@ -6,6 +6,32 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v1.0.1] - 2026-08-26
+
+### 🎨 Conformité Apple Design HIG & Finitions visuelles
+- **Alignement sur les Human Interface Guidelines de macOS**:
+  - Audit Apple Design HIG complet sur toutes les vues et boîtes de dialogue.
+  - Suppression des émojis décoratifs au profit d'une typographie native SF Pro et d'une hiérarchie épurée.
+  - Amélioration de la barre latérale avec surbrillance native Cocoa.
+  - Contraste optimisé en modes clair et sombre conforme aux normes WCAG 2.1 AA.
+  - Amélioration des écrans vides, des ombres de cartes et de l'espacement général.
+
+### 📜 Journaux par ordre antichronologique & Ajustements multilingues
+- **Amélioration des journaux (`LogsView`)**:
+  - Affichage des logs par ordre antichronologique (les plus récents en haut) pour un diagnostic immédiat.
+  - Suppression des largeurs fixes sur les boutons « Actualiser » et « Parcourir » pour éviter les coupures de texte.
+
+### 🛡️ Robustesse du moteur de clonage & Gestion des attributs étendus
+- **Droits d'écriture et tolérance aux erreurs `xattr`**:
+  - Attribution automatique des droits d'écriture (`chmod -R u+w`) avant modification Mach-O et re-signature.
+  - Tolérance aux erreurs bénignes lors du nettoyage des attributs étendus (`xattr -cr`), garantissant la réussite du clonage.
+
+### 🧪 Tests
+- **Couverture de tests**:
+  - Suite de tests portée à 443 tests automatisés avec 100 % de réussite.
+
+---
+
 ## [v1.0.0] - 2026-08-24
 
 ### 🚀 Version majeure officielle 1.0.0

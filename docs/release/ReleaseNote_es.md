@@ -6,6 +6,32 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v1.0.1] - 2026-08-26
+
+### 🎨 Cumplimiento de Apple Design HIG y mejoras visuales
+- **Alineación con las directrices de interfaz humana de macOS**:
+  - Auditoría integral de Apple Design HIG en todas las ventanas y diálogos.
+  - Eliminación de emojis decorativos en favor de una tipografía nativa SF Pro y jerarquía visual limpia.
+  - Resaltado nativo de Cocoa en la barra lateral de navegación.
+  - Contraste optimizado en modos claro y oscuro conforme al estándar WCAG 2.1 AA.
+  - Mejora en pantallas vacías, sombras de tarjetas, arrastre de ventanas y espaciado.
+
+### 📜 Registros en orden cronológico inverso y diseño fluido
+- **Diagnóstico en tiempo real (`LogsView`)**:
+  - Los registros se muestran en orden cronológico inverso (los más recientes arriba) para agilizar la depuración.
+  - Eliminación de anchos fijos en los botones «Actualizar» y «Examinar», evitando el corte de texto en diversos idiomas.
+
+### 🛡️ Mayor resistencia del motor de clonación y manejo de xattr
+- **Permisos de escritura y tolerancia a fallos en atributos extendidos**:
+  - Asegura permisos de escritura (`chmod -R u+w`) en el paquete clonado antes de modificar el Mach-O y firmar.
+  - Tolerancia a errores al limpiar atributos extendidos (`xattr -cr`) en instantáneas de solo lectura o archivos protegidos.
+
+### 📦 Calidad garantizada
+- **Cobertura exhaustiva**:
+  - Suite de pruebas ampliada a 443 casos automatizados con un 100 % de éxito.
+
+---
+
 ## [v1.0.0] - 2026-08-24
 
 ### 🚀 Lanzamiento oficial de la versión 1.0.0

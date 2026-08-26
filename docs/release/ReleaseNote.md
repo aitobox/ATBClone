@@ -6,6 +6,33 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v1.0.1] - 2026-08-26
+
+### 🎨 Apple Design HIG Audit & Visual Refinements
+- **macOS Human Interface Guidelines Compliance**:
+  - Comprehensive Apple Design HIG audit across all desktop views and dialogs.
+  - Eliminated distracting emoji decorations in favor of native SF Pro typography hierarchies and clean iconography.
+  - Enhanced sidebar navigation with native Cocoa selection highlights.
+  - Polished light and dark mode color contrast ratios exceeding WCAG 2.1 AA legibility standards.
+  - Improved empty states, card shadows, window drag responsiveness, and consistent widget padding.
+
+### 📜 Reverse Chronological Logs & UI Layout Fixes
+- **Real-Time Logs Enhancement (`LogsView`)**:
+  - Configured log display to render in reverse chronological order (newest log entries at the top), significantly improving live diagnostic efficiency.
+- **Multilingual Button Width Adaptations**:
+  - Removed rigid fixed widths from Refresh and Browse buttons across windows to prevent text clipping in English, German, French, Russian, and Spanish.
+
+### 🛡️ Clone Engine Resilience & Extended Attribute Toleration
+- **Bundle Permissions & `xattr` Error Handling**:
+  - Automatically enforces user write permissions (`chmod -R u+w`) on cloned app bundles prior to Mach-O modification and code signing.
+  - Added fault-tolerant error handling for macOS extended attribute clearance (`xattr -cr`) on read-only system snapshots or protected files, eliminating cloning failures.
+
+### 🧪 Test Suite & Quality Assurance
+- **Expanded Coverage**:
+  - Automated test suite expanded to 443 unit, engine, and GUI integration tests with 100% pass rate.
+
+---
+
 ## [v1.0.0] - 2026-08-24
 
 ### 🚀 Official 1.0.0 Milestone Release

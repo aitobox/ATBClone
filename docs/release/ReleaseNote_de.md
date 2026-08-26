@@ -6,6 +6,24 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v1.0.2] - 2026-08-26
+
+### 🛡️ Optimiertes Sandbox-Stripping & Verbesserte Hard-Clone-Stabilität
+- **Universelles Sandbox-Stripping für Hard Clones (`strip_sandbox: true`)**:
+  - Standardmäßige Aktivierung von Sandbox-Stripping für Hard-Clone-Rezepte zur Vermeidung von Rechtekonflikten und Deadlocks modifizierter Mach-O-Pakete.
+  - Optimierung des WeChat-Hard-Clone-Rezepts mit garantierter Initialisierung der Laufzeitverzeichnisse (`Caches`, `Containers`, `Preferences`).
+
+### 📚 Rezept-Bereinigung & Dokumentation von Architektur-Einschränkungen
+- **Rezept-Aktualisierungen**:
+  - Entfernung des experimentellen WeCom-Rezepts aufgrund vorgelagerter CEF-IPC-Einschränkungen und Aufnahme detaillierter Erläuterungen in den Fehlerbehebungsleitfaden.
+  - Aktualisierung der Best Practices zur Erstellung benutzerdefinierter Rezepte.
+
+### 🧪 Test-Suite
+- **Vollständige Abdeckung**:
+  - Alle 443 automatisierten Tests erfolgreich bestanden.
+
+---
+
 ## [v1.0.1] - 2026-08-26
 
 ### 🎨 Apple Design HIG-Konformität & Visuelle Optimierungen

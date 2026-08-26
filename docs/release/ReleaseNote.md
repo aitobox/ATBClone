@@ -6,6 +6,24 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v1.0.2] - 2026-08-26
+
+### 🛡️ Enhanced Sandbox Stripping & Hard Clone Stability
+- **Universal Sandbox Stripping for Hard Clones**:
+  - Configured `strip_sandbox: true` across recipes utilizing the Hard Clone strategy, preventing sandbox container permission deadlocks and permission conflicts on modified Mach-O bundles.
+  - Enhanced WeChat (微信) hard clone configuration with guaranteed runtime directory structures (`Caches`, `Containers`, `Preferences`) in wrapper scripts.
+
+### 📚 Recipe Curations & Upstream Limitation Documentation
+- **Built-in Recipe Refinement**:
+  - Removed experimental WeCom (企业微信) built-in recipe due to upstream CEF deep IPC anti-multi-instance architectural constraints, and added clear troubleshooting documentation.
+  - Documented best practices for third-party application multi-instance configurations and recipe authoring.
+
+### 🧪 Comprehensive Quality Assurance
+- **Full Test Coverage**:
+  - Verified 443 automated unit, recipe, engine, and GUI integration tests with 100% pass rate.
+
+---
+
 ## [v1.0.1] - 2026-08-26
 
 ### 🎨 Apple Design HIG Audit & Visual Refinements

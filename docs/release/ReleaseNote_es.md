@@ -6,6 +6,24 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v1.0.2] - 2026-08-26
+
+### 🛡️ Optimización de eliminación de Sandbox y estabilidad de Hard Clone
+- **Eliminación de Sandbox en Hard Clones (`strip_sandbox: true`)**:
+  - Activación de eliminación de sandbox en recetas Hard Clone para evitar bloqueos y conflictos de permisos en paquetes Mach-O modificados.
+  - Optimización de la receta para WeChat con inicialización garantizada de directorios en tiempo de ejecución (`Caches`, `Containers`, `Preferences`).
+
+### 📚 Depuración de recetas y documentación de limitaciones
+- **Ajuste de recetas integradas**:
+  - Eliminación de la receta experimental para WeCom debido a restricciones IPC propietarias de CEF, añadiendo detalles en la guía de solución de problemas.
+  - Actualización de directrices para la creación y configuración de recetas personalizadas.
+
+### 📦 Calidad garantizada
+- **Cobertura exhaustiva**:
+  - 443 pruebas automatizadas completadas con un 100 % de éxito.
+
+---
+
 ## [v1.0.1] - 2026-08-26
 
 ### 🎨 Cumplimiento de Apple Design HIG y mejoras visuales

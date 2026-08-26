@@ -6,6 +6,24 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v1.0.2] - 2026-08-26
+
+### 🛡️ Optimisation du Sandbox Stripping & Stabilité des clones physiques
+- **Suppression du bac à sable pour les Hard Clones (`strip_sandbox: true`)**:
+  - Activation de la suppression du bac à sable sur les recettes Hard Clone pour éliminer les blocages de permissions consécutifs aux modifications Mach-O.
+  - Amélioration de la configuration de WeChat avec garantie d'initialisation des répertoires d'exécution (`Caches`, `Containers`, `Preferences`).
+
+### 📚 Nettoyage des recettes & Documentation des limitations
+- **Ajustement des recettes intégrées**:
+  - Retrait de la recette expérimentale WeCom en raison des contraintes IPC exclusives de CEF, avec documentation claire dans le guide de dépannage.
+  - Mise à jour des bonnes pratiques pour la création de recettes personnalisées.
+
+### 🧪 Tests
+- **Couverture de tests**:
+  - 443 tests automatisés exécutés avec un taux de réussite de 100 %.
+
+---
+
 ## [v1.0.1] - 2026-08-26
 
 ### 🎨 Conformité Apple Design HIG & Finitions visuelles

@@ -122,7 +122,7 @@ def test_load_builtin_wechat():
     assert recipe.bundle_id == "com.tencent.xinWeChat"
     assert recipe.app_name == "微信"
     assert recipe.strategy == "hard_clone"
-    assert recipe.strip_sandbox is False
+    assert recipe.strip_sandbox is True
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
     assert "Library/Keychains" in recipe.symlink_whitelist
@@ -240,7 +240,7 @@ def test_all_builtin_recipes_valid(monkeypatch, tmp_path):
     assert len(yaml_files) >= 18
 
     expected_recipes = {
-        "com.tencent.xinWeChat": ("微信", "hard_clone", False),
+        "com.tencent.xinWeChat": ("微信", "hard_clone", True),
         "com.google.Chrome": ("Chrome", "hard_clone", False),
         "com.tencent.qq": ("QQ", "hard_clone", False),
         "ru.keepcoder.Telegram": ("Telegram", "hard_clone", False),

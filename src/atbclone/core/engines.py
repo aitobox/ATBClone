@@ -165,6 +165,7 @@ class SoftCloneEngine(CloneEngine):
             wrapper_lines.append(lang_env)
         if proxy_env:
             wrapper_lines.append(proxy_env)
+        wrapper_lines.append('mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true')
         wrapper_lines.append(exec_cmd)
         wrapper_body = "\n".join(wrapper_lines)
 
@@ -499,6 +500,7 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
 
         wrapper_lines.extend([
             'REAL_USER_HOME="${REAL_USER_HOME:-$HOME}"',
+            'mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true',
             'if [ -n "$HOME" ] && [ "$HOME" != "$REAL_USER_HOME" ]; then',
             '    mkdir -p "$HOME/Library/Preferences"',
             '    if [ ! -f "$HOME/Library/Preferences/.GlobalPreferences.plist" ] && [ -f "$REAL_USER_HOME/Library/Preferences/.GlobalPreferences.plist" ]; then',
@@ -554,7 +556,12 @@ fi
             helper_bundle_id_cmd = ""
 
         if task.recipe.strip_sandbox:
-            strip_sandbox_snippet = '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true\n'
+            strip_sandbox_snippet = (
+                '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true\n'
+                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.security.application-groups" "$ent_plist" 2>/dev/null || true\n'
+                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.team-identifier" "$ent_plist" 2>/dev/null || true\n'
+                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.application-identifier" "$ent_plist" 2>/dev/null || true\n'
+            )
         else:
             strip_sandbox_snippet = ""
 

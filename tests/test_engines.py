@@ -731,11 +731,27 @@ class TestEnginePermissionsAndXattrTolerance:
             # Must tolerate errors from xattr -cr
             assert f"xattr -cr {sample_task.dest_path} 2>/dev/null || true" in script
 
-    def test_soft_clone_ensures_writable_destination(self, sample_task):
+    def test_wrapper_guarantees_home_and_tmpdir_directories(self, sample_task):
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
-            SoftCloneEngine.execute(sample_task, needs_admin=False)
+            HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
-            assert f"chmod -R u+w {sample_task.dest_path} 2>/dev/null || true" in script
+            assert 'mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true' in script
+
+        with patch("atbclone.executor.runner.Runner.run") as mock_run_soft:
+            SoftCloneEngine.execute(sample_task, needs_admin=False)
+            script_soft, _ = mock_run_soft.call_args[0]
+            assert 'mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true' in script_soft
+
+    def test_strip_sandbox_cleans_team_and_group_entitlements(self, sample_task):
+        sample_task.recipe.strip_sandbox = True
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true' in script
+            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.application-groups" "$ent_plist" 2>/dev/null || true' in script
+            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.developer.team-identifier" "$ent_plist" 2>/dev/null || true' in script
+            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.application-identifier" "$ent_plist" 2>/dev/null || true' in script
+
 
 
 

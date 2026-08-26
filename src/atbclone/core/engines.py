@@ -527,11 +527,7 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
         )
 
         # Build CEF patcher command ONLY when explicitly enabled by recipe
-        # or when cloning WeCom which requires custom Chromium Embedded Framework patching.
-        needs_cef_patch = (
-            getattr(task.recipe, "patch_cef", False)
-            or getattr(task.source, "bundle_id", "") == "com.tencent.WeWorkMac"
-        )
+        needs_cef_patch = bool(getattr(task.recipe, "patch_cef", False))
         cef_patch_cmd = (
             cls._build_cef_patch_cmd(task.dest_path)
             if needs_cef_patch

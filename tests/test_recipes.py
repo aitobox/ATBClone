@@ -197,7 +197,7 @@ def test_load_builtin_qq():
     assert recipe.bundle_id == "com.tencent.qq"
     assert recipe.app_name == "QQ"
     assert recipe.strategy == "hard_clone"
-    assert recipe.strip_sandbox is False
+    assert recipe.strip_sandbox is True
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
 
@@ -208,7 +208,7 @@ def test_load_builtin_chatgpt():
     assert recipe.bundle_id == "com.openai.codex"
     assert recipe.app_name == "ChatGPT"
     assert recipe.strategy == "hard_clone"
-    assert recipe.strip_sandbox is False
+    assert recipe.strip_sandbox is True
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
 
@@ -242,35 +242,34 @@ def test_all_builtin_recipes_valid(monkeypatch, tmp_path):
     expected_recipes = {
         "com.tencent.xinWeChat": ("微信", "hard_clone", True),
         "com.google.Chrome": ("Chrome", "hard_clone", False),
-        "com.tencent.qq": ("QQ", "hard_clone", False),
-        "ru.keepcoder.Telegram": ("Telegram", "hard_clone", False),
-        "org.telegram.desktop": ("Telegram Desktop", "hard_clone", False),
-        "jp.naver.line.mac": ("LINE", "hard_clone", False),
-        "com.tinyspeck.slackmacgap": ("Slack", "hard_clone", False),
-        "com.hnc.Discord": ("Discord", "hard_clone", False),
-        "com.skype.skype": ("Skype", "hard_clone", False),
-        "com.openai.codex": ("ChatGPT", "hard_clone", False),
-        "com.openai.chat": ("ChatGPT", "hard_clone", False),
-        "com.anthropic.claudefordesktop": ("Claude", "hard_clone", False),
-        "com.google.antigravity": ("Antigravity", "hard_clone", False),
-        "com.google.antigravity-ide": ("Antigravity IDE", "hard_clone", False),
-        "com.google.GeminiMacOS": ("Gemini", "hard_clone", False),
+        "com.tencent.qq": ("QQ", "hard_clone", True),
+        "ru.keepcoder.Telegram": ("Telegram", "hard_clone", True),
+        "org.telegram.desktop": ("Telegram Desktop", "hard_clone", True),
+        "jp.naver.line.mac": ("LINE", "hard_clone", True),
+        "com.tinyspeck.slackmacgap": ("Slack", "hard_clone", True),
+        "com.hnc.Discord": ("Discord", "hard_clone", True),
+        "com.skype.skype": ("Skype", "hard_clone", True),
+        "com.openai.codex": ("ChatGPT", "hard_clone", True),
+        "com.openai.chat": ("ChatGPT", "hard_clone", True),
+        "com.anthropic.claudefordesktop": ("Claude", "hard_clone", True),
+        "com.google.antigravity": ("Antigravity", "hard_clone", True),
+        "com.google.antigravity-ide": ("Antigravity IDE", "hard_clone", True),
+        "com.google.GeminiMacOS": ("Gemini", "hard_clone", True),
         "com.microsoft.edgemac": ("Edge", "hard_clone", False),
         "org.mozilla.firefox": ("Firefox", "soft_clone", False),
         "company.thebrowser.Browser": ("Arc", "hard_clone", False),
         "com.todesktop.230313mzl4w4u92": ("Cursor", "soft_clone", False),
         "com.microsoft.VSCode": ("VS Code", "soft_clone", False),
         "dev.zed.Zed": ("Zed", "soft_clone", False),
-        "com.tencent.WeWorkMac": ("企业微信", "hard_clone", True),
-        "com.electron.lark": ("飞书", "hard_clone", False),
-        "com.bilibili.bilibiliPC": ("哔哩哔哩", "hard_clone", False),
-        "com.bytedance.douyin.desktop": ("抖音", "hard_clone", False),
-        "com.netease.163music": ("网易云音乐", "hard_clone", False),
-        "com.valvesoftware.steam": ("Steam", "hard_clone", False),
-        "com.kingsoft.wpsoffice.mac": ("WPS Office", "hard_clone", False),
-        "com.lemon.lvpro": ("剪映专业版", "hard_clone", False),
-        "com.lemon.lvoverseas": ("CapCut", "hard_clone", False),
-        "com.google.android.studio": ("Android Studio", "hard_clone", False),
+        "com.electron.lark": ("飞书", "hard_clone", True),
+        "com.bilibili.bilibiliPC": ("哔哩哔哩", "hard_clone", True),
+        "com.bytedance.douyin.desktop": ("抖音", "hard_clone", True),
+        "com.netease.163music": ("网易云音乐", "hard_clone", True),
+        "com.valvesoftware.steam": ("Steam", "hard_clone", True),
+        "com.kingsoft.wpsoffice.mac": ("WPS Office", "hard_clone", True),
+        "com.lemon.lvpro": ("剪映专业版", "hard_clone", True),
+        "com.lemon.lvoverseas": ("CapCut", "hard_clone", True),
+        "com.google.android.studio": ("Android Studio", "hard_clone", True),
         "com.brave.Browser": ("Brave Browser", "soft_clone", False),
         "org.torproject.torbrowser": ("Tor Browser", "soft_clone", False),
     }

@@ -2,7 +2,7 @@ bundle_id: org.telegram.desktop
 app_name: Telegram Desktop
 strategy: hard_clone
 app_type: generic
-strip_sandbox: false
+strip_sandbox: true
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'
   TMPDIR: '{{ATB_DATA_DIR}}/Tmp'

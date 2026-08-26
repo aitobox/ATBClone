@@ -3,7 +3,7 @@ app_name: 飞书
 strategy: hard_clone
 app_type: electron
 patch_framework_singleton: true
-strip_sandbox: false
+strip_sandbox: true
 # --user-data-dir isolates the Electron SingletonLock per clone.
 # Feishu hardcodes "LarkShell" as the Electron app name (in Lark Framework.framework,
 # not the thin main binary), so NSHomeDirectory()-based HOME isolation is bypassed by

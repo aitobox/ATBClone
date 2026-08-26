@@ -688,14 +688,6 @@ class TestCefFrameworkPatchingAndSymlinks:
             assert "Patch CEF framework no_sandbox" not in script
             assert "CFBundleIdentifier $new_id." not in script
 
-    def test_hard_clone_script_includes_cef_patch_for_wework(self, sample_task):
-        sample_task.source.bundle_id = "com.tencent.WeWorkMac"
-        with patch("atbclone.executor.runner.Runner.run") as mock_run:
-            HardCloneEngine.execute(sample_task, needs_admin=False)
-            script, _ = mock_run.call_args[0]
-            assert "Patch CEF framework no_sandbox" in script
-            assert "CFBundleIdentifier $new_id." in script
-
     def test_hard_clone_script_includes_cef_patch_when_recipe_flag_true(self, sample_task):
         sample_task.source.bundle_id = "com.custom.cefapp"
         sample_task.recipe.patch_cef = True

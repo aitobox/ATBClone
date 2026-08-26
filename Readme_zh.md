@@ -59,7 +59,7 @@ macOS 原生桌面图形客户端提供直观、全功能的应用分身管理�
    - 自动匹配内置规则或动态触发深度架构探测。
    - 可视化自定义分身名称、显示标题、独立数据目录（如外接移动硬盘）以及 HTTP/SOCKS5 专属代理配置。
 3. **内置规则库 (Recipe Library)**：
-   - 分类浏览内置的 33+ 热门应用规则（微信、QQ、Chrome、Cursor、ChatGPT、Claude 等），查看沙盒剥离与隔离策略。
+   - 分类浏览内置的 32+ 热门应用规则（微信、QQ、Chrome、Cursor、ChatGPT、Claude 等），查看沙盒剥离与隔离策略。
 4. **应用深度探测器 (App Prober)**：
    - 可视化检测任意未知应用的 Mach-O 架构、Frameworks 与沙盒权限，一键生成专属分身规则。
 5. **系统健康自检 (Doctor)**：
@@ -257,39 +257,42 @@ atbclone --version
 
 | 类别 | 应用名称 | Bundle Identifier | 克隆策略 | 应用类型 (App Type) | 沙盒解除 (Strip Sandbox) |
 | :--- | :--- | :--- | :--- | :--- | :---: |
-| **即时通讯 & 协同办公** | 微信 (WeChat) | `com.tencent.xinWeChat` | Hard Clone | `cocoa` | ✘ |
-| | QQ | `com.tencent.qq` | Hard Clone | `electron` | ✘ |
-| | 企业微信 (WeCom) | `com.tencent.WeWorkMac` | Hard Clone | `chromium` | ✘ |
-| | 飞书 (Lark) | `com.electron.lark` | Hard Clone | `electron` | ✘ |
-| | Telegram (原生 Swift) | `ru.keepcoder.Telegram` | Hard Clone | `cocoa` | ✘ |
-| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | `generic` | ✘ |
-| | LINE | `jp.naver.line.mac` | Hard Clone | `cocoa` | ✘ |
-| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | `electron` | ✘ |
-| | Discord | `com.hnc.Discord` | Hard Clone | `electron` | ✘ |
-| | Skype | `com.skype.skype` | Hard Clone | `electron` | ✘ |
-| **AI 客户端** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | `electron` | ✘ |
-| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | `cocoa` | ✘ |
-| | ChatGPT (标准版) | `com.openai.chat` | Hard Clone | `cocoa` | ✘ |
-| | Gemini | `com.google.GeminiMacOS` | Hard Clone | `cocoa` | ✘ |
-| | Antigravity | `com.google.antigravity` | Hard Clone | `electron` | ✘ |
-| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | `electron` | ✘ |
-| **浏览器** | Google Chrome | `com.google.Chrome` | Hard Clone | `chromium` | ✘ |
-| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | `chromium` | ✘ |
+| **即时通讯 & 协同办公** | 微信 (WeChat) | `com.tencent.xinWeChat` | Hard Clone | `cocoa` | ✔ |
+| | QQ | `com.tencent.qq` | Hard Clone | `electron` | ✔ |
+| | 飞书 (Lark) | `com.electron.lark` | Hard Clone | `electron` | ✔ |
+| | Telegram (原生 Swift) | `ru.keepcoder.Telegram` | Hard Clone | `cocoa` | ✔ |
+| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | `generic` | ✔ |
+| | LINE | `jp.naver.line.mac` | Hard Clone | `cocoa` | ✔ |
+| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | `electron` | ✔ |
+| | Discord | `com.hnc.Discord` | Hard Clone | `electron` | ✔ |
+| | Skype | `com.skype.skype` | Hard Clone | `electron` | ✔ |
+| **AI 客户端** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | `electron` | ✔ |
+| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | `cocoa` | ✔ |
+| | ChatGPT (标准版) | `com.openai.chat` | Hard Clone | `cocoa` | ✔ |
+| | Gemini | `com.google.GeminiMacOS` | Hard Clone | `cocoa` | ✔ |
+| | Antigravity | `com.google.antigravity` | Hard Clone | `electron` | ✔ |
+| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | `electron` | ✔ |
+| **浏览器** | Google Chrome | `com.google.Chrome` | Hard Clone | `chromium` | — |
+| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | `chromium` | — |
 | | Brave Browser | `com.brave.Browser` | Soft Clone | `chromium` | — |
 | | Firefox | `org.mozilla.firefox` | Soft Clone | `firefox` | — |
 | | Tor Browser | `org.torproject.torbrowser` | Soft Clone | `firefox` | — |
-| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | `chromium` | ✘ |
-| **音视频与社交娱乐** | 哔哩哔哩 (Bilibili) | `com.bilibili.bilibiliPC` | Hard Clone | `electron` | ✘ |
-| | 抖音 (Douyin) | `com.bytedance.douyin.desktop` | Hard Clone | `electron` | ✘ |
-| | 网易云音乐 | `com.netease.163music` | Hard Clone | `chromium` | ✘ |
-| | Steam | `com.valvesoftware.steam` | Hard Clone | `cocoa` | ✘ |
-| **生产力与实用工具** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | `cocoa` | ✘ |
-| | 剪映专业版 | `com.lemon.lvpro` | Hard Clone | `chromium` | ✘ |
-| | CapCut | `com.lemon.lvoverseas` | Hard Clone | `chromium` | ✘ |
+| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | `chromium` | — |
+| **音视频与社交娱乐** | 哔哩哔哩 (Bilibili) | `com.bilibili.bilibiliPC` | Hard Clone | `electron` | ✔ |
+| | 抖音 (Douyin) | `com.bytedance.douyin.desktop` | Hard Clone | `electron` | ✔ |
+| | 网易云音乐 | `com.netease.163music` | Hard Clone | `chromium` | ✔ |
+| | Steam | `com.valvesoftware.steam` | Hard Clone | `cocoa` | ✔ |
+| **生产力与实用工具** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | `cocoa` | ✔ |
+| | 剪映专业版 | `com.lemon.lvpro` | Hard Clone | `chromium` | ✔ |
+| | CapCut | `com.lemon.lvoverseas` | Hard Clone | `chromium` | ✔ |
 | **开发工具** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | `electron` | — |
 | | VS Code | `com.microsoft.VSCode` | Soft Clone | `electron` | — |
-| | Android Studio | `com.google.android.studio` | Hard Clone | `generic` | ✘ |
+| | Android Studio | `com.google.android.studio` | Hard Clone | `generic` | ✔ |
 | | Zed | `dev.zed.Zed` | Soft Clone | `generic` | — |
+
+> [!WARNING]
+> **关于企业微信 (WeCom / `com.tencent.WeWorkMac`)**：
+> 由于企业微信客户端深度集成了定制版 CEF (Chromium Embedded Framework) 多进程架构与强绑定的 Seatbelt / Helper 子进程沙盒校验机制，目前在 macOS 上无法实现无损独立分身，ATBClone 暂不支持企业微信的多开分身。
 
 ---
 

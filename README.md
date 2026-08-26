@@ -59,7 +59,7 @@ The native macOS desktop interface provides a visual, streamlined experience:
    - Automatically matches built-in recipes or runs the App Prober on unlisted applications.
    - Customize clone name, display title, custom icon, dedicated data directory (e.g. on external SSDs), and independent HTTP / SOCKS5 proxies.
 3. **Built-in Recipe Library**:
-   - Explore 33+ pre-configured application recipes (WeChat, QQ, Chrome, Cursor, ChatGPT, Claude, etc.) categorized by type, complete with sandbox stripping rules and isolation strategies.
+   - Explore 32+ pre-configured application recipes (WeChat, QQ, Chrome, Cursor, ChatGPT, Claude, etc.) categorized by type, complete with sandbox stripping rules and isolation strategies.
 4. **App Prober (Deep Architecture Inspection)**:
    - Inspect any unknown macOS app's Mach-O architecture, frameworks, and sandbox entitlements, and generate custom recipe YAML files with one click.
 5. **System Diagnostics (Doctor)**:
@@ -258,39 +258,42 @@ atbclone --version
 
 | Category | Application | Bundle Identifier | Strategy | App Type | Strip Sandbox |
 | :--- | :--- | :--- | :--- | :--- | :---: |
-| **Instant Messaging & Collaboration** | WeChat | `com.tencent.xinWeChat` | Hard Clone | `cocoa` | ✘ |
-| | QQ | `com.tencent.qq` | Hard Clone | `electron` | ✘ |
-| | WeCom (企业微信) | `com.tencent.WeWorkMac` | Hard Clone | `chromium` | ✘ |
-| | Lark (飞书) | `com.electron.lark` | Hard Clone | `electron` | ✘ |
-| | Telegram (Native Swift) | `ru.keepcoder.Telegram` | Hard Clone | `cocoa` | ✘ |
-| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | `generic` | ✘ |
-| | LINE | `jp.naver.line.mac` | Hard Clone | `cocoa` | ✘ |
-| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | `electron` | ✘ |
-| | Discord | `com.hnc.Discord` | Hard Clone | `electron` | ✘ |
-| | Skype | `com.skype.skype` | Hard Clone | `electron` | ✘ |
-| **AI Clients** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | `electron` | ✘ |
-| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | `cocoa` | ✘ |
-| | ChatGPT (Standard) | `com.openai.chat` | Hard Clone | `cocoa` | ✘ |
-| | Gemini | `com.google.GeminiMacOS` | Hard Clone | `cocoa` | ✘ |
-| | Antigravity | `com.google.antigravity` | Hard Clone | `electron` | ✘ |
-| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | `electron` | ✘ |
-| **Browsers** | Google Chrome | `com.google.Chrome` | Hard Clone | `chromium` | ✘ |
-| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | `chromium` | ✘ |
+| **Instant Messaging & Collaboration** | WeChat | `com.tencent.xinWeChat` | Hard Clone | `cocoa` | ✔ |
+| | QQ | `com.tencent.qq` | Hard Clone | `electron` | ✔ |
+| | Lark (飞书) | `com.electron.lark` | Hard Clone | `electron` | ✔ |
+| | Telegram (Native Swift) | `ru.keepcoder.Telegram` | Hard Clone | `cocoa` | ✔ |
+| | Telegram Desktop | `org.telegram.desktop` | Hard Clone | `generic` | ✔ |
+| | LINE | `jp.naver.line.mac` | Hard Clone | `cocoa` | ✔ |
+| | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | `electron` | ✔ |
+| | Discord | `com.hnc.Discord` | Hard Clone | `electron` | ✔ |
+| | Skype | `com.skype.skype` | Hard Clone | `electron` | ✔ |
+| **AI Clients** | Claude | `com.anthropic.claudefordesktop` | Hard Clone | `electron` | ✔ |
+| | ChatGPT (Codex) | `com.openai.codex` | Hard Clone | `cocoa` | ✔ |
+| | ChatGPT (Standard) | `com.openai.chat` | Hard Clone | `cocoa` | ✔ |
+| | Gemini | `com.google.GeminiMacOS` | Hard Clone | `cocoa` | ✔ |
+| | Antigravity | `com.google.antigravity` | Hard Clone | `electron` | ✔ |
+| | Antigravity IDE | `com.google.antigravity-ide` | Hard Clone | `electron` | ✔ |
+| **Browsers** | Google Chrome | `com.google.Chrome` | Hard Clone | `chromium` | — |
+| | Microsoft Edge | `com.microsoft.edgemac` | Hard Clone | `chromium` | — |
 | | Brave Browser | `com.brave.Browser` | Soft Clone | `chromium` | — |
 | | Firefox | `org.mozilla.firefox` | Soft Clone | `firefox` | — |
 | | Tor Browser | `org.torproject.torbrowser` | Soft Clone | `firefox` | — |
-| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | `chromium` | ✘ |
-| **Media & Entertainment** | Bilibili (哔哩哔哩) | `com.bilibili.bilibiliPC` | Hard Clone | `electron` | ✘ |
-| | Douyin (抖音) | `com.bytedance.douyin.desktop` | Hard Clone | `electron` | ✘ |
-| | Netease Music (网易云音乐) | `com.netease.163music` | Hard Clone | `chromium` | ✘ |
-| | Steam | `com.valvesoftware.steam` | Hard Clone | `cocoa` | ✘ |
-| **Productivity & Utilities** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | `cocoa` | ✘ |
-| | VideoFusion (剪映专业版) | `com.lemon.lvpro` | Hard Clone | `chromium` | ✘ |
-| | CapCut | `com.lemon.lvoverseas` | Hard Clone | `chromium` | ✘ |
+| | Arc Browser | `company.thebrowser.Browser` | Hard Clone | `chromium` | — |
+| **Media & Entertainment** | Bilibili (哔哩哔哩) | `com.bilibili.bilibiliPC` | Hard Clone | `electron` | ✔ |
+| | Douyin (抖音) | `com.bytedance.douyin.desktop` | Hard Clone | `electron` | ✔ |
+| | Netease Music (网易云音乐) | `com.netease.163music` | Hard Clone | `chromium` | ✔ |
+| | Steam | `com.valvesoftware.steam` | Hard Clone | `cocoa` | ✔ |
+| **Productivity & Utilities** | WPS Office | `com.kingsoft.wpsoffice.mac` | Hard Clone | `cocoa` | ✔ |
+| | VideoFusion (剪映专业版) | `com.lemon.lvpro` | Hard Clone | `chromium` | ✔ |
+| | CapCut | `com.lemon.lvoverseas` | Hard Clone | `chromium` | ✔ |
 | **Developer Tools** | Cursor | `com.todesktop.230313mzl4w4u92` | Soft Clone | `electron` | — |
 | | VS Code | `com.microsoft.VSCode` | Soft Clone | `electron` | — |
-| | Android Studio | `com.google.android.studio` | Hard Clone | `generic` | ✘ |
+| | Android Studio | `com.google.android.studio` | Hard Clone | `generic` | ✔ |
 | | Zed | `dev.zed.Zed` | Soft Clone | `generic` | — |
+
+> [!WARNING]
+> **Regarding WeCom (企业微信 / `com.tencent.WeWorkMac`)**:
+> Due to proprietary Chromium Embedded Framework (CEF) sub-process architecture, deep Seatbelt sandbox enforcement, and multi-layered process singleton checks, WeCom cannot currently be cloned reliably. ATBClone does not support WeCom cloning at this time.
 
 ---
 

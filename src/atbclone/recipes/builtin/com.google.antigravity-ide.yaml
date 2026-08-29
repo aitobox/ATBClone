@@ -9,3 +9,6 @@ environment_injection:
   GEMINI_HOME: '{{ATB_DATA_DIR}}/Gemini'
   GEMINI_CONFIG_DIR: '{{ATB_DATA_DIR}}/Gemini'
   ANTIGRAVITY_HOME: '{{ATB_DATA_DIR}}/Gemini'
+symlink_whitelist:
+- Library/Keychains
+

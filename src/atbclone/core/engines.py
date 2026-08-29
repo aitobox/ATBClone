@@ -718,7 +718,12 @@ fi
                 '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true\n'
                 '    /usr/libexec/PlistBuddy -c "Delete :com.apple.security.application-groups" "$ent_plist" 2>/dev/null || true\n'
                 '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.team-identifier" "$ent_plist" 2>/dev/null || true\n'
+                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.aps-environment" "$ent_plist" 2>/dev/null || true\n'
                 '    /usr/libexec/PlistBuddy -c "Delete :com.apple.application-identifier" "$ent_plist" 2>/dev/null || true\n'
+                '    /usr/libexec/PlistBuddy -c "Delete :keychain-access-groups" "$ent_plist" 2>/dev/null || true\n'
+                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.associated-domains" "$ent_plist" 2>/dev/null || true\n'
+                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.icloud-container-identifiers" "$ent_plist" 2>/dev/null || true\n'
+                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.ubiquity-container-identifiers" "$ent_plist" 2>/dev/null || true\n'
             )
         else:
             strip_sandbox_snippet = ""

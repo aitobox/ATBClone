@@ -785,7 +785,9 @@ class TestEnginePermissionsAndXattrTolerance:
             assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true' in script
             assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.application-groups" "$ent_plist" 2>/dev/null || true' in script
             assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.developer.team-identifier" "$ent_plist" 2>/dev/null || true' in script
+            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.developer.aps-environment" "$ent_plist" 2>/dev/null || true' in script
             assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.application-identifier" "$ent_plist" 2>/dev/null || true' in script
+            assert '/usr/libexec/PlistBuddy -c "Delete :keychain-access-groups" "$ent_plist" 2>/dev/null || true' in script
 
     def test_hard_clone_codex_home_script(self, mock_app_info, base_recipe):
         base_recipe.environment_injection = {

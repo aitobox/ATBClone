@@ -6,6 +6,36 @@
 
 ---
 
+## [v1.1.0] - 2026-08-29
+
+### 🤖 AI クライアントおよび LLM ツールエコシステムの本格サポート
+- **Claude Desktop & Claude Code のマルチインスタンス対応**:
+  - `CLAUDE_CONFIG_DIR` を自動注入し、クローン専用の `~/.claude` および `~/.claude.json` 設定を複製・隔離。
+  - クローンバンドル内の `CFBundleName` を適切に維持し、Claude Helper プロセスがホストアプリを見失ってクラッシュする問題を解消。
+- **Google Antigravity & Gemini エコシステム**:
+  - `GEMINI_HOME` および `ANTIGRAVITY_HOME` 環境変数を注入し、`~/.gemini` を完全に隔離。
+- **OpenAI ChatGPT & Codex CLI**:
+  - `CODEX_HOME` を注入し、`~/.codex` を複製・隔離して複数アカウントの同時利用をサポート。
+
+### 🔑 macOS キーチェーン（Keychains）の自動シンボリックリンク
+- **HOME リダイレクト時の資格情報保護**:
+  - `HOME` ディレクトリのリダイレクト時に `Library/Keychains` へのシンボリックリンクを自動作成し、キーチェーン欠落エラーやクラッシュを防止。
+
+### 🛡️ AMFI Entitlements のクリーンアップと署名セキュリティ
+- **macOS Sonoma / Sequoia への最適化**:
+  - Ad-Hoc 再署名時に制限付きチーム権限（`com.apple.application-identifier` 等）を自動的に除去。
+  - Apple Mobile File Integrity (AMFI) による Helper プロセスの `SIGKILL` 強制終了を防止。
+
+### 🚀 ProcessSingleton バイナリパッチの汎用化
+- **Electron / AI アプリの多重起動対応**:
+  - Mach-O ProcessSingleton パッチを汎用化し、AI クライアントレシピに `--user-data-dir` を注入して競合を解消。
+
+### 🧪 テストスイート拡充
+- **品質検証**:
+  - 自動テストスイートを 453 件に拡大し、全テスト 100% 合格。
+
+---
+
 ## [v1.0.2] - 2026-08-26
 
 ### 🛡️ サンドボックス剥離の最適化とハードクローンの安定性向上

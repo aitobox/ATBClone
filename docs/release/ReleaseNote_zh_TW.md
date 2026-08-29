@@ -6,6 +6,36 @@
 
 ---
 
+## [v1.1.0] - 2026-08-29
+
+### 🤖 深度支援 AI 客戶端與大模型工具生態
+- **Claude Desktop 與 Claude Code 原生多開支援**：
+  - 自動注入 `CLAUDE_CONFIG_DIR`，深度隔離並複製分身專用的 `~/.claude` 與 `~/.claude.json` 設定。
+  - 在分身應用程式套件中精準保留 `CFBundleName`，確保 Claude Helper 輔助處理程序正確識別宿主應用程式，杜絕處理程序尋找失敗導致的閃退。
+- **Google Antigravity 與 Gemini 生態多開**：
+  - 自動注入 `GEMINI_HOME` 與 `ANTIGRAVITY_HOME` 環境變數，實作 `~/.gemini` 執行環境的獨立隔離。
+- **OpenAI ChatGPT 與 Codex CLI 多開**：
+  - 自動注入 `CODEX_HOME` 環境變數並複製隔離 `~/.codex` 目錄，支援多帳號並行工作流程。
+
+### 🔑 macOS Keychains 鑰匙圈自動符號連結
+- **環境重新導向與憑證安全保障**：
+  - 在重新導向 `HOME` 目錄時自動建立 `Library/Keychains` 符號連結，徹底解決鑰匙圈遺失報錯、登入項目當機及憑證讀取失敗等問題。
+
+### 🛡️ AMFI 權限清洗與代碼簽章安全
+- **macOS Sonoma / Sequoia 深度適配**：
+  - 在進行 Ad-Hoc 重新簽章時自動剝離受限的團隊級權限（`com.apple.application-identifier`、`com.apple.developer.team-identifier`、`keychain-access-groups`）。
+  - 徹底防止 Apple Mobile File Integrity (AMFI) 機制對 Helper 輔助處理程序觸發 `SIGKILL` 強制終止。
+
+### 🚀 ProcessSingleton 修補通用化與啟動參數隔離
+- **廣泛的 Electron / AI 應用程式多開支援**：
+  - 通用化 Mach-O 二進位 ProcessSingleton 單例鎖修補邏輯，並在 AI 客戶端規則中注入 `--user-data-dir` 參數，避免實例互斥。
+
+### 🧪 品質保障與自動化測試
+- **測試套件擴充**：
+  - 自動化測試案例擴充至 453 項，全方位涵蓋 AI 客戶端隔離、鑰匙圈符號連結、AMFI 權限清洗及雙引擎核心。
+
+---
+
 ## [v1.0.2] - 2026-08-26
 
 ### 🛡️ 沙箱權限剝離最佳化與硬分身穩定性增強

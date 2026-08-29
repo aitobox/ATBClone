@@ -6,6 +6,36 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v1.1.0] - 2026-08-29
+
+### 🤖 Vollständige Unterstützung von AI-Clients & LLM-Tools
+- **Claude Desktop & Claude Code Multi-Instanz**:
+  - Automatische Injektion von `CLAUDE_CONFIG_DIR` sowie Replikation und Isolation von `~/.claude` und `~/.claude.json`.
+  - Beibehaltung von `CFBundleName` zur Vermeidung von Lookup-Abstürzen von Claude-Helper-Prozessen.
+- **Google Antigravity & Gemini-Ökosystem**:
+  - Injektion von `GEMINI_HOME` und `ANTIGRAVITY_HOME` zur sauberen Isolation von `~/.gemini`.
+- **OpenAI ChatGPT & Codex CLI**:
+  - Injektion von `CODEX_HOME` und Replikation von `~/.codex` für gleichzeitige Mehrkontennutzung.
+
+### 🔑 Automatische macOS Keychain-Verknüpfung
+- **Zertifikats- und Schlüsselbundschutz**:
+  - Automatische Symlink-Erstellung auf `Library/Keychains` bei `HOME`-Umleitung verhindert Schlüsselbundfehler und Abstürze.
+
+### 🛡️ AMFI-Entitlements-Bereinigung & Hardened Runtime-Stabilität
+- **Optimierung für macOS Sonoma & Sequoia**:
+  - Automatische Bereinigung restriktiver Team-Entitlements (`com.apple.application-identifier` etc.) beim Ad-Hoc-Signieren.
+  - Verhindert das `SIGKILL`-Beenden von Hilfsprozessen durch Apple Mobile File Integrity (AMFI).
+
+### 🚀 Universelles ProcessSingleton-Mach-O-Patching
+- **Multi-Instanz für Electron & AI-Apps**:
+  - Verallgemeinerung des ProcessSingleton-Binärpatches und Injektion von `--user-data-dir` für AI-Client-Rezepte.
+
+### 🧪 Test-Suite
+- **Erweiterte Abdeckung**:
+  - Test-Suite auf 453 automatisierte Tests ausgebaut (100 % bestanden).
+
+---
+
 ## [v1.0.2] - 2026-08-26
 
 ### 🛡️ Optimiertes Sandbox-Stripping & Verbesserte Hard-Clone-Stabilität

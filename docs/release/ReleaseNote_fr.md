@@ -6,6 +6,36 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v1.1.0] - 2026-08-29
+
+### 🤖 Prise en charge native des clients IA & Outils LLM
+- **Support multi-instance pour Claude Desktop & Claude Code**:
+  - Injection automatique de `CLAUDE_CONFIG_DIR`, réplication et isolation de `~/.claude` et `~/.claude.json`.
+  - Préservation de `CFBundleName` pour assurer le bon fonctionnement des processus auxiliaires Claude.
+- **Écosystème Google Antigravity & Gemini**:
+  - Injection de `GEMINI_HOME` et `ANTIGRAVITY_HOME` pour une isolation complète de `~/.gemini`.
+- **OpenAI ChatGPT & Codex CLI**:
+  - Injection de `CODEX_HOME` et réplication de `~/.codex` pour l'utilisation simultanée de plusieurs comptes.
+
+### 🔑 Liens symboliques automatiques vers le trousseau macOS
+- **Protection des identifiants et prévention des plantages**:
+  - Création automatique de liens symboliques vers `Library/Keychains` lors de la redirection de `HOME`.
+
+### 🛡️ Nettoyage des autorisations AMFI & Sécurité de signature
+- **Compatibilité macOS Sonoma & Sequoia**:
+  - Suppression automatique des autorisations d'équipe restreintes lors de la re-signature Ad-Hoc.
+  - Évite la terminaison brutale (`SIGKILL`) des sous-processus par Apple Mobile File Integrity (AMFI).
+
+### 🚀 Généralisation du patch Mach-O ProcessSingleton
+- **Multi-instance élargi pour applications Electron & IA**:
+  - Généralisation du patch binaire ProcessSingleton et injection systématique de `--user-data-dir`.
+
+### 🧪 Tests
+- **Couverture de tests**:
+  - Suite portée à 453 tests automatisés avec un taux de réussite de 100 %.
+
+---
+
 ## [v1.0.2] - 2026-08-26
 
 ### 🛡️ Optimisation du Sandbox Stripping & Stabilité des clones physiques

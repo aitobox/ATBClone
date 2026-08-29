@@ -6,6 +6,36 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v1.1.0] - 2026-08-29
+
+### 🤖 First-Class AI Client & LLM Tool Ecosystem Support
+- **Claude Desktop & Claude Code Multi-Instance Support**:
+  - Automatically injects `CLAUDE_CONFIG_DIR`, replicates and isolates `~/.claude` and `~/.claude.json` configuration directories per clone.
+  - Preserves `CFBundleName` across cloned bundles to ensure Claude helper processes locate the host application without lookup crashes.
+- **Google Antigravity & Gemini Ecosystem**:
+  - Injects `GEMINI_HOME` and `ANTIGRAVITY_HOME` environment variables, isolating `~/.gemini` data directories.
+- **OpenAI ChatGPT & Codex CLI**:
+  - Injects `CODEX_HOME` and replicates `~/.codex` configuration directories for simultaneous multi-account execution.
+
+### 🔑 Automatic macOS Keychain Symlinking
+- **Keychain Redirection & Crash Prevention**:
+  - Automatically establishes symlinks to `Library/Keychains` when `HOME` environment redirection is enabled, eliminating missing keychain alerts, login item crashes, and credential storage errors.
+
+### 🛡️ AMFI Entitlements Sanitization & Hardened Runtime Security
+- **Ad-Hoc Signing Stability on macOS Sonoma & Sequoia**:
+  - Automatically sanitizes restricted team-scoped entitlements (`com.apple.application-identifier`, `com.apple.developer.team-identifier`, `keychain-access-groups`) during ad-hoc re-signing.
+  - Prevents Apple Mobile File Integrity (AMFI) `SIGKILL` termination on embedded helper processes.
+
+### 🚀 ProcessSingleton Mach-O Patching Generalization
+- **Broad AI & Electron Multi-Instance Support**:
+  - Generalized Mach-O ProcessSingleton patching and injected `--user-data-dir` arguments across AI client recipes to prevent single-instance locks.
+
+### 🧪 Comprehensive Quality Assurance
+- **Expanded Test Suite**:
+  - Automated test suite expanded to 453 unit, engine, recipe, prober, and GUI integration tests with 100% pass rate.
+
+---
+
 ## [v1.0.2] - 2026-08-26
 
 ### 🛡️ Enhanced Sandbox Stripping & Hard Clone Stability

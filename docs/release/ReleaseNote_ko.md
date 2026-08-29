@@ -6,6 +6,36 @@
 
 ---
 
+## [v1.1.0] - 2026-08-29
+
+### 🤖 AI 클라이언트 및 LLM 도구 생태계 심층 지원
+- **Claude Desktop 및 Claude Code 다중 실행 지원**:
+  - `CLAUDE_CONFIG_DIR`을 자동 주입하고 각 복제본 전용 `~/.claude` 및 `~/.claude.json` 환경을 격리 및 복제합니다.
+  - 번들 내부의 `CFBundleName`을 안전하게 보존하여 Claude Helper 보조 프로세스가 호스트 앱을 정상 조회하도록 보장합니다.
+- **Google Antigravity 및 Gemini 생태계 지원**:
+  - `GEMINI_HOME` 및 `ANTIGRAVITY_HOME` 환경 변수를 주입하여 `~/.gemini` 디렉터리를 인스턴스별로 독립 격리합니다.
+- **OpenAI ChatGPT 및 Codex CLI 지원**:
+  - `CODEX_HOME` 환경 변수를 주입하고 `~/.codex` 설정을 복제하여 다중 계정 동시 실행을 지원합니다.
+
+### 🔑 macOS 키체인(Keychains) 자동 심볼릭 링크
+- **자격 증명 보호 및 크래시 방지**:
+  - `HOME` 디렉터리 리디렉션 시 `Library/Keychains` 심볼릭 링크를 자동 구성하여 키체인 누락 오류 및 자격 증명 조회 실패를 방지합니다.
+
+### 🛡️ AMFI 권한 정제 및 코드 서명 안전성 강화
+- **macOS Sonoma / Sequoia 호환성 최적화**:
+  - Ad-Hoc 재서명 시 제한된 팀 범위 권한(`com.apple.application-identifier`, `keychain-access-groups` 등)을 안전하게 정제합니다.
+  - Apple Mobile File Integrity(AMFI)에 의한 Helper 프로세스의 `SIGKILL` 강제 종료를 원천 방지합니다.
+
+### 🚀 ProcessSingleton 바이너리 패치 범용화
+- **Electron / AI 앱 다중 실행 호환성 확장**:
+  - Mach-O ProcessSingleton 패치를 범용화하고 AI 클라이언트 레시피에 `--user-data-dir`을 자동 적용했습니다.
+
+### 🧪 테스트 및 품질 보증
+- **테스트 확장**:
+  - 총 453개의 단위, 엔진, 레시피 및 GUI 통합 테스트를 100% 통과했습니다.
+
+---
+
 ## [v1.0.2] - 2026-08-26
 
 ### 🛡️ 샌드박스 박리 최적화 및 하드 복제 안정성 강화

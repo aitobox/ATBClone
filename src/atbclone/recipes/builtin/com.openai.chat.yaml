@@ -4,10 +4,13 @@ strategy: hard_clone
 app_type: electron
 strip_sandbox: true
 patch_framework_singleton: true
+launch_args:
+- --user-data-dir={{ATB_DATA_DIR}}/UserData
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'
   TMPDIR: '{{ATB_DATA_DIR}}/Tmp'
   CODEX_HOME: '{{ATB_DATA_DIR}}/Codex'
 symlink_whitelist:
 - Library/Keychains
+
 

@@ -3,6 +3,8 @@ app_name: Antigravity
 strategy: hard_clone
 app_type: electron
 strip_sandbox: true
+launch_args:
+- --user-data-dir={{ATB_DATA_DIR}}/UserData
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'
   TMPDIR: '{{ATB_DATA_DIR}}/Tmp'
@@ -11,4 +13,5 @@ environment_injection:
   ANTIGRAVITY_HOME: '{{ATB_DATA_DIR}}/Gemini'
 symlink_whitelist:
 - Library/Keychains
+
 

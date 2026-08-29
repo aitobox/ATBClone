@@ -14,3 +14,6 @@ launch_args:
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'
   TMPDIR: '{{ATB_DATA_DIR}}/Tmp'
+symlink_whitelist:
+- Library/Keychains
+

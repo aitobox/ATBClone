@@ -125,7 +125,7 @@ class TestSoftCloneEngine:
             assert "cp /Applications/TestApp.app/Contents/Info.plist /Applications/TestApp2.app/Contents/Info.plist" in script
             assert "chmod -R u+w /Applications/TestApp2.app 2>/dev/null || true" in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.example.testapp.clone2" /Applications/TestApp2.app/Contents/Info.plist' in script
-            assert '/usr/libexec/PlistBuddy -c "Set :CFBundleName TestApp 2" /Applications/TestApp2.app/Contents/Info.plist' in script
+            assert '/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName TestApp 2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert "cat << 'WRAPPER_EOF' > /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
             assert 'export LANG=' in script
             assert 'export LC_ALL=' in script
@@ -195,7 +195,7 @@ class TestHardCloneEngine:
             assert "cp -R /Applications/TestApp.app /Applications/TestApp2.app" in script
             assert "chmod -R u+w /Applications/TestApp2.app 2>/dev/null || true" in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.example.testapp.clone2" /Applications/TestApp2.app/Contents/Info.plist' in script
-            assert '/usr/libexec/PlistBuddy -c "Set :CFBundleName TestApp 2" /Applications/TestApp2.app/Contents/Info.plist' in script
+            assert '/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName TestApp 2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert "mv /Applications/TestApp2.app/Contents/MacOS/TestApp /Applications/TestApp2.app/Contents/MacOS/TestApp.bin" in script
             assert "cat << 'WRAPPER_EOF' > /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
             assert 'export LANG=' in script
@@ -318,19 +318,15 @@ class TestSoftCloneEngineCustomisation:
             SoftCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert 'Set :CFBundleDisplayName TestApp 2' in script
-            assert 'Set :CFBundleName TestApp 2' in script
 
     def test_custom_display_name_overrides_clone_name(self, sample_task):
-        """When display_name is set, CFBundleDisplayName and CFBundleName should use it instead."""
+        """When display_name is set, CFBundleDisplayName should use it instead."""
         sample_task.display_name = "我的测试App"
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
             SoftCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert "Set :CFBundleDisplayName 我的测试App" in script
-            assert "Set :CFBundleName 我的测试App" in script
-            # clone_name should NOT appear in the DisplayName or Name lines
             assert "Set :CFBundleDisplayName TestApp 2" not in script
-            assert "Set :CFBundleName TestApp 2" not in script
 
     def test_custom_icon_injects_copy_command(self, sample_task):
         """When icon_path is set, shell script should contain the icon copy snippet."""
@@ -370,7 +366,6 @@ class TestHardCloneEngineCustomisation:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert "Set :CFBundleDisplayName TestApp 2" in script
-            assert "Set :CFBundleName TestApp 2" in script
 
     def test_custom_display_name_overrides_clone_name(self, sample_task):
         sample_task.display_name = "硬克隆App"
@@ -378,9 +373,7 @@ class TestHardCloneEngineCustomisation:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert "Set :CFBundleDisplayName 硬克隆App" in script
-            assert "Set :CFBundleName 硬克隆App" in script
             assert "Set :CFBundleDisplayName TestApp 2" not in script
-            assert "Set :CFBundleName TestApp 2" not in script
 
     def test_custom_icon_injects_copy_command(self, sample_task):
         sample_task.icon_path = Path("/icons/hard_custom.icns")
@@ -912,8 +905,11 @@ class TestEnginePermissionsAndXattrTolerance:
             assert "export CLAUDE_CONFIG_DIR=/Users/test/data/Claude" in script
             assert 'if [ -d "$HOME/.claude" ] && [ ! -d /Users/test/data/Claude ]; then' in script
             assert 'cp -R "$HOME/.claude/." /Users/test/data/Claude/' in script
+            assert 'if [ -f "$HOME/.claude.json" ] && [ ! -f /Users/test/data/Claude/.claude.json ]; then' in script
+            assert 'cp "$HOME/.claude.json" /Users/test/data/Claude/.claude.json' in script
             assert 'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then' in script
             assert 'cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/"' in script
+            assert 'cp "$REAL_USER_HOME/.claude.json" "$CLAUDE_CONFIG_DIR/.claude.json"' in script
 
     def test_soft_clone_claude_script(self, mock_app_info, base_recipe):
         base_recipe.environment_injection = {
@@ -936,8 +932,11 @@ class TestEnginePermissionsAndXattrTolerance:
             assert "export CLAUDE_CONFIG_DIR=/Users/test/data/Claude" in script
             assert 'if [ -d "$HOME/.claude" ] && [ ! -d /Users/test/data/Claude ]; then' in script
             assert 'cp -R "$HOME/.claude/." /Users/test/data/Claude/' in script
+            assert 'if [ -f "$HOME/.claude.json" ] && [ ! -f /Users/test/data/Claude/.claude.json ]; then' in script
+            assert 'cp "$HOME/.claude.json" /Users/test/data/Claude/.claude.json' in script
             assert 'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then' in script
             assert 'cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/"' in script
+            assert 'cp "$REAL_USER_HOME/.claude.json" "$CLAUDE_CONFIG_DIR/.claude.json"' in script
 
 
 

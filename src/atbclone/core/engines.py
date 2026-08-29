@@ -82,7 +82,6 @@ class CloneEngine:
         """Return a shell snippet that applies display name to Info.plist and removes localized overrides."""
         name_escaped = effective_display_name.replace('\\', '\\\\').replace('"', '\\"')
         return textwrap.dedent(f"""
-            /usr/libexec/PlistBuddy -c "Set :CFBundleName {name_escaped}" {dst_plist} 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleName string {name_escaped}" {dst_plist}
             /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName {name_escaped}" {dst_plist} 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string {name_escaped}" {dst_plist}
             /usr/libexec/PlistBuddy -c "Delete :LSHasLocalizedDisplayName" {dst_plist} 2>/dev/null || true
             if [ -d {dst_resources} ]; then
@@ -168,6 +167,10 @@ class CloneEngine:
             if [ -d "$HOME/.claude" ] && [ ! -d {target_quoted} ]; then
                 mkdir -p {target_quoted}
                 cp -R "$HOME/.claude/." {target_quoted}/ 2>/dev/null || true
+            fi
+            if [ -f "$HOME/.claude.json" ] && [ ! -f {target_quoted}/.claude.json ]; then
+                mkdir -p {target_quoted}
+                cp "$HOME/.claude.json" {target_quoted}/.claude.json 2>/dev/null || true
             fi
         """).strip() + "\n"
 
@@ -283,6 +286,12 @@ class SoftCloneEngine(CloneEngine):
             '    mkdir -p "$CLAUDE_CONFIG_DIR" 2>/dev/null || true',
             '    if [ -d "$REAL_USER_HOME/.claude" ] && [ -z "$(ls -A "$CLAUDE_CONFIG_DIR" 2>/dev/null)" ]; then',
             '        cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/" 2>/dev/null || true',
+            '    fi',
+            '    if [ -f "$REAL_USER_HOME/.claude.json" ] && [ ! -f "$CLAUDE_CONFIG_DIR/.claude.json" ]; then',
+            '        cp "$REAL_USER_HOME/.claude.json" "$CLAUDE_CONFIG_DIR/.claude.json" 2>/dev/null || true',
+            '    fi',
+            '    if [ -n "$HOME" ] && [ "$HOME" != "$REAL_USER_HOME" ] && [ -f "$REAL_USER_HOME/.claude.json" ] && [ ! -f "$HOME/.claude.json" ]; then',
+            '        cp "$REAL_USER_HOME/.claude.json" "$HOME/.claude.json" 2>/dev/null || true',
             '    fi',
             'fi',
             'mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true',
@@ -670,6 +679,12 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
             '    mkdir -p "$CLAUDE_CONFIG_DIR" 2>/dev/null || true',
             '    if [ -d "$REAL_USER_HOME/.claude" ] && [ -z "$(ls -A "$CLAUDE_CONFIG_DIR" 2>/dev/null)" ]; then',
             '        cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/" 2>/dev/null || true',
+            '    fi',
+            '    if [ -f "$REAL_USER_HOME/.claude.json" ] && [ ! -f "$CLAUDE_CONFIG_DIR/.claude.json" ]; then',
+            '        cp "$REAL_USER_HOME/.claude.json" "$CLAUDE_CONFIG_DIR/.claude.json" 2>/dev/null || true',
+            '    fi',
+            '    if [ -n "$HOME" ] && [ "$HOME" != "$REAL_USER_HOME" ] && [ -f "$REAL_USER_HOME/.claude.json" ] && [ ! -f "$HOME/.claude.json" ]; then',
+            '        cp "$REAL_USER_HOME/.claude.json" "$HOME/.claude.json" 2>/dev/null || true',
             '    fi',
             'fi',
             f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"',

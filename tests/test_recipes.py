@@ -211,6 +211,19 @@ def test_load_builtin_chatgpt():
     assert recipe.strip_sandbox is True
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
+    assert recipe.environment_injection.get("CODEX_HOME") == "{{ATB_DATA_DIR}}/Codex"
+
+
+def test_load_builtin_chatgpt_chat():
+    recipe = RecipeLoader.match("com.openai.chat")
+    assert recipe is not None
+    assert recipe.bundle_id == "com.openai.chat"
+    assert recipe.app_name == "ChatGPT"
+    assert recipe.strategy == "hard_clone"
+    assert recipe.strip_sandbox is True
+    assert "HOME" in recipe.environment_injection
+    assert "TMPDIR" in recipe.environment_injection
+    assert recipe.environment_injection.get("CODEX_HOME") == "{{ATB_DATA_DIR}}/Codex"
 
 
 def test_load_builtin_edge():

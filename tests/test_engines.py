@@ -744,6 +744,55 @@ class TestEnginePermissionsAndXattrTolerance:
             assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.developer.team-identifier" "$ent_plist" 2>/dev/null || true' in script
             assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.application-identifier" "$ent_plist" 2>/dev/null || true' in script
 
+    def test_hard_clone_codex_home_script(self, mock_app_info, base_recipe):
+        base_recipe.environment_injection = {
+            "HOME": "{{ATB_DATA_DIR}}/Home",
+            "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
+            "CODEX_HOME": "{{ATB_DATA_DIR}}/Codex",
+        }
+        task = CloneTask(
+            source=mock_app_info,
+            dest_path=Path("/Applications/TestApp2.app"),
+            data_dir=Path("/Users/test/data"),
+            recipe=base_recipe,
+            clone_name="TestApp2",
+            new_bundle_id="com.example.testapp2",
+        )
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "export CODEX_HOME=/Users/test/data/Codex" in script
+            assert 'if [ -d "$HOME/.codex" ] && [ ! -d /Users/test/data/Codex ]; then' in script
+            assert 'cp -R "$HOME/.codex/." /Users/test/data/Codex/' in script
+            assert 'if [ -n "$CODEX_HOME" ] && [ "$CODEX_HOME" != "$REAL_USER_HOME/.codex" ]; then' in script
+            assert 'cp -R "$REAL_USER_HOME/.codex/." "$CODEX_HOME/"' in script
+
+    def test_soft_clone_codex_home_script(self, mock_app_info, base_recipe):
+        base_recipe.environment_injection = {
+            "HOME": "{{ATB_DATA_DIR}}/Home",
+            "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
+            "CODEX_HOME": "{{ATB_DATA_DIR}}/Codex",
+        }
+        task = CloneTask(
+            source=mock_app_info,
+            dest_path=Path("/Applications/TestApp2.app"),
+            data_dir=Path("/Users/test/data"),
+            recipe=base_recipe,
+            clone_name="TestApp2",
+            new_bundle_id="com.example.testapp2",
+        )
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            SoftCloneEngine.execute(task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "export CODEX_HOME=/Users/test/data/Codex" in script
+            assert 'if [ -d "$HOME/.codex" ] && [ ! -d /Users/test/data/Codex ]; then' in script
+            assert 'cp -R "$HOME/.codex/." /Users/test/data/Codex/' in script
+            assert 'if [ -n "$CODEX_HOME" ] && [ "$CODEX_HOME" != "$REAL_USER_HOME/.codex" ]; then' in script
+            assert 'cp -R "$REAL_USER_HOME/.codex/." "$CODEX_HOME/"' in script
+
+
 
 
 

@@ -122,6 +122,41 @@ class CloneEngine:
         """Return shell snippet to register the app bundle with LaunchServices."""
         return f"/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f {dst_app} 2>/dev/null || true"
 
+    @staticmethod
+    def _build_codex_init_cmd(effective_env: dict[str, str], data_dir: Path) -> str:
+        """Return shell snippet to initialize CODEX_HOME from ~/.codex at clone creation time."""
+        if "CODEX_HOME" not in effective_env:
+            return ""
+        raw_val = effective_env["CODEX_HOME"]
+        target_path = raw_val.replace("{{ATB_DATA_DIR}}", str(data_dir))
+        target_quoted = shlex.quote(target_path)
+        return textwrap.dedent(f"""\
+            if [ -d "$HOME/.codex" ] && [ ! -d {target_quoted} ]; then
+                mkdir -p {target_quoted}
+                cp -R "$HOME/.codex/." {target_quoted}/ 2>/dev/null || true
+            fi
+        """).strip() + "\n"
+
+    @staticmethod
+    def _build_symlink_whitelist_snippet(task: CloneTask) -> str:
+        """Return a shell snippet that creates symlinks for items in symlink_whitelist."""
+        whitelist = getattr(task.recipe, "symlink_whitelist", [])
+        if not whitelist:
+            return ""
+        lines = []
+        for item in whitelist:
+            item_clean = item.strip().strip("/")
+            if not item_clean:
+                continue
+            item_quoted = shlex.quote(item_clean)
+            lines.append(
+                f'    if [ ! -e "$HOME"/{item_quoted} ] && [ -e "$REAL_USER_HOME"/{item_quoted} ]; then\n'
+                f'        mkdir -p "$(dirname "$HOME"/{item_quoted})"\n'
+                f'        ln -s "$REAL_USER_HOME"/{item_quoted} "$HOME"/{item_quoted} 2>/dev/null || true\n'
+                f'    fi'
+            )
+        return "\n".join(lines)
+
 
 class SoftCloneEngine(CloneEngine):
     """Creates a lightweight wrapper app that launches the original binary with custom args and environment."""
@@ -154,19 +189,52 @@ class SoftCloneEngine(CloneEngine):
         lang_env, lang_args = cls._build_language_env_and_args(task)
         valid_launch_args = cls._get_validated_launch_args(task)
 
+        effective_env = dict(task.recipe.environment_injection)
+        env_vars = "\n".join([
+            f"export {k}={shlex.quote(v.replace('{{ATB_DATA_DIR}}', str(task.data_dir)))}"
+            for k, v in effective_env.items()
+        ])
+        codex_init_cmd = cls._build_codex_init_cmd(effective_env, task.data_dir)
+
         args_list = cls._combine_launch_args(valid_launch_args, lang_args, task.data_dir)
 
         args_str = f" {' '.join(args_list)}" if args_list else ""
         exec_cmd = f'exec {src_bin}{args_str} "$@"'
 
+        symlink_snippet = cls._build_symlink_whitelist_snippet(task)
+        if symlink_snippet:
+            symlink_snippet_block = f"\n{symlink_snippet}"
+        else:
+            symlink_snippet_block = ""
+
         proxy_env = cls._build_proxy_env(task)
         wrapper_lines = ["#!/bin/bash", 'REAL_USER_HOME="$HOME"']
+        if env_vars:
+            wrapper_lines.append(env_vars)
         if lang_env:
             wrapper_lines.append(lang_env)
         if proxy_env:
             wrapper_lines.append(proxy_env)
-        wrapper_lines.append('mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true')
-        wrapper_lines.append(exec_cmd)
+        wrapper_lines.extend([
+            'REAL_USER_HOME="${REAL_USER_HOME:-$HOME}"',
+            'if [ -n "$HOME" ] && [ "$HOME" != "$REAL_USER_HOME" ]; then',
+            '    mkdir -p "$HOME/Library/Preferences"',
+            '    if [ ! -f "$HOME/Library/Preferences/.GlobalPreferences.plist" ] && [ -f "$REAL_USER_HOME/Library/Preferences/.GlobalPreferences.plist" ]; then',
+            '        cp "$REAL_USER_HOME/Library/Preferences/.GlobalPreferences.plist" "$HOME/Library/Preferences/.GlobalPreferences.plist" 2>/dev/null || true',
+            '    fi',
+            '    if [ ! -f "$HOME/.CFUserTextEncoding" ] && [ -f "$REAL_USER_HOME/.CFUserTextEncoding" ]; then',
+            '        cp "$REAL_USER_HOME/.CFUserTextEncoding" "$HOME/.CFUserTextEncoding" 2>/dev/null || true',
+            '    fi' + symlink_snippet_block,
+            'fi',
+            'if [ -n "$CODEX_HOME" ] && [ "$CODEX_HOME" != "$REAL_USER_HOME/.codex" ]; then',
+            '    mkdir -p "$CODEX_HOME" 2>/dev/null || true',
+            '    if [ -d "$REAL_USER_HOME/.codex" ] && [ -z "$(ls -A "$CODEX_HOME" 2>/dev/null)" ]; then',
+            '        cp -R "$REAL_USER_HOME/.codex/." "$CODEX_HOME/" 2>/dev/null || true',
+            '    fi',
+            'fi',
+            'mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true',
+            exec_cmd,
+        ])
         wrapper_body = "\n".join(wrapper_lines)
 
         src_resources = shlex.quote(str(task.source.path / "Contents" / "Resources"))
@@ -185,7 +253,7 @@ mkdir -p {dst_parent}
 mkdir -p {data_dir}
 rm -rf {dst_app}
 mkdir -p {dst_mac}
-# Copy Resources dir so the app icon (.icns) and other assets are available
+{codex_init_cmd}# Copy Resources dir so the app icon (.icns) and other assets are available
 if [ -d {src_resources} ]; then
     cp -R {src_resources} {dst_resources}
 fi
@@ -476,6 +544,8 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
         ])
         proxy_env = cls._build_proxy_env(task)
 
+        codex_init_cmd = cls._build_codex_init_cmd(effective_env, task.data_dir)
+
         # Inject launch_args (e.g. --user-data-dir=... for Chromium apps)
         args_list = cls._combine_launch_args(valid_launch_args, lang_args, task.data_dir)
 
@@ -509,6 +579,12 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
             '    if [ ! -f "$HOME/.CFUserTextEncoding" ] && [ -f "$REAL_USER_HOME/.CFUserTextEncoding" ]; then',
             '        cp "$REAL_USER_HOME/.CFUserTextEncoding" "$HOME/.CFUserTextEncoding" 2>/dev/null || true',
             '    fi' + symlink_snippet_block,
+            'fi',
+            'if [ -n "$CODEX_HOME" ] && [ "$CODEX_HOME" != "$REAL_USER_HOME/.codex" ]; then',
+            '    mkdir -p "$CODEX_HOME" 2>/dev/null || true',
+            '    if [ -d "$REAL_USER_HOME/.codex" ] && [ -z "$(ls -A "$CODEX_HOME" 2>/dev/null)" ]; then',
+            '        cp -R "$REAL_USER_HOME/.codex/." "$CODEX_HOME/" 2>/dev/null || true',
+            '    fi',
             'fi',
             f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"',
         ])
@@ -581,7 +657,7 @@ fi
 mkdir -p {dst_parent}
 mkdir -p {data_dir}
 rm -rf {dst}
-cp -R {src} {dst}
+{codex_init_cmd}cp -R {src} {dst}
 chmod -R u+w {dst} 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
 {helper_bundle_id_cmd}{display_name_cmd}

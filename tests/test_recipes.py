@@ -226,6 +226,15 @@ def test_load_builtin_chatgpt_chat():
     assert recipe.environment_injection.get("CODEX_HOME") == "{{ATB_DATA_DIR}}/Codex"
 
 
+def test_load_builtin_claude():
+    recipe = RecipeLoader.match("com.anthropic.claudefordesktop")
+    assert recipe is not None
+    assert recipe.bundle_id == "com.anthropic.claudefordesktop"
+    assert "HOME" in recipe.environment_injection
+    assert "TMPDIR" in recipe.environment_injection
+    assert recipe.environment_injection.get("CLAUDE_CONFIG_DIR") == "{{ATB_DATA_DIR}}/Claude"
+
+
 def test_load_builtin_antigravity():
     for bid in ["com.google.antigravity", "com.google.antigravity-ide", "com.google.GeminiMacOS"]:
         recipe = RecipeLoader.match(bid)

@@ -157,6 +157,21 @@ class CloneEngine:
         """).strip() + "\n"
 
     @staticmethod
+    def _build_claude_init_cmd(effective_env: dict[str, str], data_dir: Path) -> str:
+        """Return shell snippet to initialize CLAUDE_CONFIG_DIR from ~/.claude at clone creation time."""
+        if "CLAUDE_CONFIG_DIR" not in effective_env:
+            return ""
+        raw_val = effective_env["CLAUDE_CONFIG_DIR"]
+        target_path = raw_val.replace("{{ATB_DATA_DIR}}", str(data_dir))
+        target_quoted = shlex.quote(target_path)
+        return textwrap.dedent(f"""\
+            if [ -d "$HOME/.claude" ] && [ ! -d {target_quoted} ]; then
+                mkdir -p {target_quoted}
+                cp -R "$HOME/.claude/." {target_quoted}/ 2>/dev/null || true
+            fi
+        """).strip() + "\n"
+
+    @staticmethod
     def _build_symlink_whitelist_snippet(task: CloneTask) -> str:
         """Return a shell snippet that creates symlinks for items in symlink_whitelist."""
         whitelist = getattr(task.recipe, "symlink_whitelist", [])
@@ -215,6 +230,7 @@ class SoftCloneEngine(CloneEngine):
         ])
         codex_init_cmd = cls._build_codex_init_cmd(effective_env, task.data_dir)
         gemini_init_cmd = cls._build_gemini_init_cmd(effective_env, task.data_dir)
+        claude_init_cmd = cls._build_claude_init_cmd(effective_env, task.data_dir)
 
         args_list = cls._combine_launch_args(valid_launch_args, lang_args, task.data_dir)
 
@@ -259,6 +275,12 @@ class SoftCloneEngine(CloneEngine):
             '        cp -R "$REAL_USER_HOME/.gemini/." "$_TARGET_GEMINI_DIR/" 2>/dev/null || true',
             '    fi',
             'fi',
+            'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then',
+            '    mkdir -p "$CLAUDE_CONFIG_DIR" 2>/dev/null || true',
+            '    if [ -d "$REAL_USER_HOME/.claude" ] && [ -z "$(ls -A "$CLAUDE_CONFIG_DIR" 2>/dev/null)" ]; then',
+            '        cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/" 2>/dev/null || true',
+            '    fi',
+            'fi',
             'mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true',
             exec_cmd,
         ])
@@ -280,7 +302,7 @@ mkdir -p {dst_parent}
 mkdir -p {data_dir}
 rm -rf {dst_app}
 mkdir -p {dst_mac}
-{codex_init_cmd}{gemini_init_cmd}# Copy Resources dir so the app icon (.icns) and other assets are available
+{codex_init_cmd}{gemini_init_cmd}{claude_init_cmd}# Copy Resources dir so the app icon (.icns) and other assets are available
 
 if [ -d {src_resources} ]; then
     cp -R {src_resources} {dst_resources}
@@ -574,6 +596,7 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
 
         codex_init_cmd = cls._build_codex_init_cmd(effective_env, task.data_dir)
         gemini_init_cmd = cls._build_gemini_init_cmd(effective_env, task.data_dir)
+        claude_init_cmd = cls._build_claude_init_cmd(effective_env, task.data_dir)
 
         # Inject launch_args (e.g. --user-data-dir=... for Chromium apps)
         args_list = cls._combine_launch_args(valid_launch_args, lang_args, task.data_dir)
@@ -620,6 +643,12 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
             '    mkdir -p "$_TARGET_GEMINI_DIR" 2>/dev/null || true',
             '    if [ -d "$REAL_USER_HOME/.gemini" ] && [ -z "$(ls -A "$_TARGET_GEMINI_DIR" 2>/dev/null)" ]; then',
             '        cp -R "$REAL_USER_HOME/.gemini/." "$_TARGET_GEMINI_DIR/" 2>/dev/null || true',
+            '    fi',
+            'fi',
+            'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then',
+            '    mkdir -p "$CLAUDE_CONFIG_DIR" 2>/dev/null || true',
+            '    if [ -d "$REAL_USER_HOME/.claude" ] && [ -z "$(ls -A "$CLAUDE_CONFIG_DIR" 2>/dev/null)" ]; then',
+            '        cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/" 2>/dev/null || true',
             '    fi',
             'fi',
             f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"',
@@ -693,7 +722,7 @@ fi
 mkdir -p {dst_parent}
 mkdir -p {data_dir}
 rm -rf {dst}
-{codex_init_cmd}{gemini_init_cmd}cp -R {src} {dst}
+{codex_init_cmd}{gemini_init_cmd}{claude_init_cmd}cp -R {src} {dst}
 
 chmod -R u+w {dst} 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}

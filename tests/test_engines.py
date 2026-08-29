@@ -846,6 +846,55 @@ class TestEnginePermissionsAndXattrTolerance:
             assert 'cp -R "$HOME/.gemini/." /Users/test/data/Gemini/' in script
             assert 'cp -R "$REAL_USER_HOME/.gemini/." "$_TARGET_GEMINI_DIR/"' in script
 
+    def test_hard_clone_claude_script(self, mock_app_info, base_recipe):
+        base_recipe.environment_injection = {
+            "HOME": "{{ATB_DATA_DIR}}/Home",
+            "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
+            "CLAUDE_CONFIG_DIR": "{{ATB_DATA_DIR}}/Claude",
+        }
+        task = CloneTask(
+            source=mock_app_info,
+            dest_path=Path("/Applications/TestApp2.app"),
+            data_dir=Path("/Users/test/data"),
+            recipe=base_recipe,
+            clone_name="TestApp2",
+            new_bundle_id="com.example.testapp2",
+        )
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "export CLAUDE_CONFIG_DIR=/Users/test/data/Claude" in script
+            assert 'if [ -d "$HOME/.claude" ] && [ ! -d /Users/test/data/Claude ]; then' in script
+            assert 'cp -R "$HOME/.claude/." /Users/test/data/Claude/' in script
+            assert 'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then' in script
+            assert 'cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/"' in script
+
+    def test_soft_clone_claude_script(self, mock_app_info, base_recipe):
+        base_recipe.environment_injection = {
+            "HOME": "{{ATB_DATA_DIR}}/Home",
+            "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
+            "CLAUDE_CONFIG_DIR": "{{ATB_DATA_DIR}}/Claude",
+        }
+        task = CloneTask(
+            source=mock_app_info,
+            dest_path=Path("/Applications/TestApp2.app"),
+            data_dir=Path("/Users/test/data"),
+            recipe=base_recipe,
+            clone_name="TestApp2",
+            new_bundle_id="com.example.testapp2",
+        )
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            SoftCloneEngine.execute(task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "export CLAUDE_CONFIG_DIR=/Users/test/data/Claude" in script
+            assert 'if [ -d "$HOME/.claude" ] && [ ! -d /Users/test/data/Claude ]; then' in script
+            assert 'cp -R "$HOME/.claude/." /Users/test/data/Claude/' in script
+            assert 'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then' in script
+            assert 'cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/"' in script
+
+
 
 
 

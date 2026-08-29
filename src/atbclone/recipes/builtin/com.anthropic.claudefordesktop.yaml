@@ -6,3 +6,5 @@ strip_sandbox: true
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'
   TMPDIR: '{{ATB_DATA_DIR}}/Tmp'
+  CLAUDE_CONFIG_DIR: '{{ATB_DATA_DIR}}/Claude'
+

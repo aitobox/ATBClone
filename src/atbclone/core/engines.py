@@ -344,7 +344,7 @@ class HardCloneEngine(CloneEngine):
         """
         dest_quoted = shlex.quote(str(dest_path))
         return textwrap.dedent(f"""\
-            # Patch ProcessSingleton in embedded frameworks if present (e.g. Feishu/Lark)
+            # Patch ProcessSingleton in embedded frameworks if present (e.g. Feishu/Lark, ChatGPT)
             python3 -c '
 import os, glob, struct
 frameworks_dir = os.path.join({dest_quoted}, "Contents", "Frameworks")
@@ -384,19 +384,25 @@ if os.path.isdir(frameworks_dir):
                 if found_pc is None:
                     continue
                 cmp_pos = None
-                for pos in range(found_pc - 4, max(0, found_pc - 200), -4):
+                for pos in range(found_pc - 4, max(0, found_pc - 300), -4):
                     w, = struct.unpack_from("<I", data, pos)
-                    if w == 0x7100001F:
+                    if (w & 0xFFE0001F) == 0x7100001F:
                         cmp_pos = pos
                         break
                 if cmp_pos is None:
                     continue
-                bl_pos = cmp_pos - 4
-                w_bl, = struct.unpack_from("<I", data, bl_pos)
-                if (w_bl & 0xFC000000) == 0x94000000:
-                    struct.pack_into("<II", data, bl_pos, 0x52800000, 0xD503201F)
-                    with open(fpath, "wb") as f:
-                        f.write(data)
+                for pos in range(cmp_pos - 4, max(0, cmp_pos - 40), -4):
+                    w_bl, = struct.unpack_from("<I", data, pos)
+                    if (w_bl & 0xFC000000) == 0x94000000:
+                        imm26 = w_bl & 0x03FFFFFF
+                        if imm26 & (1 << 25): imm26 -= (1 << 26)
+                        bl_target = pos + (imm26 << 2)
+                        if 0 <= bl_target < len(data) - 8:
+                            struct.pack_into("<II", data, bl_target, 0x52800000, 0xD65F03C0)
+                        struct.pack_into("<II", data, pos, 0x52800000, 0xD503201F)
+                        with open(fpath, "wb") as f:
+                            f.write(data)
+                        break
             except Exception:
                 pass
 ' 2>/dev/null || true
@@ -519,22 +525,29 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
                         continue
 
                     cmp_pos = None
-                    for pos in range(found_pc - 4, max(0, found_pc - 200), -4):
+                    for pos in range(found_pc - 4, max(0, found_pc - 300), -4):
                         (w,) = struct.unpack_from("<I", data, pos)
-                        if w == 0x7100001F:
+                        if (w & 0xFFE0001F) == 0x7100001F:
                             cmp_pos = pos
                             break
 
                     if cmp_pos is None:
                         continue
 
-                    bl_pos = cmp_pos - 4
-                    (w_bl,) = struct.unpack_from("<I", data, bl_pos)
-                    if (w_bl & 0xFC000000) == 0x94000000:
-                        struct.pack_into("<II", data, bl_pos, 0x52800000, 0xD503201F)
-                        with open(fpath, "wb") as f:
-                            f.write(data)
-                        patched_any = True
+                    for pos in range(cmp_pos - 4, max(0, cmp_pos - 40), -4):
+                        (w_bl,) = struct.unpack_from("<I", data, pos)
+                        if (w_bl & 0xFC000000) == 0x94000000:
+                            imm26 = w_bl & 0x03FFFFFF
+                            if imm26 & (1 << 25):
+                                imm26 -= 1 << 26
+                            bl_target = pos + (imm26 << 2)
+                            if 0 <= bl_target < len(data) - 8:
+                                struct.pack_into("<II", data, bl_target, 0x52800000, 0xD65F03C0)
+                            struct.pack_into("<II", data, pos, 0x52800000, 0xD503201F)
+                            with open(fpath, "wb") as f:
+                                f.write(data)
+                            patched_any = True
+                            break
                 except Exception:
                     continue
 

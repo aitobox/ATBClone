@@ -1,8 +1,9 @@
 bundle_id: com.openai.chat
 app_name: ChatGPT
 strategy: hard_clone
-app_type: cocoa
+app_type: electron
 strip_sandbox: true
+patch_framework_singleton: true
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'
   TMPDIR: '{{ATB_DATA_DIR}}/Tmp'

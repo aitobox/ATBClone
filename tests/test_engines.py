@@ -652,6 +652,49 @@ class TestProcessSingletonFrameworkPatching:
         assert bl_patched == 0x52800000  # mov w0, #0
         assert nop_patched == 0xD503201F  # nop
 
+    def test_patch_framework_singletons_with_custom_register(self, tmp_path):
+        import struct
+
+        app_dir = tmp_path / "ChatGPT2.app"
+        fw_dir = app_dir / "Contents" / "Frameworks" / "Codex Framework.framework"
+        fw_dir.mkdir(parents=True)
+        macho_file = fw_dir / "Codex Framework"
+
+        data = bytearray(b"\x00" * 0x100000)
+        data[0:4] = b"\xcf\xfa\xed\xfe"
+
+        target_str = b"Failed to create a ProcessSingleton for your profile directory."
+        str_offset = 0x80000
+        data[str_offset : str_offset + len(target_str)] = target_str
+
+        page = str_offset & ~0xFFF
+        page_offset = str_offset & 0xFFF
+
+        pc = 0x50000
+        pc_page = pc & ~0xFFF
+        imm = (page - pc_page) >> 12
+        immlo = imm & 3
+        immhi = (imm >> 2) & 0x7FFFF
+        adrp_w = 0x90000000 | (immlo << 29) | (immhi << 5)
+        add_w = 0x91000000 | (page_offset << 10)
+
+        # Write bl targeting 0x60000, cmp w8, #0 (0x7100011f), adrp, add
+        # bl offset = (0x60000 - (pc - 8)) >> 2 = (0x10008) >> 2 = 0x4002
+        bl_inst = 0x94000000 | 0x4002
+        cmp_w8 = 0x7100011F
+        struct.pack_into("<IIII", data, pc - 8, bl_inst, cmp_w8, adrp_w, add_w)
+
+        macho_file.write_bytes(data)
+
+        assert HardCloneEngine.patch_framework_singletons(app_dir) is True
+
+        patched_data = macho_file.read_bytes()
+        bl_patched, _ = struct.unpack_from("<II", patched_data, pc - 8)
+        assert bl_patched == 0x52800000  # mov w0, #0
+        target_fn_patched, target_fn_ret = struct.unpack_from("<II", patched_data, 0x60000)
+        assert target_fn_patched == 0x52800000  # mov w0, #0
+        assert target_fn_ret == 0xD65F03C0  # ret
+
     def test_hard_clone_script_omits_singleton_patch_by_default(self, sample_task):
         sample_task.source.bundle_id = "com.example.normalapp"
         sample_task.recipe.patch_framework_singleton = False

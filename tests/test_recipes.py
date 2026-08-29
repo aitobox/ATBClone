@@ -208,7 +208,9 @@ def test_load_builtin_chatgpt():
     assert recipe.bundle_id == "com.openai.codex"
     assert recipe.app_name == "ChatGPT"
     assert recipe.strategy == "hard_clone"
+    assert recipe.app_type == "electron"
     assert recipe.strip_sandbox is True
+    assert recipe.patch_framework_singleton is True
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
     assert recipe.environment_injection.get("CODEX_HOME") == "{{ATB_DATA_DIR}}/Codex"
@@ -220,7 +222,9 @@ def test_load_builtin_chatgpt_chat():
     assert recipe.bundle_id == "com.openai.chat"
     assert recipe.app_name == "ChatGPT"
     assert recipe.strategy == "hard_clone"
+    assert recipe.app_type == "electron"
     assert recipe.strip_sandbox is True
+    assert recipe.patch_framework_singleton is True
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
     assert recipe.environment_injection.get("CODEX_HOME") == "{{ATB_DATA_DIR}}/Codex"
@@ -235,7 +239,8 @@ def test_load_builtin_claude():
     assert recipe.environment_injection.get("CLAUDE_CONFIG_DIR") == "{{ATB_DATA_DIR}}/Claude"
 
 
-def test_load_builtin_antigravity():
+def test_load_builtin_antigravity(monkeypatch, tmp_path):
+    monkeypatch.setattr(RecipeLoader, "LOCAL_DIR", tmp_path)
     for bid in ["com.google.antigravity", "com.google.antigravity-ide", "com.google.GeminiMacOS"]:
         recipe = RecipeLoader.match(bid)
         assert recipe is not None

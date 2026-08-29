@@ -226,6 +226,18 @@ def test_load_builtin_chatgpt_chat():
     assert recipe.environment_injection.get("CODEX_HOME") == "{{ATB_DATA_DIR}}/Codex"
 
 
+def test_load_builtin_antigravity():
+    for bid in ["com.google.antigravity", "com.google.antigravity-ide", "com.google.GeminiMacOS"]:
+        recipe = RecipeLoader.match(bid)
+        assert recipe is not None
+        assert recipe.bundle_id == bid
+        assert "HOME" in recipe.environment_injection
+        assert "TMPDIR" in recipe.environment_injection
+        assert recipe.environment_injection.get("GEMINI_HOME") == "{{ATB_DATA_DIR}}/Gemini"
+        assert recipe.environment_injection.get("GEMINI_CONFIG_DIR") == "{{ATB_DATA_DIR}}/Gemini"
+        assert recipe.environment_injection.get("ANTIGRAVITY_HOME") == "{{ATB_DATA_DIR}}/Gemini"
+
+
 def test_load_builtin_edge():
     recipe = RecipeLoader.match("com.microsoft.edgemac")
     assert recipe is not None

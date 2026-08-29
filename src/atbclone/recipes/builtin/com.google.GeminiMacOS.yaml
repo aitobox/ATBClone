@@ -6,3 +6,6 @@ strip_sandbox: true
 environment_injection:
   HOME: '{{ATB_DATA_DIR}}/Home'
   TMPDIR: '{{ATB_DATA_DIR}}/Tmp'
+  GEMINI_HOME: '{{ATB_DATA_DIR}}/Gemini'
+  GEMINI_CONFIG_DIR: '{{ATB_DATA_DIR}}/Gemini'
+  ANTIGRAVITY_HOME: '{{ATB_DATA_DIR}}/Gemini'

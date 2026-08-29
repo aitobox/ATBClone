@@ -792,6 +792,61 @@ class TestEnginePermissionsAndXattrTolerance:
             assert 'if [ -n "$CODEX_HOME" ] && [ "$CODEX_HOME" != "$REAL_USER_HOME/.codex" ]; then' in script
             assert 'cp -R "$REAL_USER_HOME/.codex/." "$CODEX_HOME/"' in script
 
+    def test_hard_clone_gemini_home_script(self, mock_app_info, base_recipe):
+        base_recipe.environment_injection = {
+            "HOME": "{{ATB_DATA_DIR}}/Home",
+            "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
+            "GEMINI_HOME": "{{ATB_DATA_DIR}}/Gemini",
+            "GEMINI_CONFIG_DIR": "{{ATB_DATA_DIR}}/Gemini",
+            "ANTIGRAVITY_HOME": "{{ATB_DATA_DIR}}/Gemini",
+        }
+        task = CloneTask(
+            source=mock_app_info,
+            dest_path=Path("/Applications/TestApp2.app"),
+            data_dir=Path("/Users/test/data"),
+            recipe=base_recipe,
+            clone_name="TestApp2",
+            new_bundle_id="com.example.testapp2",
+        )
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "export GEMINI_HOME=/Users/test/data/Gemini" in script
+            assert "export GEMINI_CONFIG_DIR=/Users/test/data/Gemini" in script
+            assert "export ANTIGRAVITY_HOME=/Users/test/data/Gemini" in script
+            assert 'if [ -d "$HOME/.gemini" ] && [ ! -d /Users/test/data/Gemini ]; then' in script
+            assert 'cp -R "$HOME/.gemini/." /Users/test/data/Gemini/' in script
+            assert 'cp -R "$REAL_USER_HOME/.gemini/." "$_TARGET_GEMINI_DIR/"' in script
+
+    def test_soft_clone_gemini_home_script(self, mock_app_info, base_recipe):
+        base_recipe.environment_injection = {
+            "HOME": "{{ATB_DATA_DIR}}/Home",
+            "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
+            "GEMINI_HOME": "{{ATB_DATA_DIR}}/Gemini",
+            "GEMINI_CONFIG_DIR": "{{ATB_DATA_DIR}}/Gemini",
+            "ANTIGRAVITY_HOME": "{{ATB_DATA_DIR}}/Gemini",
+        }
+        task = CloneTask(
+            source=mock_app_info,
+            dest_path=Path("/Applications/TestApp2.app"),
+            data_dir=Path("/Users/test/data"),
+            recipe=base_recipe,
+            clone_name="TestApp2",
+            new_bundle_id="com.example.testapp2",
+        )
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            SoftCloneEngine.execute(task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "export GEMINI_HOME=/Users/test/data/Gemini" in script
+            assert "export GEMINI_CONFIG_DIR=/Users/test/data/Gemini" in script
+            assert "export ANTIGRAVITY_HOME=/Users/test/data/Gemini" in script
+            assert 'if [ -d "$HOME/.gemini" ] && [ ! -d /Users/test/data/Gemini ]; then' in script
+            assert 'cp -R "$HOME/.gemini/." /Users/test/data/Gemini/' in script
+            assert 'cp -R "$REAL_USER_HOME/.gemini/." "$_TARGET_GEMINI_DIR/"' in script
+
+
 
 
 

@@ -235,7 +235,7 @@ class TestHardCloneEngine:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert 'ent_plist=$(mktemp /tmp/atb_ent_XXXXXX.plist)' in script
+            assert 'ent_plist=$(mktemp "${TMPDIR:-/tmp}/atb_ent_XXXXXX")' in script
             assert 'codesign -d --entitlements - --xml /Applications/TestApp.app > "$ent_plist" 2>/dev/null || true' in script
             assert 'if [ -s "$ent_plist" ]; then' in script
             assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true' in script
@@ -936,7 +936,24 @@ class TestEnginePermissionsAndXattrTolerance:
             assert 'cp "$HOME/.claude.json" /Users/test/data/Claude/.claude.json' in script
             assert 'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then' in script
             assert 'cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/"' in script
-            assert 'cp "$REAL_USER_HOME/.claude.json" "$CLAUDE_CONFIG_DIR/.claude.json"' in script
+class TestBuildFrameworkPruneCmd:
+    """Unit tests for HardCloneEngine._build_framework_prune_cmd helper."""
+
+    def test_framework_prune_cmd_structure(self):
+        cmd = HardCloneEngine._build_framework_prune_cmd(Path("/Applications/TestApp.app"))
+        assert "/Applications/TestApp.app/Contents/Frameworks" in cmd
+        assert "readlink" in cmd
+        assert "Versions/Current" in cmd
+        assert "rm -rf" in cmd
+
+    def test_hard_clone_includes_framework_prune(self, sample_task):
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "Prune stale/inactive framework versions" in script
+            assert "/Applications/TestApp2.app/Contents/Frameworks" in script
+
 
 
 

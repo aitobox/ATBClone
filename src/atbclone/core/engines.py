@@ -567,6 +567,36 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
         return patched_any
 
     @classmethod
+    def _build_framework_prune_cmd(cls, dest_path: Path) -> str:
+        """Return a shell snippet that prunes stale/orphaned framework versions in Contents/Frameworks.
+
+        When apps like Google Chrome update in-place, previous versions remain inside
+        Contents/Frameworks/*.framework/Versions/ alongside the active version pointed to by Current.
+        Leaving stale versions causes 'embedded framework contains modified or invalid version'
+        errors during codesign verification, and wastes hundreds of megabytes of disk space.
+        """
+        dst = shlex.quote(str(dest_path))
+        return textwrap.dedent(f"""\
+            # Prune stale/inactive framework versions to ensure clean codesigning and save disk space
+            if [ -d {dst}/Contents/Frameworks ]; then
+                find {dst}/Contents/Frameworks -name "*.framework" -type d 2>/dev/null | while read -r fw; do
+                    if [ -d "$fw/Versions" ] && [ -L "$fw/Versions/Current" ]; then
+                        curr_target=$(readlink "$fw/Versions/Current")
+                        curr_target_base=$(basename "$curr_target")
+                        for ver_path in "$fw/Versions"/*; do
+                            if [ -d "$ver_path" ] && [ ! -L "$ver_path" ]; then
+                                ver_name=$(basename "$ver_path")
+                                if [ "$ver_name" != "$curr_target_base" ]; then
+                                    rm -rf "$ver_path" 2>/dev/null || true
+                                fi
+                            fi
+                        done
+                    fi
+                done
+            fi
+        """).strip() + "\n"
+
+    @classmethod
     def execute(cls, task: CloneTask, needs_admin: bool = False) -> None:
         """Execute hard clone script.
 
@@ -728,36 +758,56 @@ fi
         else:
             helper_bundle_id_cmd = ""
 
+        framework_prune_cmd = cls._build_framework_prune_cmd(task.dest_path)
+
         if task.recipe.strip_sandbox:
-            strip_sandbox_snippet = (
-                '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true\n'
-                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.security.application-groups" "$ent_plist" 2>/dev/null || true\n'
-                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.team-identifier" "$ent_plist" 2>/dev/null || true\n'
-                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.aps-environment" "$ent_plist" 2>/dev/null || true\n'
-                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.application-identifier" "$ent_plist" 2>/dev/null || true\n'
-                '    /usr/libexec/PlistBuddy -c "Delete :keychain-access-groups" "$ent_plist" 2>/dev/null || true\n'
-                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.associated-domains" "$ent_plist" 2>/dev/null || true\n'
-                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.icloud-container-identifiers" "$ent_plist" 2>/dev/null || true\n'
-                '    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.ubiquity-container-identifiers" "$ent_plist" 2>/dev/null || true\n'
+            codesign_cmds = (
+                f'ent_plist=$(mktemp "${{TMPDIR:-/tmp}}/atb_ent_XXXXXX")\n'
+                f'codesign -d --entitlements - --xml {src} > "$ent_plist" 2>/dev/null || true\n'
+                f'if [ -s "$ent_plist" ]; then\n'
+                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true\n'
+                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.security.application-groups" "$ent_plist" 2>/dev/null || true\n'
+                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.team-identifier" "$ent_plist" 2>/dev/null || true\n'
+                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.aps-environment" "$ent_plist" 2>/dev/null || true\n'
+                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.application-identifier" "$ent_plist" 2>/dev/null || true\n'
+                f'    /usr/libexec/PlistBuddy -c "Delete :keychain-access-groups" "$ent_plist" 2>/dev/null || true\n'
+                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.associated-domains" "$ent_plist" 2>/dev/null || true\n'
+                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.icloud-container-identifiers" "$ent_plist" 2>/dev/null || true\n'
+                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.ubiquity-container-identifiers" "$ent_plist" 2>/dev/null || true\n'
+                f'    python3 -c "\n'
+                f'import plistlib\n'
+                f'try:\n'
+                f'    with open(\'$ent_plist\', \'rb\') as fp:\n'
+                f'        pl = plistlib.load(fp)\n'
+                f'    restricted = (\'com.apple.developer.\', \'com.apple.application-identifier\', \'keychain-access-groups\', \'com.apple.security.application-groups\', \'com.apple.security.app-sandbox\')\n'
+                f'    filtered = {{k: v for k, v in pl.items() if not any(k.startswith(p) for p in restricted)}}\n'
+                f'    with open(\'$ent_plist\', \'wb\') as fp:\n'
+                f'        plistlib.dump(filtered, fp)\n'
+                f'except Exception:\n'
+                f'    pass\n'
+                f'" 2>/dev/null || true\n'
+                f'    find {dst} -type f \\( -name \'*.dylib\' -o -name \'*.so\' \\) -exec codesign --force --sign - {{}} + 2>/dev/null || true\n'
+                f'    find {dst}/Contents -type f -perm +111 | while read -r bin_file; do if file "$bin_file" 2>/dev/null | grep -q \'Mach-O\'; then codesign --force --sign - --entitlements "$ent_plist" "$bin_file" 2>/dev/null || true; fi; done\n'
+                f'    find {dst}/Contents -name \'*.framework\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
+                f'    find {dst}/Contents -name \'*.app\' -type d -exec codesign --force --deep --sign - --entitlements "$ent_plist" {{}} + 2>/dev/null || true\n'
+                f'    codesign --force --deep --sign - --entitlements "$ent_plist" {dst}\n'
+                f'else\n'
+                f'    find {dst} -type f \\( -name \'*.dylib\' -o -name \'*.so\' \\) -exec codesign --force --sign - {{}} + 2>/dev/null || true\n'
+                f'    find {dst}/Contents -type f -perm +111 | while read -r bin_file; do if file "$bin_file" 2>/dev/null | grep -q \'Mach-O\'; then codesign --force --sign - "$bin_file" 2>/dev/null || true; fi; done\n'
+                f'    find {dst}/Contents -name \'*.framework\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
+                f'    find {dst}/Contents -name \'*.app\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
+                f'    codesign --force --deep --sign - {dst}\n'
+                f'fi\n'
+                f'rm -f "$ent_plist"\n'
             )
         else:
-            strip_sandbox_snippet = ""
-
-        codesign_cmds = (
-            f"ent_plist=$(mktemp /tmp/atb_ent_XXXXXX.plist)\n"
-            f"codesign -d --entitlements - --xml {src} > \"$ent_plist\" 2>/dev/null || true\n"
-            f"if [ -s \"$ent_plist\" ]; then\n"
-            f"    {strip_sandbox_snippet}"
-            f"    find {dst} -type f \\( -name '*.dylib' -o -name '*.so' \\) -exec codesign --force --sign - {{}} + 2>/dev/null || true\n"
-            f"    find {dst}/Contents -name '*.app' -type d -exec codesign --force --deep --sign - --entitlements \"$ent_plist\" {{}} + 2>/dev/null || true\n"
-            f"    find {dst}/Contents -name '*.framework' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n"
-            f"    find {dst}/Contents -type f -perm +111 | while read -r bin_file; do if file \"$bin_file\" 2>/dev/null | grep -q 'Mach-O'; then codesign --force --sign - --entitlements \"$ent_plist\" \"$bin_file\" 2>/dev/null || true; fi; done\n"
-            f"    codesign --force --deep --sign - --entitlements \"$ent_plist\" {dst}\n"
-            f"else\n"
-            f"    codesign --force --deep --sign - {dst}\n"
-            f"fi\n"
-            f'rm -f "$ent_plist"\n'
-        )
+            codesign_cmds = (
+                f'find {dst} -type f \\( -name \'*.dylib\' -o -name \'*.so\' \\) -exec codesign --force --sign - {{}} + 2>/dev/null || true\n'
+                f'find {dst}/Contents -type f -perm +111 | while read -r bin_file; do if file "$bin_file" 2>/dev/null | grep -q \'Mach-O\'; then codesign --force --sign - "$bin_file" 2>/dev/null || true; fi; done\n'
+                f'find {dst}/Contents -name \'*.framework\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
+                f'find {dst}/Contents -name \'*.app\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
+                f'codesign --force --deep --sign - {dst}\n'
+            )
 
         script = f"""set -e
 mkdir -p {dst_parent}
@@ -773,7 +823,7 @@ cat << 'WRAPPER_EOF' > {wrapper}
 {wrapper_body}
 WRAPPER_EOF
 chmod +x {wrapper}
-{singleton_patch_cmd}{cef_patch_cmd}xattr -cr {dst} 2>/dev/null || true
+{singleton_patch_cmd}{cef_patch_cmd}{framework_prune_cmd}xattr -cr {dst} 2>/dev/null || true
 {codesign_cmds}codesign -vv --deep --strict {dst}
 {lsregister_cmd}
 """

@@ -6,6 +6,25 @@
 
 ---
 
+## [v1.1.1] - 2026-08-30
+
+### 🧹 古いフレームワークバージョンの自動クリーンアップ
+- **ディスク容量削減と署名検証エラーの防止**:
+  - `HardCloneEngine` が `Contents/Frameworks/*.framework/Versions/` 内の非アクティブな古いバージョン（Google Chrome や Electron アプリの更新残骸など）を自動的に削除。
+  - 署名検証時の `embedded framework contains modified or invalid version` エラーを完全に防止し、クローンごとに数百MBの容量を節約。
+
+### 🛡️ Python plistlib による権限（Entitlements）の徹底クリーンアップ
+- **安全な一時ファイル生成と制限付き権限の除外**:
+  - 安全なアトミック一時パス（`${TMPDIR:-/tmp}/atb_ent_XXXXXX`）を使用して Entitlements を抽出。
+  - `PlistBuddy` と Python `plistlib` を併用し、Apple Developer 権限、Application Groups、iCloud、Sandbox などの制限付きプレフィックス（`com.apple.developer.` 等）を完全に除去。
+  - dylib、Mach-O バイナリ、フレームワーク、Helper プロセス、ルートバンドルの多段階再署名を実施。
+
+### 🧪 テストスイート拡充
+- **品質検証**:
+  - 自動テストスイートを 455 件に拡大し、全テスト 100% 合格。
+
+---
+
 ## [v1.1.0] - 2026-08-29
 
 ### 🤖 AI クライアントおよび LLM ツールエコシステムの本格サポート

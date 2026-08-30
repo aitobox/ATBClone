@@ -6,6 +6,25 @@
 
 ---
 
+## [v1.1.1] - 2026-08-30
+
+### 🧹 이전 프레임워크 버전 자동 정리 및 디스크 절약
+- **디스크 최적화 및 코드 서명 검증 안정성 확보**:
+  - `HardCloneEngine`이 `Contents/Frameworks/*.framework/Versions/` 내부의 비활성 잔여 구버전(Google Chrome, Chromium, Electron 앱의 업데이트 잔해)을 자동으로 정리합니다.
+  - 서명 검증 시 발생하는 `embedded framework contains modified or invalid version` 오류를 방지하고 복제본당 수백 MB의 디스크 공간을 절약합니다.
+
+### 🛡️ Python plistlib 기반 심층 권한(Entitlements) 정제
+- **안전한 임시 파일 추출 및 제한된 권한 필터링**:
+  - 원자적 임시 경로(`${TMPDIR:-/tmp}/atb_ent_XXXXXX`)를 사용하여 Entitlements를 안전하게 추출합니다.
+  - `PlistBuddy` 및 Python `plistlib`을 통합하여 애플 개발자, 앱 그룹, iCloud, 샌드박스 등의 제한된 권한 접두사(`com.apple.developer.` 등)를 철저히 정제합니다.
+  - dylib, Mach-O 바이너리, 내장 Frameworks, Helper 프로세스 및 루트 번들에 걸친 다단계 재서명을 적용했습니다.
+
+### 🧪 테스트 및 품질 보증
+- **테스트 확장**:
+  - 총 455개의 단위, 엔진, 레시피 및 GUI 통합 테스트를 100% 통과했습니다.
+
+---
+
 ## [v1.1.0] - 2026-08-29
 
 ### 🤖 AI 클라이언트 및 LLM 도구 생태계 심층 지원

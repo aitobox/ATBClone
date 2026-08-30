@@ -6,6 +6,25 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v1.1.1] - 2026-08-30
+
+### 🧹 Automatische Bereinigung veralteter Framework-Versionen
+- **Speicheroptimierung & Zuverlässige Signaturprüfung**:
+  - `HardCloneEngine` bereinigt automatisch inaktive Versionen in `Contents/Frameworks/*.framework/Versions/` (z. B. nach Updates von Google Chrome oder Electron-Apps).
+  - Verhindert Fehler (`embedded framework contains modified or invalid version`) bei der Codesign-Verifizierung und spart pro Klon Hunderte Megabyte Speicherplatz.
+
+### 🛡️ Tiefgreifende Entitlements-Bereinigung mit Python-Plistlib
+- **Sichere Extraktion & Umfassende Entitlements-Filterung**:
+  - Nutzt atomare temporäre Dateien (`${TMPDIR:-/tmp}/atb_ent_XXXXXX`) für die Entitlements-Extraktion.
+  - Filterung via `PlistBuddy` und Python `plistlib` entfernt restriktive Präfixe (`com.apple.developer.`, `keychain-access-groups`, `com.apple.security.application-groups`, `com.apple.security.app-sandbox`).
+  - Mehrstufige rekursive Neusignierung von dylibs, Mach-O-Binärdateien, Frameworks und Hilfs-Apps.
+
+### 🧪 Test-Suite
+- **Erweiterte Abdeckung**:
+  - Test-Suite auf 455 automatisierte Tests ausgebaut (100 % Erfolgsquote).
+
+---
+
 ## [v1.1.0] - 2026-08-29
 
 ### 🤖 Vollständige Unterstützung von AI-Clients & LLM-Tools

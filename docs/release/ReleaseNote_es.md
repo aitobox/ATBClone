@@ -6,6 +6,25 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v1.1.1] - 2026-08-30
+
+### 🧹 Depuración automática de versiones obsoletas de Frameworks
+- **Optimización de espacio en disco y validación de firma**:
+  - `HardCloneEngine` purga automáticamente versiones inactivas en `Contents/Frameworks/*.framework/Versions/` (restos de actualizaciones de Google Chrome o Electron).
+  - Elimina el error `embedded framework contains modified or invalid version` durante la verificación de firmas y ahorra cientos de megabytes por clon.
+
+### 🛡️ Limpieza profunda de autorizaciones con Python plistlib
+- **Extracción atómica y filtrado exhaustivo de permisos**:
+  - Uso de rutas temporales atómicas (`${TMPDIR:-/tmp}/atb_ent_XXXXXX`) para extraer los entitlements de manera segura.
+  - Combinación de `PlistBuddy` y Python `plistlib` para eliminar prefijos restringidos (`com.apple.developer.`, `keychain-access-groups`, `com.apple.security.application-groups`, `com.apple.security.app-sandbox`).
+  - Firma profunda multietapa en bibliotecas dinámicas, ejecutables Mach-O, frameworks y subprocesos auxiliares.
+
+### 📦 Calidad garantizada
+- **Cobertura exhaustiva**:
+  - Suite de pruebas ampliada a 455 casos automatizados con un 100 % de éxito.
+
+---
+
 ## [v1.1.0] - 2026-08-29
 
 ### 🤖 Soporte integral para clientes de IA y herramientas LLM

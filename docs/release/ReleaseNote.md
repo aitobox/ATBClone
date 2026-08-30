@@ -6,6 +6,25 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v1.1.1] - 2026-08-30
+
+### 🧹 Automatic Stale Framework Version Pruning
+- **Disk Optimization & Code Signing Verification**:
+  - `HardCloneEngine` now automatically prunes orphaned/stale framework versions inside `Contents/Frameworks/*.framework/Versions/` (often left behind by in-place updates of Google Chrome, Chromium, and Electron apps).
+  - Eliminates `"embedded framework contains modified or invalid version"` errors during codesign verification while saving hundreds of megabytes of disk space per cloned application.
+
+### 🛡️ Deep Entitlements Sanitization with Python Plistlib
+- **Atomic Extraction & Security Policy Filtering**:
+  - Upgraded entitlements extraction to use secure atomic temporary files (`${TMPDIR:-/tmp}/atb_ent_XXXXXX`).
+  - Integrated Python `plistlib` filtering to reliably purge restricted Apple developer, application-group, iCloud, and sandbox entitlement prefixes (`com.apple.developer.`, `keychain-access-groups`, `com.apple.security.application-groups`, `com.apple.security.app-sandbox`).
+  - Multi-stage recursive code signing across dynamic libraries, Mach-O binaries, frameworks, and embedded helper apps.
+
+### 🧪 Comprehensive Quality Assurance
+- **Expanded Test Suite**:
+  - Automated test suite expanded to 455 unit, engine, recipe, prober, and GUI integration tests with 100% pass rate.
+
+---
+
 ## [v1.1.0] - 2026-08-29
 
 ### 🤖 First-Class AI Client & LLM Tool Ecosystem Support

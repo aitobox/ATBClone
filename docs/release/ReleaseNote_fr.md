@@ -6,6 +6,25 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v1.1.1] - 2026-08-30
+
+### 🧹 Nettoyage automatique des anciennes versions de Frameworks
+- **Optimisation de l'espace disque & Vérification de signature**:
+  - `HardCloneEngine` supprime automatiquement les versions obsolètes dans `Contents/Frameworks/*.framework/Versions/` (laissées par les mises à jour de Chrome ou Electron).
+  - Élimine l'erreur `embedded framework contains modified or invalid version` lors de la vérification de signature et économise des centaines de mégaoctets par clone.
+
+### 🛡️ Nettoyage approfondi des autorisations avec Python plistlib
+- **Extraction atomique & Filtrage des autorisations restreintes**:
+  - Utilisation d'un fichier temporaire atomique sécurisé (`${TMPDIR:-/tmp}/atb_ent_XXXXXX`).
+  - Nettoyage via `PlistBuddy` et Python `plistlib` pour supprimer tous les préfixes restreints (`com.apple.developer.`, `keychain-access-groups`, `com.apple.security.application-groups`, `com.apple.security.app-sandbox`).
+  - Re-signature récursive multi-étapes des dylibs, binaires Mach-O, frameworks et applications auxiliaires.
+
+### 🧪 Tests
+- **Couverture de tests**:
+  - Suite portée à 455 tests automatisés avec un taux de réussite de 100 %.
+
+---
+
 ## [v1.1.0] - 2026-08-29
 
 ### 🤖 Prise en charge native des clients IA & Outils LLM

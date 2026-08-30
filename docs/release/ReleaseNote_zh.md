@@ -6,6 +6,25 @@
 
 ---
 
+## [v1.1.1] - 2026-08-30
+
+### 🧹 框架历史过期版本自动清理与瘦身
+- **磁盘占用优化与代码签名校验保障**：
+  - `HardCloneEngine` 在克隆时自动扫描并清理 `Contents/Frameworks/*.framework/Versions/` 下未被软链接引用的残留过期历史版本（常见于 Google Chrome、Chromium 及各类 Electron 应用的热更新残留）。
+  - 彻底杜绝签名校验时因历史版本残留导致的 `embedded framework contains modified or invalid version` 报错，同时为每个分身节省数百兆磁盘空间。
+
+### 🛡️ 基于 Python plistlib 的深度权限清洗与多阶段重签
+- **原子临时提取与限制性权限全量过滤**：
+  - 优化 Entitlements 权限提取机制，使用原子安全临时路径（`${TMPDIR:-/tmp}/atb_ent_XXXXXX`）。
+  - 结合 `PlistBuddy` 与 Python `plistlib` 深度清洗机制，精准剥离全部苹果开发者、应用组、iCloud 及沙盒限制性权限（`com.apple.developer.`、`keychain-access-groups`、`com.apple.security.application-groups`、`com.apple.security.app-sandbox`）。
+  - 实施包含 dylib、Mach-O 二进制、内嵌 Frameworks、Helper 辅助子进程及主 Bundle 的多阶段深度重签名。
+
+### 🧪 质量保障与自动化测试
+- **测试套件扩充**：
+  - 自动化测试用例扩充至 455 项，覆盖历史框架清理、权限深度清洗及全量引擎流程。
+
+---
+
 ## [v1.1.0] - 2026-08-29
 
 ### 🤖 深度支持 AI 客户端与大模型工具生态

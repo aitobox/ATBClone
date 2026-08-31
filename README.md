@@ -7,8 +7,7 @@
 > 📖 **Looking for a beginner-friendly tutorial?** Check out the complete **[ATBClone User Manual (English)](docs/guide/en/README.md)** | **[中文使用手册](docs/guide/zh-cn/README.md)**.
 
 <p align="center">
-  <img src="resource/images/screenshot-20260821-110121.png" alt="ATBClone Clones Dashboard" width="49%">
-  <img src="resource/images/screenshot-20260821-110133.png" alt="ATBClone Built-in Recipes" width="49%">
+  <img src="resource/images/screenshot-20260821-110121.png" alt="ATBClone Clones Dashboard" width="80%">
 </p>
 
 ---

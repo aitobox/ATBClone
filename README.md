@@ -20,7 +20,7 @@ ATBClone provides two distribution packages with **identical core functionality*
 
 | Distribution Package | Target Audience | Description |
 | :--- | :--- | :--- |
-| **`ATBClone-arm-0.9.7.dmg`** | 👶 **General Users (Strongly Recommended)** | macOS Native GUI desktop application installer (`.dmg`). Provides a modern, visual card-based interface with zero terminal knowledge required. |
+| **`ATBClone-arm-x.x.x.dmg`** | 👶 **General Users (Strongly Recommended)** | macOS Native GUI desktop application installer (`.dmg`). Provides a modern, visual card-based interface with zero terminal knowledge required. |
 | **`ATBCloneCli.tar.gz`** | ⚡ **Power Users / Developers** | Standalone binary command-line tool archive (`ATBCloneCli`). Zero Python dependencies required; ideal for terminal power users, automation scripts, and CI/CD pipelines. |
 
 > 💡 **User Guidance**:
@@ -46,7 +46,7 @@ ATBClone provides two distribution packages with **identical core functionality*
 
 ## 🖥️ Graphical User Interface (GUI — Recommended for General Users)
 
-> 💡 **Tip for Everyday Users**: If you prefer not to use the terminal, download `ATBClone-arm-0.9.7.dmg` from [GitHub Releases](https://github.com/aitobox/ATBClone/releases), open the DMG, drag `ATBClone.app` to your `Applications` folder, and launch it directly.
+> 💡 **Tip for Everyday Users**: If you prefer not to use the terminal, download `ATBClone-arm-x.x.x-arm.dmg` from [GitHub Releases](https://github.com/aitobox/ATBClone/releases), open the DMG, drag `ATBClone.app` to your `Applications` folder, and launch it directly.
 
 The native macOS desktop interface provides a visual, streamlined experience:
 
@@ -318,19 +318,19 @@ atbclone doctor
 
 ## 🏷️ Semantic Version Management
 
-The project adheres to semantic versioning `x.y.z` (current version: `0.9.7`) and provides a dedicated version management script at `scripts/manage_version.py`:
+The project adheres to semantic versioning `x.y.z` (current version: `1.1.1`) and provides a dedicated version management script at `scripts/manage_version.py`:
 
 ```bash
 # 1. Check version consistency across configuration files
 python scripts/manage_version.py --show
 
-# 2. Bump semantic version (patch: 0.9.7 -> 0.9.8, minor: 0.9.7 -> 0.10.0, major: 0.9.7 -> 1.0.0)
+# 2. Bump semantic version (patch: 1.1.1 -> 1.1.2, minor: 1.1.1 -> 1.2.0, major: 1.1.1 -> 2.0.0)
 python scripts/manage_version.py --bump patch
 python scripts/manage_version.py --bump minor
 python scripts/manage_version.py --bump major
 
 # 3. Set an explicit version
-python scripts/manage_version.py 0.9.7
+python scripts/manage_version.py 1.1.1
 
 # 4. Preview changes without writing to disk
 python scripts/manage_version.py --bump patch --dry-run
@@ -348,7 +348,7 @@ The project includes automated build scripts to package both the CLI and GUI int
 # 1. Build CLI standalone binary (dist/ATBCloneCli)
 bash scripts/build_cli.sh
 
-# 2. Build GUI DMG installer (dist/ATBClone-0.9.7.dmg)
+# 2. Build GUI DMG installer (dist/ATBClone-1.1.1.dmg)
 bash scripts/build_gui.sh
 ```
 

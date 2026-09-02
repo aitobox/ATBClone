@@ -42,7 +42,14 @@ class LogsView(toga.Box):
         # Monospace Log Text Area
         self.log_text = toga.MultilineTextInput(
             readonly=True,
-            style=Pack(flex=1, margin=(0, 24, 20, 24), font_family="monospace", font_size=12, background_color=Theme.BG_CARD),
+            style=Pack(
+                flex=1,
+                margin=(0, 24, 20, 24),
+                font_family="monospace",
+                font_size=12,
+                background_color="#141414",
+                color="#E8E8E8",
+            ),
         )
         self.add(self.log_text)
 

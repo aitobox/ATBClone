@@ -244,7 +244,7 @@ class RecipeListView(toga.Box):
         recipe: Recipe = item["recipe"]
         is_builtin = item.get("is_builtin", False)
 
-        card = toga.Box(style=Pack(direction=COLUMN, margin=(6, 8, 8, 8), width=340, background_color=Theme.BG_CARD))
+        card = toga.Box(style=Pack(direction=COLUMN, margin=(6, 8, 8, 8), flex=1, background_color=Theme.BG_CARD))
 
         # Header
         header = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(12, 14, 6, 14)))
@@ -263,7 +263,7 @@ class RecipeListView(toga.Box):
         card.add(body)
 
         # Footer
-        actions = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(0, 14, 12, 14)))
+        actions = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(0, 10, 12, 10)))
         btn_edit = toga.Button(t("btn_edit"), on_press=lambda w: self._open_edit_dialog(recipe), style=Pack(font_weight="bold", font_size=13, height=30, margin_right=6, flex=1))
         actions.add(btn_edit)
 
@@ -272,6 +272,7 @@ class RecipeListView(toga.Box):
             actions.add(btn_del)
 
         card.add(actions)
+
         return card
 
     def on_table_select(self, widget: toga.Table):

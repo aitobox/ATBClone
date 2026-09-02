@@ -59,7 +59,8 @@ class ReleaseNotesWindow(toga.Window):
                 flex=1,
                 font_family="monospace",
                 font_size=12,
-                background_color=Theme.BG_CARD,
+                background_color="#141414",
+                color="#E8E8E8",
             ),
         )
         content_box.add(self.text_content)

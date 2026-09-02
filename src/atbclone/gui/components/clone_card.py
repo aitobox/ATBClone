@@ -24,7 +24,7 @@ class CloneCard(toga.Box):
         on_detail: Optional[Callable[[CloneRecord], None]] = None,
         on_delete: Optional[Callable[[CloneRecord], None]] = None,
     ):
-        super().__init__(style=Pack(direction=COLUMN, margin=(6, 8, 8, 8), width=340, background_color=Theme.BG_CARD))
+        super().__init__(style=Pack(direction=COLUMN, margin=(6, 8, 8, 8), flex=1, background_color=Theme.BG_CARD))
         self.record = record
 
         # Card Header: Icon + Name + Strategy Tag
@@ -52,20 +52,20 @@ class CloneCard(toga.Box):
         body.add(toga.Label(t("card_label_proxy", proxy_info=proxy_info), style=Pack(font_size=12, color=Theme.TEXT_TERTIARY)))
         self.add(body)
 
-        # Card Footer: Action buttons
-        actions = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(0, 14, 12, 14)))
+        # Card Footer: Action buttons — use flex layout to prevent overflow on any card width
+        actions = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin=(0, 10, 12, 10)))
 
-        # 1-Click Direct Launch Button
+        # 1-Click Direct Launch Button (flex=2: takes proportionally more space)
         btn_launch = toga.Button(
             t("btn_launch"),
             on_press=lambda w: on_launch(record) if on_launch else None,
-            style=Pack(font_weight="bold", font_size=13, height=30, margin_right=6, flex=1),
+            style=Pack(font_weight="bold", font_size=12, height=30, margin_right=4, flex=2),
         )
-        btn_open_dir = toga.Button(t("btn_open_dir_short"), on_press=lambda w: on_open_dir(record) if on_open_dir else None, style=Pack(margin_right=6, width=50, height=30, font_size=12))
-        btn_update = toga.Button(t("btn_update_short"), on_press=lambda w: on_update(record) if on_update else None, style=Pack(margin_right=6, width=50, height=30, font_size=12))
-        btn_edit = toga.Button(t("btn_edit_short"), on_press=lambda w: on_edit(record) if on_edit else None, style=Pack(margin_right=6, width=50, height=30, font_size=12))
-        btn_detail = toga.Button(t("btn_detail_short"), on_press=lambda w: on_detail(record) if on_detail else None, style=Pack(margin_right=6, width=50, height=30, font_size=12))
-        btn_delete = toga.Button(t("btn_delete_short"), on_press=lambda w: on_delete(record) if on_delete else None, style=Pack(width=50, height=30, font_size=12))
+        btn_open_dir = toga.Button(t("btn_open_dir_short"), on_press=lambda w: on_open_dir(record) if on_open_dir else None, style=Pack(margin_right=4, height=30, font_size=11, flex=1))
+        btn_update = toga.Button(t("btn_update_short"), on_press=lambda w: on_update(record) if on_update else None, style=Pack(margin_right=4, height=30, font_size=11, flex=1))
+        btn_edit = toga.Button(t("btn_edit_short"), on_press=lambda w: on_edit(record) if on_edit else None, style=Pack(margin_right=4, height=30, font_size=11, flex=1))
+        btn_detail = toga.Button(t("btn_detail_short"), on_press=lambda w: on_detail(record) if on_detail else None, style=Pack(margin_right=4, height=30, font_size=11, flex=1))
+        btn_delete = toga.Button(t("btn_delete_short"), on_press=lambda w: on_delete(record) if on_delete else None, style=Pack(height=30, font_size=11, flex=1))
 
         actions.add(btn_launch)
         actions.add(btn_open_dir)
@@ -74,5 +74,6 @@ class CloneCard(toga.Box):
         actions.add(btn_detail)
         actions.add(btn_delete)
         self.add(actions)
+
 
 

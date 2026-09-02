@@ -6,6 +6,31 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v1.2.0] - 2026-09-02
+
+### 🔔 Inyección nativa de Dylib para notificaciones de macOS e iconos en la barra de menús
+- **Corrección de notificaciones y elementos de la barra de estado (Fix #5)**:
+  - Habilitación de la inyección de bibliotecas dinámicas Mach-O (`.dylib`) en `HardCloneEngine`.
+  - Intercepción de las API NSUserNotificationCenter y NSStatusItem, restaurando los avisos de notificación y los iconos de la barra de menús en los clones físicos.
+
+### 🌓 Adaptación dinámica al modo oscuro y mejoras visuales
+- **Seguimiento del aspecto del sistema (Fix #4)**:
+  - Detección en tiempo real de cambios en el aspecto del sistema (claro / oscuro) para una adaptación fluida de la interfaz.
+- **Diseño de cuadrícula y contraste de texto**:
+  - Optimización del espaciado de tarjetas y ampliación del ancho predeterminado de la ventana.
+  - Mejora notable del contraste de texto en las ventanas de registros y notas de la versión (conforme a WCAG 2.1 AA).
+
+### 📖 Documentación y capturas de pantalla
+- **Actualización de rutas estándar**:
+  - Actualización de la ruta de instalación predeterminada en la documentación a `~/ATBClone/Apps`.
+  - Nuevas capturas de pantalla de alta resolución en la documentación.
+
+### 📦 Calidad garantizada
+- **Cobertura exhaustiva**:
+  - Suite de pruebas ampliada a 462 casos automatizados con un 100 % de éxito.
+
+---
+
 ## [v1.1.1] - 2026-08-30
 
 ### 🧹 Depuración automática de versiones obsoletas de Frameworks

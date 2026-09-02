@@ -6,6 +6,31 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v1.2.0] - 2026-09-02
+
+### 🔔 Native Dylib-Injektion für macOS-Mitteilungszentrale & Menüleisten-Statussymbole
+- **Behebung von Benachrichtigungs- & Tray-Problemen (Fix #5)**:
+  - Aktivierung der nativen Mach-O-Dylib-Injektion in `HardCloneEngine`.
+  - Fängt NSUserNotificationCenter- und NSStatusItem-APIs ab, wodurch fehlende Mitteilungsbanner und Menüleistensymbole bei Hard Clones behoben werden.
+
+### 🌓 Dynamische Dunkelmodus-Erkennung & Visuelle Optimierungen
+- **Systemweites Erscheinungsbild-Tracking (Fix #4)**:
+  - Echtzeit-Erkennung von macOS-Designänderungen für nahtlose Umschaltung zwischen Hell- und Dunkelmodus.
+- **Karten-Layout & Kontrastverbesserungen**:
+  - Optimierte Abstände im Rasterlayout und vergrößerte Standard-Fensterbreite.
+  - Deutlich verbesserter Textkontrast in den Protokoll- und Versionshinweisfenstern (WCAG 2.1 AA).
+
+### 📖 Dokumentations- und Screenshot-Aktualisierungen
+- **Standardpfade & Bildmaterial**:
+  - Standard-Installationspfad in der Dokumentation auf `~/ATBClone/Apps` aktualisiert.
+  - Hochauflösende Benutzeroberflächen-Screenshots aktualisiert.
+
+### 🧪 Test-Suite
+- **Erweiterte Abdeckung**:
+  - Test-Suite auf 462 automatisierte Tests ausgebaut (100 % Erfolgsquote).
+
+---
+
 ## [v1.1.1] - 2026-08-30
 
 ### 🧹 Automatische Bereinigung veralteter Framework-Versionen

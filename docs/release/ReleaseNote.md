@@ -6,6 +6,31 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v1.2.0] - 2026-09-02
+
+### 🔔 Native Dylib Injection for macOS Notifications & Menu Bar Status Items
+- **Notification Center & Tray Item Resolution (Fix #5)**:
+  - Enabled native dynamic library (`.dylib`) interpose injection in `HardCloneEngine`.
+  - Interposes NSUserNotificationCenter and NSStatusItem APIs, resolving missing macOS notification banners and menu bar tray status items for hard cloned applications.
+
+### 🌓 Dynamic Dark Mode Awareness & Visual Theme Polish
+- **System Appearance Tracking (Fix #4)**:
+  - Added real-time macOS system appearance tracking to dynamically adapt GUI theme tokens when toggling between Dark and Light modes.
+- **Card Layout & Contrast Improvements**:
+  - Optimized card layout grid spacing and enlarged default application window width for improved readability.
+  - Enhanced text contrast in Logs and Release Notes windows, meeting WCAG 2.1 AA legibility standards.
+
+### 📖 Documentation & Screenshot Updates
+- **Path Standards & Asset Refreshes**:
+  - Updated default clone installation path across documentation to `~/ATBClone/Apps`.
+  - Refreshed high-resolution GUI application screenshots in documentation and asset directories.
+
+### 🧪 Comprehensive Quality Assurance
+- **Expanded Test Suite**:
+  - Automated test suite expanded to 462 unit, engine, recipe, theme, and GUI integration tests with 100% pass rate.
+
+---
+
 ## [v1.1.1] - 2026-08-30
 
 ### 🧹 Automatic Stale Framework Version Pruning

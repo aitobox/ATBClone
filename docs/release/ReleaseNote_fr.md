@@ -6,6 +6,31 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v1.2.0] - 2026-09-02
+
+### 🔔 Injection de Dylib native pour le centre de notifications macOS et la barre des menus
+- **Résolution des bannières et icônes d'état (Fix #5)**:
+  - Activation de l'injection dynamique de bibliothèques Mach-O (`.dylib`) dans `HardCloneEngine`.
+  - Interception des API NSUserNotificationCenter et NSStatusItem pour restaurer les bannières de notifications et les icônes de barre des menus des clones physiques.
+
+### 🌓 Prise en compte dynamique du mode sombre & Améliorations visuelles
+- **Suivi de l'apparence du système (Fix #4)**:
+  - Détection en temps réel des changements d'apparence système (mode clair / sombre) avec rafraîchissement immédiat de l'interface.
+- **Disposition des cartes & Contraste du texte**:
+  - Optimisation des espacements dans la grille des cartes et élargissement de la fenêtre par défaut.
+  - Amélioration sensible du contraste du texte dans les journaux et les notes de version (conforme WCAG 2.1 AA).
+
+### 📖 Documentation et captures d'écran
+- **Mise à jour des chemins & Ressources graphiques**:
+  - Mise à jour du chemin d'installation par défaut vers `~/ATBClone/Apps`.
+  - Nouvelles captures d'écran haute résolution dans la documentation.
+
+### 🧪 Tests
+- **Couverture de tests**:
+  - Suite portée à 462 tests automatisés avec 100 % de réussite.
+
+---
+
 ## [v1.1.1] - 2026-08-30
 
 ### 🧹 Nettoyage automatique des anciennes versions de Frameworks

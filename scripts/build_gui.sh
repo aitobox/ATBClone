@@ -173,7 +173,32 @@ else
     SIGN_IDENTITY="-"
 fi
 
-# ── 6. briefcase create ───────────────────────────────────────────────────── #
+# ── Helper: Filesystem detritus & xattr sanitizer ─────────────────────────── #
+sanitize_filesystem() {
+    local target="$1"
+    if [[ -e "${target}" ]]; then
+        find "${target}" \( -name ".DS_Store" -o -name "._*" \) -delete 2>/dev/null || true
+        xattr -cr "${target}" 2>/dev/null || true
+        if command -v dot_clean &>/dev/null; then
+            dot_clean -m "${target}" 2>/dev/null || true
+        fi
+    fi
+}
+
+# ── 6. Setup codesign retry & detritus wrapper ────────────────────────────── #
+WRAPPER_BIN_DIR="$(mktemp -d -t codesign_shim_XXXXXX)"
+ln -sf "${SCRIPT_DIR}/codesign_wrapper.py" "${WRAPPER_BIN_DIR}/codesign"
+export PATH="${WRAPPER_BIN_DIR}:${PATH}"
+trap 'rm -rf "${WRAPPER_BIN_DIR}"' EXIT
+
+# Pre-clean source trees to eliminate invalid metadata/xattrs
+echo "[*] Sanitizing source files and resource extended attributes (xattr)..."
+sanitize_filesystem "resource"
+sanitize_filesystem "docs/release"
+sanitize_filesystem "src"
+sanitize_filesystem "build"
+
+# ── 7. briefcase create ───────────────────────────────────────────────────── #
 APP_DIR="build/atbclone/macos/app"
 PY_FRAMEWORK="${APP_DIR}/ATBClone.app/Contents/Frameworks/Python.framework"
 if [[ ! -d "${APP_DIR}" ]] || [[ ! -d "${PY_FRAMEWORK}" ]]; then
@@ -189,7 +214,7 @@ else
     echo "==> [1/3] macOS app scaffolding already present (skipping create)."
 fi
 
-# ── 7. briefcase build ────────────────────────────────────────────────────── #
+# ── 8. briefcase build ────────────────────────────────────────────────────── #
 echo ""
 echo "==> [2/3] briefcase build macOS ..."
 PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase build macOS -u
@@ -223,6 +248,8 @@ mkdir -p "${APP_BUNDLE}/Contents/Resources/docs/release"
 if [[ -d "docs/release" ]]; then
     cp -R docs/release/* "${APP_BUNDLE}/Contents/Resources/docs/release/"
 fi
+echo "[*] Sanitizing app bundle attributes in ${APP_BUNDLE}..."
+sanitize_filesystem "${APP_BUNDLE}"
 touch "${APP_BUNDLE}"
 
 if [[ -f "${APP_BUNDLE}/Contents/Resources/atbclone.icns" || -f "${APP_BUNDLE}/Contents/Resources/ATBClone.icns" || -f "${APP_BUNDLE}/Contents/Resources/logo.icns" || -f "${APP_BUNDLE}/Contents/Resources/icon.icns" ]]; then
@@ -230,15 +257,9 @@ if [[ -f "${APP_BUNDLE}/Contents/Resources/atbclone.icns" || -f "${APP_BUNDLE}/C
 fi
 echo "[+] Bundle integrity verified: Python.framework & entrypoint present."
 
-# ── 8. briefcase package  (produces .dmg) ────────────────────────────────── #
+# ── 9. briefcase package  (produces .dmg) ────────────────────────────────── #
 echo ""
 echo "==> [3/3] briefcase package macOS (DMG) ..."
-
-# Set up codesign retry wrapper shim so timestamp server timeouts automatically backoff and retry (2s..60s)
-WRAPPER_BIN_DIR="$(mktemp -d -t codesign_shim_XXXXXX)"
-ln -sf "${SCRIPT_DIR}/codesign_wrapper.py" "${WRAPPER_BIN_DIR}/codesign"
-export PATH="${WRAPPER_BIN_DIR}:${PATH}"
-trap 'rm -rf "${WRAPPER_BIN_DIR}"' EXIT
 
 if [[ "${SKIP_SIGN}" -eq 1 || "${SIGN_IDENTITY}" == "-" ]]; then
     PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase package macOS -p dmg --adhoc-sign --no-notarize

@@ -176,3 +176,47 @@ def test_build_gui_bundle_integrity_checks():
     assert "briefcase build macOS -u" in content
 
 
+def test_build_gui_bash_syntax():
+    root = Path(__file__).parent.parent
+    script = root / "scripts" / "build_gui.sh"
+    result = subprocess.run(
+        ["bash", "-n", str(script)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, f"Bash syntax error: {result.stderr}"
+
+
+def test_build_gui_contains_xattr_sanitization():
+    root = Path(__file__).parent.parent
+    content = (root / "scripts" / "build_gui.sh").read_text(encoding="utf-8")
+    assert "sanitize_filesystem" in content
+    assert "xattr -cr" in content
+    assert "codesign_wrapper.py" in content
+
+
+def test_codesign_wrapper_logic():
+    import importlib.util
+
+    root = Path(__file__).parent.parent
+    wrapper_path = root / "scripts" / "codesign_wrapper.py"
+    assert wrapper_path.exists()
+    assert os.access(wrapper_path, os.X_OK)
+
+    spec = importlib.util.spec_from_file_location("codesign_wrapper", str(wrapper_path))
+    assert spec and spec.loader
+    wrapper = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(wrapper)
+
+    assert wrapper.is_detritus_error("resource fork, Finder information, or similar detritus not allowed")
+    assert wrapper.is_detritus_error("detritus not allowed")
+    assert not wrapper.is_detritus_error("invalid argument")
+
+    assert wrapper.is_retryable_error("timestamp service is not available")
+    assert wrapper.is_retryable_error("Operation timed out")
+    assert not wrapper.is_retryable_error("code object is not signed at all")
+
+    extracted = wrapper.extract_targets(["--sign", "-", "--force", "--entitlements", "Entitlements.plist", "build/App.app"])
+    assert extracted == ["build/App.app"]
+
+

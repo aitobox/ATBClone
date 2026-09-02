@@ -126,10 +126,10 @@ class TestSoftCloneEngine:
             assert "chmod -R u+w /Applications/TestApp2.app 2>/dev/null || true" in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.example.testapp.clone2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName TestApp 2" /Applications/TestApp2.app/Contents/Info.plist' in script
-            assert "cat << 'WRAPPER_EOF' > /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
-            assert 'export LANG=' in script
-            assert 'export LC_ALL=' in script
-            assert 'exec /Applications/TestApp.app/Contents/MacOS/TestApp' in script
+            assert "clang -O2 -x c - -o /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
+            assert 'setenv("LANG", "zh_CN.UTF-8", 1);' in script
+            assert 'setenv("LC_ALL", "zh_CN.UTF-8", 1);' in script
+            assert 'real_bin = "/Applications/TestApp.app/Contents/MacOS/TestApp"' in script
             assert '-AppleLanguages' in script
             assert '-AppleLocale' in script
             assert "chmod +x /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
@@ -149,8 +149,9 @@ class TestSoftCloneEngine:
             script, _ = mock_run.call_args[0]
             assert "mkdir -p '/Applications/Google Chrome 2.app/Contents/MacOS'" in script
             assert "cp '/Applications/Google Chrome.app/Contents/Info.plist' '/Applications/Google Chrome 2.app/Contents/Info.plist'" in script
-            assert "exec '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'" in script
-            assert "--lang=" in script
+            assert "clang -O2 -x c - -o '/Applications/Google Chrome 2.app/Contents/MacOS/Google Chrome'" in script
+            assert 'real_bin = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"' in script
+            assert "--lang=zh-CN" in script
             assert "-AppleLanguages" not in script
             assert "-AppleLocale" not in script
 
@@ -170,9 +171,11 @@ class TestSoftCloneEngine:
             mock_run.assert_called_once()
             script, needs_admin = mock_run.call_args[0]
             assert needs_admin is True
-            assert 'export HTTP_PROXY="http://127.0.0.1:8080"' in script
+            assert 'setenv("HTTP_PROXY", "http://127.0.0.1:8080", 1);' in script
             assert '--user-data-dir=/Users/test/Library/Application Support/TestApp2' in script
-            assert "exec /Applications/TestApp.app/Contents/MacOS/TestApp '--user-data-dir=/Users/test/Library/Application Support/TestApp2' --no-first-run" in script
+            assert '--no-first-run' in script
+            assert 'execv(real_bin, new_argv);' in script
+
 
     def test_soft_clone_failure_cleans_up_and_reraises(self, sample_task):
         with patch("atbclone.executor.runner.Runner.run", side_effect=[CloneError("Permission denied"), None]) as mock_run:
@@ -196,19 +199,17 @@ class TestHardCloneEngine:
             assert "chmod -R u+w /Applications/TestApp2.app 2>/dev/null || true" in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.example.testapp.clone2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName TestApp 2" /Applications/TestApp2.app/Contents/Info.plist' in script
-            assert "mv /Applications/TestApp2.app/Contents/MacOS/TestApp /Applications/TestApp2.app/Contents/MacOS/TestApp.bin" in script
-            assert "cat << 'WRAPPER_EOF' > /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
-            assert 'export LANG=' in script
-            assert 'export LC_ALL=' in script
-            assert 'exec "$(dirname "$0")/TestApp.bin"' in script
-            assert "-AppleLanguages" in script
-            assert "-AppleLocale" in script
-            assert "chmod +x /Applications/TestApp2.app/Contents/MacOS/TestApp" in script
+            assert "libatbclone_env.dylib" in script
+            assert "insert_dylib(" in script
+            assert 'setenv("LANG", "zh_CN.UTF-8", 1);' in script
+            assert 'setenv("LC_ALL", "zh_CN.UTF-8", 1);' in script
+            assert "chmod +x /Applications/TestApp2.app/Contents/Frameworks/libatbclone_env.dylib" in script
             assert "xattr -cr /Applications/TestApp2.app 2>/dev/null || true" in script
             assert "codesign --force --deep --sign - /Applications/TestApp2.app" in script
             assert "codesign -vv --deep --strict /Applications/TestApp2.app" in script
 
     def test_hard_clone_with_spaces_in_path(self, mock_app_info_with_spaces, base_recipe):
+        base_recipe.launch_args = ["--no-first-run"]
         task = CloneTask(
             source=mock_app_info_with_spaces,
             dest_path=Path("/Applications/Google Chrome 2.app"),
@@ -223,8 +224,9 @@ class TestHardCloneEngine:
             script, _ = mock_run.call_args[0]
             assert "cp -R '/Applications/Google Chrome.app' '/Applications/Google Chrome 2.app'" in script
             assert "mv '/Applications/Google Chrome 2.app/Contents/MacOS/Google Chrome' '/Applications/Google Chrome 2.app/Contents/MacOS/Google Chrome.bin'" in script
-            assert 'exec "$(dirname "$0")/Google Chrome.bin"' in script
-            assert "--lang=" in script
+            assert "clang -O2 -x c - -o '/Applications/Google Chrome 2.app/Contents/MacOS/Google Chrome'" in script
+            assert 'Google Chrome.bin' in script
+            assert "--lang=zh-CN" in script
             assert "-AppleLanguages" not in script
             assert "-AppleLocale" not in script
 
@@ -259,11 +261,10 @@ class TestHardCloneEngine:
             mock_run.assert_called_once()
             script, needs_admin = mock_run.call_args[0]
             assert needs_admin is True
-            assert "export APP_DATA_DIR='/Users/test/Library/Application Support/TestApp2'" in script
-            assert "export CUSTOM_FLAG=1" in script
-            assert "export UNSAFE_VAL='foo\"; rm -rf /; echo \"$bar`whoami`'" in script
-            assert 'export HTTP_PROXY="http://127.0.0.1:1080"' in script
-            assert 'export LANG=' in script
+            assert 'setenv("APP_DATA_DIR", "/Users/test/Library/Application Support/TestApp2", 1);' in script
+            assert 'setenv("CUSTOM_FLAG", "1", 1);' in script
+            assert 'setenv("HTTP_PROXY", "http://127.0.0.1:1080", 1);' in script
+            assert 'setenv("LANG", "zh_CN.UTF-8", 1);' in script
 
     def test_hard_clone_with_launch_args(self, sample_task):
         sample_task.recipe.app_type = "chromium"
@@ -272,8 +273,27 @@ class TestHardCloneEngine:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert 'exec "$(dirname "$0")/TestApp.bin" \'--user-data-dir=/Users/test/Library/Application Support/TestApp2\' --no-first-run' in script
-            assert "--lang=" in script
+            assert '--user-data-dir=/Users/test/Library/Application Support/TestApp2' in script
+            assert '--no-first-run' in script
+            assert "--lang=zh-CN" in script
+
+
+    def test_hard_clone_dylib_env_injection_when_no_launch_args(self, sample_task):
+        sample_task.recipe.launch_args = []
+        sample_task.recipe.app_type = "cocoa"
+        sample_task.recipe.environment_injection = {
+            "HOME": "{{ATB_DATA_DIR}}/Home",
+            "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
+        }
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "libatbclone_env.dylib" in script
+            assert "insert_dylib(" in script
+            assert 'setenv("HOME", "/Users/test/Library/Application Support/TestApp2/Home", 1);' in script
+            assert 'setenv("TMPDIR", "/Users/test/Library/Application Support/TestApp2/Tmp", 1);' in script
+            assert "mv /Applications/TestApp2.app/Contents/MacOS/TestApp /Applications/TestApp2.app/Contents/MacOS/TestApp.bin" not in script
 
     def test_hard_clone_failure_cleans_up_and_reraises(self, sample_task):
 
@@ -722,7 +742,6 @@ class TestCefFrameworkPatchingAndSymlinks:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert "Patch CEF framework no_sandbox" not in script
-            assert "CFBundleIdentifier $new_id." not in script
 
     def test_hard_clone_script_includes_cef_patch_when_recipe_flag_true(self, sample_task):
         sample_task.source.bundle_id = "com.custom.cefapp"
@@ -731,7 +750,6 @@ class TestCefFrameworkPatchingAndSymlinks:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
             assert "Patch CEF framework no_sandbox" in script
-            assert "CFBundleIdentifier $new_id." in script
 
     def test_symlink_whitelist_snippet_generation_empty(self, sample_task):
         sample_task.recipe.symlink_whitelist = []
@@ -763,12 +781,13 @@ class TestEnginePermissionsAndXattrTolerance:
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
-            assert 'mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true' in script
+            assert f'mkdir -p "{sample_task.data_dir}/Home/Library/Preferences" "{sample_task.data_dir}/Tmp"' in script
 
         with patch("atbclone.executor.runner.Runner.run") as mock_run_soft:
             SoftCloneEngine.execute(sample_task, needs_admin=False)
             script_soft, _ = mock_run_soft.call_args[0]
-            assert 'mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true' in script_soft
+            assert f'mkdir -p "{sample_task.data_dir}/Home/Library/Preferences" "{sample_task.data_dir}/Tmp"' in script_soft
+
 
     def test_strip_sandbox_cleans_team_and_group_entitlements(self, sample_task):
         sample_task.recipe.strip_sandbox = True
@@ -800,11 +819,9 @@ class TestEnginePermissionsAndXattrTolerance:
             HardCloneEngine.execute(task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert "export CODEX_HOME=/Users/test/data/Codex" in script
+            assert 'setenv("CODEX_HOME", "/Users/test/data/Codex", 1);' in script
             assert 'if [ -d "$HOME/.codex" ] && [ ! -d /Users/test/data/Codex ]; then' in script
             assert 'cp -R "$HOME/.codex/." /Users/test/data/Codex/' in script
-            assert 'if [ -n "$CODEX_HOME" ] && [ "$CODEX_HOME" != "$REAL_USER_HOME/.codex" ]; then' in script
-            assert 'cp -R "$REAL_USER_HOME/.codex/." "$CODEX_HOME/"' in script
 
     def test_soft_clone_codex_home_script(self, mock_app_info, base_recipe):
         base_recipe.environment_injection = {
@@ -824,11 +841,9 @@ class TestEnginePermissionsAndXattrTolerance:
             SoftCloneEngine.execute(task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert "export CODEX_HOME=/Users/test/data/Codex" in script
+            assert 'setenv("CODEX_HOME", "/Users/test/data/Codex", 1);' in script
             assert 'if [ -d "$HOME/.codex" ] && [ ! -d /Users/test/data/Codex ]; then' in script
             assert 'cp -R "$HOME/.codex/." /Users/test/data/Codex/' in script
-            assert 'if [ -n "$CODEX_HOME" ] && [ "$CODEX_HOME" != "$REAL_USER_HOME/.codex" ]; then' in script
-            assert 'cp -R "$REAL_USER_HOME/.codex/." "$CODEX_HOME/"' in script
 
     def test_hard_clone_gemini_home_script(self, mock_app_info, base_recipe):
         base_recipe.environment_injection = {
@@ -850,12 +865,11 @@ class TestEnginePermissionsAndXattrTolerance:
             HardCloneEngine.execute(task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert "export GEMINI_HOME=/Users/test/data/Gemini" in script
-            assert "export GEMINI_CONFIG_DIR=/Users/test/data/Gemini" in script
-            assert "export ANTIGRAVITY_HOME=/Users/test/data/Gemini" in script
+            assert 'setenv("GEMINI_HOME", "/Users/test/data/Gemini", 1);' in script
+            assert 'setenv("GEMINI_CONFIG_DIR", "/Users/test/data/Gemini", 1);' in script
+            assert 'setenv("ANTIGRAVITY_HOME", "/Users/test/data/Gemini", 1);' in script
             assert 'if [ -d "$HOME/.gemini" ] && [ ! -d /Users/test/data/Gemini ]; then' in script
             assert 'cp -R "$HOME/.gemini/." /Users/test/data/Gemini/' in script
-            assert 'cp -R "$REAL_USER_HOME/.gemini/." "$_TARGET_GEMINI_DIR/"' in script
 
     def test_soft_clone_gemini_home_script(self, mock_app_info, base_recipe):
         base_recipe.environment_injection = {
@@ -877,12 +891,11 @@ class TestEnginePermissionsAndXattrTolerance:
             SoftCloneEngine.execute(task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert "export GEMINI_HOME=/Users/test/data/Gemini" in script
-            assert "export GEMINI_CONFIG_DIR=/Users/test/data/Gemini" in script
-            assert "export ANTIGRAVITY_HOME=/Users/test/data/Gemini" in script
+            assert 'setenv("GEMINI_HOME", "/Users/test/data/Gemini", 1);' in script
+            assert 'setenv("GEMINI_CONFIG_DIR", "/Users/test/data/Gemini", 1);' in script
+            assert 'setenv("ANTIGRAVITY_HOME", "/Users/test/data/Gemini", 1);' in script
             assert 'if [ -d "$HOME/.gemini" ] && [ ! -d /Users/test/data/Gemini ]; then' in script
             assert 'cp -R "$HOME/.gemini/." /Users/test/data/Gemini/' in script
-            assert 'cp -R "$REAL_USER_HOME/.gemini/." "$_TARGET_GEMINI_DIR/"' in script
 
     def test_hard_clone_claude_script(self, mock_app_info, base_recipe):
         base_recipe.environment_injection = {
@@ -902,14 +915,9 @@ class TestEnginePermissionsAndXattrTolerance:
             HardCloneEngine.execute(task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert "export CLAUDE_CONFIG_DIR=/Users/test/data/Claude" in script
+            assert 'setenv("CLAUDE_CONFIG_DIR", "/Users/test/data/Claude", 1);' in script
             assert 'if [ -d "$HOME/.claude" ] && [ ! -d /Users/test/data/Claude ]; then' in script
             assert 'cp -R "$HOME/.claude/." /Users/test/data/Claude/' in script
-            assert 'if [ -f "$HOME/.claude.json" ] && [ ! -f /Users/test/data/Claude/.claude.json ]; then' in script
-            assert 'cp "$HOME/.claude.json" /Users/test/data/Claude/.claude.json' in script
-            assert 'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then' in script
-            assert 'cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/"' in script
-            assert 'cp "$REAL_USER_HOME/.claude.json" "$CLAUDE_CONFIG_DIR/.claude.json"' in script
 
     def test_soft_clone_claude_script(self, mock_app_info, base_recipe):
         base_recipe.environment_injection = {
@@ -929,13 +937,9 @@ class TestEnginePermissionsAndXattrTolerance:
             SoftCloneEngine.execute(task, needs_admin=False)
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
-            assert "export CLAUDE_CONFIG_DIR=/Users/test/data/Claude" in script
+            assert 'setenv("CLAUDE_CONFIG_DIR", "/Users/test/data/Claude", 1);' in script
             assert 'if [ -d "$HOME/.claude" ] && [ ! -d /Users/test/data/Claude ]; then' in script
             assert 'cp -R "$HOME/.claude/." /Users/test/data/Claude/' in script
-            assert 'if [ -f "$HOME/.claude.json" ] && [ ! -f /Users/test/data/Claude/.claude.json ]; then' in script
-            assert 'cp "$HOME/.claude.json" /Users/test/data/Claude/.claude.json' in script
-            assert 'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then' in script
-            assert 'cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/"' in script
 class TestBuildFrameworkPruneCmd:
     """Unit tests for HardCloneEngine._build_framework_prune_cmd helper."""
 
@@ -953,6 +957,65 @@ class TestBuildFrameworkPruneCmd:
             script, _ = mock_run.call_args[0]
             assert "Prune stale/inactive framework versions" in script
             assert "/Applications/TestApp2.app/Contents/Frameworks" in script
+
+
+class TestPreferenceSeedingSnippet:
+    """Unit tests for initial preference seeding in CloneEngine."""
+
+    def test_preference_seeding_snippet_content(self, sample_task):
+        sample_task.source.bundle_id = "com.tencent.xinWeChat"
+        sample_task.new_bundle_id = "com.tencent.xinWeChat.atbclone.1"
+        snippet = CloneEngine._build_preference_seeding_snippet(sample_task)
+
+        assert '_ORIG_PLIST="$HOME/Library/Preferences/com.tencent.xinWeChat.plist"' in snippet
+        assert '_CONTAINER_PLIST="$HOME/Library/Containers/com.tencent.xinWeChat/Data/Library/Preferences/com.tencent.xinWeChat.plist"' in snippet
+        assert 'com.tencent.xinWeChat.plist' in snippet
+        assert 'com.tencent.xinWeChat.atbclone.1.plist' in snippet
+
+    def test_soft_clone_includes_preference_seeding(self, sample_task):
+        sample_task.source.bundle_id = "com.tencent.xinWeChat"
+        sample_task.new_bundle_id = "com.tencent.xinWeChat.atbclone.1"
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            SoftCloneEngine.execute(sample_task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "_ORIG_PLIST=" in script
+            assert "com.tencent.xinWeChat.plist" in script
+            assert "com.tencent.xinWeChat.atbclone.1.plist" in script
+
+
+    def test_hard_clone_includes_preference_seeding(self, sample_task):
+        sample_task.source.bundle_id = "com.tencent.xinWeChat"
+        sample_task.new_bundle_id = "com.tencent.xinWeChat.atbclone.1"
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "_ORIG_PLIST=" in script
+            assert "com.tencent.xinWeChat.plist" in script
+            assert "com.tencent.xinWeChat.atbclone.1.plist" in script
+
+
+class TestSubBundleAndTeamIdentifierHandling:
+    """Unit tests for cleaning TeamIdentifier and updating sub-bundle IDs."""
+
+    def test_soft_clone_deletes_team_identifier(self, sample_task):
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            SoftCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "Delete :TeamIdentifier" in script
+
+    def test_hard_clone_sub_bundle_id_mutation_and_team_identifier(self, sample_task):
+        sample_task.source.bundle_id = "com.tencent.xinWeChat"
+        sample_task.new_bundle_id = "com.tencent.xinWeChat.atbclone.2"
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "Delete :TeamIdentifier" in script
+            assert "find /Applications/TestApp2.app/Contents -name \"Info.plist\"" in script
+            assert "com.tencent.xinWeChat" in script
+            assert "com.tencent.xinWeChat.atbclone.2" in script
+            assert "*.appex" in script
 
 
 

@@ -13,6 +13,7 @@ This chapter answers frequently asked questions regarding data privacy, account 
   - [4. Do I need Administrator (Root / Sudo) privileges?](#4-do-i-need-administrator-root--sudo-privileges)
   - [5. What should I do if macOS says "App is damaged and can't be opened"?](#5-what-should-i-do-if-macos-says-app-is-damaged-and-cant-be-opened)
   - [6. How do I change the clone's icon?](#6-how-do-i-change-the-clones-icon)
+  - [7. How do communication clones (e.g., WeChat, QQ) display Menu Bar icons and receive background messages?](#7-how-do-communication-clones-eg-wechat-qq-display-menu-bar-icons-and-receive-background-messages)
 - [System Diagnostics (Doctor Tab)](#system-diagnostics-doctor-tab)
 - [Reporting Issues to GitHub (Step-by-Step Guide)](#reporting-issues-to-github-step-by-step-guide)
   - [Step 1: Open Clone Details](#step-1-open-clone-details)
@@ -58,7 +59,6 @@ By default, all user data (databases, local chat archives, cache, cookies, and p
 
 ### 3. Will my account get banned for multi-instancing?
 **ATBClone operates strictly at the macOS operating system environment level.**
-
 * **No Reverse-Engineering / Code Injection**: ATBClone does **not** use runtime code hooking (such as Frida, Cycript, or dynamic dylib injection) and does **not** tamper with in-memory application logic or network packets.
 * **Pure Environment Deception**: The application runs completely unmodified; it is simply presented with an isolated `$HOME` directory and custom bundle identifier.
 * **Anti-Fingerprint Proxy Isolation**: By configuring a dedicated HTTP or SOCKS5 proxy per clone, each instance can connect via a distinct IP address, preventing IP-level association across multiple accounts.
@@ -90,6 +90,24 @@ Or simply select the clone inside ATBClone and click **"Update"** to allow ATBCl
 1. Open Finder and locate your clone in `~/ATBClone/Apps`.
 2. Select the app and press `Cmd + I` (Get Info).
 3. Drag any `.icns` or `.png` image file onto the small application icon at the top-left of the Info inspector window.
+
+---
+
+### 7. How do communication clones (e.g., WeChat, QQ) display Menu Bar icons and receive background messages?
+
+Instant messaging apps like WeChat and QQ support residing in the macOS top Menu Bar (Status Bar) and receiving incoming messages in the background.
+
+#### 1. Enabling the Menu Bar Status Icon:
+* After launching and logging into the cloned WeChat, press `Cmd + ,` or navigate to **WeChat -> Settings / Preferences**.
+* In the **General** settings tab, verify and enable **"Show WeChat in Menu Bar"** (在菜单栏显示微信图标).
+* The ATBClone engine automatically seeds your primary app's initial preferences on first launch; if this option was enabled in your main app, the clone will inherit it immediately.
+
+#### 2. Background Message Reception & Notifications:
+* **Background Long-Polling Connection**: Because clones use ad-hoc re-signing, Apple's push notification service (APNs) cannot directly route to clones. Instead, WeChat maintains its own active TCP/WebSocket connection (`LongLink`) in the background to receive private and group messages in real time.
+* **Keep Running in the Background**: When finished chatting, simply click the red close button (`x`) on the main window. The clone will remain active in the Menu Bar and background; **do not press `Cmd + Q` to terminate it**.
+* **Alerts & Badges**: When a new message arrives, the Menu Bar icon displays an unread indicator/red dot, the Dock icon badge updates, and alert sounds play.
+* **Notification Permissions**: When prompted with "Allow notifications for WorkWeChat", click "Allow". You can also verify notification permissions in macOS **System Settings -> Notifications**.
+
 
 ---
 

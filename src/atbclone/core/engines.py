@@ -180,6 +180,7 @@ class CloneEngine:
         whitelist = getattr(task.recipe, "symlink_whitelist", [])
         if not whitelist:
             return ""
+        data_dir_quoted = shlex.quote(str(task.data_dir))
         lines = []
         for item in whitelist:
             item_clean = item.strip().strip("/")
@@ -187,12 +188,263 @@ class CloneEngine:
                 continue
             item_quoted = shlex.quote(item_clean)
             lines.append(
-                f'    if [ ! -e "$HOME"/{item_quoted} ] && [ -e "$REAL_USER_HOME"/{item_quoted} ]; then\n'
-                f'        mkdir -p "$(dirname "$HOME"/{item_quoted})"\n'
-                f'        ln -s "$REAL_USER_HOME"/{item_quoted} "$HOME"/{item_quoted} 2>/dev/null || true\n'
-                f'    fi'
+                f'if [ -d {data_dir_quoted} ]; then\n'
+                f'    mkdir -p "{task.data_dir}/Home"\n'
+                f'    if [ ! -e "{task.data_dir}/Home"/{item_quoted} ] && [ -e "$HOME"/{item_quoted} ]; then\n'
+                f'        mkdir -p "$(dirname "{task.data_dir}/Home"/{item_quoted})"\n'
+                f'        ln -s "$HOME"/{item_quoted} "{task.data_dir}/Home"/{item_quoted} 2>/dev/null || true\n'
+                f'    fi\n'
+                f'fi'
             )
         return "\n".join(lines)
+
+    @staticmethod
+    def _build_preference_seeding_snippet(task: CloneTask) -> str:
+        """Return a shell snippet that seeds initial preferences from the original app into the clone's HOME."""
+        orig_bundle_id = (
+            getattr(task.source, "bundle_id", "")
+            if hasattr(task, "source") and task.source
+            else getattr(task.recipe, "bundle_id", "")
+        )
+        new_bundle_id = getattr(task, "new_bundle_id", "") or orig_bundle_id
+        if not orig_bundle_id:
+            return ""
+        orig_quoted = shlex.quote(orig_bundle_id)
+        new_quoted = shlex.quote(new_bundle_id)
+        data_dir_quoted = shlex.quote(str(task.data_dir))
+        lines = [
+            f'if [ -d {data_dir_quoted} ]; then',
+            f'    mkdir -p "{task.data_dir}/Home/Library/Preferences" "{task.data_dir}/Tmp" 2>/dev/null || true',
+            f'    if [ ! -f "{task.data_dir}/Home/Library/Preferences/.GlobalPreferences.plist" ] && [ -f "$HOME/Library/Preferences/.GlobalPreferences.plist" ]; then',
+            f'        cp "$HOME/Library/Preferences/.GlobalPreferences.plist" "{task.data_dir}/Home/Library/Preferences/.GlobalPreferences.plist" 2>/dev/null || true',
+            f'    fi',
+            f'    if [ ! -f "{task.data_dir}/Home/.CFUserTextEncoding" ] && [ -f "$HOME/.CFUserTextEncoding" ]; then',
+            f'        cp "$HOME/.CFUserTextEncoding" "{task.data_dir}/Home/.CFUserTextEncoding" 2>/dev/null || true',
+            f'    fi',
+            f'    if [ ! -e "{task.data_dir}/Home/Library/Keychains" ] && [ -e "$HOME/Library/Keychains" ]; then',
+            f'        mkdir -p "{task.data_dir}/Home/Library"',
+            f'        ln -s "$HOME/Library/Keychains" "{task.data_dir}/Home/Library/Keychains" 2>/dev/null || true',
+            f'    fi',
+            f'    _ORIG_PLIST="$HOME/Library/Preferences/{orig_quoted}.plist"',
+            f'    _CONTAINER_PLIST="$HOME/Library/Containers/{orig_quoted}/Data/Library/Preferences/{orig_quoted}.plist"',
+            f'    if [ ! -f "{task.data_dir}/Home/Library/Preferences/{orig_quoted}.plist" ]; then',
+            '        if [ -f "$_ORIG_PLIST" ]; then',
+            f'            cp "$_ORIG_PLIST" "{task.data_dir}/Home/Library/Preferences/{orig_quoted}.plist" 2>/dev/null || true',
+            '        elif [ -f "$_CONTAINER_PLIST" ]; then',
+            f'            cp "$_CONTAINER_PLIST" "{task.data_dir}/Home/Library/Preferences/{orig_quoted}.plist" 2>/dev/null || true',
+            '        fi',
+            '    fi',
+        ]
+        if orig_bundle_id != new_bundle_id:
+            lines.extend([
+                f'    if [ ! -f "{task.data_dir}/Home/Library/Preferences/{new_quoted}.plist" ]; then',
+                '        if [ -f "$_ORIG_PLIST" ]; then',
+                f'            cp "$_ORIG_PLIST" "{task.data_dir}/Home/Library/Preferences/{new_quoted}.plist" 2>/dev/null || true',
+                '        elif [ -f "$_CONTAINER_PLIST" ]; then',
+                f'            cp "$_CONTAINER_PLIST" "{task.data_dir}/Home/Library/Preferences/{new_quoted}.plist" 2>/dev/null || true',
+                '        fi',
+                '    fi',
+            ])
+        lines.append("fi")
+        return "\n".join(lines)
+
+    @staticmethod
+    def _build_c_launcher_compile_cmd(
+        dst_wrapper: str,
+        target_bin_statement: str,
+        effective_env: dict[str, str],
+        proxy_env: str,
+        lang_env: str,
+        args_list: list[str],
+        data_dir: Path,
+    ) -> str:
+        """Return a shell snippet that uses clang to compile a native Mach-O C launcher."""
+        setenv_c_lines = [
+            '    const char *orig_home = getenv("HOME");',
+            '    if (orig_home && !getenv("REAL_USER_HOME")) {',
+            '        setenv("REAL_USER_HOME", orig_home, 1);',
+            '    }',
+        ]
+        for k, v in effective_env.items():
+            val = v.replace("{{ATB_DATA_DIR}}", str(data_dir))
+            k_esc = k.replace('"', '\\"')
+            v_esc = val.replace('\\', '\\\\').replace('"', '\\"')
+            setenv_c_lines.append(f'    setenv("{k_esc}", "{v_esc}", 1);')
+
+        if proxy_env:
+            for line in proxy_env.splitlines():
+                if line.startswith("export "):
+                    kv = line[7:]
+                    if "=" in kv:
+                        pk, pv = kv.split("=", 1)
+                        pv_clean = pv.strip("'\"")
+                        pk_esc = pk.replace('"', '\\"')
+                        pv_esc = pv_clean.replace('\\', '\\\\').replace('"', '\\"')
+                        setenv_c_lines.append(f'    setenv("{pk_esc}", "{pv_esc}", 1);')
+
+        if lang_env:
+            for line in lang_env.splitlines():
+                if line.startswith("export "):
+                    kv = line[7:]
+                    if "=" in kv:
+                        lk, lv = kv.split("=", 1)
+                        lv_clean = lv.strip("'\"")
+                        lk_esc = lk.replace('"', '\\"')
+                        lv_esc = lv_clean.replace('\\', '\\\\').replace('"', '\\"')
+                        setenv_c_lines.append(f'    setenv("{lk_esc}", "{lv_esc}", 1);')
+
+        setenv_block = "\n".join(setenv_c_lines)
+
+        if args_list:
+            escaped_args = ", ".join(
+                f'"{arg.replace("\\", "\\\\").replace("\"", "\\\"")}"'
+                for arg in args_list
+            )
+            args_block = f"""    char *hardcoded_args[] = {{{escaped_args}}};
+    int hardcoded_count = {len(args_list)};
+    char **new_argv = malloc((argc + hardcoded_count + 1) * sizeof(char *));
+    if (!new_argv) return 1;
+    new_argv[0] = argv[0];
+    for (int i = 0; i < hardcoded_count; i++) {{
+        new_argv[i + 1] = hardcoded_args[i];
+    }}
+    for (int i = 1; i < argc; i++) {{
+        new_argv[hardcoded_count + i] = argv[i];
+    }}
+    new_argv[argc + hardcoded_count] = NULL;"""
+            exec_argv = "new_argv"
+        else:
+            args_block = "    char **new_argv = argv;"
+            exec_argv = "new_argv"
+
+        c_source = f"""#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <libgen.h>
+#include <limits.h>
+#include <mach-o/dyld.h>
+
+int main(int argc, char *argv[]) {{
+{target_bin_statement}
+
+{setenv_block}
+
+{args_block}
+
+    execv(real_bin, {exec_argv});
+    perror("execv failed");
+    return 1;
+}}
+"""
+        return f"""clang -O2 -x c - -o {dst_wrapper} << 'LAUNCHER_C_EOF'
+{c_source}LAUNCHER_C_EOF
+chmod +x {dst_wrapper}
+"""
+
+    @staticmethod
+    def _build_dylib_env_cmd(
+        dst_frameworks: str,
+        effective_env: dict[str, str],
+        proxy_env: str,
+        lang_env: str,
+        data_dir: Path,
+        bin_orig: str,
+    ) -> str:
+        """Compile a lightweight environment injection dylib and insert LC_LOAD_DYLIB into bin_orig."""
+        setenv_c_lines = [
+            '    const char *orig_home = getenv("HOME");',
+            '    if (orig_home && !getenv("REAL_USER_HOME")) {',
+            '        setenv("REAL_USER_HOME", orig_home, 1);',
+            '    }',
+        ]
+        for k, v in effective_env.items():
+            val = v.replace("{{ATB_DATA_DIR}}", str(data_dir))
+            k_esc = k.replace('"', '\\"')
+            v_esc = val.replace('\\', '\\\\').replace('"', '\\"')
+            setenv_c_lines.append(f'    setenv("{k_esc}", "{v_esc}", 1);')
+
+        if proxy_env:
+            for line in proxy_env.splitlines():
+                if line.startswith("export "):
+                    kv = line[7:]
+                    if "=" in kv:
+                        pk, pv = kv.split("=", 1)
+                        pv_clean = pv.strip("'\"")
+                        pk_esc = pk.replace('"', '\\"')
+                        pv_esc = pv_clean.replace('\\', '\\\\').replace('"', '\\"')
+                        setenv_c_lines.append(f'    setenv("{pk_esc}", "{pv_esc}", 1);')
+
+        if lang_env:
+            for line in lang_env.splitlines():
+                if line.startswith("export "):
+                    kv = line[7:]
+                    if "=" in kv:
+                        lk, lv = kv.split("=", 1)
+                        lv_clean = lv.strip("'\"")
+                        lk_esc = lk.replace('"', '\\"')
+                        lv_esc = lv_clean.replace('\\', '\\\\').replace('"', '\\"')
+                        setenv_c_lines.append(f'    setenv("{lk_esc}", "{lv_esc}", 1);')
+
+        setenv_block = "\n".join(setenv_c_lines)
+
+        c_source = f"""#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+
+__attribute__((constructor))
+static void atbclone_env_init(void) {{
+{setenv_block}
+}}
+"""
+        py_insert_dylib = f"""python3 -c "
+import struct
+def insert_dylib(macho_path, dylib_path):
+    with open(macho_path, 'rb') as fp:
+        data = bytearray(fp.read())
+    magic = struct.unpack('<I', data[:4])[0]
+    archs = []
+    if magic in (0xcafebabe, 0xbebafeca):
+        nfat = struct.unpack('>I', data[4:8])[0]
+        for i in range(nfat):
+            cputype, cpusubtype, offset, size, align = struct.unpack('>IIIII', data[8+i*20:28+i*20])
+            archs.append(offset)
+    elif magic in (0xfeedfacf, 0xcffaedfe, 0xfeedface, 0xcefaedfe):
+        archs.append(0)
+    else:
+        return
+    dylib_bytes = dylib_path.encode('utf-8') + b'\\x00'
+    cmdsize = 24 + len(dylib_bytes)
+    if cmdsize % 8 != 0:
+        cmdsize += (8 - (cmdsize % 8))
+        dylib_bytes = dylib_bytes.ljust(cmdsize - 24, b'\\x00')
+    load_cmd = struct.pack('<IIIIII', 0x0c, cmdsize, 24, 0, 0, 0) + dylib_bytes
+    for offset in archs:
+        m_magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags, reserved = struct.unpack('<IIIIIIII', data[offset:offset+32])
+        end_of_cmds = offset + 32 + sizeofcmds
+        existing_cmds = bytes(data[offset+32:end_of_cmds])
+        if dylib_path.encode('utf-8') in existing_cmds:
+            continue
+        data[end_of_cmds:end_of_cmds+cmdsize] = load_cmd
+        ncmds += 1
+        sizeofcmds += cmdsize
+        data[offset:offset+32] = struct.pack('<IIIIIIII', m_magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags, reserved)
+    with open(macho_path, 'wb') as fp:
+        fp.write(data)
+
+raw_bin = {repr(bin_orig.strip("'\""))}
+insert_dylib(raw_bin, '@rpath/libatbclone_env.dylib')
+"
+"""
+        return f"""mkdir -p {dst_frameworks}
+clang -dynamiclib -O2 -arch arm64 -arch x86_64 -install_name @rpath/libatbclone_env.dylib -o {dst_frameworks}/libatbclone_env.dylib -x c - << 'ATB_DYLIB_EOF'
+{c_source}ATB_DYLIB_EOF
+chmod +x {dst_frameworks}/libatbclone_env.dylib
+{py_insert_dylib}"""
+
+
+
 
 
 class SoftCloneEngine(CloneEngine):
@@ -241,63 +493,19 @@ class SoftCloneEngine(CloneEngine):
         exec_cmd = f'exec {src_bin}{args_str} "$@"'
 
         symlink_snippet = cls._build_symlink_whitelist_snippet(task)
-        if symlink_snippet:
-            symlink_snippet_block = f"\n{symlink_snippet}"
-        else:
-            symlink_snippet_block = ""
-
+        pref_seeding = cls._build_preference_seeding_snippet(task)
         proxy_env = cls._build_proxy_env(task)
-        wrapper_lines = ["#!/bin/bash", 'REAL_USER_HOME="$HOME"']
-        if env_vars:
-            wrapper_lines.append(env_vars)
-        if lang_env:
-            wrapper_lines.append(lang_env)
-        if proxy_env:
-            wrapper_lines.append(proxy_env)
-        wrapper_lines.extend([
-            'REAL_USER_HOME="${REAL_USER_HOME:-$HOME}"',
-            'if [ -n "$HOME" ] && [ "$HOME" != "$REAL_USER_HOME" ]; then',
-            '    mkdir -p "$HOME/Library/Preferences"',
-            '    if [ ! -f "$HOME/Library/Preferences/.GlobalPreferences.plist" ] && [ -f "$REAL_USER_HOME/Library/Preferences/.GlobalPreferences.plist" ]; then',
-            '        cp "$REAL_USER_HOME/Library/Preferences/.GlobalPreferences.plist" "$HOME/Library/Preferences/.GlobalPreferences.plist" 2>/dev/null || true',
-            '    fi',
-            '    if [ ! -f "$HOME/.CFUserTextEncoding" ] && [ -f "$REAL_USER_HOME/.CFUserTextEncoding" ]; then',
-            '        cp "$REAL_USER_HOME/.CFUserTextEncoding" "$HOME/.CFUserTextEncoding" 2>/dev/null || true',
-            '    fi',
-            '    if [ ! -e "$HOME/Library/Keychains" ] && [ -e "$REAL_USER_HOME/Library/Keychains" ]; then',
-            '        mkdir -p "$HOME/Library"',
-            '        ln -s "$REAL_USER_HOME/Library/Keychains" "$HOME/Library/Keychains" 2>/dev/null || true',
-            '    fi' + symlink_snippet_block,
-            'fi',
-            'if [ -n "$CODEX_HOME" ] && [ "$CODEX_HOME" != "$REAL_USER_HOME/.codex" ]; then',
-            '    mkdir -p "$CODEX_HOME" 2>/dev/null || true',
-            '    if [ -d "$REAL_USER_HOME/.codex" ] && [ -z "$(ls -A "$CODEX_HOME" 2>/dev/null)" ]; then',
-            '        cp -R "$REAL_USER_HOME/.codex/." "$CODEX_HOME/" 2>/dev/null || true',
-            '    fi',
-            'fi',
-            '_TARGET_GEMINI_DIR="${GEMINI_HOME:-${ANTIGRAVITY_HOME:-$GEMINI_CONFIG_DIR}}"',
-            'if [ -n "$_TARGET_GEMINI_DIR" ] && [ "$_TARGET_GEMINI_DIR" != "$REAL_USER_HOME/.gemini" ]; then',
-            '    mkdir -p "$_TARGET_GEMINI_DIR" 2>/dev/null || true',
-            '    if [ -d "$REAL_USER_HOME/.gemini" ] && [ -z "$(ls -A "$_TARGET_GEMINI_DIR" 2>/dev/null)" ]; then',
-            '        cp -R "$REAL_USER_HOME/.gemini/." "$_TARGET_GEMINI_DIR/" 2>/dev/null || true',
-            '    fi',
-            'fi',
-            'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then',
-            '    mkdir -p "$CLAUDE_CONFIG_DIR" 2>/dev/null || true',
-            '    if [ -d "$REAL_USER_HOME/.claude" ] && [ -z "$(ls -A "$CLAUDE_CONFIG_DIR" 2>/dev/null)" ]; then',
-            '        cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/" 2>/dev/null || true',
-            '    fi',
-            '    if [ -f "$REAL_USER_HOME/.claude.json" ] && [ ! -f "$CLAUDE_CONFIG_DIR/.claude.json" ]; then',
-            '        cp "$REAL_USER_HOME/.claude.json" "$CLAUDE_CONFIG_DIR/.claude.json" 2>/dev/null || true',
-            '    fi',
-            '    if [ -n "$HOME" ] && [ "$HOME" != "$REAL_USER_HOME" ] && [ -f "$REAL_USER_HOME/.claude.json" ] && [ ! -f "$HOME/.claude.json" ]; then',
-            '        cp "$REAL_USER_HOME/.claude.json" "$HOME/.claude.json" 2>/dev/null || true',
-            '    fi',
-            'fi',
-            'mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true',
-            exec_cmd,
-        ])
-        wrapper_body = "\n".join(wrapper_lines)
+
+        target_bin_statement = f'    char *real_bin = "{str(task.source.executable)}";'
+        c_launcher_cmd = cls._build_c_launcher_compile_cmd(
+            dst_wrapper=wrapper,
+            target_bin_statement=target_bin_statement,
+            effective_env=effective_env,
+            proxy_env=proxy_env,
+            lang_env=lang_env,
+            args_list=args_list,
+            data_dir=task.data_dir,
+        )
 
         src_resources = shlex.quote(str(task.source.path / "Contents" / "Resources"))
         dst_resources = shlex.quote(str(task.dest_path / "Contents" / "Resources"))
@@ -323,11 +531,12 @@ fi
 cp {src_plist} {dst_plist}
 chmod -R u+w {dst_app} 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
+/usr/libexec/PlistBuddy -c "Delete :TeamIdentifier" {dst_plist} 2>/dev/null || true
 {display_name_cmd}
-{icon_cmd}cat << 'WRAPPER_EOF' > {wrapper}
-{wrapper_body}
-WRAPPER_EOF
-chmod +x {wrapper}
+{icon_cmd}{c_launcher_cmd}
+{pref_seeding}
+{symlink_snippet}
+codesign --force --deep --sign - {dst_app} 2>/dev/null || true
 {lsregister_cmd}
 """
         try:
@@ -660,66 +869,47 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
         args_str = f" {' '.join(args_list)}" if args_list else ""
 
         symlink_snippet = cls._build_symlink_whitelist_snippet(task)
-        if symlink_snippet:
-            symlink_snippet_block = f"\n{symlink_snippet}"
+        pref_seeding = cls._build_preference_seeding_snippet(task)
+
+        app_type = getattr(task.recipe, "app_type", None)
+        if not app_type and hasattr(task, "source") and task.source and getattr(task.source, "path", None):
+            from atbclone.core.app_prober import AppProber
+            app_type = AppProber.detect_app_type(
+                task.source.path,
+                bundle_id=getattr(task.source, "bundle_id", ""),
+            )
+        is_chromium = (app_type or "").lower() in ("chromium", "electron")
+
+        if not is_chromium and not valid_launch_args:
+            dst_frameworks = shlex.quote(str(task.dest_path / "Contents" / "Frameworks"))
+            exec_prep_cmd = cls._build_dylib_env_cmd(
+                dst_frameworks=dst_frameworks,
+                effective_env=effective_env,
+                proxy_env=proxy_env,
+                lang_env=lang_env,
+                data_dir=task.data_dir,
+                bin_orig=bin_orig,
+            )
         else:
-            symlink_snippet_block = ""
+            target_bin_statement = f"""    char exec_path[PATH_MAX];
+    uint32_t size = sizeof(exec_path);
+    if (_NSGetExecutablePath(exec_path, &size) != 0) {{
+        return 1;
+    }}
+    char *dir = dirname(exec_path);
+    char real_bin[PATH_MAX];
+    snprintf(real_bin, sizeof(real_bin), "%s/{orig_bin_name}.bin", dir);"""
 
-        wrapper_lines = [
-            "#!/bin/bash",
-            'REAL_USER_HOME="$HOME"',
-        ]
-        if env_vars:
-            wrapper_lines.append(env_vars)
-        if lang_env:
-            wrapper_lines.append(lang_env)
-        if proxy_env:
-            wrapper_lines.append(proxy_env)
-
-        wrapper_lines.extend([
-            'REAL_USER_HOME="${REAL_USER_HOME:-$HOME}"',
-            'mkdir -p "$HOME" "$TMPDIR" 2>/dev/null || true',
-            'if [ -n "$HOME" ] && [ "$HOME" != "$REAL_USER_HOME" ]; then',
-            '    mkdir -p "$HOME/Library/Preferences"',
-            '    if [ ! -f "$HOME/Library/Preferences/.GlobalPreferences.plist" ] && [ -f "$REAL_USER_HOME/Library/Preferences/.GlobalPreferences.plist" ]; then',
-            '        cp "$REAL_USER_HOME/Library/Preferences/.GlobalPreferences.plist" "$HOME/Library/Preferences/.GlobalPreferences.plist" 2>/dev/null || true',
-            '    fi',
-            '    if [ ! -f "$HOME/.CFUserTextEncoding" ] && [ -f "$REAL_USER_HOME/.CFUserTextEncoding" ]; then',
-            '        cp "$REAL_USER_HOME/.CFUserTextEncoding" "$HOME/.CFUserTextEncoding" 2>/dev/null || true',
-            '    fi',
-            '    if [ ! -e "$HOME/Library/Keychains" ] && [ -e "$REAL_USER_HOME/Library/Keychains" ]; then',
-            '        mkdir -p "$HOME/Library"',
-            '        ln -s "$REAL_USER_HOME/Library/Keychains" "$HOME/Library/Keychains" 2>/dev/null || true',
-            '    fi' + symlink_snippet_block,
-            'fi',
-            'if [ -n "$CODEX_HOME" ] && [ "$CODEX_HOME" != "$REAL_USER_HOME/.codex" ]; then',
-            '    mkdir -p "$CODEX_HOME" 2>/dev/null || true',
-            '    if [ -d "$REAL_USER_HOME/.codex" ] && [ -z "$(ls -A "$CODEX_HOME" 2>/dev/null)" ]; then',
-            '        cp -R "$REAL_USER_HOME/.codex/." "$CODEX_HOME/" 2>/dev/null || true',
-            '    fi',
-            'fi',
-            '_TARGET_GEMINI_DIR="${GEMINI_HOME:-${ANTIGRAVITY_HOME:-$GEMINI_CONFIG_DIR}}"',
-            'if [ -n "$_TARGET_GEMINI_DIR" ] && [ "$_TARGET_GEMINI_DIR" != "$REAL_USER_HOME/.gemini" ]; then',
-            '    mkdir -p "$_TARGET_GEMINI_DIR" 2>/dev/null || true',
-            '    if [ -d "$REAL_USER_HOME/.gemini" ] && [ -z "$(ls -A "$_TARGET_GEMINI_DIR" 2>/dev/null)" ]; then',
-            '        cp -R "$REAL_USER_HOME/.gemini/." "$_TARGET_GEMINI_DIR/" 2>/dev/null || true',
-            '    fi',
-            'fi',
-            'if [ -n "$CLAUDE_CONFIG_DIR" ] && [ "$CLAUDE_CONFIG_DIR" != "$REAL_USER_HOME/.claude" ]; then',
-            '    mkdir -p "$CLAUDE_CONFIG_DIR" 2>/dev/null || true',
-            '    if [ -d "$REAL_USER_HOME/.claude" ] && [ -z "$(ls -A "$CLAUDE_CONFIG_DIR" 2>/dev/null)" ]; then',
-            '        cp -R "$REAL_USER_HOME/.claude/." "$CLAUDE_CONFIG_DIR/" 2>/dev/null || true',
-            '    fi',
-            '    if [ -f "$REAL_USER_HOME/.claude.json" ] && [ ! -f "$CLAUDE_CONFIG_DIR/.claude.json" ]; then',
-            '        cp "$REAL_USER_HOME/.claude.json" "$CLAUDE_CONFIG_DIR/.claude.json" 2>/dev/null || true',
-            '    fi',
-            '    if [ -n "$HOME" ] && [ "$HOME" != "$REAL_USER_HOME" ] && [ -f "$REAL_USER_HOME/.claude.json" ] && [ ! -f "$HOME/.claude.json" ]; then',
-            '        cp "$REAL_USER_HOME/.claude.json" "$HOME/.claude.json" 2>/dev/null || true',
-            '    fi',
-            'fi',
-            f'exec "$(dirname "$0")/{orig_bin_name}.bin"{args_str} "$@"',
-        ])
-        wrapper_body = "\n".join(wrapper_lines)
+            c_launcher_cmd = cls._build_c_launcher_compile_cmd(
+                dst_wrapper=wrapper,
+                target_bin_statement=target_bin_statement,
+                effective_env=effective_env,
+                proxy_env=proxy_env,
+                lang_env=lang_env,
+                args_list=args_list,
+                data_dir=task.data_dir,
+            )
+            exec_prep_cmd = f"mv {bin_orig} {bin_bak}\n{c_launcher_cmd}"
 
         # Build framework singleton patcher command ONLY when explicitly enabled by recipe
         # or when cloning Feishu/Lark which requires custom ProcessSingleton handling.
@@ -741,22 +931,27 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
             else ""
         )
 
-        if needs_cef_patch:
-            helper_bundle_id_cmd = f"""if [ -d {dst}/Contents/Frameworks ]; then
-    find {dst}/Contents/Frameworks -name "*.app" -type d 2>/dev/null | while read -r helper_app; do
-        h_plist="$helper_app/Contents/Info.plist"
-        if [ -f "$h_plist" ]; then
-            cur_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$h_plist" 2>/dev/null || true)
-            if [[ "$cur_id" =~ ^[A-Z0-9]{{10}}\\. ]]; then
-                new_id=$(echo "$cur_id" | sed -E 's/^[A-Z0-9]{{10}}\\.//')
-                /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $new_id.{task.new_bundle_id}" "$h_plist" 2>/dev/null || true
-            fi
+        # Update CFBundleIdentifier for all sub-bundles (.app, .appex, etc.) and clean TeamIdentifier
+        orig_id_clean = (
+            getattr(task.source, "bundle_id", "")
+            if hasattr(task, "source") and task.source
+            else getattr(task.recipe, "bundle_id", "")
+        )
+        helper_bundle_id_cmd = f"""find {dst}/Contents -name "Info.plist" -type f 2>/dev/null | while read -r pfile; do
+    /usr/libexec/PlistBuddy -c "Delete :TeamIdentifier" "$pfile" 2>/dev/null || true
+    cur_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$pfile" 2>/dev/null || true)
+    if [ -n "$cur_id" ] && [ "$cur_id" != "{task.new_bundle_id}" ]; then
+        if [ -n "{orig_id_clean}" ] && [[ "$cur_id" == *"{orig_id_clean}"* ]]; then
+            updated_id="${{cur_id//{orig_id_clean}/{task.new_bundle_id}}}"
+            updated_id=$(echo "$updated_id" | sed -E 's/^[A-Z0-9]{{10}}\\.//')
+            /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $updated_id" "$pfile" 2>/dev/null || true
+        elif [[ "$cur_id" =~ ^[A-Z0-9]{{10}}\\. ]]; then
+            new_id=$(echo "$cur_id" | sed -E 's/^[A-Z0-9]{{10}}\\.//')
+            /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $new_id.{task.new_bundle_id}" "$pfile" 2>/dev/null || true
         fi
-    done
-fi
+    fi
+done
 """
-        else:
-            helper_bundle_id_cmd = ""
 
         framework_prune_cmd = cls._build_framework_prune_cmd(task.dest_path)
 
@@ -789,12 +984,14 @@ fi
                 f'    find {dst} -type f \\( -name \'*.dylib\' -o -name \'*.so\' \\) -exec codesign --force --sign - {{}} + 2>/dev/null || true\n'
                 f'    find {dst}/Contents -type f -perm +111 | while read -r bin_file; do if file "$bin_file" 2>/dev/null | grep -q \'Mach-O\'; then codesign --force --sign - --entitlements "$ent_plist" "$bin_file" 2>/dev/null || true; fi; done\n'
                 f'    find {dst}/Contents -name \'*.framework\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
+                f'    find {dst}/Contents -name \'*.appex\' -type d -exec codesign --force --deep --sign - --entitlements "$ent_plist" {{}} + 2>/dev/null || true\n'
                 f'    find {dst}/Contents -name \'*.app\' -type d -exec codesign --force --deep --sign - --entitlements "$ent_plist" {{}} + 2>/dev/null || true\n'
                 f'    codesign --force --deep --sign - --entitlements "$ent_plist" {dst}\n'
                 f'else\n'
                 f'    find {dst} -type f \\( -name \'*.dylib\' -o -name \'*.so\' \\) -exec codesign --force --sign - {{}} + 2>/dev/null || true\n'
                 f'    find {dst}/Contents -type f -perm +111 | while read -r bin_file; do if file "$bin_file" 2>/dev/null | grep -q \'Mach-O\'; then codesign --force --sign - "$bin_file" 2>/dev/null || true; fi; done\n'
                 f'    find {dst}/Contents -name \'*.framework\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
+                f'    find {dst}/Contents -name \'*.appex\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
                 f'    find {dst}/Contents -name \'*.app\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
                 f'    codesign --force --deep --sign - {dst}\n'
                 f'fi\n'
@@ -805,6 +1002,7 @@ fi
                 f'find {dst} -type f \\( -name \'*.dylib\' -o -name \'*.so\' \\) -exec codesign --force --sign - {{}} + 2>/dev/null || true\n'
                 f'find {dst}/Contents -type f -perm +111 | while read -r bin_file; do if file "$bin_file" 2>/dev/null | grep -q \'Mach-O\'; then codesign --force --sign - "$bin_file" 2>/dev/null || true; fi; done\n'
                 f'find {dst}/Contents -name \'*.framework\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
+                f'find {dst}/Contents -name \'*.appex\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
                 f'find {dst}/Contents -name \'*.app\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
                 f'codesign --force --deep --sign - {dst}\n'
             )
@@ -818,11 +1016,9 @@ rm -rf {dst}
 chmod -R u+w {dst} 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier {task.new_bundle_id}" {dst_plist}
 {helper_bundle_id_cmd}{display_name_cmd}
-{icon_cmd}mv {bin_orig} {bin_bak}
-cat << 'WRAPPER_EOF' > {wrapper}
-{wrapper_body}
-WRAPPER_EOF
-chmod +x {wrapper}
+{icon_cmd}{exec_prep_cmd}
+{pref_seeding}
+{symlink_snippet}
 {singleton_patch_cmd}{cef_patch_cmd}{framework_prune_cmd}xattr -cr {dst} 2>/dev/null || true
 {codesign_cmds}codesign -vv --deep --strict {dst}
 {lsregister_cmd}

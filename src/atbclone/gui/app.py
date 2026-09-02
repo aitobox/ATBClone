@@ -29,7 +29,7 @@ from atbclone.gui.views.logs_view import LogsView
 from atbclone.gui.views.settings_view import SettingsView
 from atbclone.gui.windows.wizard import WizardWindow
 from atbclone.gui.theme import Theme
-from atbclone.gui.patch_cocoa import patch_cocoa_widgets, configure_cocoa_window_movable
+from atbclone.gui.patch_cocoa import patch_cocoa_widgets, configure_cocoa_window_movable, is_dark_mode
 
 
 def set_macos_dock_icon(icon_path: Optional[Path] = None) -> bool:
@@ -122,6 +122,9 @@ class ATBCloneApp(toga.App):
             return None
 
     def startup(self):
+        # Apply correct color palette before constructing any widgets
+        Theme.apply_mode(is_dark_mode())
+
         # Set macOS Dock icon immediately on app launch
         set_macos_dock_icon(get_app_icon_path("png"))
 

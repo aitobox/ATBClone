@@ -6,6 +6,27 @@ from typing import Any
 _is_patched = False
 
 
+def is_dark_mode() -> bool:
+    """Detect whether macOS system appearance is currently Dark Mode.
+
+    Reads NSApp.effectiveAppearance.name and checks for the 'Dark' substring,
+    which covers NSAppearanceNameDarkAqua and any dark variants.
+    Returns False on non-macOS platforms or when Cocoa is unavailable.
+    """
+    if sys.platform != "darwin":
+        return False
+    try:
+        from toga_cocoa.libs.appkit import NSApplication
+        ns_app = NSApplication.sharedApplication
+        appearance = getattr(ns_app, "effectiveAppearance", None)
+        if appearance is None:
+            return False
+        name = str(getattr(appearance, "name", "") or "")
+        return "Dark" in name
+    except Exception:
+        return False
+
+
 def configure_cocoa_text_field(native_text_field: Any, font_size: float = 13.5) -> None:
     """Configure an NSTextField for smooth single-line text editing, horizontal scrolling, and clear typography.
 

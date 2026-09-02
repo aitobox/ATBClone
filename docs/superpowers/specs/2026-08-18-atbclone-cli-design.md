@@ -36,7 +36,7 @@ For standard macOS apps (WeChat, Telegram).
 5. Clear quarantine attributes (`xattr -cr`).
 6. Ad-Hoc Resign: `codesign --force --deep --sign -`.
 
-Execution Strategy: The `executor` module generates a single shell script for the hard clone process (with `set -e` for atomicity). If writing to a system directory like `/Applications`, it executes via a single `osascript` prompt to request admin privileges once. Target directories like `~/Applications` do not require privilege escalation.
+Execution Strategy: The `executor` module generates a single shell script for the hard clone process (with `set -e` for atomicity). If writing to a system directory like `/Applications`, it executes via a single `osascript` prompt to request admin privileges once. Target directories like `~/ATBClone/Apps` do not require privilege escalation.
 
 ## Recipe Engine
 Defined via YAML and validated with Pydantic. Supports `hard_clone` and `soft_clone` strategies.

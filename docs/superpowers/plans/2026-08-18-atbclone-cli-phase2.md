@@ -163,7 +163,7 @@ class CloneRecord:
 1. 请输入 .app 路径（或拖入）
 2. 自动检测 bundle_id，显示匹配的 recipe
 3. 询问分身名称（默认自动编号）
-4. 询问输出目录（默认 ~/Applications）
+4. 询问输出目录（默认 ~/ATBClone/Apps）
 5. 是否配置代理？若是，询问地址/端口/类型
 6. 确认信息 → 执行 clone
 

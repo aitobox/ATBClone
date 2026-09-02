@@ -40,7 +40,7 @@ Release 页面主要提供两个发布文件，**核心功能完全一致**：
 - 📑 **规则引擎 (Recipe Engine)**：内置 33+ 常用应用与 AI Agent 工具分身规则，支持通过 `~/ATBClone/recipes/` 本地优先级覆盖自定义规则。
 - 🪄 **交互式向导 (Interactive Wizard)**：全流程引导式 CLI，支持终端拖拽 `.app` 路径、自动命名递增、自定义数据目录与快捷代理配置。
 - 🔄 **生命周期管理**：查看已有分身（`list`）、主应用升级后一键重克隆并保留用户数据（`update`）、安全删除分身（`remove` 支持 `--with-data` / `--keep-data` 与交互确认）。
-- 🛡️ **安全与提权机制**：默认克隆至 `~/Applications` 无需 root/sudo 权限；如需写入系统级 `/Applications` 采用原生单次 `osascript` 授权提权；严格使用 `shlex.quote` 保证路径转义安全。
+- 🛡️ **安全与提权机制**：默认克隆至 `~/ATBClone/Apps` 无需 root/sudo 权限；如需写入系统级 `/Applications` 采用原生单次 `osascript` 授权提权；严格使用 `shlex.quote` 保证路径转义安全。
 
 
 ---
@@ -87,14 +87,14 @@ atbclone wizard
 
 ### 2. 命令行快速克隆 (`clone`)
 
-#### 基础克隆（自动递增编号，默认输出至 `~/Applications`）
+#### 基础克隆（自动递增编号，默认输出至 `~/ATBClone/Apps`）
 ```bash
 atbclone clone /Applications/WeChat.app
 ```
 
 #### 指定分身名称与输出目录
 ```bash
-atbclone clone /Applications/WeChat.app --name "微信工作版" --output-dir ~/Applications
+atbclone clone /Applications/WeChat.app --name "微信工作版" --output-dir ~/ATBClone/Apps
 ```
 
 #### 自定义数据存储目录 (`--data-dir`)

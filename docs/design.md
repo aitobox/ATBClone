@@ -52,9 +52,9 @@ exec "$ORIGINAL_BIN" --user-data-dir="$USER_DATA" >/dev/null 2>&1 &
 * **核心原理**：结合系统级身份伪装与进程启动劫持。这也就是 ATBClone 独创的“三板斧”技术。
 * **执行步骤与原理命令** (需经由 `osascript` 提权执行)：
 1. **物理拷贝**：
-`cp -R "/Applications/WeChat.app" "/Applications/WeChat_ATB.app"`
+`cp -R "/Applications/WeChat.app" "$HOME/ATBClone/Apps/WeChat_ATB.app"`
 2. **修改身份 (基因重组)**：
-`/usr/libexec/PlistBuddy -c 'Set :CFBundleIdentifier com.tencent.xinWeChat.ATB' /Applications/WeChat_ATB.app/Contents/Info.plist`
+`/usr/libexec/PlistBuddy -c 'Set :CFBundleIdentifier com.tencent.xinWeChat.ATB' $HOME/ATBClone/Apps/WeChat_ATB.app/Contents/Info.plist`
 3. **沙盒剥离 (Sandbox Stripping - 核心！)**：
 检测是否存在苹果沙盒限制。如果有，提取 Entitlements，用 Python 正则移除 `<key>com.apple.security.app-sandbox</key>`，为后续重签做准备。
 4. **壳劫持与网络隔离注入 (Wrapper Hijack)**：
@@ -79,9 +79,9 @@ exec "$DIR/WeChat.bin" "$@"
 
 
 5. **清理隔离属性**：
-`xattr -cr "/Applications/WeChat_ATB.app"`
+`xattr -cr "$HOME/ATBClone/Apps/WeChat_ATB.app"`
 6. **本地临时重签 (Ad-Hoc 签名)**：
-`codesign --force --deep --sign - "/Applications/WeChat_ATB.app"` (若有修改过 Entitlements，此处需附加 `--entitlements` 参数注入新的授权文件)。
+`codesign --force --deep --sign - "$HOME/ATBClone/Apps/WeChat_ATB.app"` (若有修改过 Entitlements，此处需附加 `--entitlements` 参数注入新的授权文件)。
 
 
 
@@ -156,7 +156,7 @@ ATBClone 的终极壁垒不是代码，而是 **Recipes (配置规则)**。每�
 
 **ATB 解法：版本巡检与“数据-逻辑分离”架构**
 
-由于在之前的“壳劫持”设计中，我们已经将应用本体（`/Applications/WeChat_ATB.app`）与用户数据（`~/ATBClone/Data/WeChat/`）进行了**物理级解耦**，因此分身的升级其实可以做到“丝滑且无损”。
+由于在之前的“壳劫持”设计中，我们已经将应用本体（`~/ATBClone/Apps/WeChat_ATB.app`）与用户数据（`~/ATBClone/Data/WeChat/`）进行了**物理级解耦**，因此分身的升级其实可以做到“丝滑且无损”。
 
 * **静默版本巡检 (Version Polling)**：
 * 在 ATBClone 主界面启动时，或后台驻留一个极轻量的 `QTimer` 轮询任务。
@@ -167,7 +167,7 @@ ATBClone 的终极壁垒不是代码，而是 **Recipes (配置规则)**。每�
 * 当检测到版本不一致时，UI 弹出提示：“检测到母体 [微信] 已升级至 v3.8.1，当前分身 [WeChat_ATB] 仍为 v3.8.0。是否一键同步更新？”
 * 用户点击“同步”后，ATBClone 在后台静默执行以下逻辑：
 1. 杀死当前运行的分身进程。
-2. 直接删除旧的 `/Applications/WeChat_ATB.app`（由于数据全在 `~/ATBClone/` 下，这个删除动作**完全不会丢失任何用户聊天记录和登录状态**）。
+2. 直接删除旧的 `~/ATBClone/Apps/WeChat_ATB.app`（由于数据全在 `~/ATBClone/` 下，这个删除动作**完全不会丢失任何用户聊天记录和登录状态**）。
 3. 按照“硬分身”规则，重新走一遍 `拷贝 -> 篡改 -> 壳劫持 -> 剥离沙盒 -> 重签` 的自动化流程。
 4. 新分身启动，自动挂载原有的假 `$HOME` 数据目录，完美继承旧数据。
 

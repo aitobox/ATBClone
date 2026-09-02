@@ -69,7 +69,7 @@ ATBClone 在设计上实现了严格的物理级隔离与沙盒容器隔离：
 ---
 
 ### 4. 需要管理员密码 (Root / Sudo) 吗？
-* **安装到 `~/Applications`（默认推荐）**：**全程无需管理员密码，免 Root 权限。** 所有文件均运行在当前普通用户空间中。
+* **安装到 `~/ATBClone/Apps`（默认推荐）**：**全程无需管理员密码，免 Root 权限。** 所有文件均运行在当前普通用户空间中。
 * **安装到系统全局 `/Applications`**：macOS 会弹出一次系统原生授权窗口，要求输入开机密码以允许向全局系统目录写入文件。
 
 ---
@@ -87,7 +87,7 @@ xattr -cr "/path/to/您的分身应用.app"
 ---
 
 ### 6. 如何为分身更换自定义图标？
-1. 在访达中打开 `~/Applications`，找到您的分身应用。
+1. 在访达中打开 `~/ATBClone/Apps`，找到您的分身应用。
 2. 选中分身并按下快捷键 `Cmd + I`（显示简介）。
 3. 将您准备好的 `.icns` 或 `.png` 图标文件，直接拖拽到简介窗口左上角的小图标上即可完成替换。
 
@@ -117,7 +117,7 @@ xattr -cr "/path/to/您的分身应用.app"
 2. 探针将自动校验：
    * **Xcode Command Line Tools (`xcode-select -p`)**：确保 Apple 开发者编译工具已安装，这是 `codesign` 签名的必要条件。
    * **Codesign 与 PlistBuddy**：确认系统底层工具链可用。
-   * **目录读写权限**：检查 `~/Applications` 和 `~/ATBClone/Data` 的写入权限。
+   * **目录读写权限**：检查 `~/ATBClone/Apps` 和 `~/ATBClone/Data` 的写入权限。
 3. 若某一项出现红色警告，根据界面提示进行修复即可（如终端执行 `xcode-select --install`）。
 
 ---
@@ -140,7 +140,7 @@ xattr -cr "/path/to/您的分身应用.app"
 |  • 原始 ID:    com.tencent.xinWeChat                        |
 |  • 新分身 ID:  com.tencent.xinWeChat.atbclone.WeChat2       |
 |  • 克隆策略:   hard_clone                                   |
-|  • 安装目标:   /Users/username/Applications/WeChat2.app     |
+|  • 安装目标:   /Users/username/ATBClone/Apps/WeChat2.app     |
 |  • 数据目录:   /Users/username/ATBClone/Data/WeChat2        |
 |  • 代理设置:   http://127.0.0.1:7890                        |
 |                                                             |

@@ -59,7 +59,7 @@ graph TD
 ### 1. Soft Clone (Launcher Mode)
 * **Design Philosophy**: Zero disk waste, instant launch, lightweight delegation.
 * **Mechanism**: 
-  1. Creates a minimal `.app` directory structure (less than 200 KB) in `~/Applications/<CloneName>.app`.
+  1. Creates a minimal `.app` directory structure (less than 200 KB) in `~/ATBClone/Apps/<CloneName>.app`.
   2. Generates an independent `Info.plist` with a custom bundle ID and icon.
   3. Places an executable launcher script in `Contents/MacOS/<Executable>` that directly invokes the primary application's Mach-O binary while passing dedicated data directory flags:
      ```bash
@@ -140,7 +140,7 @@ ATBClone solves this through **Data-Logic Decoupling**:
 
 ```text
 [ Application Logic / Executable ]         [ User Data & Chat Databases ]
-~/Applications/WeChat2.app                 ~/ATBClone/Data/WeChat2/
+~/ATBClone/Apps/WeChat2.app                 ~/ATBClone/Data/WeChat2/
   ├── Contents/Info.plist                    ├── Home/
   ├── Contents/MacOS/WeChat (Wrapper)        │   ├── Library/Application Support/...
   ├── Contents/MacOS/WeChat.bin              │   ├── Library/Preferences/...

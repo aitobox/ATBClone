@@ -6,6 +6,7 @@ import pytest
 from click.testing import CliRunner
 
 from atbclone.cli.main import cli
+from atbclone.core.config import DEFAULT_APPS_DIR
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.models import AppInfo
 from atbclone.executor.runner import CloneError
@@ -92,7 +93,7 @@ def test_wizard_complete_hard_clone(tmp_path: Path, mock_app_info: AppInfo, mock
         assert isinstance(task, CloneTask)
         assert task.source == mock_app_info
         assert task.clone_name == "WeChat2"
-        assert task.dest_path == Path.home() / "Applications" / "WeChat2.app"
+        assert task.dest_path == DEFAULT_APPS_DIR / "WeChat2.app"
         assert task.new_bundle_id == "com.tencent.xinWeChat.atbclone.2"
         assert task.display_name is None
         assert task.icon_path is None

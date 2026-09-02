@@ -39,7 +39,7 @@ ATBClone provides two distribution packages with **identical core functionality*
 - 📑 **Recipe Engine**: 33+ built-in recipes for popular apps and AI Agent tools, with local override support via `~/ATBClone/recipes/`.
 - 🪄 **Interactive Wizard**: Step-by-step interactive CLI guide supporting terminal drag-and-drop application paths, automatic name incrementing, custom data directory configuration, and on-the-fly proxy setup.
 - 🔄 **Lifecycle Management**: View cloned apps (`list`), re-clone after primary app updates while preserving user and chat data (`update`), and safely remove clones with interactive prompts or flag controls (`remove` with `--with-data` / `--keep-data`).
-- 🛡️ **Security & Privilege Elevation**: Writing to `~/Applications` requires no admin privileges; writing to `/Applications` uses native single-prompt macOS `osascript` authorization; robust path escaping via `shlex.quote` throughout.
+- 🛡️ **Security & Privilege Elevation**: Writing to `~/ATBClone/Apps` requires no admin privileges; writing to `/Applications` uses native single-prompt macOS `osascript` authorization; robust path escaping via `shlex.quote` throughout.
 
 
 ---
@@ -86,14 +86,14 @@ atbclone wizard
 
 ### 2. Command Line Quick Clone (`clone`)
 
-#### Basic Clone (Auto-incremented name, defaults to `~/Applications`)
+#### Basic Clone (Auto-incremented name, defaults to `~/ATBClone/Apps`)
 ```bash
 atbclone clone /Applications/WeChat.app
 ```
 
 #### Specify Clone Name and Output Directory
 ```bash
-atbclone clone /Applications/WeChat.app --name "WeChat-Work" --output-dir ~/Applications
+atbclone clone /Applications/WeChat.app --name "WeChat-Work" --output-dir ~/ATBClone/Apps
 ```
 
 #### Custom Data Storage Directory (`--data-dir`)

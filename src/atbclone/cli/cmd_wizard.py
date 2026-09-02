@@ -8,7 +8,7 @@ from rich.console import Console
 
 from atbclone.core.app_inspector import AppInspector
 from atbclone.core.clone_task import CloneTask
-from atbclone.core.config import DEFAULT_DATA_DIR
+from atbclone.core.config import DEFAULT_APPS_DIR, DEFAULT_DATA_DIR
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord, StateManager
@@ -45,7 +45,7 @@ def wizard() -> None:
     console.print(t("wizard_strategy_info", strategy=recipe.strategy))
 
     # 3. Clone name
-    out_path = Path.home() / "Applications"
+    out_path = DEFAULT_APPS_DIR
     clone_name, num = AppInspector.next_available_name(info.app_name, out_path)
     clone_name = click.prompt(t("wizard_prompt_clone_name"), default=clone_name)
 
@@ -74,7 +74,7 @@ def wizard() -> None:
         break
 
     # 6. Output dir
-    output_dir = click.prompt(t("wizard_prompt_output_dir"), default=str(Path.home() / "Applications"))
+    output_dir = click.prompt(t("wizard_prompt_output_dir"), default=str(DEFAULT_APPS_DIR))
     out_path = Path(output_dir).expanduser().resolve()
 
     # 7. Data storage directory (if supported by recipe)

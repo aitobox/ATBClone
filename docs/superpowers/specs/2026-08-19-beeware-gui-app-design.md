@@ -75,7 +75,7 @@ A 7-step wizard with step indicator, Back/Next navigation, and asynchronous exec
 1. **Step 1 - Select Source App**: File picker or drag-and-drop `.app` bundle. Calls `AppInspector.inspect()`.
 2. **Step 2 - Recipe Matching**: Automatically match recipe via `RecipeLoader`. If unmatched, offers auto-probe.
 3. **Step 3 - Identity & Naming**: Clone name input (auto-incremented suggestion) and Display Name input.
-4. **Step 4 - Destination Directory**: Select target directory (`~/Applications` default or `/Applications`).
+4. **Step 4 - Destination Directory**: Select target directory (`~/ATBClone/Apps` default or `/Applications`).
 5. **Step 5 - Data Directory**: If supported (`supports_data_dir()`), allow custom data storage path.
 6. **Step 6 - Proxy Configuration**: Toggle proxy with type (HTTP/SOCKS5), host, port, credentials.
 7. **Step 7 - Summary & Execution**: Final review. Running clone asynchronously in background with real-time log output widget.

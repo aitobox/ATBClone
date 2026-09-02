@@ -59,7 +59,7 @@ graph TD
 ### 1. 软分身（启动器模式）
 * **设计理念**：零磁盘浪费、毫秒级秒开、轻量化参数委托。
 * **执行步骤**：
-  1. 在 `~/Applications/<分身名称>.app` 创建极小尺寸的目录外壳（体积通常小于 200 KB）。
+  1. 在 `~/ATBClone/Apps/<分身名称>.app` 创建极小尺寸的目录外壳（体积通常小于 200 KB）。
   2. 生成独立的 `Info.plist`，配置专属的应用代号与图标。
   3. 在 `Contents/MacOS/` 下写入可执行 Bash 启动脚本，直接调用母体应用的 Mach-O 实体并注入隔离参数：
      ```bash
@@ -138,7 +138,7 @@ ATBClone 彻底解决了这一痛点，核心在于**数据与逻辑的物理级
 
 ```text
 [ 程序逻辑层 (随时可丢弃重构) ]               [ 数据持久层 (永久保留安全隔离) ]
-~/Applications/WeChat2.app                 ~/ATBClone/Data/WeChat2/
+~/ATBClone/Apps/WeChat2.app                 ~/ATBClone/Data/WeChat2/
   ├── Contents/Info.plist                    ├── Home/
   ├── Contents/MacOS/WeChat (代理壳)          │   ├── Library/Application Support/...
   ├── Contents/MacOS/WeChat.bin              │   ├── Library/Preferences/...

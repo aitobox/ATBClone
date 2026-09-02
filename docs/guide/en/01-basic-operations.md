@@ -81,7 +81,7 @@ Click **"Next Step >"**.
 ### Step 4: Installation Destination
 Choose where the newly created cloned `.app` bundle will reside:
 
-* **Default (`~/Applications` — Recommended)**: Installs directly into your user Applications folder. **Requires zero administrator passwords or root elevation.**
+* **Default (`~/ATBClone/Apps` — Recommended)**: Installs directly into your user ATBClone applications folder. **Requires zero administrator passwords or root elevation.**
 * **System (`/Applications`)**: Installs alongside standard system apps. ATBClone will request standard macOS authorization once via native dialog.
 
 Click **"Next Step >"**.
@@ -118,7 +118,7 @@ Review the summary configuration card:
 * **Source Application**: `/Applications/WeChat.app`
 * **Clone Name**: `WeChat2`
 * **Strategy**: `hard_clone`
-* **Destination**: `~/Applications/WeChat2.app`
+* **Destination**: `~/ATBClone/Apps/WeChat2.app`
 * **Data Storage**: `~/ATBClone/Data/WeChat2`
 * **Proxy**: `http://127.0.0.1:7890`
 
@@ -141,7 +141,7 @@ graph LR
 ### Launching Cloned Applications
 * **From ATBClone**: Click the prominent **"Launch"** button on the application card or table row.
 * **From macOS Spotlight**: Press `Cmd + Space`, type your clone's Display Name (e.g. `WeChat Work`), and press `Enter`.
-* **From Dock / Finder**: Double-click `~/Applications/WeChat2.app` directly.
+* **From Dock / Finder**: Double-click `~/ATBClone/Apps/WeChat2.app` directly.
 
 ---
 
@@ -203,7 +203,7 @@ When clicking **"Delete"** (or during batch deletion), ATBClone provides a safe 
 +-------------------------------------------------------------+
 ```
 
-* **Keep Data (Unchecked - Default)**: Removes the `.app` bundle from `~/Applications` while preserving your chats, preferences, and databases in `~/ATBClone/Data/WeChat2`. You can recreate the clone later and immediately resume where you left off.
+* **Keep Data (Unchecked - Default)**: Removes the `.app` bundle from `~/ATBClone/Apps` while preserving your chats, preferences, and databases in `~/ATBClone/Data/WeChat2`. You can recreate the clone later and immediately resume where you left off.
 * **Purge Data (Checked)**: Permanently removes both the `.app` bundle and the entire data storage directory.
 
 ---

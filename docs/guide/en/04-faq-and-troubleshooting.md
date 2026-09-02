@@ -69,7 +69,7 @@ By default, all user data (databases, local chat archives, cache, cookies, and p
 ---
 
 ### 4. Do I need Administrator (Root / Sudo) privileges?
-* **When installing to `~/Applications` (Default & Recommended)**: **Zero administrator privileges or passwords required.** Everything runs in standard user space.
+* **When installing to `~/ATBClone/Apps` (Default & Recommended)**: **Zero administrator privileges or passwords required.** Everything runs in standard user space.
 * **When installing to system `/Applications`**: macOS will prompt you once via standard native system dialog for authorization to write to the global application folder.
 
 ---
@@ -87,7 +87,7 @@ Or simply select the clone inside ATBClone and click **"Update"** to allow ATBCl
 ---
 
 ### 6. How do I change the clone's icon?
-1. Open Finder and locate your clone in `~/Applications`.
+1. Open Finder and locate your clone in `~/ATBClone/Apps`.
 2. Select the app and press `Cmd + I` (Get Info).
 3. Drag any `.icns` or `.png` image file onto the small application icon at the top-left of the Info inspector window.
 
@@ -117,7 +117,7 @@ If you encounter unexpected behavior during cloning or signing, run our built-in
 2. The Doctor probe automatically validates:
    * **Xcode Command Line Tools (`xcode-select -p`)**: Ensures Apple developer tools are installed for code signing.
    * **Codesign & PlistBuddy**: Verifies system binary utilities.
-   * **Storage Directory Access**: Checks read/write permissions for `~/Applications` and `~/ATBClone/Data`.
+   * **Storage Directory Access**: Checks read/write permissions for `~/ATBClone/Apps` and `~/ATBClone/Data`.
 3. If any item shows an error or warning, follow the on-screen resolution tips (e.g., running `xcode-select --install`).
 
 ---
@@ -140,7 +140,7 @@ If you find an application that fails to clone, or crashes upon opening after cl
 |  • Bundle ID:       com.tencent.xinWeChat                   |
 |  • New Bundle ID:   com.tencent.xinWeChat.atbclone.WeChat2  |
 |  • Strategy:        hard_clone                              |
-|  • Destination:     /Users/username/Applications/WeChat2.app|
+|  • Destination:     /Users/username/ATBClone/Apps/WeChat2.app|
 |  • Data Directory:  /Users/username/ATBClone/Data/WeChat2   |
 |  • Proxy:           http://127.0.0.1:7890                   |
 |                                                             |

@@ -9,7 +9,7 @@ from rich.console import Console
 from atbclone.core.app_inspector import AppInspector
 from atbclone.core.app_prober import AppProber
 from atbclone.core.clone_task import CloneTask
-from atbclone.core.config import DEFAULT_DATA_DIR
+from atbclone.core.config import DEFAULT_APPS_DIR, DEFAULT_DATA_DIR
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.i18n import t
 from atbclone.core.locale import SUPPORTED_LANGUAGES
@@ -29,7 +29,7 @@ logger = get_logger("cli.clone")
 @click.option("--icon", default=None, type=click.Path(exists=True, dir_okay=False), help="Path to custom icon file (.icns, defaults to original app icon).")
 @click.option("--strategy", default=None, type=click.Choice(["hard_clone", "soft_clone"]), help="Override cloning strategy (hard_clone or soft_clone).")
 @click.option("--language", "-l", default="system", type=click.Choice(list(SUPPORTED_LANGUAGES.keys())), help="Target locale/language (system, zh-Hans, zh-Hant, en, ja, ko).")
-@click.option("--output-dir", default=str(Path.home() / "Applications"), help="Target output directory for the cloned application.")
+@click.option("--output-dir", default=str(DEFAULT_APPS_DIR), help="Target output directory for the cloned application.")
 @click.option("--data-dir", default=None, help="Custom data storage directory for this clone.")
 @click.option("--proxy-host", default=None, help="Proxy host (overrides recipe)")
 @click.option("--proxy-port", default=None, type=int, help="Proxy port")

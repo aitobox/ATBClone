@@ -60,7 +60,7 @@ Write comprehensive documentation detailing:
   - Step 1: Selecting the Primary Application (`.app` selection / drag-and-drop).
   - Step 2: Auto-detecting & Matching Recipes (Built-in 33+ recipes vs Prober analysis).
   - Step 3: Clone Identity & Localization (Clone Name e.g. `WeChat2`, Finder/Dock Display Name, UI Language selection).
-  - Step 4: Installation Destination (`~/Applications` user folder vs `/Applications` system folder).
+  - Step 4: Installation Destination (`~/ATBClone/Apps` user folder vs `/Applications` system folder).
   - Step 5: Dedicated Data Directory (`~/ATBClone/Data/<Name>` or external SSD storage).
   - Step 6: Network Proxy Configuration (HTTP / SOCKS5 with host/port for independent IP).
   - Step 7: Confirmation & Instant Cloning.
@@ -171,7 +171,7 @@ Write comprehensive documentation detailing:
   - *Will creating a clone affect my original app's data?* (Explain complete separation).
   * *Where is clone data stored, and how do I back it up or migrate it?* (`~/ATBClone/Data/`).
   * *Will my account get banned for multi-instancing?* (Explain OS-level environment isolation vs memory hooks, dedicated proxy IP, and terms of service).
-  * *Why does ATBClone not require root/admin passwords when cloning to `~/Applications`?*
+  * *Why does ATBClone not require root/admin passwords when cloning to `~/ATBClone/Apps`?*
   * *What should I do if macOS says "App is damaged or cannot be opened"?* (Quarantine xattr removal).
 - System Diagnostics (Doctor Tab):
   - Running Doctor checks for Xcode Command Line Tools, codesigning tools, and storage permissions.

@@ -6,6 +6,7 @@ import pytest
 from click.testing import CliRunner
 
 from atbclone.cli.main import cli
+from atbclone.core.config import DEFAULT_APPS_DIR
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.models import AppInfo
 from atbclone.executor.runner import CloneError
@@ -201,7 +202,7 @@ def test_clone_output_dir_admin_detection(tmp_path: Path, mock_app_info: AppInfo
 
 def test_clone_default_output_dir(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
     runner = CliRunner()
-    default_dir = Path.home() / "Applications"
+    default_dir = DEFAULT_APPS_DIR
 
     with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
          patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \

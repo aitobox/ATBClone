@@ -50,7 +50,7 @@ graph TD
 在阅读本手册前，您可以先了解以下常用名词：
 
 * **母体应用 (Host App)**：您 Mac 上安装的原版应用程序（通常位于 `/Applications`）。
-* **分身应用 (Clone App)**：由 ATBClone 引擎生成的独立副本体（默认存放在 `~/Applications`）。
+* **分身应用 (Clone App)**：由 ATBClone 引擎生成的独立副本体（默认存放在 `~/ATBClone/Apps`）。
 * **硬分身 (Hard Clone / 物理克隆 + 壳劫持)**：完整复制 App 实体，修改唯一 Bundle ID，注入环境变量启动脚本并重新签名。适合微信、Telegram、QQ、飞书、Discord 等绝大多数社交和原生应用。
 * **软分身 (Soft Clone / 软包装启动器)**：仅生成轻量级启动器外壳，通过启动参数（如 `--user-data-dir`）重定向数据。适合 Cursor、VS Code、Chrome、Edge、Firefox 等浏览器与开发工具。
 * **规则 (Recipe)**：指示 ATBClone 如何处理该应用的 YAML 格式配置说明书。

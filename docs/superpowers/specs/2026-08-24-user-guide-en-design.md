@@ -43,7 +43,7 @@ docs/guide/en/
   1. *Step 1: Select Primary Application*: Drag-and-drop or browse from `/Applications`.
   2. *Step 2: Strategy & Recipe Matching*: Auto-detection from 33+ built-in recipes or Prober dynamic analysis.
   3. *Step 3: Clone Identity & Language*: Setting Clone Name (e.g. `WeChat2`), Display Title in Dock/Finder, and independent UI language locale.
-  4. *Step 4: Destination Directory*: Installing to `~/Applications` (zero-password user space) vs `/Applications` (system space).
+  4. *Step 4: Destination Directory*: Installing to `~/ATBClone/Apps` (zero-password user space) vs `/Applications` (system space).
   5. *Step 5: Dedicated Data Directory*: Auto-configured `~/ATBClone/Data/<Name>` or custom external SSD storage.
   6. *Step 6: Network Proxy*: Optional dedicated HTTP / SOCKS5 proxy configuration per clone.
   7. *Step 7: Summary & Execution*: Review parameters and create with one click.

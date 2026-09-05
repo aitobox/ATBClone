@@ -92,28 +92,29 @@ ATBClone 利用 `/usr/libexec/PlistBuddy` 对目标包进行身份突变（如�
 
 ---
 
-### 第二板斧：二进制壳劫持与环境欺骗 (Wrapper Hijack)
-为了在不逆向反编译、不修改已编译 Mach-O 机器码的前提下实现完美数据重定向，ATBClone 采用了独创的壳劫持技术：
+### 第二板斧：原生动态库注入与环境隔离 (Native In-Process Dylib Injection)
+为了在保证数据完全隔离的同时，完美契合 macOS 14 (Sonoma) 和 15 (Sequoia) 苛刻的 **RunningBoardServices (RBS)** 与系统服务生命周期管控，ATBClone 实现了独创的原生动态库注入与智能降级体系：
 
-1. 将原可执行文件 `Contents/MacOS/WeChat` 重命名为 `Contents/MacOS/WeChat.bin`。
-2. 写入一个同名的中间代理脚本 `Contents/MacOS/WeChat` 并赋予执行权限（`chmod +x`）：
-   ```bash
-   #!/bin/bash
-   DIR=$(dirname "$0")
-   
-   # 1. 家目录与临时目录欺骗重定向
-   export HOME="/Users/username/ATBClone/Data/WeChat2/Home"
-   export TMPDIR="/Users/username/ATBClone/Data/WeChat2/Tmp"
-   
-   # 2. 单应用专属网络代理注入 (可选)
-   export HTTP_PROXY="http://127.0.0.1:7890"
-   export HTTPS_PROXY="http://127.0.0.1:7890"
-   export ALL_PROXY="socks5://127.0.0.1:7890"
-   
-   # 3. 启动母体二进制并透传所有参数
-   exec "$DIR/WeChat.bin" "$@"
-   ```
-3. 应用启动时，读取到的 `$HOME` 即为隔离目录，自动将所有的聊天记录、配置文件和缓存写入专属沙盒，完美实现多账号互不干扰。
+#### 1. 为什么传统的 `execv` 包装会失效？
+过去采用 Shell 脚本或独立 C 二进制启动器包装真实应用时，启动器调用 `execv` 切换到真实二进制（如 `WeChat.bin`），Darwin 内核会递增进程版本号 (`PIDVersion`)。
+macOS 的两大系统组件：
+* **`MenuBarAgent`**（负责顶部菜单栏图标与状态栏驻留 `NSStatusItem`）
+* **`usernoted`**（负责通知中心弹窗与权限绑定）
+
+在接收 XPC 连接时都会校验进程 `audit_token`。一旦发生 `execv` 进程替换，RBS 会报告 `mismatched pid version` 错误并丢弃连接，导致菜单栏图标消失、系统通知静默失效。
+
+#### 2. 原生动态库无感注入 (`libatbclone_env.dylib`)
+为彻底解决此问题，ATBClone 研发了原生动态库注入架构：
+1. **保留原版可执行文件**：不重命名原版二进制，可执行文件保持为官方原生 Mach-O。
+2. **轻量动态库预置**：在 `Contents/Frameworks/` 下编译极简通用动态库 `libatbclone_env.dylib`。其内部通过 C 语言 `__attribute__((constructor))` 构造函数，在 dyld 装载镜像、进入主程序 `main()` 前完成 `HOME`、`TMPDIR`、网络代理等环境重定向。
+3. **Mach-O `LC_LOAD_DYLIB` 指令追加**：纯 Python 解析 Mach-O 结构，直接在 Load Commands 列表中安全追加 `@executable_path/../Frameworks/libatbclone_env.dylib`。
+4. **零进程替换**：整个生命周期保持单一原生进程，与 LaunchServices / RBS 100% 吻合。
+
+#### 3. 静态 Headroom 探测与优雅降级
+为防止在非标准编译器或紧凑打包的应用上强行追加指令损坏 Mach-O Section，引擎内置静态头部空间探测器：
+$$\text{Padding} = \text{first\_section\_offset} - (32 + \text{sizeofcmds})$$
+* **头部空间充足时**：自动启用原生动态库无感注入（如微信剩余 50KB+，安全注入）；
+* **头部空间不足或需启动参数时**：自动平滑降级为轻量编译的 **原生 Mach-O C 启动器包装**，彻底杜绝应用崩溃风险。
 
 ---
 

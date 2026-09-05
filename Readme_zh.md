@@ -33,7 +33,7 @@ Release 页面主要提供两个发布文件，**核心功能完全一致**：
 ## ✨ 核心特性
 
 - 📦 **双引擎克隆架构 (Dual-Engine Cloning Mechanism)**：
-  - **硬克隆 (Hard Clone)**：面向原生/社交与独立架构应用（微信、QQ、Telegram、AI 客户端、Chrome、Edge、Arc 等）。完整复制 App Bundle，修改 `Info.plist` 与 Bundle Identifier，通过二进制劫持启动脚本注入独立 `HOME` / `TMPDIR` 数据目录，支持按需剥离 App Sandbox 沙盒限制，并完成 Ad-hoc 重新签名。
+  - **硬克隆 (Hard Clone)**：面向原生/社交与独立架构应用（微信、QQ、Telegram、AI 客户端、Chrome、Edge、Arc 等）。完整复制 App Bundle，修改 `Info.plist` 与 Bundle Identifier，通过进程内动态库注入 (`libatbclone_env.dylib`) 或 Mach-O 二进制启动器拦截注入独立 `HOME` / `TMPDIR` 数据目录，支持按需剥离 App Sandbox 沙盒限制，并完成 Ad-hoc 重新签名。
   - **软克隆 (Soft Clone)**：面向现代代码编辑器与浏览器（Cursor、VS Code、Firefox、Brave、Tor、Zed 等）。生成轻量级启动器包装（Wrapper Bundle），自动注入 `--user-data-dir` / `--profile` 参数与独立代理环境变量。
 - 🔍 **智能应用探测 (App Prober)**：遇到未预设规则的任意 macOS 应用程序时，自动分析其 Mach-O 架构、Frameworks 与代码签名沙盒权限，动态决定软/硬克隆策略并提取推荐规则。
 - 🌐 **独立网络代理 (Isolated Network Proxies)**：为每个分身实例配置独立的 HTTP 或 SOCKS5 代理（支持认证），与系统主网络及母体应用互不干扰。
@@ -126,6 +126,20 @@ atbclone clone /Applications/ChatGPT.app \
   --proxy-port 1080 \
   --proxy-type socks5
 ```
+
+#### 选择环境变量注入策略 (`--injection-strategy`)
+对于硬克隆应用，可控制隔离环境变量（`HOME`/`TMPDIR`/代理等）如何注入到目标进程中：
+```bash
+# 自动模式（默认）：静态探测 Mach-O Load Command 剩余空间，首选进程内 dylib 注入，空间不足 56 字节时安全降级为 launcher
+atbclone clone /Applications/WeChat.app --injection-strategy auto
+
+# 强制 dylib 注入（保证 macOS 系统原生通知和菜单栏状态栏图标完整可用）
+atbclone clone /Applications/WeChat.app --injection-strategy dylib
+
+# 强制 Mach-O 二进制启动器拦截
+atbclone clone /Applications/Chrome.app --injection-strategy launcher
+```
+*可选策略：* `auto`（默认/推荐）、`dylib`（进程内动态库注入，保持 Darwin PIDVersion 纯净）、`launcher`（C 二进制启动器拦截）。
 
 ---
 

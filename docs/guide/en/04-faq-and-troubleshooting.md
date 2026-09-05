@@ -106,8 +106,10 @@ Instant messaging apps like WeChat and QQ support residing in the macOS top Menu
 * **Background Long-Polling Connection**: Because clones use ad-hoc re-signing, Apple's push notification service (APNs) cannot directly route to clones. Instead, WeChat maintains its own active TCP/WebSocket connection (`LongLink`) in the background to receive private and group messages in real time.
 * **Keep Running in the Background**: When finished chatting, simply click the red close button (`x`) on the main window. The clone will remain active in the Menu Bar and background; **do not press `Cmd + Q` to terminate it**.
 * **Alerts & Badges**: When a new message arrives, the Menu Bar icon displays an unread indicator/red dot, the Dock icon badge updates, and alert sounds play.
-* **Notification Permissions**: When prompted with "Allow notifications for WorkWeChat", click "Allow". You can also verify notification permissions in macOS **System Settings -> Notifications**.
+* **Notification Permissions**: When prompted with "Allow notifications for WeChat", click "Allow". You can also verify notification permissions in macOS **System Settings -> Notifications**.
 
+> [!TIP]
+> **Under the Hood**: Communication apps like WeChat and Telegram rely on ATBClone's **`dylib` native in-process injection mode** (keep `auto` or select `dylib` when cloning). This avoids `execv` process replacement, which alters process version (`PIDVersion`) and breaks macOS Notification Center (`usernoted`) and Menu Bar status item (`MenuBarAgent`) registration. If `launcher` mode is accidentally selected, notifications and menu bar status icons may be silently suppressed by macOS.
 
 ---
 

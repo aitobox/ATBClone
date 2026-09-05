@@ -32,7 +32,7 @@ ATBClone provides two distribution packages with **identical core functionality*
 ## ✨ Key Features
 
 - 📦 **Dual-Engine Cloning Mechanism**:
-  - **Hard Clone**: Designed for native and social applications (WeChat, QQ, Telegram, AI clients, Chrome, Edge, Arc, etc.). Duplicates the entire App Bundle, modifies `Info.plist` and Bundle Identifier, injects isolated `HOME` / `TMPDIR` data directories via binary launcher script hijack, optionally strips App Sandbox restrictions, and performs ad-hoc code re-signing.
+  - **Hard Clone**: Designed for native and social applications (WeChat, QQ, Telegram, AI clients, Chrome, Edge, Arc, etc.). Duplicates the entire App Bundle, modifies `Info.plist` and Bundle Identifier, injects isolated `HOME` / `TMPDIR` data directories via in-process dynamic library injection (`libatbclone_env.dylib`) or Mach-O binary launcher hijack, optionally strips App Sandbox restrictions, and performs ad-hoc code re-signing.
   - **Soft Clone**: Designed for modern code editors and browsers (Cursor, VS Code, Firefox, Brave, Tor, Zed, etc.). Generates a lightweight wrapper bundle, automatically injecting isolated `--user-data-dir` / `--profile` launch arguments and proxy environment variables.
 - 🔍 **Intelligent App Prober**: Automatically inspects Mach-O architectures, frameworks, and code signing sandbox entitlements for any application without a pre-configured recipe, dynamically determining the optimal soft/hard clone strategy and generating recommended recipes.
 - 🌐 **Isolated Network Proxies**: Configure dedicated HTTP or SOCKS5 proxies (with authentication support) per cloned application without interfering with host system or primary application traffic.
@@ -126,6 +126,20 @@ atbclone clone /Applications/ChatGPT.app \
   --proxy-port 1080 \
   --proxy-type socks5
 ```
+
+#### Injection Strategy Selection (`--injection-strategy`)
+For Hard Clone apps, customize how isolated environment variables (`HOME`, `TMPDIR`, proxies) are injected into the cloned application:
+```bash
+# Auto mode (default): probes Mach-O load command headroom, prefers in-process dylib injection, falls back to launcher if headroom < 56 bytes
+atbclone clone /Applications/WeChat.app --injection-strategy auto
+
+# Force dylib injection (guarantees native macOS system notifications and Menu Bar status icons)
+atbclone clone /Applications/WeChat.app --injection-strategy dylib
+
+# Force Mach-O binary launcher hijack
+atbclone clone /Applications/Chrome.app --injection-strategy launcher
+```
+*Options:* `auto` (default/recommended), `dylib` (in-process dynamic library, Darwin PIDVersion preserved), `launcher` (C binary launcher hijack).
 
 ---
 

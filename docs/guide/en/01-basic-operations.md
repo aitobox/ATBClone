@@ -54,8 +54,12 @@ ATBClone automatically inspects the chosen application:
 * **Built-in Match**: If the app matches one of our 33+ built-in recipes, ATBClone automatically selects the optimal strategy (e.g., `Hard Clone` for WeChat, `Soft Clone` for Cursor/VS Code).
 * **Smart Prober**: If the app is not in the built-in library, the engine dynamically scans its Mach-O binary and sandbox entitlements, determining the best strategy automatically.
 * **Strategy Selection**: You can manually toggle between:
-  * `hard_clone`: Duplicates the bundle, mutates bundle ID, and injects binary wrapper scripts.
+  * `hard_clone`: Duplicates the bundle, mutates bundle ID, and injects environment isolation mechanisms.
   * `soft_clone`: Lightweight launcher shell passing isolated parameters.
+* **Injection Mode (Injection Strategy)**: For Hard Clones, you can configure the underlying injection technology:
+  * `auto` (Default & Recommended): Automatically probes Mach-O header padding headroom. For native applications with sufficient headroom, it uses **In-Process Dylib Injection (`dylib`)** (zero `execv` process substitution, guaranteeing full Notification Center and Menu Bar status item support). If padding is insufficient or custom CLI args are required, it gracefully falls back to **Launcher Packaging (`launcher`)**.
+  * `dylib` (Dynamic Library Injection): Forces in-process dylib injection via Mach-O `LC_LOAD_DYLIB`. If the binary header lacks space, it reports an error rather than corrupting the binary. Ideal for native messengers (WeChat, Telegram).
+  * `launcher` (Launcher Packaging): Forces the traditional native Mach-O C launcher wrapper with `.bin` binary backup.
 
 Click **"Next Step >"** to proceed.
 

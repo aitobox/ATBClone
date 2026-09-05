@@ -17,6 +17,7 @@
   - [3. `strategy`（克隆策略）](#3-strategy克隆策略)
   - [4. `strip_sandbox`（沙盒剥离）](#4-strip_sandbox沙盒剥离)
   - [5. `proxy`（独立代理配置）](#5-proxy独立代理配置)
+  - [6. `injection_strategy`（环境注入模式）](#6-injection_strategy环境注入模式)
 - [自定义规则 YAML 完整范例](#自定义规则-yaml-完整范例)
 - [下一步指引](#下一步指引)
 
@@ -145,6 +146,18 @@ proxy:
 
 ---
 
+### 6. `injection_strategy`（环境注入模式）
+* **类型**：`enum`（可选值：`auto` | `dylib` | `launcher`，默认：`auto`）
+* **说明**：配置针对物理克隆（`hard_clone`）应用的环境变量重定向底层机制。
+
+| 注入模式 | 运行机制 | 核心优势与适用场景 |
+| :--- | :--- | :--- |
+| **`auto`（默认推荐）** | 智能静态探测 Mach-O 头部 Padding 空间。空间充足时使用 `dylib`，空间不足或需额外参数时自动平滑回退为 `launcher`。 | 绝大多数场景首选。保证对未知软件的最大兼容性与后续更新韧性。 |
+| **`dylib`（强制动态库注入）** | 往 Mach-O 插入 `LC_LOAD_DYLIB`，启动阶段由 dyld 直接调用 `libatbclone_env.dylib` 完成环境变量隔离，**零进程替换 (`execv`)**。 | 原生通信软件（微信、QQ、Telegram、企业微信）。完美支持顶部状态栏图标与 macOS 系统通知中心。 |
+| **`launcher`（强制启动器包装）** | 编译原生 Mach-O C 二进制启动器替代主程序，将原主程序重命名为 `.bin` 并通过 `execv` 代理启动。 | 需追加特定命令行启动参数或 Mach-O 头部极度紧凑的应用。 |
+
+---
+
 ## 📄 自定义规则 YAML 完整范例
 
 下面是一份标准的自定义规则文件示例：
@@ -160,6 +173,7 @@ app_name: ExampleApp
 strategy: hard_clone
 app_type: cocoa
 strip_sandbox: false
+injection_strategy: auto
 
 proxy:
   enabled: false

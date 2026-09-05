@@ -17,6 +17,7 @@ This chapter explains how to create custom recipes using the built-in **App Prob
   - [3. `strategy` (Cloning Strategy)](#3-strategy-cloning-strategy)
   - [4. `strip_sandbox` (Sandbox Stripping)](#4-strip_sandbox-sandbox-stripping)
   - [5. `proxy` (Proxy Settings)](#5-proxy-proxy-settings)
+  - [6. `injection_strategy` (Injection Strategy)](#6-injection_strategy-injection-strategy)
 - [Sample Custom Recipe YAML](#sample-custom-recipe-yaml)
 - [Next Steps](#next-steps)
 
@@ -145,6 +146,18 @@ proxy:
 
 ---
 
+### 6. `injection_strategy` (Injection Strategy)
+* **Type**: `enum` (`auto` | `dylib` | `launcher`, Default: `auto`)
+* **Description**: Configures the underlying environment isolation technique for `hard_clone` operations.
+
+| Injection Strategy | Mechanism | Key Benefits & Typical Use Cases |
+| :--- | :--- | :--- |
+| **`auto` (Default & Recommended)** | Statically inspects the binary Mach-O header padding headroom. If space is sufficient, uses `dylib`; otherwise automatically falls back to `launcher`. | Best for almost all apps. Ensures maximum compatibility and seamless adaptation across app updates. |
+| **`dylib` (Forced Dylib Injection)** | Inserts `LC_LOAD_DYLIB` directly into the Mach-O binary. Environment variables are set in-process before `main()`, with **zero `execv` process replacement**. | Native Cocoa/communication apps (WeChat, Telegram, QQ). Fully supports Menu Bar status items (`NSStatusItem`) and macOS Notification Center. |
+| **`launcher` (Forced Launcher Packaging)** | Compiles a native Mach-O C launcher and backs up the original binary as `.bin` launched via `execv`. | Apps requiring custom CLI parameters or binaries with tightly packed Mach-O headers. |
+
+---
+
 ## 📄 Sample Custom Recipe YAML
 
 Here is what a complete custom recipe file looks like:
@@ -160,6 +173,7 @@ app_name: ExampleApp
 strategy: hard_clone
 app_type: cocoa
 strip_sandbox: false
+injection_strategy: auto
 
 proxy:
   enabled: false

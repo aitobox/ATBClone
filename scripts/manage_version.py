@@ -6,10 +6,11 @@ across all project configuration files and multilingual ReleaseNotes.
 """
 
 import argparse
+import plistlib
 import re
 import sys
 from pathlib import Path
-from typing import NamedTuple
+from typing import Any, NamedTuple
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -93,6 +94,39 @@ class VersionTarget:
         return True
 
 
+class PlistVersionTarget:
+    """Represents a macOS Info.plist file containing version definitions."""
+
+    def __init__(self, path: Path, name: str):
+        self.path = path
+        self.name = name
+
+    def read_version(self) -> str | None:
+        if not self.path.exists():
+            return None
+        try:
+            with open(self.path, "rb") as f:
+                pl = plistlib.load(f)
+            return pl.get("CFBundleShortVersionString")
+        except Exception:
+            return None
+
+    def update_version(self, new_version: str, dry_run: bool = False) -> bool:
+        if not self.path.exists():
+            return False
+        try:
+            with open(self.path, "rb") as f:
+                pl = plistlib.load(f)
+            pl["CFBundleShortVersionString"] = new_version
+            pl["CFBundleVersion"] = new_version
+            if not dry_run:
+                with open(self.path, "wb") as f:
+                    plistlib.dump(pl, f)
+            return True
+        except Exception:
+            return False
+
+
 class ReleaseNoteTarget:
     """Represents a multilingual release note file in docs/release/."""
 
@@ -135,6 +169,43 @@ def get_version_targets(root: Path = PROJECT_ROOT) -> list[VersionTarget]:
             name="src/atbclone/__init__.py",
         ),
     ]
+
+
+def get_build_artifact_targets(root: Path = PROJECT_ROOT) -> list[Any]:
+    """Return optional build/packaging intermediate targets if they exist locally."""
+    targets: list[Any] = []
+
+    # 1. Briefcase macOS App Info.plist
+    app_plist = root / "build" / "atbclone" / "macos" / "app" / "ATBClone.app" / "Contents" / "Info.plist"
+    if not app_plist.exists() and (root / "build").exists():
+        found = list((root / "build").glob("**/ATBClone.app/Contents/Info.plist"))
+        if found:
+            app_plist = found[0]
+
+    targets.append(
+        PlistVersionTarget(
+            path=app_plist,
+            name="Info.plist (macOS App)",
+        )
+    )
+
+    # 2. Briefcase macOS installer welcome.html
+    welcome_html = root / "build" / "atbclone" / "macos" / "app" / "installer" / "resources" / "welcome.html"
+    if not welcome_html.exists() and (root / "build").exists():
+        found = list((root / "build").glob("**/installer/resources/welcome.html"))
+        if found:
+            welcome_html = found[0]
+
+    targets.append(
+        VersionTarget(
+            path=welcome_html,
+            pattern=re.compile(r"ATBClone\s+([0-9]+\.[0-9]+\.[0-9]+)"),
+            replace_template="ATBClone {version}",
+            name="installer/welcome.html",
+        )
+    )
+
+    return targets
 
 
 def get_release_note_targets(root: Path = PROJECT_ROOT) -> list[ReleaseNoteTarget]:
@@ -188,6 +259,16 @@ def show_versions(root: Path = PROJECT_ROOT) -> int:
         else:
             all_matched = False
 
+    build_targets = [bt for bt in get_build_artifact_targets(root) if bt.path.exists()]
+    if build_targets:
+        print("\nBuild Artifact Targets (detected in build/):")
+        for bt in build_targets:
+            bt_ver = bt.read_version()
+            status = f"v{bt_ver}" if bt_ver else "[NO VERSION ENTRY]"
+            if first_ver and bt_ver != first_ver:
+                status += " [OUT OF SYNC]"
+            print(f"  - {bt.name:<30}: {status}")
+
     rn_targets = get_release_note_targets(root)
     rn_matched = True
     if any(t.exists() for t in rn_targets):
@@ -230,6 +311,16 @@ def apply_version(new_version_str: str, root: Path = PROJECT_ROOT, dry_run: bool
             print(f"  [✔] {target.name} ({old_ver} -> {new_version_str})")
         else:
             print(f"  [✘] {target.name} (failed to update)")
+
+    build_targets = [bt for bt in get_build_artifact_targets(root) if bt.path.exists()]
+    if build_targets:
+        for bt in build_targets:
+            old_ver = bt.read_version()
+            success = bt.update_version(new_version_str, dry_run=dry_run)
+            if success:
+                print(f"  [✔] {bt.name} ({old_ver} -> {new_version_str})")
+            else:
+                print(f"  [✘] {bt.name} (failed to update)")
 
     print(f"\n[✔] Version successfully set to {new_version_str}")
     return 0

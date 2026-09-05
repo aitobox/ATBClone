@@ -179,3 +179,74 @@ def test_main_cli_check_notes(capsys):
     captured_fail = capsys.readouterr()
     assert "Missing v9.9.9 entry in 9 ReleaseNotes file(s)" in captured_fail.out
 
+
+def test_plist_version_target(tmp_path):
+    import plistlib
+
+    plist_file = tmp_path / "Info.plist"
+    data = {
+        "CFBundleShortVersionString": "1.0.0",
+        "CFBundleVersion": "1",
+    }
+    with open(plist_file, "wb") as f:
+        plistlib.dump(data, f)
+
+    target = mv.PlistVersionTarget(plist_file, "Test Info.plist")
+    assert target.read_version() == "1.0.0"
+
+    # Dry run should not modify
+    assert target.update_version("1.2.0", dry_run=True) is True
+    assert target.read_version() == "1.0.0"
+
+    # Real update
+    assert target.update_version("1.2.0", dry_run=False) is True
+    assert target.read_version() == "1.2.0"
+    with open(plist_file, "rb") as f:
+        updated = plistlib.load(f)
+    assert updated["CFBundleShortVersionString"] == "1.2.0"
+    assert updated["CFBundleVersion"] == "1.2.0"
+
+    # Non-existent file
+    missing_target = mv.PlistVersionTarget(tmp_path / "nonexistent.plist", "Missing")
+    assert missing_target.read_version() is None
+    assert missing_target.update_version("1.2.0") is False
+
+
+def test_build_artifact_targets_and_apply_version(tmp_path):
+    import plistlib
+
+    # Setup mock project with pyproject.toml, src/__init__.py, and build/ artifacts
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text('[project]\nversion = "1.0.0"\n[tool.briefcase]\nversion = "1.0.0"\n', encoding="utf-8")
+
+    init_file = tmp_path / "src" / "atbclone" / "__init__.py"
+    init_file.parent.mkdir(parents=True)
+    init_file.write_text('__version__ = "1.0.0"\n', encoding="utf-8")
+
+    app_dir = tmp_path / "build" / "atbclone" / "macos" / "app"
+    plist_file = app_dir / "ATBClone.app" / "Contents" / "Info.plist"
+    plist_file.parent.mkdir(parents=True)
+    with open(plist_file, "wb") as f:
+        plistlib.dump({"CFBundleShortVersionString": "1.0.0", "CFBundleVersion": "1"}, f)
+
+    welcome_file = app_dir / "installer" / "resources" / "welcome.html"
+    welcome_file.parent.mkdir(parents=True)
+    welcome_file.write_text("<html><h1>ATBClone 0.9.2</h1></html>", encoding="utf-8")
+
+    build_targets = mv.get_build_artifact_targets(root=tmp_path)
+    assert len(build_targets) == 2
+    assert build_targets[0].read_version() == "1.0.0"
+    assert build_targets[1].read_version() == "0.9.2"
+
+    # Apply version
+    assert mv.apply_version("1.3.0", root=tmp_path, dry_run=False) == 0
+
+    assert build_targets[0].read_version() == "1.3.0"
+    assert build_targets[1].read_version() == "1.3.0"
+    with open(plist_file, "rb") as f:
+        pl = plistlib.load(f)
+    assert pl["CFBundleShortVersionString"] == "1.3.0"
+    assert pl["CFBundleVersion"] == "1.3.0"
+    assert "ATBClone 1.3.0" in welcome_file.read_text(encoding="utf-8")
+
+

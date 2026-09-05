@@ -248,6 +248,13 @@ mkdir -p "${APP_BUNDLE}/Contents/Resources/docs/release"
 if [[ -d "docs/release" ]]; then
     cp -R docs/release/* "${APP_BUNDLE}/Contents/Resources/docs/release/"
 fi
+
+# Sync version from pyproject.toml into Info.plist
+if [[ -f "${APP_BUNDLE}/Contents/Info.plist" ]]; then
+    echo "[*] Synchronizing version v${VERSION} into ${APP_BUNDLE}/Contents/Info.plist ..."
+    /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${VERSION}" "${APP_BUNDLE}/Contents/Info.plist" 2>/dev/null || \
+    /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string ${VERSION}" "${APP_BUNDLE}/Contents/Info.plist" 2>/dev/null || true
+fi
 echo "[*] Sanitizing app bundle attributes in ${APP_BUNDLE}..."
 sanitize_filesystem "${APP_BUNDLE}"
 touch "${APP_BUNDLE}"

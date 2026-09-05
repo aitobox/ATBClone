@@ -398,6 +398,7 @@ static void atbclone_env_init(void) {{
 {setenv_block}
 }}
 """
+        clean_bin = bin_orig.strip("'\"")
         py_insert_dylib = f"""python3 -c "
 import struct
 def insert_dylib(macho_path, dylib_path):
@@ -433,14 +434,17 @@ def insert_dylib(macho_path, dylib_path):
     with open(macho_path, 'wb') as fp:
         fp.write(data)
 
-raw_bin = {repr(bin_orig.strip("'\""))}
-insert_dylib(raw_bin, '@rpath/libatbclone_env.dylib')
+raw_bin = {clean_bin!r}
+insert_dylib(raw_bin, '@executable_path/../Frameworks/libatbclone_env.dylib')
 "
 """
         return f"""mkdir -p {dst_frameworks}
-clang -dynamiclib -O2 -arch arm64 -arch x86_64 -install_name @rpath/libatbclone_env.dylib -o {dst_frameworks}/libatbclone_env.dylib -x c - << 'ATB_DYLIB_EOF'
+clang -dynamiclib -O2 -arch arm64 -arch x86_64 -install_name @executable_path/../Frameworks/libatbclone_env.dylib -o {dst_frameworks}/libatbclone_env.dylib -x c - << 'ATB_DYLIB_EOF'
 {c_source}ATB_DYLIB_EOF
 chmod +x {dst_frameworks}/libatbclone_env.dylib
+if [ -d {dst_frameworks}/ld ]; then
+    ln -sf ../libatbclone_env.dylib {dst_frameworks}/ld/libatbclone_env.dylib 2>/dev/null || cp -f {dst_frameworks}/libatbclone_env.dylib {dst_frameworks}/ld/libatbclone_env.dylib 2>/dev/null || true
+fi
 {py_insert_dylib}"""
 
 

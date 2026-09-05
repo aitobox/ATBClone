@@ -200,6 +200,10 @@ class TestHardCloneEngine:
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.example.testapp.clone2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert '/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName TestApp 2" /Applications/TestApp2.app/Contents/Info.plist' in script
             assert "libatbclone_env.dylib" in script
+            assert "-install_name @executable_path/../Frameworks/libatbclone_env.dylib" in script
+            assert "insert_dylib(raw_bin, '@executable_path/../Frameworks/libatbclone_env.dylib')" in script
+            assert "if [ -d /Applications/TestApp2.app/Contents/Frameworks/ld ]; then" in script
+            assert "ln -sf ../libatbclone_env.dylib /Applications/TestApp2.app/Contents/Frameworks/ld/libatbclone_env.dylib" in script
             assert "insert_dylib(" in script
             assert 'setenv("LANG", "zh_CN.UTF-8", 1);' in script
             assert 'setenv("LC_ALL", "zh_CN.UTF-8", 1);' in script
@@ -207,6 +211,20 @@ class TestHardCloneEngine:
             assert "xattr -cr /Applications/TestApp2.app 2>/dev/null || true" in script
             assert "codesign --force --deep --sign - /Applications/TestApp2.app" in script
             assert "codesign -vv --deep --strict /Applications/TestApp2.app" in script
+
+    def test_hard_clone_dylib_rpath_independent_and_ld_symlink(self, sample_task):
+        """Verify dylib injection uses @executable_path and handles Frameworks/ld fallback for WeChat 4.x."""
+        sample_task.recipe.launch_args = []
+        sample_task.recipe.app_type = "cocoa"
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "@rpath/libatbclone_env.dylib" not in script
+            assert "-install_name @executable_path/../Frameworks/libatbclone_env.dylib" in script
+            assert "insert_dylib(raw_bin, '@executable_path/../Frameworks/libatbclone_env.dylib')" in script
+            assert "if [ -d /Applications/TestApp2.app/Contents/Frameworks/ld ]; then" in script
+            assert "ln -sf ../libatbclone_env.dylib /Applications/TestApp2.app/Contents/Frameworks/ld/libatbclone_env.dylib" in script
 
     def test_hard_clone_with_spaces_in_path(self, mock_app_info_with_spaces, base_recipe):
         base_recipe.launch_args = ["--no-first-run"]

@@ -35,6 +35,7 @@ class Recipe(BaseModel):
     patch_framework_singleton: bool = False
     patch_cef: bool = False
     patch_lark_isolation: bool = False
+    patch_chatgpt_isolation: bool = False
     strip_url_schemes: bool = False
     injection_strategy: InjectionStrategy = "auto"
 

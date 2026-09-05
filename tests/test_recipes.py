@@ -210,7 +210,10 @@ def test_load_builtin_chatgpt():
     assert recipe.strategy == "hard_clone"
     assert recipe.app_type == "electron"
     assert recipe.strip_sandbox is True
-    assert recipe.patch_framework_singleton is True
+    assert recipe.patch_chatgpt_isolation is True
+    assert recipe.strip_url_schemes is True
+    assert recipe.patch_framework_singleton is False
+    assert recipe.launch_args == []
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
     assert recipe.environment_injection.get("CODEX_HOME") == "{{ATB_DATA_DIR}}/Codex"
@@ -224,7 +227,10 @@ def test_load_builtin_chatgpt_chat():
     assert recipe.strategy == "hard_clone"
     assert recipe.app_type == "electron"
     assert recipe.strip_sandbox is True
-    assert recipe.patch_framework_singleton is True
+    assert recipe.patch_chatgpt_isolation is True
+    assert recipe.strip_url_schemes is True
+    assert recipe.patch_framework_singleton is False
+    assert recipe.launch_args == []
     assert "HOME" in recipe.environment_injection
     assert "TMPDIR" in recipe.environment_injection
     assert recipe.environment_injection.get("CODEX_HOME") == "{{ATB_DATA_DIR}}/Codex"
@@ -404,6 +410,20 @@ def test_all_builtin_recipes_have_explicit_app_type():
             missing_app_type.append(yf.name)
 
     assert not missing_app_type, f"Builtin recipes missing explicit app_type: {missing_app_type}"
+
+
+def test_chatgpt_recipes_have_isolation_flags():
+    from atbclone.recipes.loader import RecipeLoader
+
+    for bid in ("com.openai.codex", "com.openai.chat"):
+        recipe = RecipeLoader.get(bid)
+        assert recipe is not None, f"Recipe {bid} should exist"
+        assert recipe.patch_chatgpt_isolation is True
+        assert recipe.strip_url_schemes is True
+        assert recipe.patch_framework_singleton is False
+        assert recipe.launch_args == []
+        assert "HOME" in recipe.environment_injection
+
 
 
 

@@ -755,6 +755,38 @@ class TestProcessSingletonFrameworkPatching:
             assert "libatbclone_lark_hook.dylib" not in script
             assert "Lark/Feishu isolation" not in script
 
+    def test_hard_clone_script_includes_isolation_hook_for_chatgpt(self, sample_task):
+        sample_task.source.bundle_id = "com.openai.codex"
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "ChatGPT isolation: compile Cocoa/POSIX hook dylib and strip URL schemes" in script
+            assert "libatbclone_chatgpt_hook.dylib" in script
+            assert "DYLD_INSERT_LIBRARIES" in script
+            assert "Delete :CFBundleURLTypes" in script
+            # Ensure generic singleton patch is skipped for ChatGPT
+            assert "Patch ProcessSingleton in embedded frameworks" not in script
+
+    def test_hard_clone_script_includes_isolation_hook_for_chatgpt_chat_id(self, sample_task):
+        sample_task.source.bundle_id = "com.openai.chat"
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "ChatGPT isolation: compile Cocoa/POSIX hook dylib and strip URL schemes" in script
+            assert "libatbclone_chatgpt_hook.dylib" in script
+            assert "DYLD_INSERT_LIBRARIES" in script
+            assert "Delete :CFBundleURLTypes" in script
+            assert "Patch ProcessSingleton in embedded frameworks" not in script
+
+    def test_hard_clone_script_omits_chatgpt_isolation_for_non_chatgpt_apps(self, sample_task):
+        sample_task.source.bundle_id = "com.google.Chrome"
+        sample_task.recipe.patch_chatgpt_isolation = False
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "libatbclone_chatgpt_hook.dylib" not in script
+            assert "ChatGPT isolation" not in script
+
     def test_hard_clone_script_includes_singleton_patch_when_recipe_flag_true(self, sample_task):
         sample_task.source.bundle_id = "com.other.electronapp"
         sample_task.recipe.patch_framework_singleton = True
@@ -852,8 +884,8 @@ class TestEnginePermissionsAndXattrTolerance:
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
             assert 'setenv("CODEX_HOME", "/Users/test/data/Codex", 1);' in script
-            assert 'if [ -d "$HOME/.codex" ] && [ ! -d /Users/test/data/Codex ]; then' in script
-            assert 'cp -R "$HOME/.codex/." /Users/test/data/Codex/' in script
+            assert 'mkdir -p /Users/test/data/Codex' in script
+            assert 'cp -R "$HOME/.codex/."' not in script
 
     def test_soft_clone_codex_home_script(self, mock_app_info, base_recipe):
         base_recipe.environment_injection = {
@@ -874,8 +906,8 @@ class TestEnginePermissionsAndXattrTolerance:
             mock_run.assert_called_once()
             script, _ = mock_run.call_args[0]
             assert 'setenv("CODEX_HOME", "/Users/test/data/Codex", 1);' in script
-            assert 'if [ -d "$HOME/.codex" ] && [ ! -d /Users/test/data/Codex ]; then' in script
-            assert 'cp -R "$HOME/.codex/." /Users/test/data/Codex/' in script
+            assert 'mkdir -p /Users/test/data/Codex' in script
+            assert 'cp -R "$HOME/.codex/."' not in script
 
     def test_hard_clone_gemini_home_script(self, mock_app_info, base_recipe):
         base_recipe.environment_injection = {

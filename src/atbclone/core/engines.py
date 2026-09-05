@@ -126,17 +126,14 @@ class CloneEngine:
 
     @staticmethod
     def _build_codex_init_cmd(effective_env: dict[str, str], data_dir: Path) -> str:
-        """Return shell snippet to initialize CODEX_HOME from ~/.codex at clone creation time."""
+        """Return shell snippet to initialize clean CODEX_HOME directory at clone creation time."""
         if "CODEX_HOME" not in effective_env:
             return ""
         raw_val = effective_env["CODEX_HOME"]
         target_path = raw_val.replace("{{ATB_DATA_DIR}}", str(data_dir))
         target_quoted = shlex.quote(target_path)
         return textwrap.dedent(f"""\
-            if [ -d "$HOME/.codex" ] && [ ! -d {target_quoted} ]; then
-                mkdir -p {target_quoted}
-                cp -R "$HOME/.codex/." {target_quoted}/ 2>/dev/null || true
-            fi
+            mkdir -p {target_quoted}
         """).strip() + "\n"
 
     @staticmethod
@@ -775,26 +772,9 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
         """)
 
     @classmethod
-    def _build_lark_isolation_cmd(cls, task: CloneTask) -> str:
-        """Return a shell snippet to compile libatbclone_lark_hook.dylib and strip URL schemes for Feishu/Lark."""
-        is_lark = (
-            getattr(task.recipe, "patch_lark_isolation", False)
-            or getattr(task.source, "bundle_id", "") == "com.electron.lark"
-            or getattr(task, "new_bundle_id", "").startswith("com.electron.lark")
-        )
-        if not is_lark:
-            return ""
-
-        dst = shlex.quote(str(task.dest_path))
-        dst_frameworks = shlex.quote(str(task.dest_path / "Contents" / "Frameworks"))
-        rel_plist = getattr(task.source, "relative_plist_path", Path("Contents/Info.plist"))
-        dst_plist = shlex.quote(str(task.dest_path / rel_plist))
-
-        strip_schemes_cmd = ""
-        if getattr(task.recipe, "strip_url_schemes", False) or is_lark:
-            strip_schemes_cmd = f'/usr/libexec/PlistBuddy -c "Delete :CFBundleURLTypes" {dst_plist} 2>/dev/null || true\n'
-
-        hook_m = textwrap.dedent("""\
+    def _cocoa_hook_source(cls) -> str:
+        """Return the Objective-C source code for Cocoa/POSIX home directory interpose hook."""
+        return textwrap.dedent("""\
             #import <Foundation/Foundation.h>
             #include <pwd.h>
             #include <unistd.h>
@@ -916,6 +896,28 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
             DYLD_INTERPOSE(my_confstr, confstr)
         """).strip()
 
+    @classmethod
+    def _build_lark_isolation_cmd(cls, task: CloneTask) -> str:
+        """Return a shell snippet to compile libatbclone_lark_hook.dylib and strip URL schemes for Feishu/Lark."""
+        is_lark = (
+            getattr(task.recipe, "patch_lark_isolation", False)
+            or getattr(task.source, "bundle_id", "") == "com.electron.lark"
+            or getattr(task, "new_bundle_id", "").startswith("com.electron.lark")
+        )
+        if not is_lark:
+            return ""
+
+        dst = shlex.quote(str(task.dest_path))
+        dst_frameworks = shlex.quote(str(task.dest_path / "Contents" / "Frameworks"))
+        rel_plist = getattr(task.source, "relative_plist_path", Path("Contents/Info.plist"))
+        dst_plist = shlex.quote(str(task.dest_path / rel_plist))
+
+        strip_schemes_cmd = ""
+        if getattr(task.recipe, "strip_url_schemes", False) or is_lark:
+            strip_schemes_cmd = f'/usr/libexec/PlistBuddy -c "Delete :CFBundleURLTypes" {dst_plist} 2>/dev/null || true\n'
+
+        hook_m = cls._cocoa_hook_source()
+
         return textwrap.dedent(f"""\
             # Lark/Feishu isolation: compile Cocoa/POSIX hook dylib and strip URL schemes
             {strip_schemes_cmd}mkdir -p {dst_frameworks}
@@ -923,6 +925,39 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
 {hook_m}
 LARK_HOOK_EOF
             chmod +x {dst_frameworks}/libatbclone_lark_hook.dylib
+        """).strip() + "\n"
+
+    @classmethod
+    def _build_chatgpt_isolation_cmd(cls, task: CloneTask) -> str:
+        """Return a shell snippet to compile libatbclone_chatgpt_hook.dylib and strip URL schemes for ChatGPT."""
+        is_chatgpt = (
+            getattr(task.recipe, "patch_chatgpt_isolation", False)
+            or getattr(task.source, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
+            or getattr(task.recipe, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
+            or getattr(task, "new_bundle_id", "").startswith("com.openai.codex")
+            or getattr(task, "new_bundle_id", "").startswith("com.openai.chat")
+        )
+        if not is_chatgpt:
+            return ""
+
+        dst = shlex.quote(str(task.dest_path))
+        dst_frameworks = shlex.quote(str(task.dest_path / "Contents" / "Frameworks"))
+        rel_plist = getattr(task.source, "relative_plist_path", Path("Contents/Info.plist"))
+        dst_plist = shlex.quote(str(task.dest_path / rel_plist))
+
+        strip_schemes_cmd = ""
+        if getattr(task.recipe, "strip_url_schemes", False) or is_chatgpt:
+            strip_schemes_cmd = f'/usr/libexec/PlistBuddy -c "Delete :CFBundleURLTypes" {dst_plist} 2>/dev/null || true\n'
+
+        hook_m = cls._cocoa_hook_source()
+
+        return textwrap.dedent(f"""\
+            # ChatGPT isolation: compile Cocoa/POSIX hook dylib and strip URL schemes
+            {strip_schemes_cmd}mkdir -p {dst_frameworks}
+            clang -dynamiclib -O2 -arch arm64 -arch x86_64 -framework Foundation -install_name @executable_path/../Frameworks/libatbclone_chatgpt_hook.dylib -o {dst_frameworks}/libatbclone_chatgpt_hook.dylib -x objective-c - << 'CHATGPT_HOOK_EOF'
+{hook_m}
+CHATGPT_HOOK_EOF
+            chmod +x {dst_frameworks}/libatbclone_chatgpt_hook.dylib
         """).strip() + "\n"
 
     @staticmethod
@@ -1135,7 +1170,22 @@ LARK_HOOK_EOF
         use_dylib = False
         source_bin = getattr(task.source, "executable", None)
 
-        if strategy_pref == "launcher":
+        is_lark = (
+            getattr(task.recipe, "patch_lark_isolation", False)
+            or getattr(task.source, "bundle_id", "") == "com.electron.lark"
+            or getattr(task, "new_bundle_id", "").startswith("com.electron.lark")
+        )
+        is_chatgpt = (
+            getattr(task.recipe, "patch_chatgpt_isolation", False)
+            or getattr(task.source, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
+            or getattr(task.recipe, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
+            or getattr(task, "new_bundle_id", "").startswith("com.openai.codex")
+            or getattr(task, "new_bundle_id", "").startswith("com.openai.chat")
+        )
+
+        if is_lark or is_chatgpt:
+            use_dylib = False
+        elif strategy_pref == "launcher":
             use_dylib = False
         elif strategy_pref == "dylib":
             # Explicit dylib requested: if source_bin exists, verify headroom
@@ -1188,7 +1238,19 @@ LARK_HOOK_EOF
                 or getattr(task.source, "bundle_id", "") == "com.electron.lark"
                 or getattr(task, "new_bundle_id", "").startswith("com.electron.lark")
             )
-            hook_dylib_rel_path = "../Frameworks/libatbclone_lark_hook.dylib" if is_lark else ""
+            is_chatgpt = (
+                getattr(task.recipe, "patch_chatgpt_isolation", False)
+                or getattr(task.source, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
+                or getattr(task.recipe, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
+                or getattr(task, "new_bundle_id", "").startswith("com.openai.codex")
+                or getattr(task, "new_bundle_id", "").startswith("com.openai.chat")
+            )
+            if is_lark:
+                hook_dylib_rel_path = "../Frameworks/libatbclone_lark_hook.dylib"
+            elif is_chatgpt:
+                hook_dylib_rel_path = "../Frameworks/libatbclone_chatgpt_hook.dylib"
+            else:
+                hook_dylib_rel_path = ""
 
             c_launcher_cmd = cls._build_c_launcher_compile_cmd(
                 dst_wrapper=wrapper,
@@ -1202,18 +1264,26 @@ LARK_HOOK_EOF
             )
             exec_prep_cmd = f"mv {bin_orig} {bin_bak}\n{c_launcher_cmd}"
 
-        # Check if Feishu/Lark isolation is active
+        # Check if Feishu/Lark or ChatGPT isolation is active
         is_lark = (
             getattr(task.recipe, "patch_lark_isolation", False)
             or getattr(task.source, "bundle_id", "") == "com.electron.lark"
             or getattr(task, "new_bundle_id", "").startswith("com.electron.lark")
         )
+        is_chatgpt = (
+            getattr(task.recipe, "patch_chatgpt_isolation", False)
+            or getattr(task.source, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
+            or getattr(task.recipe, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
+            or getattr(task, "new_bundle_id", "").startswith("com.openai.codex")
+            or getattr(task, "new_bundle_id", "").startswith("com.openai.chat")
+        )
 
         # Build framework singleton patcher command ONLY when explicitly enabled by recipe
-        # and NOT for Feishu/Lark which uses dedicated Cocoa/POSIX hook isolation.
+        # and NOT for Feishu/Lark or ChatGPT which use dedicated Cocoa/POSIX hook isolation.
         needs_singleton_patch = (
             getattr(task.recipe, "patch_framework_singleton", False)
             and not is_lark
+            and not is_chatgpt
         )
         singleton_patch_cmd = (
             cls._build_singleton_patch_cmd(task.dest_path)
@@ -1233,6 +1303,13 @@ LARK_HOOK_EOF
         lark_isolation_cmd = (
             cls._build_lark_isolation_cmd(task)
             if is_lark
+            else ""
+        )
+
+        # Build ChatGPT isolation command ONLY when cloning ChatGPT
+        chatgpt_isolation_cmd = (
+            cls._build_chatgpt_isolation_cmd(task)
+            if is_chatgpt
             else ""
         )
 
@@ -1324,7 +1401,7 @@ chmod -R u+w {dst} 2>/dev/null || true
 {icon_cmd}{exec_prep_cmd}
 {pref_seeding}
 {symlink_snippet}
-{singleton_patch_cmd}{cef_patch_cmd}{lark_isolation_cmd}{framework_prune_cmd}xattr -cr {dst} 2>/dev/null || true
+{singleton_patch_cmd}{cef_patch_cmd}{lark_isolation_cmd}{chatgpt_isolation_cmd}{framework_prune_cmd}xattr -cr {dst} 2>/dev/null || true
 {codesign_cmds}codesign -vv --deep --strict {dst}
 {lsregister_cmd}
 """

@@ -6,6 +6,26 @@
 
 ---
 
+## [v1.2.1] - 2026-09-05
+
+### 🧩 基於 @executable_path 的動態庫解耦注入 (Fix #6)
+- **強化動態庫攔截穩定性**：
+  - 將 `HardCloneEngine` 中的注入動態庫參照路徑由 `@rpath` 全面升級為基於執行檔相對路徑的 `@executable_path/../Frameworks/libatbclone_env.dylib`。
+  - 徹底擺脫對目標應用程式自身 Mach-O `LC_RPATH` 定址清單的依賴，徹底杜絕在自訂、精簡或非標準 rpath 應用程式（如微信 WeChat 4.x 等特殊架構 Cocoa 應用程式）上的 dyld 載入崩潰與符號解析失敗問題。
+  - 針對特殊多層架構目錄（如 `Contents/Frameworks/ld/`）增加符號連結兜底回退支援。
+
+### ⚙️ 建置中介產物與 Info.plist 版本全量自動同步
+- **消除版本漂移死角**：
+  - 升級 `scripts/manage_version.py`，新增基於標準庫 `plistlib` 的 `PlistVersionTarget`，在版本巡檢與升級時全自動檢測並同步更新 `build/` 目錄下的 `Info.plist`（包含 `CFBundleShortVersionString` 與 `CFBundleVersion`）以及安裝程式 `welcome.html`。
+  - 在 `scripts/manage_version.py --show` 中引入建置中介產物版本展示與 `[OUT OF SYNC]` 失步預警。
+  - 加固 `scripts/build_gui.sh`，確保在獨立執行 GUI 打包時應用程式套件主副版本號及安裝程式資源始終與 `pyproject.toml` 保持一致。
+
+### 🧪 品質保障與自動化測試
+- **測試套件擴充**：
+  - 自動化測試案例擴充至 468 項，完整涵蓋 @executable_path 注入驗證、plistlib 讀寫及中介產物同步邏輯。
+
+---
+
 ## [v1.2.0] - 2026-09-02
 
 ### 🔔 原生動態庫注入與 macOS 通知中心/選單列狀態圖示修復

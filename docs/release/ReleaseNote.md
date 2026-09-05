@@ -6,6 +6,26 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v1.2.1] - 2026-09-05
+
+### 🧩 Decoupled Dylib Injection via @executable_path (Fix #6)
+- **Robust Dynamic Library Interposition**:
+  - Migrated dynamic library injection in `HardCloneEngine` from `@rpath` to `@executable_path/../Frameworks/libatbclone_env.dylib`.
+  - Completely decouples dylib loading from target binaries' `LC_RPATH`, eliminating launch crashes and dyld symbol resolution failures on applications with non-standard or stripped rpath configurations (e.g., WeChat 4.x and custom Cocoa bundles).
+  - Added fallback symlink generation in `Contents/Frameworks/ld/` when an `ld` directory structure is present.
+
+### ⚙️ Automated Build Intermediate Artifacts & Info.plist Synchronization
+- **Zero-Drift Version Alignment**:
+  - Enhanced `scripts/manage_version.py` with native `PlistVersionTarget` via `plistlib` to automatically track and update `Info.plist` (`CFBundleShortVersionString` & `CFBundleVersion`) and `installer/resources/welcome.html`.
+  - Added build intermediate artifact inspection and drift detection to `scripts/manage_version.py --show`.
+  - Hardened `scripts/build_gui.sh` to guarantee both short and internal bundle versions are synchronized during GUI packaging.
+
+### 🧪 Comprehensive Quality Assurance
+- **Expanded Test Suite**:
+  - Automated test suite expanded to 468 unit, engine, version management, and GUI integration tests with 100% pass rate.
+
+---
+
 ## [v1.2.0] - 2026-09-02
 
 ### 🔔 Native Dylib Injection for macOS Notifications & Menu Bar Status Items

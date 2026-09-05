@@ -6,6 +6,26 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v1.2.1] - 2026-09-05
+
+### 🧩 Injection de Dylib découplée via @executable_path (Fix #6)
+- **Robustesse accrue de l'interposition dynamique**:
+  - Remplacement de `@rpath` par `@executable_path/../Frameworks/libatbclone_env.dylib` dans `HardCloneEngine`.
+  - Supprime la dépendance envers la configuration `LC_RPATH` des exécutables cibles, résolvant les plantages au lancement sur les applications à chemins non standards (notamment WeChat 4.x).
+  - Création automatique d'un lien symbolique de secours dans `Contents/Frameworks/ld/` si présent.
+
+### ⚙️ Synchronisation automatique des artefacts de build et d'Info.plist
+- **Harmonisation complète des versions**:
+  - Ajout de `PlistVersionTarget` dans `scripts/manage_version.py` via `plistlib` pour mettre à jour automatiquement `Info.plist` (`CFBundleShortVersionString` et `CFBundleVersion`) et `welcome.html`.
+  - Affichage et détection des écarts de version (`[OUT OF SYNC]`) dans `scripts/manage_version.py --show`.
+  - Sécurisation de `scripts/build_gui.sh` pour garantir la synchronisation lors de la création du paquet d'installation.
+
+### 🧪 Tests
+- **Couverture de tests**:
+  - Suite portée à 468 tests automatisés avec 100 % de réussite.
+
+---
+
 ## [v1.2.0] - 2026-09-02
 
 ### 🔔 Injection de Dylib native pour le centre de notifications macOS et la barre des menus

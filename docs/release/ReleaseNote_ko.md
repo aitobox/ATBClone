@@ -6,6 +6,26 @@
 
 ---
 
+## [v1.2.1] - 2026-09-05
+
+### 🧩 @executable_path 기반 dylib 주입 디커플링 (Fix #6)
+- **동적 라이브러리 가로채기 안정성 강화**:
+  - `HardCloneEngine`의 동적 라이브러리 참조 경로를 `@rpath`에서 `@executable_path/../Frameworks/libatbclone_env.dylib`로 전면 업그레이드했습니다.
+  - 대상 바이너리의 `LC_RPATH` 종속성을 완전히 제거하여 WeChat 4.x와 같이 비표준 또는 축소된 rpath를 가진 앱에서의 dyld 로드 충돌 및 심볼 해석 실패 문제를 해결했습니다.
+  - `Contents/Frameworks/ld/` 하위 디렉터리가 존재하는 경우 심볼릭 링크 폴백을 자동 생성하도록 지원합니다.
+
+### ⚙️ 빌드 중간 산출물 및 Info.plist 버전 자동 동기화
+- **버전 불일치 방지**:
+  - `scripts/manage_version.py`에 표준 `plistlib` 기반 `PlistVersionTarget`을 추가하여 `build/` 디렉터리의 `Info.plist`(`CFBundleShortVersionString` 및 `CFBundleVersion`)와 `welcome.html`을 자동으로 동기화합니다.
+  - `scripts/manage_version.py --show`에 빌드 중간 산출물 상태 및 `[OUT OF SYNC]` 경고 표시를 도입했습니다.
+  - `scripts/build_gui.sh`를 보강하여 독립 패키징 시에도 번들 내부 버전과 설치 관리자 리소스가 항상 일치하도록 구현했습니다.
+
+### 🧪 테스트 및 품질 보증
+- **테스트 확장**:
+  - 총 468개의 단위, 엔진, 버전 관리 및 GUI 통합 테스트를 100% 통과했습니다.
+
+---
+
 ## [v1.2.0] - 2026-09-02
 
 ### 🔔 네이티브 dylib 주입을 통한 macOS 알림 센터 및 메뉴 막대 상태 아이콘 복구

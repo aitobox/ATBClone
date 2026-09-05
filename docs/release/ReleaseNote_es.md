@@ -6,6 +6,26 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v1.2.1] - 2026-09-05
+
+### 🧩 Inyección de Dylib desacoplada mediante @executable_path (Fix #6)
+- **Mayor estabilidad en la interceptación dinámica**:
+  - Actualización de la ruta de la biblioteca en `HardCloneEngine` de `@rpath` a `@executable_path/../Frameworks/libatbclone_env.dylib`.
+  - Desacoplamiento total respecto a la lista `LC_RPATH` del ejecutable destino, evitando fallos de dyld en aplicaciones con rpaths no estándar o recortados (como WeChat 4.x).
+  - Creación automática de enlaces simbólicos de respaldo en `Contents/Frameworks/ld/` cuando dicha estructura existe.
+
+### ⚙️ Sincronización automática de Info.plist y artefactos intermedios
+- **Alineación íntegra de versiones**:
+  - Mejora de `scripts/manage_version.py` con `PlistVersionTarget` mediante `plistlib` para sincronizar automáticamente `Info.plist` (`CFBundleShortVersionString` y `CFBundleVersion`) y `welcome.html`.
+  - Inspección de artefactos intermedios y aviso `[OUT OF SYNC]` en `scripts/manage_version.py --show`.
+  - Protección en `scripts/build_gui.sh` para garantizar que la versión del instalador y del paquete coincidan con `pyproject.toml`.
+
+### 📦 Calidad garantizada
+- **Cobertura exhaustiva**:
+  - Suite de pruebas ampliada a 468 casos automatizados con un 100 % de éxito.
+
+---
+
 ## [v1.2.0] - 2026-09-02
 
 ### 🔔 Inyección nativa de Dylib para notificaciones de macOS e iconos en la barra de menús

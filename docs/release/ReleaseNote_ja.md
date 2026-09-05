@@ -6,6 +6,26 @@
 
 ---
 
+## [v1.2.1] - 2026-09-05
+
+### 🧩 @executable_path による dylib 注入の疎結合化 (Fix #6)
+- **動的ライブラリフックの堅牢性向上**:
+  - `HardCloneEngine` における動的ライブラリのロードパスを `@rpath` から `@executable_path/../Frameworks/libatbclone_env.dylib` に全面移行。
+  - 対象バイナリの `LC_RPATH` 設定への依存を解消し、WeChat 4.x やカスタム Cocoa アプリなど、非標準または削除された rpath を持つアプリでの起動クラッシュや dyld シンボル解決失敗を完全に防止。
+  - `Contents/Frameworks/ld/` ディレクトリが存在する場合のシンボリックリンクフォールバックを実装。
+
+### ⚙️ ビルド中間生成物および Info.plist の自動バージョン同期
+- **バージョン不整合の完全解消**:
+  - `scripts/manage_version.py` を強化し、標準ライブラリ `plistlib` を用いた `PlistVersionTarget` を追加。`build/` 配下の `Info.plist`（`CFBundleShortVersionString` および `CFBundleVersion`）と `welcome.html` を自動同期。
+  - `scripts/manage_version.py --show` にビルド中間生成物のステータスおよび `[OUT OF SYNC]` 警告表示を追加。
+  - `scripts/build_gui.sh` を強化し、GUI パッケージング時にも内部バージョン番号とインストーラーリソースの整合性を保証。
+
+### 🧪 テストスイート拡充
+- **品質検証**:
+  - 自動テストスイートを 468 件に拡大し、全テスト 100% 合格。
+
+---
+
 ## [v1.2.0] - 2026-09-02
 
 ### 🔔 ネイティブ dylib 注入による macOS 通知センターおよびメニューバー項目の修復

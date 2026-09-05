@@ -6,6 +6,26 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v1.2.1] - 2026-09-05
+
+### 🧩 Entkoppelte Dylib-Injektion über @executable_path (Fix #6)
+- **Robuste dynamische Bibliotheksinjektion**:
+  - Umstellung der Dylib-Injektion in `HardCloneEngine` von `@rpath` auf `@executable_path/../Frameworks/libatbclone_env.dylib`.
+  - Entkoppelt das Laden der Bibliothek von der `LC_RPATH`-Konfiguration der Ziel-Binärdatei und verhindert Startabstürze bei Anwendungen mit benutzerdefinierten oder reduzierten rpaths (z. B. WeChat 4.x).
+  - Automatischer Symlink-Fallback in `Contents/Frameworks/ld/`, falls vorhanden.
+
+### ⚙️ Automatische Synchronisierung von Info.plist & Build-Artefakten
+- **Versionskonsistenz in Build-Zwischenprodukten**:
+  - Erweiterung von `scripts/manage_version.py` um `PlistVersionTarget` via `plistlib`, um `Info.plist` (`CFBundleShortVersionString` & `CFBundleVersion`) und `installer/resources/welcome.html` synchron zu halten.
+  - Versionsprüfung mit `scripts/manage_version.py --show` erkennt Zwischenartefakte und warnt bei `[OUT OF SYNC]`.
+  - `scripts/build_gui.sh` gehärtet, um die Konsistenz aller Bundle- und Installer-Ressourcen zu gewährleisten.
+
+### 🧪 Test-Suite
+- **Erweiterte Abdeckung**:
+  - Test-Suite auf 468 automatisierte Tests ausgebaut (100 % Erfolgsquote).
+
+---
+
 ## [v1.2.0] - 2026-09-02
 
 ### 🔔 Native Dylib-Injektion für macOS-Mitteilungszentrale & Menüleisten-Statussymbole

@@ -239,6 +239,21 @@ def test_load_builtin_claude():
     assert recipe.environment_injection.get("CLAUDE_CONFIG_DIR") == "{{ATB_DATA_DIR}}/Claude"
 
 
+def test_load_builtin_lark():
+    recipe = RecipeLoader.match("com.electron.lark")
+    assert recipe is not None
+    assert recipe.bundle_id == "com.electron.lark"
+    assert recipe.app_name == "飞书"
+    assert recipe.strategy == "hard_clone"
+    assert recipe.strip_sandbox is True
+    assert recipe.patch_lark_isolation is True
+    assert recipe.strip_url_schemes is True
+    assert recipe.patch_framework_singleton is False
+    assert recipe.launch_args == []
+    assert recipe.environment_injection.get("HOME") == "{{ATB_DATA_DIR}}/Home"
+    assert recipe.environment_injection.get("TMPDIR") == "{{ATB_DATA_DIR}}/Tmp"
+
+
 def test_load_builtin_antigravity(monkeypatch, tmp_path):
     monkeypatch.setattr(RecipeLoader, "LOCAL_DIR", tmp_path)
     for bid in ["com.google.antigravity", "com.google.antigravity-ide", "com.google.GeminiMacOS"]:

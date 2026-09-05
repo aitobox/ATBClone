@@ -260,6 +260,7 @@ class CloneEngine:
         lang_env: str,
         args_list: list[str],
         data_dir: Path,
+        hook_dylib_rel_path: str = "",
     ) -> str:
         """Return a shell snippet that uses clang to compile a native Mach-O C launcher."""
         setenv_c_lines = [
@@ -320,6 +321,18 @@ class CloneEngine:
             args_block = "    char **new_argv = argv;"
             exec_argv = "new_argv"
 
+        hook_block = ""
+        if hook_dylib_rel_path:
+            hook_block = f"""    const char *existing_dyld = getenv("DYLD_INSERT_LIBRARIES");
+    char hook_path[PATH_MAX * 2];
+    if (existing_dyld && strlen(existing_dyld) > 0) {{
+        snprintf(hook_path, sizeof(hook_path), "%s:%s/{hook_dylib_rel_path}", existing_dyld, dir);
+    }} else {{
+        snprintf(hook_path, sizeof(hook_path), "%s/{hook_dylib_rel_path}", dir);
+    }}
+    setenv("DYLD_INSERT_LIBRARIES", hook_path, 1);
+"""
+
         c_source = f"""#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -334,7 +347,7 @@ int main(int argc, char *argv[]) {{
 {setenv_block}
 
 {args_block}
-
+{hook_block}
     execv(real_bin, {exec_argv});
     perror("execv failed");
     return 1;
@@ -761,6 +774,157 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
 ' 2>/dev/null || true
         """)
 
+    @classmethod
+    def _build_lark_isolation_cmd(cls, task: CloneTask) -> str:
+        """Return a shell snippet to compile libatbclone_lark_hook.dylib and strip URL schemes for Feishu/Lark."""
+        is_lark = (
+            getattr(task.recipe, "patch_lark_isolation", False)
+            or getattr(task.source, "bundle_id", "") == "com.electron.lark"
+            or getattr(task, "new_bundle_id", "").startswith("com.electron.lark")
+        )
+        if not is_lark:
+            return ""
+
+        dst = shlex.quote(str(task.dest_path))
+        dst_frameworks = shlex.quote(str(task.dest_path / "Contents" / "Frameworks"))
+        rel_plist = getattr(task.source, "relative_plist_path", Path("Contents/Info.plist"))
+        dst_plist = shlex.quote(str(task.dest_path / rel_plist))
+
+        strip_schemes_cmd = ""
+        if getattr(task.recipe, "strip_url_schemes", False) or is_lark:
+            strip_schemes_cmd = f'/usr/libexec/PlistBuddy -c "Delete :CFBundleURLTypes" {dst_plist} 2>/dev/null || true\n'
+
+        hook_m = textwrap.dedent("""\
+            #import <Foundation/Foundation.h>
+            #include <pwd.h>
+            #include <unistd.h>
+            #include <stdlib.h>
+            #include <string.h>
+
+            static NSString *my_NSHomeDirectory(void) {
+                const char *custom = getenv("HOME");
+                if (custom && custom[0]) {
+                    return [NSString stringWithUTF8String:custom];
+                }
+                return NSHomeDirectory();
+            }
+
+            static NSString *my_NSHomeDirectoryForUser(NSString *userName) {
+                const char *custom = getenv("HOME");
+                if (custom && custom[0]) {
+                    return [NSString stringWithUTF8String:custom];
+                }
+                return NSHomeDirectoryForUser(userName);
+            }
+
+            static NSString *my_NSTemporaryDirectory(void) {
+                const char *custom = getenv("TMPDIR");
+                if (custom && custom[0]) {
+                    NSString *t = [NSString stringWithUTF8String:custom];
+                    if (![t hasSuffix:@"/"]) {
+                        t = [t stringByAppendingString:@"/"];
+                    }
+                    [[NSFileManager defaultManager] createDirectoryAtPath:t withIntermediateDirectories:YES attributes:nil error:nil];
+                    return t;
+                }
+                return NSTemporaryDirectory();
+            }
+
+            static NSArray<NSString *> *my_NSSearchPathForDirectoriesInDomains(
+                NSSearchPathDirectory directory,
+                NSSearchPathDomainMask domainMask,
+                BOOL expandTilde) {
+                const char *custom_home = getenv("HOME");
+                if (custom_home && custom_home[0] && (domainMask & NSUserDomainMask)) {
+                    NSString *homeStr = [NSString stringWithUTF8String:custom_home];
+                    NSString *sub = nil;
+                    switch (directory) {
+                        case NSApplicationSupportDirectory:
+                            sub = @"Library/Application Support";
+                            break;
+                        case NSCachesDirectory:
+                            sub = @"Library/Caches";
+                            break;
+                        case NSLibraryDirectory:
+                            sub = @"Library";
+                            break;
+                        case NSDocumentDirectory:
+                            sub = @"Documents";
+                            break;
+                        default:
+                            break;
+                    }
+                    if (sub) {
+                        NSString *full = [homeStr stringByAppendingPathComponent:sub];
+                        [[NSFileManager defaultManager] createDirectoryAtPath:full withIntermediateDirectories:YES attributes:nil error:nil];
+                        return @[full];
+                    }
+                }
+                return NSSearchPathForDirectoriesInDomains(directory, domainMask, expandTilde);
+            }
+
+            static struct passwd *my_getpwuid(uid_t uid) {
+                struct passwd *pw = getpwuid(uid);
+                if (pw) {
+                    const char *custom_home = getenv("HOME");
+                    if (custom_home && custom_home[0]) {
+                        static struct passwd fake_pw;
+                        fake_pw = *pw;
+                        fake_pw.pw_dir = (char *)custom_home;
+                        return &fake_pw;
+                    }
+                }
+                return pw;
+            }
+
+            static int my_getpwuid_r(uid_t uid, struct passwd *pwd, char *buffer, size_t bufsize, struct passwd **result) {
+                int ret = getpwuid_r(uid, pwd, buffer, bufsize, result);
+                if (ret == 0 && result && *result) {
+                    const char *custom_home = getenv("HOME");
+                    if (custom_home && custom_home[0]) {
+                        pwd->pw_dir = (char *)custom_home;
+                    }
+                }
+                return ret;
+            }
+
+            static size_t my_confstr(int name, char *buf, size_t len) {
+                if (name == _CS_DARWIN_USER_TEMP_DIR || name == _CS_DARWIN_USER_CACHE_DIR) {
+                    const char *custom_tmp = getenv("TMPDIR");
+                    if (custom_tmp && custom_tmp[0]) {
+                        size_t n = strlen(custom_tmp) + 1;
+                        if (buf && len > 0) {
+                            strncpy(buf, custom_tmp, len);
+                            buf[len - 1] = 0;
+                        }
+                        return n;
+                    }
+                }
+                return confstr(name, buf, len);
+            }
+
+            #define DYLD_INTERPOSE(_replacement,_replacee) \\
+               __attribute__((used)) static struct{ const void* replacement; const void* replacee; } _interpose_##_replacee \\
+                        __attribute__ ((section ("__DATA,__interpose"))) = { (const void*)(unsigned long)&_replacement, (const void*)(unsigned long)&_replacee };
+
+            DYLD_INTERPOSE(my_NSHomeDirectory, NSHomeDirectory)
+            DYLD_INTERPOSE(my_NSHomeDirectoryForUser, NSHomeDirectoryForUser)
+            DYLD_INTERPOSE(my_NSTemporaryDirectory, NSTemporaryDirectory)
+            DYLD_INTERPOSE(my_NSSearchPathForDirectoriesInDomains, NSSearchPathForDirectoriesInDomains)
+            DYLD_INTERPOSE(my_getpwuid, getpwuid)
+            DYLD_INTERPOSE(my_getpwuid_r, getpwuid_r)
+            DYLD_INTERPOSE(my_confstr, confstr)
+        """).strip()
+
+        return textwrap.dedent(f"""\
+            # Lark/Feishu isolation: compile Cocoa/POSIX hook dylib and strip URL schemes
+            {strip_schemes_cmd}mkdir -p {dst_frameworks}
+            clang -dynamiclib -O2 -arch arm64 -arch x86_64 -framework Foundation -install_name @executable_path/../Frameworks/libatbclone_lark_hook.dylib -o {dst_frameworks}/libatbclone_lark_hook.dylib -x objective-c - << 'LARK_HOOK_EOF'
+{hook_m}
+LARK_HOOK_EOF
+            chmod +x {dst_frameworks}/libatbclone_lark_hook.dylib
+        """).strip() + "\n"
+
     @staticmethod
     def _build_symlink_whitelist_snippet(task: CloneTask) -> str:
         """Return a shell snippet that creates symlinks for items in symlink_whitelist."""
@@ -1019,6 +1183,13 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
     char real_bin[PATH_MAX];
     snprintf(real_bin, sizeof(real_bin), "%s/{orig_bin_name}.bin", dir);"""
 
+            is_lark = (
+                getattr(task.recipe, "patch_lark_isolation", False)
+                or getattr(task.source, "bundle_id", "") == "com.electron.lark"
+                or getattr(task, "new_bundle_id", "").startswith("com.electron.lark")
+            )
+            hook_dylib_rel_path = "../Frameworks/libatbclone_lark_hook.dylib" if is_lark else ""
+
             c_launcher_cmd = cls._build_c_launcher_compile_cmd(
                 dst_wrapper=wrapper,
                 target_bin_statement=target_bin_statement,
@@ -1027,14 +1198,22 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
                 lang_env=lang_env,
                 args_list=args_list,
                 data_dir=task.data_dir,
+                hook_dylib_rel_path=hook_dylib_rel_path,
             )
             exec_prep_cmd = f"mv {bin_orig} {bin_bak}\n{c_launcher_cmd}"
 
+        # Check if Feishu/Lark isolation is active
+        is_lark = (
+            getattr(task.recipe, "patch_lark_isolation", False)
+            or getattr(task.source, "bundle_id", "") == "com.electron.lark"
+            or getattr(task, "new_bundle_id", "").startswith("com.electron.lark")
+        )
+
         # Build framework singleton patcher command ONLY when explicitly enabled by recipe
-        # or when cloning Feishu/Lark which requires custom ProcessSingleton handling.
+        # and NOT for Feishu/Lark which uses dedicated Cocoa/POSIX hook isolation.
         needs_singleton_patch = (
             getattr(task.recipe, "patch_framework_singleton", False)
-            or getattr(task.source, "bundle_id", "") == "com.electron.lark"
+            and not is_lark
         )
         singleton_patch_cmd = (
             cls._build_singleton_patch_cmd(task.dest_path)
@@ -1047,6 +1226,13 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
         cef_patch_cmd = (
             cls._build_cef_patch_cmd(task.dest_path)
             if needs_cef_patch
+            else ""
+        )
+
+        # Build Lark isolation command ONLY when cloning Feishu/Lark
+        lark_isolation_cmd = (
+            cls._build_lark_isolation_cmd(task)
+            if is_lark
             else ""
         )
 
@@ -1138,7 +1324,7 @@ chmod -R u+w {dst} 2>/dev/null || true
 {icon_cmd}{exec_prep_cmd}
 {pref_seeding}
 {symlink_snippet}
-{singleton_patch_cmd}{cef_patch_cmd}{framework_prune_cmd}xattr -cr {dst} 2>/dev/null || true
+{singleton_patch_cmd}{cef_patch_cmd}{lark_isolation_cmd}{framework_prune_cmd}xattr -cr {dst} 2>/dev/null || true
 {codesign_cmds}codesign -vv --deep --strict {dst}
 {lsregister_cmd}
 """

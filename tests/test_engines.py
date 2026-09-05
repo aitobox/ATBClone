@@ -734,12 +734,26 @@ class TestProcessSingletonFrameworkPatching:
             script, _ = mock_run.call_args[0]
             assert "Patch ProcessSingleton in embedded frameworks" not in script
 
-    def test_hard_clone_script_includes_singleton_patch_for_lark(self, sample_task):
+    def test_hard_clone_script_includes_isolation_hook_for_lark(self, sample_task):
         sample_task.source.bundle_id = "com.electron.lark"
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
-            assert "Patch ProcessSingleton in embedded frameworks" in script
+            assert "Lark/Feishu isolation: compile Cocoa/POSIX hook dylib and strip URL schemes" in script
+            assert "libatbclone_lark_hook.dylib" in script
+            assert "DYLD_INSERT_LIBRARIES" in script
+            assert "Delete :CFBundleURLTypes" in script
+            # Ensure generic singleton patch is skipped for Lark
+            assert "Patch ProcessSingleton in embedded frameworks" not in script
+
+    def test_hard_clone_script_omits_lark_isolation_for_non_lark_apps(self, sample_task):
+        sample_task.source.bundle_id = "com.google.Chrome"
+        sample_task.recipe.patch_lark_isolation = False
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            script, _ = mock_run.call_args[0]
+            assert "libatbclone_lark_hook.dylib" not in script
+            assert "Lark/Feishu isolation" not in script
 
     def test_hard_clone_script_includes_singleton_patch_when_recipe_flag_true(self, sample_task):
         sample_task.source.bundle_id = "com.other.electronapp"

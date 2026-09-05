@@ -18,6 +18,7 @@ class ProxyConfig(BaseModel):
 
 
 AppType = Literal["cocoa", "chromium", "electron", "firefox", "generic"]
+InjectionStrategy = Literal["auto", "dylib", "launcher"]
 
 
 class Recipe(BaseModel):
@@ -33,6 +34,7 @@ class Recipe(BaseModel):
     app_type: AppType | None = None
     patch_framework_singleton: bool = False
     patch_cef: bool = False
+    injection_strategy: InjectionStrategy = "auto"
 
 
 def supports_data_dir(recipe: Recipe) -> bool:

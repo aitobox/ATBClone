@@ -8,7 +8,10 @@ import textwrap
 
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.locale import build_language_wrapper_snippet
+from atbclone.core.logger import get_logger
 from atbclone.executor.runner import CloneError, Runner
+
+logger = get_logger("core.engines")
 
 
 class CloneEngine:
@@ -447,6 +450,82 @@ if [ -d {dst_frameworks}/ld ]; then
 fi
 {py_insert_dylib}"""
 
+    @classmethod
+    def _check_macho_injection_headroom(
+        cls,
+        macho_path: Path,
+        dylib_path: str = "@executable_path/../Frameworks/libatbclone_env.dylib",
+    ) -> tuple[bool, str]:
+        """Verify that a Mach-O binary has enough free padding in its header to safely inject LC_LOAD_DYLIB.
+
+        Returns:
+            (is_safe, reason): True if safe to inject; False with reason if insufficient or unsupported.
+        """
+        if not macho_path.exists() or not macho_path.is_file():
+            return False, f"File does not exist: {macho_path}"
+
+        try:
+            with open(macho_path, "rb") as fp:
+                data = fp.read()
+        except OSError as e:
+            return False, f"Failed to read binary: {e}"
+
+        if len(data) < 32:
+            return False, "File too small to be Mach-O"
+
+        magic = struct.unpack("<I", data[:4])[0]
+        archs: list[tuple[int, int]] = []
+        if magic in (0xCAFEBABE, 0xBEBAFECA):
+            nfat = struct.unpack(">I", data[4:8])[0]
+            for i in range(nfat):
+                cputype, cpusubtype, offset, size, align = struct.unpack(
+                    ">IIIII", data[8 + i * 20 : 28 + i * 20]
+                )
+                archs.append((offset, size))
+        elif magic in (0xFEEDFACF, 0xCFFAEDFE):
+            archs.append((0, len(data)))
+        else:
+            return False, f"Unsupported binary format (magic: {hex(magic)})"
+
+        cmdsize = 24 + len(dylib_path.encode("utf-8") + b"\x00")
+        if cmdsize % 8 != 0:
+            cmdsize += 8 - (cmdsize % 8)
+
+        for offset, size in archs:
+            if offset + 32 > len(data):
+                return False, "Malformed Mach-O slice"
+            m_magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags, reserved = struct.unpack(
+                "<IIIIIIII", data[offset : offset + 32]
+            )
+            if filetype != 2:  # MH_EXECUTE
+                return False, f"Mach-O filetype {filetype} is not MH_EXECUTE"
+
+            cmd_ptr = offset + 32
+            first_section_offset = size
+            for _ in range(ncmds):
+                if cmd_ptr + 8 > len(data):
+                    return False, "Malformed load commands"
+                cmd, csize = struct.unpack("<II", data[cmd_ptr : cmd_ptr + 8])
+                if cmd == 0x19:  # LC_SEGMENT_64
+                    if cmd_ptr + 68 <= len(data):
+                        nsects = struct.unpack("<I", data[cmd_ptr + 64 : cmd_ptr + 68])[0]
+                        sect_ptr = cmd_ptr + 72
+                        for _ in range(nsects):
+                            if sect_ptr + 52 <= len(data):
+                                s_size = struct.unpack("<Q", data[sect_ptr + 40 : sect_ptr + 48])[0]
+                                s_offset = struct.unpack("<I", data[sect_ptr + 48 : sect_ptr + 52])[0]
+                                if s_size > 0 and s_offset > 0:
+                                    if s_offset < first_section_offset:
+                                        first_section_offset = s_offset
+                            sect_ptr += 80
+                cmd_ptr += csize
+
+            end_of_cmds = 32 + sizeofcmds
+            padding = first_section_offset - end_of_cmds
+            if padding < cmdsize:
+                return False, f"Insufficient header padding ({padding} bytes available, {cmdsize} required)"
+
+        return True, "OK"
 
 
 
@@ -465,6 +544,8 @@ class SoftCloneEngine(CloneEngine):
         if getattr(task.source, "is_ios_app", False):
             from atbclone.core.i18n import t
             raise CloneError(t("clone_err_ios_wrapper_unsupported"))
+
+        task.actual_injection_strategy = "launcher"
 
         src_bin = shlex.quote(str(task.source.executable))
         src_plist = shlex.quote(str(task.source.path / "Contents" / "Info.plist"))
@@ -884,7 +965,41 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
             )
         is_chromium = (app_type or "").lower() in ("chromium", "electron")
 
-        if not is_chromium and not valid_launch_args:
+        strategy_pref = getattr(task, "injection_strategy", None) or getattr(task.recipe, "injection_strategy", "auto")
+        strategy_pref = strategy_pref.lower() if strategy_pref else "auto"
+
+        use_dylib = False
+        source_bin = getattr(task.source, "executable", None)
+
+        if strategy_pref == "launcher":
+            use_dylib = False
+        elif strategy_pref == "dylib":
+            # Explicit dylib requested: if source_bin exists, verify headroom
+            if source_bin and source_bin.exists():
+                safe, reason = cls._check_macho_injection_headroom(source_bin)
+                if not safe:
+                    raise CloneError(f"Mach-O dylib injection failed: {reason}")
+            use_dylib = True
+        else:  # "auto"
+            if not is_chromium and not valid_launch_args:
+                if source_bin and source_bin.exists():
+                    safe, reason = cls._check_macho_injection_headroom(source_bin)
+                    if safe:
+                        use_dylib = True
+                    else:
+                        logger.warning(
+                            f"Mach-O header padding insufficient for dylib injection ({reason}). "
+                            "Gracefully falling back to native C launcher."
+                        )
+                        use_dylib = False
+                else:
+                    use_dylib = True
+            else:
+                use_dylib = False
+
+        task.actual_injection_strategy = "dylib" if use_dylib else "launcher"
+
+        if use_dylib:
             dst_frameworks = shlex.quote(str(task.dest_path / "Contents" / "Frameworks"))
             exec_prep_cmd = cls._build_dylib_env_cmd(
                 dst_frameworks=dst_frameworks,

@@ -82,6 +82,7 @@ class WizardWindow(toga.Window):
         self.label_recipe_bundle = WrappingLabel(f"{t('probe_row_bundle_id')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
         self.label_recipe_strat = WrappingLabel(f"{t('probe_row_strategy')}: —", style=Pack(font_size=13, color=Theme.TEXT_MUTED, margin_bottom=4))
         self.select_recipe_strat = toga.Selection(items=["hard_clone", "soft_clone"], style=Pack(width=160, font_size=12.0))
+        self.select_injection_strat = toga.Selection(items=["auto", "dylib", "launcher"], style=Pack(width=160, font_size=12.0))
         # Shows whether recipe came from built-in library or Probe analysis
         self.label_recipe_origin = WrappingLabel("", style=Pack(font_size=11.5, font_style="italic", margin_bottom=6))
 
@@ -171,6 +172,10 @@ class WizardWindow(toga.Window):
             row_strat.add(toga.Label(t("win_wizard_step2_select_strat"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
             row_strat.add(self.select_recipe_strat)
             box.add(row_strat)
+            row_inj = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=8))
+            row_inj.add(toga.Label(t("win_wizard_step2_select_injection"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
+            row_inj.add(self.select_injection_strat)
+            box.add(row_inj)
             self.step_container.add(box)
 
         elif self.current_step == 3:
@@ -335,6 +340,7 @@ class WizardWindow(toga.Window):
             self.label_recipe_bundle.text = f"{t('probe_row_bundle_id')}: {self.app_info.bundle_id}"
             self.label_recipe_strat.text = f"{t('probe_row_strategy')}: {self.recipe.strategy}"
             self.select_recipe_strat.value = self.recipe.strategy
+            self.select_injection_strat.value = getattr(self.recipe, "injection_strategy", "auto")
             if self._recipe_from_probe:
                 self.label_recipe_origin.text = t("win_wizard_step2_origin_probe")
             else:
@@ -342,6 +348,7 @@ class WizardWindow(toga.Window):
 
         elif self.current_step == 2:
             self.recipe.strategy = str(self.select_recipe_strat.value)
+            self.recipe.injection_strategy = str(self.select_injection_strat.value)
             out_dir = Path(self.input_dest_dir.value.strip() or str(DEFAULT_APPS_DIR))
             suggested_name, num = AppInspector.next_available_name(self.app_info.app_name, out_dir)
             self._display_name_customized = False
@@ -377,6 +384,7 @@ class WizardWindow(toga.Window):
                 f"{t('card_label_source', source_app=self.app_info.app_name)} ({self.app_info.bundle_id})\n"
                 f"{t('list_col_name')}: {clone_name}\n"
                 f"{t('list_col_strategy')}: {self.recipe.strategy}\n"
+                f"{t('detail_label_injection')}: {self.select_injection_strat.value}\n"
                 f"{t('list_col_destination')}: {self.input_dest_dir.value}/{clone_name}.app\n"
                 f"{data_label}: {self.input_data_dir.value}\n"
                 f"{t('list_col_proxy')}: {proxy_str}"
@@ -455,6 +463,7 @@ class WizardWindow(toga.Window):
             new_bundle_id=new_bundle_id,
             display_name=display_name,
             language=lang,
+            injection_strategy=str(self.select_injection_strat.value),
         )
 
         try:

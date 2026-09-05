@@ -1036,6 +1036,84 @@ class TestSubBundleAndTeamIdentifierHandling:
             assert "*.appex" in script
 
 
+class TestMachOInjectionHeadroomAndStrategy:
+    """Unit tests for Mach-O headroom probing and injection strategy branching."""
+
+    def test_check_macho_headroom_nonexistent(self, tmp_path):
+        fake_path = tmp_path / "nonexistent_bin"
+        safe, reason = CloneEngine._check_macho_injection_headroom(fake_path)
+        assert safe is False
+        assert "File does not exist" in reason
+
+    def test_check_macho_headroom_non_macho(self, tmp_path):
+        dummy_file = tmp_path / "dummy.txt"
+        dummy_file.write_text("Hello, this is a plain text file, not Mach-O.")
+        safe, reason = CloneEngine._check_macho_injection_headroom(dummy_file)
+        assert safe is False
+        assert "Unsupported binary format" in reason
+
+    def test_check_macho_headroom_wechat_if_present(self):
+        wechat_bin = Path("/Applications/WeChat.app/Contents/MacOS/WeChat")
+        if wechat_bin.exists():
+            safe, reason = CloneEngine._check_macho_injection_headroom(wechat_bin)
+            assert safe is True
+            assert reason == "OK"
+
+    def test_check_macho_headroom_chrome_if_present(self):
+        chrome_bin = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+        if chrome_bin.exists():
+            safe, reason = CloneEngine._check_macho_injection_headroom(chrome_bin)
+            assert safe is False
+            assert "Insufficient header padding" in reason
+
+    def test_hard_clone_force_launcher_strategy(self, sample_task):
+        sample_task.recipe.launch_args = []
+        sample_task.recipe.app_type = "cocoa"
+        sample_task.injection_strategy = "launcher"
+        with patch("atbclone.executor.runner.Runner.run") as mock_run:
+            HardCloneEngine.execute(sample_task, needs_admin=False)
+            mock_run.assert_called_once()
+            script, _ = mock_run.call_args[0]
+            assert "libatbclone_env.dylib" not in script
+            assert "TestApp.bin" in script
+            assert sample_task.actual_injection_strategy == "launcher"
+
+    def test_hard_clone_force_dylib_fails_when_unsafe(self, sample_task):
+        sample_task.recipe.launch_args = []
+        sample_task.recipe.app_type = "cocoa"
+        sample_task.injection_strategy = "dylib"
+        with patch.object(CloneEngine, "_check_macho_injection_headroom", return_value=(False, "Padding full")):
+            with patch.object(Path, "exists", return_value=True):
+                with pytest.raises(CloneError, match="Mach-O dylib injection failed: Padding full"):
+                    HardCloneEngine.execute(sample_task, needs_admin=False)
+
+    def test_hard_clone_auto_graceful_fallback_when_unsafe(self, sample_task):
+        sample_task.recipe.launch_args = []
+        sample_task.recipe.app_type = "cocoa"
+        sample_task.injection_strategy = "auto"
+        with patch.object(CloneEngine, "_check_macho_injection_headroom", return_value=(False, "Insufficient padding")):
+            with patch.object(Path, "exists", return_value=True):
+                with patch("atbclone.executor.runner.Runner.run") as mock_run:
+                    HardCloneEngine.execute(sample_task, needs_admin=False)
+                    script, _ = mock_run.call_args[0]
+                    assert "libatbclone_env.dylib" not in script
+                    assert "TestApp.bin" in script
+                    assert sample_task.actual_injection_strategy == "launcher"
+
+    def test_hard_clone_auto_uses_dylib_when_safe(self, sample_task):
+        sample_task.recipe.launch_args = []
+        sample_task.recipe.app_type = "cocoa"
+        sample_task.injection_strategy = "auto"
+        with patch.object(CloneEngine, "_check_macho_injection_headroom", return_value=(True, "OK")):
+            with patch.object(Path, "exists", return_value=True):
+                with patch("atbclone.executor.runner.Runner.run") as mock_run:
+                    HardCloneEngine.execute(sample_task, needs_admin=False)
+                    script, _ = mock_run.call_args[0]
+                    assert "libatbclone_env.dylib" in script
+                    assert sample_task.actual_injection_strategy == "dylib"
+
+
+
 
 
 

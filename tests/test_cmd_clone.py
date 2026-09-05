@@ -645,6 +645,27 @@ def test_clone_ios_wrapper_app_fails(tmp_path: Path):
         assert "不支持 iOS on Mac Wrapper 应用" in result.output or "iOS on Mac Wrapper" in result.output
 
 
+def test_clone_with_injection_strategy_option(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_hard_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.load", return_value=[]), \
+         patch("atbclone.cli.cmd_clone.StateManager.add") as mock_state_add:
+
+        result = runner.invoke(
+            cli,
+            ["clone", str(mock_app_info.path), "--output-dir", str(output_dir), "--injection-strategy", "launcher"],
+        )
+        assert result.exit_code == 0
+        task_passed = mock_hard_exec.call_args[0][0]
+        assert task_passed.injection_strategy == "launcher"
+
+
+
 
 
 

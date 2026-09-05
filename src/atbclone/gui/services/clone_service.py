@@ -70,6 +70,7 @@ class CloneService:
                         new_bundle_id=task.new_bundle_id,
                         language=task.language,
                         display_name=task.display_name,
+                        injection_strategy=getattr(task, "actual_injection_strategy", getattr(task, "injection_strategy", "auto")),
                     )
                     self.state_manager.add(record)
                     logger.info(f"Clone '{task.clone_name}' created successfully at '{dest_path}'")

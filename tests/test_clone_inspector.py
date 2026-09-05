@@ -58,3 +58,43 @@ def test_inspect_fallback_when_file_not_found(tmp_path):
     assert details.source_type == "recipe_fallback"
     assert any("user-data-dir" in arg for arg in details.launch_args) or any("lang" in arg for arg in details.launch_args)
     assert details.env_vars.get("HTTP_PROXY") == "http://127.0.0.1:8080"
+
+
+def test_inspect_detects_dylib_strategy(tmp_path):
+    app_path = tmp_path / "DylibApp.app"
+    frameworks_dir = app_path / "Contents" / "Frameworks"
+    frameworks_dir.mkdir(parents=True)
+    (frameworks_dir / "libatbclone_env.dylib").write_bytes(b"\x00")
+
+    record = CloneRecord(
+        clone_name="DylibClone",
+        source_app="DylibApp",
+        source_path="/Applications/DylibApp.app",
+        bundle_id="com.example.dylib",
+        strategy="hard_clone",
+        dest_path=str(app_path),
+        data_dir=str(tmp_path / "Data"),
+        created_at="2026-08-24T00:00:00Z",
+    )
+    details = CloneInspector.inspect(record)
+    assert details.injection_strategy == "dylib"
+
+
+def test_inspect_detects_launcher_strategy(tmp_path):
+    app_path = tmp_path / "LauncherApp.app"
+    macos_dir = app_path / "Contents" / "MacOS"
+    macos_dir.mkdir(parents=True)
+    (macos_dir / "App.bin").write_bytes(b"\x00")
+
+    record = CloneRecord(
+        clone_name="LauncherClone",
+        source_app="LauncherApp",
+        source_path="/Applications/LauncherApp.app",
+        bundle_id="com.example.launcher",
+        strategy="hard_clone",
+        dest_path=str(app_path),
+        data_dir=str(tmp_path / "Data"),
+        created_at="2026-08-24T00:00:00Z",
+    )
+    details = CloneInspector.inspect(record)
+    assert details.injection_strategy == "launcher"

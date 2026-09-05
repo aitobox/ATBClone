@@ -21,3 +21,5 @@ class CloneTask:
     display_name: str | None = None  # Dock/Finder label; defaults to clone_name when None
     icon_path: Path | None = None    # Custom .icns; defaults to copying src Resources when None
     language: str = "system"         # Desired locale/language; defaults to "system"
+    injection_strategy: str = "auto" # "auto" | "dylib" | "launcher"
+    actual_injection_strategy: str = "auto" # Recorded actual strategy executed ("dylib" | "launcher")

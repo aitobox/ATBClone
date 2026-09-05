@@ -23,6 +23,7 @@ class CloneRecord:
     new_bundle_id: str = ""
     language: str = "system"
     display_name: str | None = None
+    injection_strategy: str = "auto"
 
 
 class StateManager:
@@ -51,6 +52,8 @@ class StateManager:
             if isinstance(item, dict):
                 if "language" not in item or not item["language"]:
                     item["language"] = "system"
+                if "injection_strategy" not in item or not item["injection_strategy"]:
+                    item["injection_strategy"] = "auto"
                 try:
                     records.append(CloneRecord(**item))
                 except TypeError:

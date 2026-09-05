@@ -84,6 +84,11 @@ class CloneDetailWindow(toga.Window):
             t("win_detail_strategy", strategy=strat_badge),
             style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5),
         )
+        inj_strat = getattr(self.record, "injection_strategy", None) or self.details.injection_strategy or "auto"
+        self.label_injection_strategy = WrappingLabel(
+            f"{t('detail_label_injection')}: {inj_strat}",
+            style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5),
+        )
         self.label_language = WrappingLabel(
             f"{t('detail_label_language')}: {lang_str}",
             style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=5),
@@ -166,6 +171,7 @@ class CloneDetailWindow(toga.Window):
             t("win_detail_bundle_id", bundle_id=self.record.bundle_id),
             t("win_detail_new_bundle_id", new_bundle_id=self.record.new_bundle_id or "—"),
             t("win_detail_strategy", strategy=strat_badge),
+            f"{t('detail_label_injection')}: {getattr(self.record, 'injection_strategy', None) or self.details.injection_strategy or 'auto'}",
             f"{t('detail_label_language')}: {lang_str}",
             t("win_detail_dest_path", dest_path=self.record.dest_path),
             t("win_detail_data_dir", data_dir=self.record.data_dir),

@@ -20,6 +20,7 @@ class InjectedDetails:
     env_vars: dict[str, str] = field(default_factory=dict)
     exec_command: str = ""
     source_type: str = "recipe_fallback"  # "wrapper_script" | "recipe_fallback"
+    injection_strategy: str = "auto"  # "dylib" | "launcher" | "auto"
 
 
 class CloneInspector:
@@ -65,11 +66,27 @@ class CloneInspector:
                         if content.startswith("#!/bin/bash") or "exec " in content:
                             details = cls.parse_wrapper_script(content)
                             if details.exec_command or details.env_vars or details.launch_args:
+                                details.injection_strategy = cls._detect_strategy(dest_path, macos_dir, record)
                                 return details
                     except Exception as e:
                         logger.debug(f"Failed to read wrapper script {target_file}: {e}")
 
-        return cls.reconstruct_from_recipe(record)
+        details = cls.reconstruct_from_recipe(record)
+        details.injection_strategy = cls._detect_strategy(dest_path, macos_dir, record)
+        return details
+
+    @classmethod
+    def _detect_strategy(cls, dest_path: Path, macos_dir: Path, record: CloneRecord) -> str:
+        dylib_file = dest_path / "Contents" / "Frameworks" / "libatbclone_env.dylib"
+        if dylib_file.exists():
+            return "dylib"
+        if macos_dir.exists() and macos_dir.is_dir():
+            if any(f.name.endswith(".bin") for f in macos_dir.iterdir()):
+                return "launcher"
+        if getattr(record, "strategy", "") == "soft_clone":
+            return "launcher"
+        rec_strat = getattr(record, "injection_strategy", "auto")
+        return rec_strat if rec_strat != "auto" else "launcher"
 
     @classmethod
     def parse_wrapper_script(cls, script_content: str) -> InjectedDetails:

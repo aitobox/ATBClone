@@ -34,6 +34,7 @@ logger = get_logger("cli.clone")
 @click.option("--proxy-host", default=None, help="Proxy host (overrides recipe)")
 @click.option("--proxy-port", default=None, type=int, help="Proxy port")
 @click.option("--proxy-type", default="http", type=click.Choice(["http", "https", "socks5"]), help="Proxy type")
+@click.option("--injection-strategy", default=None, type=click.Choice(["auto", "dylib", "launcher"]), help="Injection strategy (auto, dylib, or launcher).")
 def clone(
     app_path: str,
     name: str | None,
@@ -46,6 +47,7 @@ def clone(
     proxy_host: str | None,
     proxy_port: int | None,
     proxy_type: str,
+    injection_strategy: str | None = None,
 ) -> None:
     """Clone a macOS application."""
     # Validate icon file extension early for a friendly error message
@@ -108,6 +110,7 @@ def clone(
         display_name=display_name or None,
         icon_path=Path(icon) if icon else None,
         language=language,
+        injection_strategy=injection_strategy or getattr(recipe, "injection_strategy", "auto"),
     )
 
     if proxy_host:
@@ -140,6 +143,7 @@ def clone(
             new_bundle_id=new_bundle_id,
             language=language,
             display_name=display_name or None,
+            injection_strategy=getattr(task, "actual_injection_strategy", injection_strategy or "auto"),
         )
         StateManager().add(record)
 

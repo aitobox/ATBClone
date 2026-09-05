@@ -83,6 +83,11 @@ class RecipeEditWindow(toga.Window):
             value=recipe.strategy if recipe else "hard_clone",
             style=Pack(flex=1, font_size=12.0),
         )
+        self.select_injection_strategy = toga.Selection(
+            items=["auto", "dylib", "launcher"],
+            value=recipe.injection_strategy if recipe and recipe.injection_strategy else "auto",
+            style=Pack(flex=1, font_size=12.0),
+        )
         self.switch_strip_sandbox = toga.Switch(
             text=t("win_recipe_strip_sandbox"),
             value=recipe.strip_sandbox if recipe else False,
@@ -253,6 +258,12 @@ class RecipeEditWindow(toga.Window):
         row3.add(self.select_strategy)
         form_box.add(row3)
 
+        # Injection Strategy
+        row_inj = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=8))
+        row_inj.add(toga.Label(t("win_recipe_injection_strategy"), style=Pack(width=120, font_size=13, color=Theme.TEXT_PRIMARY)))
+        row_inj.add(self.select_injection_strategy)
+        form_box.add(row_inj)
+
         # Strip Sandbox
         row4 = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_bottom=8))
         row4.add(toga.Label(t("win_recipe_sandbox"), style=Pack(width=120, font_size=13, color=Theme.TEXT_PRIMARY)))
@@ -336,6 +347,12 @@ class RecipeEditWindow(toga.Window):
         app_type = self._get_selected_app_type()
         language = self._get_selected_language()
 
+        injection_strategy = (
+            str(self.select_injection_strategy.value)
+            if self.select_injection_strategy.value
+            else "auto"
+        )
+
         return Recipe(
             bundle_id=self.input_bundle_id.value.strip(),
             app_name=self.input_app_name.value.strip(),
@@ -347,6 +364,7 @@ class RecipeEditWindow(toga.Window):
             launch_args=launch_args,
             language=language,
             app_type=app_type,
+            injection_strategy=injection_strategy,
         )
 
     async def on_save_press(self, widget: toga.Button):

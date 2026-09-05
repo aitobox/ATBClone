@@ -6,6 +6,31 @@
 
 ---
 
+## [v1.3.0] - 2026-09-05
+
+### 🔬 Mach-O 標頭安全空間探測 (Headroom Probing)
+- **靜態二進位標頭空間校驗**：
+  - 引入 `_check_macho_injection_headroom` 靜態探測演算法，在修改二進位檔前精確檢測 Mach-O 載入命令區（`sizeofcmds`）與第一個 Section 之間的剩餘邊界間隙。
+  - 徹底規避標頭緊湊型二進位檔因強制插入 `LC_LOAD_DYLIB` 導致的二進位損毀與當機風險。
+
+### 🎛️ 可設定的環境注入策略 (`auto` / `dylib` / `launcher`)
+- **全鏈路策略控制與優雅回退**：
+  - 在 Recipe 規格、CloneTask、CloneRecord、CLI（`--injection-strategy`）及 GUI（複製精靈、配方編輯器）中全面支援 `injection_strategy` 選項。
+  - **自動模式 (`auto`)**：智慧探測 Mach-O 標頭空隙，空間充裕時優先注入原生動態庫；空間不足時自動且優雅地降級為原生 C Launcher 啟動器並給出清晰提示。
+  - **動態庫模式 (`dylib`)**：強制實施 dylib 注入，空間不足或二進位不相容時擲出明確且帶有診斷資訊的 `CloneError`。
+  - **啟動器模式 (`launcher`)**：強制採用原生 Mach-O C Launcher 封裝，完全不更動原始二進位。
+  - 在分身詳細資訊面板（`CloneDetailWindow`）及 CLI `inspect` 中即時展示實際執行生效的注入模式。
+
+### 📚 完整文件體系與使用者手冊升級
+- **深度原理解析與指引更新**：
+  - 全面更新 `docs/guide/` 中英文使用者手冊及專案主 README，詳細闡述注入策略選型、動態庫攔截架構以及安全空間探測原理。
+
+### 🧪 品質保障與自動化測試
+- **測試套件擴充**：
+  - 自動化測試案例擴充至 479 項，涵蓋標頭探測、降級回退、CLI 參數校驗與檢視器檢測。
+
+---
+
 ## [v1.2.1] - 2026-09-05
 
 ### 🧩 基於 @executable_path 的動態庫解耦注入 (Fix #6)

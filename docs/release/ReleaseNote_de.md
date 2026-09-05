@@ -6,6 +6,31 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v1.3.0] - 2026-09-05
+
+### 🔬 Mach-O Headroom-Prüfung & Sicherheitsanalyse
+- **Statische Header-Inspektion**:
+  - Neuer Algorithmus `_check_macho_injection_headroom` prüft den Sicherheitsabstand zwischen Load Commands (`sizeofcmds`) und der ersten Sektion vor Änderungen an Binärdateien.
+  - Verhindert Binärbeschädigungen bei Mach-O-Dateien mit eng gepackten Headern zuverlässig.
+
+### 🎛️ Konfigurierbare Injektionsstrategie (`auto`, `dylib`, `launcher`)
+- **Flexible Architektur & Eleganter Fallback**:
+  - Volle Unterstützung von `injection_strategy` in Rezepten, CloneTask, CloneRecord, CLI (`--injection-strategy`) und GUI (Assistent, Rezept-Editor).
+  - **Auto-Modus (`auto`)**: Prüft automatisch den Headroom; nutzt dylib bei ausreichendem Platz und wechselt bei Platzmangel nahtlos mit Warnhinweis auf den nativen C Launcher.
+  - **Dylib-Modus (`dylib`)**: Erzwingt Dylib-Injektion und wirft bei unzureichendem Headroom einen aussagekräftigen `CloneError`.
+  - **Launcher-Modus (`launcher`)**: Erzwingt den nativen Mach-O C Launcher ohne Modifikation der Originalbinärdatei.
+  - Anzeige des aktiven Injektionsmodus im Detailfenster (`CloneDetailWindow`) und CLI `inspect`.
+
+### 📚 Dokumentation & Handbücher
+- **Umfassende Dokumentationsaktualisierung**:
+  - Ausführliche Anleitungen zu Injektionsstrategien, Dylib-Architektur und Headroom-Prüfung in `docs/guide/` und READMEs.
+
+### 🧪 Test-Suite
+- **Erweiterte Abdeckung**:
+  - Test-Suite auf 479 automatisierte Tests ausgebaut (100 % Erfolgsquote).
+
+---
+
 ## [v1.2.1] - 2026-09-05
 
 ### 🧩 Entkoppelte Dylib-Injektion über @executable_path (Fix #6)

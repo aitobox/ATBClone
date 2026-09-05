@@ -6,6 +6,31 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v1.3.0] - 2026-09-05
+
+### 🔬 Mach-O Headroom Probing & Safety Verification
+- **Static Binary Header Inspection**:
+  - Added `_check_macho_injection_headroom` to inspect available padding between Mach-O load commands (`sizeofcmds`) and the first section before modifying binaries.
+  - Guarantees binary integrity by preventing corruption on applications with tightly packed Mach-O headers.
+
+### 🎛️ Configurable Injection Strategy (`auto`, `dylib`, `launcher`)
+- **Flexible Interposition Architecture**:
+  - Added `injection_strategy` configuration across Recipe models, CloneTask, CloneRecord, CLI (`--injection-strategy`), and GUI (Clone Wizard, Recipe Editor).
+  - **Auto mode** (`auto`): Intelligently probes Mach-O headroom for native Cocoa apps; injects dynamic libraries when headroom is sufficient, or gracefully falls back to native Mach-O C launcher with an explanatory notice.
+  - **Dylib mode** (`dylib`): Enforces dynamic library injection, raising a descriptive `CloneError` if headroom is inadequate or binary architecture is unsupported.
+  - **Launcher mode** (`launcher`): Forces native Mach-O C launcher wrapper without modifying application binaries.
+  - Real-time display of the actual executed injection mode in `CloneDetailWindow` and CLI `inspect`.
+
+### 📚 Comprehensive Documentation Updates
+- **In-Depth Guides & Architecture Docs**:
+  - Fully updated user manuals in `docs/guide/` (both English and Simplified Chinese) and READMEs with detailed explanations of injection strategies, dylib interception mechanisms, and headroom probing.
+
+### 🧪 Comprehensive Quality Assurance
+- **Expanded Test Suite**:
+  - Automated test suite expanded to 479 unit, engine, probe, and GUI integration tests with 100% pass rate.
+
+---
+
 ## [v1.2.1] - 2026-09-05
 
 ### 🧩 Decoupled Dylib Injection via @executable_path (Fix #6)

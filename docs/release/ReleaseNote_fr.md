@@ -6,6 +6,31 @@ Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctio
 
 ---
 
+## [v1.3.0] - 2026-09-05
+
+### 🔬 Vérification de l'espace d'en-tête Mach-O (Headroom Probing)
+- **Inspection statique de l'en-tête binaire**:
+  - Ajout de `_check_macho_injection_headroom` pour mesurer le padding disponible entre `sizeofcmds` et la première section avant toute modification binaire.
+  - Empêche la corruption des exécutables dont les en-têtes Mach-O sont trop denses.
+
+### 🎛️ Stratégie d'injection configurable (`auto`, `dylib`, `launcher`)
+- **Contrôle avancé et repli gracieux**:
+  - Intégration du paramètre `injection_strategy` dans les recettes, CloneTask, CloneRecord, CLI (`--injection-strategy`) et GUI (Assistant, Éditeur de recettes).
+  - **Mode automatique (`auto`)**: Sonde l'en-tête Mach-O; injecte la dylib si l'espace le permet ou bascule automatiquement vers le lanceur C natif avec un avertissement explicatif.
+  - **Mode dylib (`dylib`)**: Force l'injection de dylib et lève une `CloneError` détaillée si l'espace est insuffisant ou le binaire incompatible.
+  - **Mode lanceur (`launcher`)**: Force l'utilisation du lanceur C Mach-O sans altérer le binaire original.
+  - Visualisation en temps réel de la stratégie active dans `CloneDetailWindow` et la commande CLI `inspect`.
+
+### 📚 Documentation et guides utilisateurs
+- **Mise à jour complète**:
+  - Guides d'utilisation mis à jour dans `docs/guide/` et README détaillant le choix des stratégies d'injection et l'architecture dylib.
+
+### 🧪 Tests
+- **Couverture de tests**:
+  - Suite portée à 479 tests automatisés avec 100 % de réussite.
+
+---
+
 ## [v1.2.1] - 2026-09-05
 
 ### 🧩 Injection de Dylib découplée via @executable_path (Fix #6)

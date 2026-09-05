@@ -6,6 +6,31 @@ En este documento se registran todas las actualizaciones principales, nuevas car
 
 ---
 
+## [v1.3.0] - 2026-09-05
+
+### 🔬 Verificación de espacio en encabezado Mach-O (Headroom Probing)
+- **Inspección estática de binarios**:
+  - Incorporación de `_check_macho_injection_headroom` para comprobar el margen de espacio entre comandos de carga (`sizeofcmds`) y la primera sección antes de modificar el binario.
+  - Evita daños irreparables en binarios Mach-O con encabezados compactos.
+
+### 🎛️ Estrategia de inyección configurable (`auto`, `dylib`, `launcher`)
+- **Control integral de inyección y degradación fluida**:
+  - Incorporación de `injection_strategy` en modelos de receta, CloneTask, CloneRecord, CLI (`--injection-strategy`) e interfaz gráfica (asistente y editor de recetas).
+  - **Modo automático (`auto`)**: Analiza el margen de Mach-O; inyecta la biblioteca dylib si es seguro o recurre automáticamente al lanzador nativo C con aviso informativo.
+  - **Modo dylib (`dylib`)**: Impone la inyección de dylib, emitiendo un error `CloneError` detallado si el espacio es insuficiente.
+  - **Modo lanzador (`launcher`)**: Fuerza el uso del lanzador nativo C Mach-O sin modificar el binario original.
+  - Visualización del modo ejecutado en tiempo real en `CloneDetailWindow` y en el comando `inspect`.
+
+### 📚 Documentación exhaustiva
+- **Guías técnicas y manuales actualizados**:
+  - Guías en `docs/guide/` y README enriquecidas con detalles sobre estrategias de inyección, arquitectura dylib y verificación de encabezados.
+
+### 📦 Calidad garantizada
+- **Cobertura exhaustiva**:
+  - Suite de pruebas ampliada a 479 casos automatizados con un 100 % de éxito.
+
+---
+
 ## [v1.2.1] - 2026-09-05
 
 ### 🧩 Inyección de Dylib desacoplada mediante @executable_path (Fix #6)

@@ -6,6 +6,31 @@
 
 ---
 
+## [v1.3.0] - 2026-09-05
+
+### 🔬 Mach-O 헤드룸 탐색 및 안전 검증 (Headroom Probing)
+- **정적 바이너리 헤더 공간 검사**:
+  - Mach-O 바이너리를 수정하기 전에 로드 명령 구역(`sizeofcmds`)과 첫 번째 섹션 사이의 여유 패딩을 정밀 검사하는 `_check_macho_injection_headroom`을 추가했습니다.
+  - 헤더 여유 공간이 부족한 앱에서 무리한 `LC_LOAD_DYLIB` 삽입으로 인한 바이너리 손상 및 충돌 위험을 원천 차단했습니다.
+
+### 🎛️ 주입 전략 구성 옵션 (`auto` / `dylib` / `launcher`)
+- **전방위 주입 전략 제어 및 우아한 폴백**:
+  - Recipe 모델, CloneTask, CloneRecord, CLI(`--injection-strategy`) 및 GUI(복제 마법사, 레시피 편집기) 전반에 `injection_strategy` 설정을 도입했습니다.
+  - **자동 모드 (`auto`)**: Cocoa 앱의 헤더 여유 공간을 탐색하여 안전할 경우 dylib을 주입하고, 공간이 부족하면 알림과 함께 네이티브 C Launcher로 자동 폴백합니다.
+  - **dylib 모드 (`dylib`)**: dylib 주입을 강제하며 공간 부족 또는 비호환 바이너리인 경우 명확한 진단 정보와 함께 `CloneError`를 발생시킵니다.
+  - **런처 모드 (`launcher`)**: 원본 바이너리를 일체 수정하지 않고 네이티브 Mach-O C Launcher 래퍼를 강제 적용합니다.
+  - 복제 상세 패널(`CloneDetailWindow`) 및 CLI `inspect`에서 실제 실행된 주입 전략을 실시간 표시합니다.
+
+### 📚 사용자 설명서 및 가이드 전면 개편
+- **심층 원리 문서화**:
+  - `docs/guide/`의 사용자 가이드(영문 및 중문)와 README에 주입 전략 선택, dylib 아키텍처 및 헤드룸 탐색 원리를 체계적으로 정리했습니다.
+
+### 🧪 테스트 및 품질 보증
+- **테스트 확장**:
+  - 총 479개의 단위, 엔진, 탐색 및 GUI 통합 테스트를 100% 통과했습니다.
+
+---
+
 ## [v1.2.1] - 2026-09-05
 
 ### 🧩 @executable_path 기반 dylib 주입 디커플링 (Fix #6)

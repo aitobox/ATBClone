@@ -6,6 +6,31 @@
 
 ---
 
+## [v1.3.0] - 2026-09-05
+
+### 🔬 Mach-O 头部安全空间探测 (Headroom Probing)
+- **静态二进制头部空间校验**：
+  - 引入 `_check_macho_injection_headroom` 静态探测算法，在修改二进制前精确检测 Mach-O 加载命令区（`sizeofcmds`）与第一个 Section 之间的剩余填充间隙。
+  - 彻底规避头部紧凑型二进制因强制插入 `LC_LOAD_DYLIB` 导致的二进制损坏与崩溃风险。
+
+### 🎛️ 可配置的环境注入策略 (`auto` / `dylib` / `launcher`)
+- **全链路策略控制与优雅回退**：
+  - 在 Recipe 规范、CloneTask、CloneRecord、CLI（`--injection-strategy`）及 GUI（克隆向导、配方编辑器）中全面支持 `injection_strategy` 选项。
+  - **自动模式 (`auto`)**：智能探测 Mach-O 头部空隙，空间充裕时优先注入原生动态库；空间不足时自动且优雅地降级为原生 C Launcher 启动器并给出友好提示。
+  - **动态库模式 (`dylib`)**：强制实施 dylib 注入，空间不足或二进制不兼容时抛出明确且带有诊断信息的 `CloneError`。
+  - **启动器模式 (`launcher`)**：强制采用原生 Mach-O C Launcher 封装，完全不改动原始二进制。
+  - 在分身详情面板（`CloneDetailWindow`）及 CLI `inspect` 中实时展示实际执行生效的注入模式。
+
+### 📚 完整文档体系与使用手册升级
+- **深度原理解析与指引更新**：
+  - 全面更新 `docs/guide/` 中英文用户手册及项目主 README，详细阐述注入策略选型、动态库拦截架构以及安全空间探测原理。
+
+### 🧪 质量保障与自动化测试
+- **测试套件扩充**：
+  - 自动化测试用例扩充至 479 项，覆盖头部探测、降级回退、CLI 参数校验与检视器检测。
+
+---
+
 ## [v1.2.1] - 2026-09-05
 
 ### 🧩 基于 @executable_path 的动态库解耦注入 (Fix #6)

@@ -6,6 +6,27 @@
 
 ---
 
+## [v1.4.0] - 2026-09-05
+
+### 🪶 Изоляция нескольких копий и блокировок Feishu / Lark (Fix #7)
+- **Перенаправление данных и перехват SingletonLock**:
+  - Специализированная библиотека `libatbclone_feishu_hook.dylib` для перехвата путей Cocoa и POSIX в Feishu/Lark (`com.electron.lark`).
+  - Перехват `NSSearchPathForDirectoriesInDomains` направляет `LarkShell`, `SingletonLock` и `SingletonSocket` в изолированный каталог данных клона.
+  - Автоматическое удаление `CFBundleURLTypes` из `Info.plist` для предотвращения конфликтов системных протоколов URL Scheme.
+  - Изоляция строго ограничена рецептами Feishu/Lark без влияния на другие приложения.
+
+### 🤖 Изоляция данных аккаунтов OpenAI ChatGPT Desktop и Codex
+- **Независимые сессии входа и очистка Deep-Link**:
+  - Добавлен патч `patch_chatgpt_isolation` с внедрением `libatbclone_chatgpt_hook.dylib` для изоляции ChatGPT Desktop (`com.openai.chat`).
+  - Исправлена инициализация `CODEX_HOME` (исключено непреднамеренное копирование `~/.codex/auth.json`), гарантируя полную изоляцию токенов авторизации.
+  - Удаление `CFBundleURLTypes` у клонов ChatGPT для предотвращения конфликтов вызова приложения по внешним ссылкам.
+
+### 🧪 Тесты
+- **Полное покрытие**:
+  - Набор тестов расширен до 485 автоматических тестов с успехом 100%.
+
+---
+
 ## [v1.3.0] - 2026-09-05
 
 ### 🔬 Проверка запаса заголовка Mach-O (Headroom Probing)

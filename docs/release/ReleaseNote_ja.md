@@ -6,6 +6,27 @@
 
 ---
 
+## [v1.4.0] - 2026-09-05
+
+### 🪶 飛書 / Lark の多重起動互斥およびデータディレクトリ完全分離 (Fix #7)
+- **専用データディレクトリとシングルトンロックのフック**:
+  - Feishu/Lark (`com.electron.lark`) 専用の Cocoa/POSIX パスフック dylib (`libatbclone_feishu_hook.dylib`) を実装。
+  - `NSSearchPathForDirectoriesInDomains` およびファイルシステム API をフックし、`LarkShell`、`SingletonLock`、`SingletonSocket` をクローンのプライベートディレクトリ配下に強制生成。
+  - `Info.plist` の `CFBundleURLTypes` を自動削除し、システム URL スキームの競合を防止。
+  - Feishu/Lark 配方のみに限定適用され、他のアプリには影響を与えません。
+
+### 🤖 OpenAI ChatGPT デスクトップ版および Codex のアカウントデータ分離
+- **独立ログインセッションとディープリンク競合の防止**:
+  - `patch_chatgpt_isolation` を追加し、`libatbclone_chatgpt_hook.dylib` を注入して ChatGPT (`com.openai.chat`) の Application Support およびキャッシュパスを分離。
+  - `CODEX_HOME` 初期化時にホストの `~/.codex/auth.json` が誤ってコピーされる問題を修正し、各クローンで完全な個別ログイン状態を保証。
+  - ChatGPT クローンの `CFBundleURLTypes` を削除し、外部 URL 起動時の干渉を防止。
+
+### 🧪 テストスイート拡充
+- **品質検証**:
+  - 自動テストスイートを 485 件に拡大し、全テスト 100% 合格。
+
+---
+
 ## [v1.3.0] - 2026-09-05
 
 ### 🔬 Mach-O ヘッドルーム検証 (Headroom Probing)

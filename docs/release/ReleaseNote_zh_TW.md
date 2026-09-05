@@ -6,6 +6,27 @@
 
 ---
 
+## [v1.4.0] - 2026-09-05
+
+### 🪶 飛書 / Lark 多處理程序互斥與資料目錄深度隔離 (Fix #7)
+- **獨佔私有資料目錄與處理程序單例鎖攔截**：
+  - 為飛書/Lark（`com.electron.lark`）引入專用的 Cocoa 與 POSIX 路徑攔截動態庫（`libatbclone_feishu_hook.dylib`）。
+  - 攔截 `NSSearchPathForDirectoriesInDomains` 與底層檔案路徑解析，使主處理程序及內嵌 Chromium 引擎均在分身私有目錄下建立 `LarkShell`、`SingletonLock` 及 `SingletonSocket`。
+  - 自動剝離分身 `Info.plist` 中的 `CFBundleURLTypes`，徹底杜絕系統外部通訊協定（URL Scheme）衝突。
+  - 攔截機制嚴格收斂於飛書/Lark 配方，對其他應用程式完全透明且無侵入。
+
+### 🤖 OpenAI ChatGPT 桌面版與 Codex 帳號資料隔離
+- **獨立登入狀態與深度連結淨化**：
+  - 引入 `patch_chatgpt_isolation` 補丁機制並注入 `libatbclone_chatgpt_hook.dylib`，攔截 ChatGPT 桌面版（`com.openai.chat`）的 Application Support 與 Cache 目錄。
+  - 修復 `CODEX_HOME` 初始化時誤複製宿主 `~/.codex/auth.json` 導致共享登入態的問題，確保各分身擁有完全獨立的帳號工作階段憑證。
+  - 自動剝離 ChatGPT 分身的 `CFBundleURLTypes`，防止外部深度連結喚醒主應用程式。
+
+### 🧪 品質保障與自動化測試
+- **測試套件擴充**：
+  - 自動化測試案例擴充至 485 項，涵蓋飛書路徑攔截、ChatGPT 帳號隔離與配方驗證。
+
+---
+
 ## [v1.3.0] - 2026-09-05
 
 ### 🔬 Mach-O 標頭安全空間探測 (Headroom Probing)

@@ -6,6 +6,27 @@
 
 ---
 
+## [v1.4.0] - 2026-09-05
+
+### 🪶 Feishu / Lark 다중 인스턴스 상호 배제 및 데이터 디렉터리 격리 (Fix #7)
+- **개별 데이터 디렉터리 리디렉션 및 싱글톤 락 가로채기**:
+  - Feishu/Lark(`com.electron.lark`) 전용 Cocoa 및 POSIX 경로 후킹 dylib(`libatbclone_feishu_hook.dylib`)을 도입했습니다.
+  - `NSSearchPathForDirectoriesInDomains` 및 파일 경로 API를 가로채어 `LarkShell`, `SingletonLock`, `SingletonSocket`이 복제본의 독립 데이터 디렉터리에 생성되도록 리디렉션합니다.
+  - `Info.plist`의 `CFBundleURLTypes`를 자동 제거하여 시스템 URL Scheme 충돌을 방지합니다.
+  - Feishu/Lark 레시피에만 엄격히 제한 적용되며 다른 앱에 영향을 주지 않습니다.
+
+### 🤖 OpenAI ChatGPT 데스크톱 및 Codex 계정 데이터 완전 격리
+- **독립 로그인 세션 및 딥링크 충돌 해결**:
+  - `patch_chatgpt_isolation` 패치를 추가하고 `libatbclone_chatgpt_hook.dylib`를 주입하여 ChatGPT(`com.openai.chat`)의 Application Support 및 Cache 디렉터리를 격리했습니다.
+  - `CODEX_HOME` 초기화 시 호스트의 `~/.codex/auth.json`이 복사되어 로그인 세션이 공유되던 문제를 수정하여 개별 계정 토큰을 완벽히 격리했습니다.
+  - ChatGPT 복제본의 `CFBundleURLTypes`를 제거하여 외부 딥링크 호출 충돌을 방지했습니다.
+
+### 🧪 테스트 및 품질 보증
+- **테스트 확장**:
+  - 총 485개의 단위, 엔진, 레시피 및 GUI 통합 테스트를 100% 통과했습니다.
+
+---
+
 ## [v1.3.0] - 2026-09-05
 
 ### 🔬 Mach-O 헤드룸 탐색 및 안전 검증 (Headroom Probing)

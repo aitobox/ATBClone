@@ -6,6 +6,27 @@ Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Op
 
 ---
 
+## [v1.4.0] - 2026-09-05
+
+### 🪶 Feishu / Lark Multi-Instanz- & Datenisolierung (Fix #7)
+- **Privates Datenverzeichnis & Singleton-Lock-Interposition**:
+  - Dedizierte Cocoa/POSIX-Pfad-Hook-Dylib (`libatbclone_feishu_hook.dylib`) für Feishu/Lark (`com.electron.lark`).
+  - Leitet `NSSearchPathForDirectoriesInDomains` sowie Dateipfade so um, dass `LarkShell`, `SingletonLock` und `SingletonSocket` isoliert im Klon-Datenverzeichnis angelegt werden.
+  - Bereinigt `CFBundleURLTypes` in `Info.plist`, um Konflikte mit System-URL-Schemata zu vermeiden.
+  - Strikt auf Feishu/Lark beschränkt ohne Auswirkungen auf andere Anwendungen.
+
+### 🤖 OpenAI ChatGPT Desktop & Codex Konto-Datenisolierung
+- **Unabhängige Login-Sitzungen & Deep-Link-Bereinigung**:
+  - Integration von `patch_chatgpt_isolation` und Injektion von `libatbclone_chatgpt_hook.dylib` für ChatGPT Desktop (`com.openai.chat`).
+  - Behebung der `CODEX_HOME`-Initialisierung (kein versehentliches Kopieren von `~/.codex/auth.json`), wodurch vollständige Token-Isolierung gewährleistet ist.
+  - Entfernung von `CFBundleURLTypes` in ChatGPT-Klonen zur Vermeidung von Protokollkonflikten.
+
+### 🧪 Test-Suite
+- **Erweiterte Abdeckung**:
+  - Test-Suite auf 485 automatisierte Tests ausgebaut (100 % Erfolgsquote).
+
+---
+
 ## [v1.3.0] - 2026-09-05
 
 ### 🔬 Mach-O Headroom-Prüfung & Sicherheitsanalyse

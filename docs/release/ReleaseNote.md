@@ -6,6 +6,27 @@ All notable changes, new features, improvements, and bug fixes for **ATBClone** 
 
 ---
 
+## [v1.4.0] - 2026-09-05
+
+### 🪶 Feishu / Lark Multi-Instance Isolation & Process Singleton Hook (Fix #7)
+- **Private Data Redirection & Singleton Lock Isolation**:
+  - Implemented specialized Cocoa & POSIX path hook dylib (`libatbclone_feishu_hook.dylib`) for Feishu/Lark (`com.electron.lark`).
+  - Interposes `NSSearchPathForDirectoriesInDomains` and filesystem path resolution, redirecting `LarkShell`, `SingletonLock`, and `SingletonSocket` to the clone's private data directory.
+  - Automatically strips `CFBundleURLTypes` in `Info.plist` to eliminate system URL scheme registration collisions.
+  - Strictly scoped to Feishu/Lark recipes with zero impact on other cloned apps.
+
+### 🤖 OpenAI ChatGPT Desktop & Codex Account Isolation
+- **Independent Login Sessions & Deep-Link Sanitization**:
+  - Introduced `patch_chatgpt_isolation` and injected `libatbclone_chatgpt_hook.dylib` to isolate Cocoa Application Support and Caches for ChatGPT Desktop (`com.openai.chat`).
+  - Resolved `CODEX_HOME` initialization issue where the host's `~/.codex/auth.json` was inadvertently copied, ensuring completely isolated account tokens.
+  - Stripped `CFBundleURLTypes` from ChatGPT clones to prevent deep-link protocol hijacking.
+
+### 🧪 Comprehensive Quality Assurance
+- **Expanded Test Suite**:
+  - Automated test suite expanded to 485 unit, engine, recipe, and GUI integration tests with 100% pass rate.
+
+---
+
 ## [v1.3.0] - 2026-09-05
 
 ### 🔬 Mach-O Headroom Probing & Safety Verification

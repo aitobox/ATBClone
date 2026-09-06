@@ -12,6 +12,7 @@ from atbclone.core.config import DEFAULT_APPS_DIR, DEFAULT_DATA_DIR
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord, StateManager
+from atbclone.validation import validate_clone_name, validate_display_name
 from atbclone.executor.runner import CloneError
 from atbclone.recipes import RecipeLoader, supports_data_dir
 
@@ -47,14 +48,28 @@ def wizard() -> None:
     # 3. Clone name
     out_path = DEFAULT_APPS_DIR
     clone_name, num = AppInspector.next_available_name(info.app_name, out_path)
-    clone_name = click.prompt(t("wizard_prompt_clone_name"), default=clone_name)
+    while True:
+        clone_name = click.prompt(t("wizard_prompt_clone_name"), default=clone_name)
+        try:
+            validate_clone_name(clone_name)
+            break
+        except ValueError as e:
+            console.print(f"[bold red]{e}[/bold red]")
 
     # 4. Display name (Dock/Finder)
-    display_name_input = click.prompt(
-        t("wizard_prompt_display_name"),
-        default="",
-    )
-    display_name: str | None = display_name_input.strip() or None
+    while True:
+        display_name_input = click.prompt(
+            t("wizard_prompt_display_name"),
+            default="",
+        )
+        display_name: str | None = display_name_input.strip() or None
+        if display_name is None:
+            break
+        try:
+            validate_display_name(display_name)
+            break
+        except ValueError as e:
+            console.print(f"[bold red]{e}[/bold red]")
 
     # 5. Custom icon
     icon_path: Path | None = None
@@ -134,10 +149,14 @@ def wizard() -> None:
     )
 
     if use_proxy and proxy_host:
-        task.recipe.proxy.enabled = True
-        task.recipe.proxy.host = proxy_host
-        task.recipe.proxy.port = proxy_port or task.recipe.proxy.port
-        task.recipe.proxy.type = proxy_type
+        try:
+            task.recipe.proxy.enabled = True
+            task.recipe.proxy.host = proxy_host
+            task.recipe.proxy.port = proxy_port or task.recipe.proxy.port
+            task.recipe.proxy.type = proxy_type
+        except ValueError as e:
+            console.print(f"[bold red]{e}[/bold red]", soft_wrap=True)
+            sys.exit(1)
 
     out_path.mkdir(parents=True, exist_ok=True)
     needs_admin = not dest_path.is_relative_to(Path.home())

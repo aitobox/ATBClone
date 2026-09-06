@@ -454,17 +454,26 @@ class WizardWindow(toga.Window):
             recipe.proxy.host = self.input_proxy_host.value.strip() or "127.0.0.1"
             recipe.proxy.port = port
 
-        task = CloneTask(
-            source=self.app_info,
-            dest_path=dest_path,
-            data_dir=data_dir,
-            recipe=recipe,
-            clone_name=clone_name,
-            new_bundle_id=new_bundle_id,
-            display_name=display_name,
-            language=lang,
-            injection_strategy=str(self.select_injection_strat.value),
-        )
+        try:
+            task = CloneTask(
+                source=self.app_info,
+                dest_path=dest_path,
+                data_dir=data_dir,
+                recipe=recipe,
+                clone_name=clone_name,
+                new_bundle_id=new_bundle_id,
+                display_name=display_name,
+                language=lang,
+                injection_strategy=str(self.select_injection_strat.value),
+            )
+        except ValueError as e:
+            self.progress_bar.stop()
+            self.label_status.text = t("win_wizard_status_failed", error=str(e))
+            logger.error(f"Wizard rejected clone inputs for '{clone_name}': {e}")
+            await self.error_dialog(t("dialog_clone_error_title"), str(e))
+            self.btn_next.enabled = True
+            self.btn_prev.enabled = True
+            return
 
         try:
             await self.clone_service.create_clone(task)

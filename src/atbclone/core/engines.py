@@ -9,6 +9,7 @@ import textwrap
 from atbclone.core.clone_task import CloneTask
 from atbclone.core.locale import build_language_wrapper_snippet
 from atbclone.core.logger import get_logger
+from atbclone.validation import escape_double_quoted
 from atbclone.executor.runner import CloneError, Runner
 
 logger = get_logger("core.engines")
@@ -83,7 +84,7 @@ class CloneEngine:
     @staticmethod
     def _build_display_name_cmd(effective_display_name: str, dst_plist: str, dst_resources: str) -> str:
         """Return a shell snippet that applies display name to Info.plist and removes localized overrides."""
-        name_escaped = effective_display_name.replace('\\', '\\\\').replace('"', '\\"')
+        name_escaped = escape_double_quoted(effective_display_name)
         return textwrap.dedent(f"""
             /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName {name_escaped}" {dst_plist} 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string {name_escaped}" {dst_plist}
             /usr/libexec/PlistBuddy -c "Delete :LSHasLocalizedDisplayName" {dst_plist} 2>/dev/null || true
@@ -181,6 +182,7 @@ class CloneEngine:
         if not whitelist:
             return ""
         data_dir_quoted = shlex.quote(str(task.data_dir))
+        home_quoted = shlex.quote(str(task.data_dir / "Home"))
         lines = []
         for item in whitelist:
             item_clean = item.strip().strip("/")
@@ -189,10 +191,10 @@ class CloneEngine:
             item_quoted = shlex.quote(item_clean)
             lines.append(
                 f'if [ -d {data_dir_quoted} ]; then\n'
-                f'    mkdir -p "{task.data_dir}/Home"\n'
-                f'    if [ ! -e "{task.data_dir}/Home"/{item_quoted} ] && [ -e "$HOME"/{item_quoted} ]; then\n'
-                f'        mkdir -p "$(dirname "{task.data_dir}/Home"/{item_quoted})"\n'
-                f'        ln -s "$HOME"/{item_quoted} "{task.data_dir}/Home"/{item_quoted} 2>/dev/null || true\n'
+                f'    mkdir -p {home_quoted}\n'
+                f'    if [ ! -e {home_quoted}/{item_quoted} ] && [ -e "$HOME"/{item_quoted} ]; then\n'
+                f'        mkdir -p "$(dirname {home_quoted}/{item_quoted})"\n'
+                f'        ln -s "$HOME"/{item_quoted} {home_quoted}/{item_quoted} 2>/dev/null || true\n'
                 f'    fi\n'
                 f'fi'
             )
@@ -210,38 +212,46 @@ class CloneEngine:
         if not orig_bundle_id:
             return ""
         orig_quoted = shlex.quote(orig_bundle_id)
-        new_quoted = shlex.quote(new_bundle_id)
         data_dir_quoted = shlex.quote(str(task.data_dir))
+        home_dir = task.data_dir / "Home"
+        home_quoted = shlex.quote(str(home_dir))
+        prefs_dir_quoted = shlex.quote(str(home_dir / "Library" / "Preferences"))
+        tmp_dir_quoted = shlex.quote(str(task.data_dir / "Tmp"))
+        global_prefs_dst = shlex.quote(str(home_dir / "Library" / "Preferences" / ".GlobalPreferences.plist"))
+        cf_text_dst = shlex.quote(str(home_dir / ".CFUserTextEncoding"))
+        keychains_dir_dst = shlex.quote(str(home_dir / "Library" / "Keychains"))
+        orig_prefs_dst = shlex.quote(str(home_dir / "Library" / "Preferences" / f"{orig_bundle_id}.plist"))
+        new_prefs_dst = shlex.quote(str(home_dir / "Library" / "Preferences" / f"{new_bundle_id}.plist"))
         lines = [
             f'if [ -d {data_dir_quoted} ]; then',
-            f'    mkdir -p "{task.data_dir}/Home/Library/Preferences" "{task.data_dir}/Tmp" 2>/dev/null || true',
-            f'    if [ ! -f "{task.data_dir}/Home/Library/Preferences/.GlobalPreferences.plist" ] && [ -f "$HOME/Library/Preferences/.GlobalPreferences.plist" ]; then',
-            f'        cp "$HOME/Library/Preferences/.GlobalPreferences.plist" "{task.data_dir}/Home/Library/Preferences/.GlobalPreferences.plist" 2>/dev/null || true',
+            f'    mkdir -p {prefs_dir_quoted} {tmp_dir_quoted} 2>/dev/null || true',
+            f'    if [ ! -f {global_prefs_dst} ] && [ -f "$HOME/Library/Preferences/.GlobalPreferences.plist" ]; then',
+            f'        cp "$HOME/Library/Preferences/.GlobalPreferences.plist" {global_prefs_dst} 2>/dev/null || true',
             f'    fi',
-            f'    if [ ! -f "{task.data_dir}/Home/.CFUserTextEncoding" ] && [ -f "$HOME/.CFUserTextEncoding" ]; then',
-            f'        cp "$HOME/.CFUserTextEncoding" "{task.data_dir}/Home/.CFUserTextEncoding" 2>/dev/null || true',
+            f'    if [ ! -f {cf_text_dst} ] && [ -f "$HOME/.CFUserTextEncoding" ]; then',
+            f'        cp "$HOME/.CFUserTextEncoding" {cf_text_dst} 2>/dev/null || true',
             f'    fi',
-            f'    if [ ! -e "{task.data_dir}/Home/Library/Keychains" ] && [ -e "$HOME/Library/Keychains" ]; then',
-            f'        mkdir -p "{task.data_dir}/Home/Library"',
-            f'        ln -s "$HOME/Library/Keychains" "{task.data_dir}/Home/Library/Keychains" 2>/dev/null || true',
+            f'    if [ ! -e {keychains_dir_dst} ] && [ -e "$HOME/Library/Keychains" ]; then',
+            f'        mkdir -p {home_quoted}/Library',
+            f'        ln -s "$HOME/Library/Keychains" {keychains_dir_dst} 2>/dev/null || true',
             f'    fi',
             f'    _ORIG_PLIST="$HOME/Library/Preferences/{orig_quoted}.plist"',
             f'    _CONTAINER_PLIST="$HOME/Library/Containers/{orig_quoted}/Data/Library/Preferences/{orig_quoted}.plist"',
-            f'    if [ ! -f "{task.data_dir}/Home/Library/Preferences/{orig_quoted}.plist" ]; then',
+            f'    if [ ! -f {orig_prefs_dst} ]; then',
             '        if [ -f "$_ORIG_PLIST" ]; then',
-            f'            cp "$_ORIG_PLIST" "{task.data_dir}/Home/Library/Preferences/{orig_quoted}.plist" 2>/dev/null || true',
+            f'            cp "$_ORIG_PLIST" {orig_prefs_dst} 2>/dev/null || true',
             '        elif [ -f "$_CONTAINER_PLIST" ]; then',
-            f'            cp "$_CONTAINER_PLIST" "{task.data_dir}/Home/Library/Preferences/{orig_quoted}.plist" 2>/dev/null || true',
+            f'            cp "$_CONTAINER_PLIST" {orig_prefs_dst} 2>/dev/null || true',
             '        fi',
             '    fi',
         ]
         if orig_bundle_id != new_bundle_id:
             lines.extend([
-                f'    if [ ! -f "{task.data_dir}/Home/Library/Preferences/{new_quoted}.plist" ]; then',
+                f'    if [ ! -f {new_prefs_dst} ]; then',
                 '        if [ -f "$_ORIG_PLIST" ]; then',
-                f'            cp "$_ORIG_PLIST" "{task.data_dir}/Home/Library/Preferences/{new_quoted}.plist" 2>/dev/null || true',
+                f'            cp "$_ORIG_PLIST" {new_prefs_dst} 2>/dev/null || true',
                 '        elif [ -f "$_CONTAINER_PLIST" ]; then',
-                f'            cp "$_CONTAINER_PLIST" "{task.data_dir}/Home/Library/Preferences/{new_quoted}.plist" 2>/dev/null || true',
+                f'            cp "$_CONTAINER_PLIST" {new_prefs_dst} 2>/dev/null || true',
                 '        fi',
                 '    fi',
             ])

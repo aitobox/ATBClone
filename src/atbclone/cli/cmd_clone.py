@@ -15,6 +15,7 @@ from atbclone.core.i18n import t
 from atbclone.core.locale import SUPPORTED_LANGUAGES
 from atbclone.core.logger import get_logger
 from atbclone.core.state import CloneRecord, StateManager
+from atbclone.validation import validate_clone_name, validate_display_name
 from atbclone.executor.runner import CloneError
 from atbclone.recipes import RecipeLoader, supports_data_dir
 
@@ -54,6 +55,20 @@ def clone(
     if icon and not icon.lower().endswith(".icns"):
         console.print(t("clone_err_icon_icns"), soft_wrap=True)
         sys.exit(1)
+
+    # Validate user-supplied names early: they end up inside generated shell
+    # scripts and destination paths, so reject unsafe values with a clear error.
+    for label, value in (("--name", name), ("--display-name", display_name)):
+        if value is None:
+            continue
+        try:
+            if label == "--name":
+                validate_clone_name(value)
+            else:
+                validate_display_name(value)
+        except ValueError as e:
+            console.print(f"[bold red]{label}:[/bold red] {e}", soft_wrap=True)
+            sys.exit(1)
 
     out_path = Path(output_dir).expanduser().resolve()
     out_path.mkdir(parents=True, exist_ok=True)
@@ -114,10 +129,14 @@ def clone(
     )
 
     if proxy_host:
-        task.recipe.proxy.enabled = True
-        task.recipe.proxy.host = proxy_host
-        task.recipe.proxy.port = proxy_port or task.recipe.proxy.port
-        task.recipe.proxy.type = proxy_type
+        try:
+            task.recipe.proxy.enabled = True
+            task.recipe.proxy.host = proxy_host
+            task.recipe.proxy.port = proxy_port or task.recipe.proxy.port
+            task.recipe.proxy.type = proxy_type
+        except ValueError as e:
+            console.print(f"[bold red]--proxy-host:[/bold red] {e}", soft_wrap=True)
+            sys.exit(1)
 
     needs_admin = not dest_path.is_relative_to(Path.home())
 

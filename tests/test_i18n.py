@@ -131,7 +131,7 @@ def test_i18n_env_lang_fallback():
         ("en_US.UTF-8", "en"),
     ]
     for env_val, expected in cases:
-        with patch.dict(os.environ, {"LANG": env_val, "ATBCLONE_LANG": ""}), \
+        with patch.dict(os.environ, {"LANG": env_val, "ATBCLONE_LANG": "", "LC_ALL": "", "LC_MESSAGES": ""}), \
              patch("atbclone.core.i18n.get_configured_language", return_value="auto"), \
              patch("subprocess.check_output", side_effect=Exception("no defaults")):
             assert detect_system_language() == expected

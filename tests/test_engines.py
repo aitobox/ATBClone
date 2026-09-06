@@ -1,5 +1,6 @@
 """Unit tests for CloneEngines (SoftCloneEngine and HardCloneEngine) and CloneTask."""
 
+import shlex
 from pathlib import Path
 from unittest.mock import patch
 
@@ -10,6 +11,19 @@ from atbclone.core.engines import CloneEngine, HardCloneEngine, SoftCloneEngine
 from atbclone.core.models import AppInfo
 from atbclone.executor.runner import CloneError
 from atbclone.recipes.models import ProxyConfig, Recipe
+
+
+@pytest.fixture(autouse=True)
+def _pin_system_locale(monkeypatch):
+    """Pin the host locale so script assertions (zh_CN / zh-CN) hold on any machine."""
+    monkeypatch.setattr(
+        "atbclone.core.locale.get_system_apple_languages",
+        lambda: ["zh-Hans-CN", "zh-Hans", "en"],
+    )
+    monkeypatch.setattr(
+        "atbclone.core.locale.get_system_apple_locale",
+        lambda: "zh_CN",
+    )
 
 
 @pytest.fixture
@@ -842,15 +856,17 @@ class TestEnginePermissionsAndXattrTolerance:
             assert f"xattr -cr {sample_task.dest_path} 2>/dev/null || true" in script
 
     def test_wrapper_guarantees_home_and_tmpdir_directories(self, sample_task):
+        prefs_dir = shlex.quote(str(sample_task.data_dir / "Home" / "Library" / "Preferences"))
+        tmp_dir = shlex.quote(str(sample_task.data_dir / "Tmp"))
         with patch("atbclone.executor.runner.Runner.run") as mock_run:
             HardCloneEngine.execute(sample_task, needs_admin=False)
             script, _ = mock_run.call_args[0]
-            assert f'mkdir -p "{sample_task.data_dir}/Home/Library/Preferences" "{sample_task.data_dir}/Tmp"' in script
+            assert f"mkdir -p {prefs_dir} {tmp_dir}" in script
 
         with patch("atbclone.executor.runner.Runner.run") as mock_run_soft:
             SoftCloneEngine.execute(sample_task, needs_admin=False)
             script_soft, _ = mock_run_soft.call_args[0]
-            assert f'mkdir -p "{sample_task.data_dir}/Home/Library/Preferences" "{sample_task.data_dir}/Tmp"' in script_soft
+            assert f"mkdir -p {prefs_dir} {tmp_dir}" in script_soft
 
 
     def test_strip_sandbox_cleans_team_and_group_entitlements(self, sample_task):

@@ -4,6 +4,7 @@ import subprocess
 from pathlib import Path
 
 from .models import AppInfo
+from atbclone.validation import sanitize_name_component, validate_bundle_id
 
 
 class AppInspector:
@@ -83,6 +84,11 @@ class AppInspector:
         if not executable_name:
             executable_name = cls._run_cmd(["defaults", "read", str(plist_path), "CFBundleExecutable"]) or path.stem
 
+        # The identifier from the source bundle ends up inside PlistBuddy and
+        # codesign command strings; anything outside the reverse-DNS charset is
+        # treated as malformed/malicious metadata and rejected before cloning.
+        validate_bundle_id(bundle_id)
+
         # Check sandbox entitlements
         entitlements = cls._run_cmd(["codesign", "-d", "--entitlements", "-", str(path)])
         has_sandbox = False
@@ -116,6 +122,9 @@ class AppInspector:
     @staticmethod
     def next_available_name(app_name: str, dest_dir: str | Path) -> tuple[str, int]:
         dest_path = Path(dest_dir)
+        # app_name comes from the source app's Info.plist and is untrusted:
+        # neutralize path separators before it is used to build dest paths.
+        app_name = sanitize_name_component(app_name)
         match = re.match(r"^(.*?)(\d+)$", app_name)
         if match:
             base_name = match.group(1)
@@ -134,6 +143,7 @@ class AppInspector:
     @staticmethod
     def generate_bundle_id(bundle_id: str, num: int = 1) -> str:
         """Generate standardized bundle identifier for a cloned application instance."""
+        validate_bundle_id(bundle_id)
         return f"{bundle_id}.atbclone.{num}"
 
     @classmethod

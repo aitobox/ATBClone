@@ -9,6 +9,7 @@ from toga.style.pack import COLUMN, ROW, CENTER
 from atbclone.core.i18n import t
 from atbclone.core.state import CloneRecord
 from atbclone.gui.theme import Theme
+from atbclone.validation import redact_url_credentials
 
 
 class CloneCard(toga.Box):
@@ -48,7 +49,7 @@ class CloneCard(toga.Box):
         body = toga.Box(style=Pack(direction=COLUMN, margin=(0, 14, 10, 14)))
         body.add(toga.Label(t("card_label_source", source_app=record.source_app), style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=3)))
         body.add(toga.Label(t("card_label_path", path=Path(record.dest_path).name), style=Pack(font_size=12, color=Theme.TEXT_TERTIARY, margin_bottom=3)))
-        proxy_info = record.proxy_summary if record.proxy_enabled else t("card_proxy_disabled")
+        proxy_info = redact_url_credentials(record.proxy_summary) if record.proxy_enabled else t("card_proxy_disabled")
         body.add(toga.Label(t("card_label_proxy", proxy_info=proxy_info), style=Pack(font_size=12, color=Theme.TEXT_TERTIARY)))
         self.add(body)
 

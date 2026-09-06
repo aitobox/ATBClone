@@ -189,7 +189,7 @@ def test_remove_admin_elevation_due_to_data_dir():
         bundle_id="com.tencent.xinWeChat",
         strategy="hard_clone",
         dest_path=str(Path.home() / "Applications" / "WeChat2.app"),
-        data_dir="/Library/Application Support/WeChat2",
+        data_dir="/Users/Shared/ATBClone/Data/WeChat2",
         created_at="2026-08-18T20:00:00",
         proxy_enabled=False,
         proxy_summary="",

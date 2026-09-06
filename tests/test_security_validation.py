@@ -291,3 +291,107 @@ class TestCliRejection:
         result = runner.invoke(clone, [str(app), "--display-name", "bad\nname"])
         assert result.exit_code == 1
         assert "--display-name" in result.output
+
+
+# ---------------------------------------------------------------------------
+# Phase 2: credential hygiene & deletion guards
+# ---------------------------------------------------------------------------
+
+
+class TestProxyUrlRedaction:
+    def test_redact_hides_password_keeps_shape(self):
+        from atbclone.validation import redact_url_credentials
+
+        assert redact_url_credentials("http://user:secret@127.0.0.1:7890") == "http://user:***@127.0.0.1:7890"
+        assert redact_url_credentials("socks5://alice:hunter2@proxy.example.com:1080") == (
+            "socks5://alice:***@proxy.example.com:1080"
+        )
+
+    def test_redact_leaves_credential_free_urls_untouched(self):
+        from atbclone.validation import redact_url_credentials
+
+        assert redact_url_credentials("http://127.0.0.1:7890") == "http://127.0.0.1:7890"
+        assert redact_url_credentials("") == ""
+
+
+class TestStateFilePermissions:
+    def test_save_restricts_state_file_to_owner(self, tmp_path):
+        import os
+
+        from atbclone.core.state import CloneRecord, StateManager
+
+        sm = StateManager(state_file=tmp_path / "clones.yaml")
+        sm.save([CloneRecord(
+            clone_name="X", source_app="X", source_path="/Applications/X.app",
+            bundle_id="com.x", strategy="hard_clone", dest_path="/Users/a/Apps/X2.app",
+            data_dir="/Users/a/ATBClone/Data/X2", created_at="2026-01-01T00:00:00",
+            proxy_enabled=True, proxy_summary="http://u:secret@127.0.0.1:7890",
+        )])
+        mode = os.stat(tmp_path / "clones.yaml").st_mode & 0o777
+        assert mode == 0o600
+
+
+class TestDeletionGuards:
+    def test_accepts_legitimate_clone_paths(self):
+        from atbclone.validation import validate_deletion_target
+
+        assert validate_deletion_target("/Applications/WeChat2.app", expect_bundle=True) == "/Applications/WeChat2.app"
+        assert validate_deletion_target(str(Path.home() / "ATBClone" / "Apps" / "X.app"), expect_bundle=True)
+        assert validate_deletion_target("/Volumes/ExternalSSD/ChromeData")
+        assert validate_deletion_target("/tmp/scratch-data")  # depth-3 custom data dirs are fine
+
+    @pytest.mark.parametrize(
+        "path",
+        [
+            "/",
+            "/Applications",
+            "/Users",
+            "/System",
+            "/System/Library/CoreServices",
+            "/usr/bin",
+            "/etc/hosts",
+            "/Library/whatever",
+            "/foo",           # top-level (depth < 3)
+        ],
+    )
+    def test_refuses_critical_or_shallow_paths(self, path):
+        from atbclone.validation import validate_deletion_target
+
+        with pytest.raises(ValueError, match="Refusing"):
+            validate_deletion_target(path)
+
+    def test_refuses_home_and_non_bundle_dest(self):
+        from atbclone.validation import validate_deletion_target
+
+        with pytest.raises(ValueError, match="Refusing"):
+            validate_deletion_target(str(Path.home()))
+        with pytest.raises(ValueError, match="Refusing"):
+            validate_deletion_target("/Applications/WeChat2", expect_bundle=True)
+
+
+class TestRemoveRejectsTamperedRecords:
+    def test_remove_refuses_tampered_dest_path(self):
+        from click.testing import CliRunner
+
+        from atbclone.cli.main import cli
+        from atbclone.core.state import CloneRecord
+
+        evil = CloneRecord(
+            clone_name="WeChat2",
+            source_app="WeChat",
+            source_path="/Applications/WeChat.app",
+            bundle_id="com.tencent.xinWeChat",
+            strategy="hard_clone",
+            dest_path="/System/Library/CoreServices",
+            data_dir=str(Path.home() / "ATBClone" / "Data" / "WeChat2"),
+            created_at="2026-08-18T20:00:00",
+        )
+        runner = CliRunner()
+        with patch("atbclone.cli.cmd_remove.StateManager.get", return_value=evil), \
+             patch("atbclone.cli.cmd_remove.Runner.run") as mock_run, \
+             patch("atbclone.cli.cmd_remove.StateManager.remove") as mock_remove:
+            result = runner.invoke(cli, ["remove", "WeChat2", "--with-data"])
+        assert result.exit_code == 1
+        assert "Refusing" in result.output
+        mock_run.assert_not_called()
+        mock_remove.assert_not_called()

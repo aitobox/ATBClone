@@ -14,6 +14,7 @@ from atbclone.core.logger import get_logger
 from atbclone.core.state import CloneRecord, StateManager
 from atbclone.executor.runner import Runner
 from atbclone.recipes.loader import RecipeLoader
+from atbclone.validation import validate_deletion_target
 
 logger = get_logger("gui.clone_service")
 
@@ -104,6 +105,9 @@ class CloneService:
                 dest_path = Path(record.dest_path)
                 needs_admin = not dest_path.is_relative_to(Path.home())
 
+                # Guard the tamperable state file before any rm -rf.
+                validate_deletion_target(str(dest_path), expect_bundle=True, field="dest_path")
+
                 script = f"#!/bin/bash\nset -e\nrm -rf {shlex.quote(str(dest_path))}\n"
                 Runner.run(script, needs_admin)
 
@@ -185,6 +189,12 @@ class CloneService:
                     not Path(record.dest_path).is_relative_to(Path.home())
                     or (with_data and not Path(record.data_dir).is_relative_to(Path.home()))
                 )
+
+                # Guard the tamperable state file before any rm -rf (which may
+                # run with admin privileges).
+                validate_deletion_target(record.dest_path, expect_bundle=True, field="dest_path")
+                if with_data:
+                    validate_deletion_target(record.data_dir, field="data_dir")
 
                 lines = [
                     "#!/bin/bash",

@@ -16,6 +16,7 @@ from atbclone.core.logger import get_logger
 from atbclone.core.state import StateManager
 from atbclone.executor.runner import CloneError, Runner
 from atbclone.recipes.loader import RecipeLoader
+from atbclone.validation import validate_deletion_target
 
 console = Console()
 logger = get_logger("cli.update")
@@ -37,6 +38,15 @@ def update(clone_name: str) -> None:
 
     dest_path = Path(record.dest_path)
     needs_admin = not dest_path.is_relative_to(Path.home())
+
+    # The state file is user-writable and unauthenticated: never hand a path
+    # from it straight to `rm -rf` (which may run with admin privileges).
+    try:
+        validate_deletion_target(str(dest_path), expect_bundle=True, field="dest_path")
+    except ValueError as e:
+        logger.error(f"Refusing to update clone '{clone_name}': {e}")
+        console.print(f"[bold red]Error:[/bold red] {e}")
+        sys.exit(1)
 
     logger.info(f"Starting update for clone '{clone_name}' (source='{record.source_path}', strategy='{record.strategy}')")
     console.print(t("update_starting", clone_name=clone_name))

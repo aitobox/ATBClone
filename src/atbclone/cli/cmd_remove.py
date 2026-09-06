@@ -10,6 +10,7 @@ from atbclone.core.i18n import t
 from atbclone.core.logger import get_logger
 from atbclone.core.state import StateManager
 from atbclone.executor.runner import CloneError, Runner
+from atbclone.validation import validate_deletion_target
 
 console = Console()
 logger = get_logger("cli.remove")
@@ -55,6 +56,17 @@ def remove(clone_name: str, with_data: bool | None, no_with_data: bool) -> None:
             )
         except click.Abort:
             sys.exit(1)
+
+    # The state file is user-writable and unauthenticated: never hand a path
+    # from it straight to `rm -rf` (which may run with admin privileges).
+    try:
+        validate_deletion_target(record.dest_path, expect_bundle=True, field="dest_path")
+        if delete_data:
+            validate_deletion_target(record.data_dir, field="data_dir")
+    except ValueError as e:
+        logger.error(f"Refusing to remove clone '{clone_name}': {e}")
+        console.print(f"[bold red]Error:[/bold red] {e}")
+        sys.exit(1)
 
     needs_admin = (
         not Path(record.dest_path).is_relative_to(Path.home())

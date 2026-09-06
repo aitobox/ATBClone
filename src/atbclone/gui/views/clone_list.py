@@ -17,6 +17,7 @@ from atbclone.gui.components.clone_card import CloneCard
 from atbclone.gui.windows.clone_detail import CloneDetailWindow
 from atbclone.gui.windows.clone_edit import CloneEditWindow
 from atbclone.gui.theme import Theme
+from atbclone.validation import redact_url_credentials
 
 logger = get_logger("gui.clone_list")
 
@@ -256,7 +257,7 @@ class CloneListView(toga.Box):
 
             table_data = []
             for r in self._filtered_clones:
-                proxy_str = r.proxy_summary if r.proxy_enabled else t("list_proxy_disabled")
+                proxy_str = redact_url_credentials(r.proxy_summary) if r.proxy_enabled else t("list_proxy_disabled")
                 table_data.append((
                     r.clone_name,
                     r.source_app,

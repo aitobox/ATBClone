@@ -12,6 +12,7 @@ from atbclone.core.state import CloneRecord
 from atbclone.gui.components.wrapping_label import WrappingLabel
 from atbclone.gui.patch_cocoa import configure_cocoa_multiline_text_view, configure_cocoa_window
 from atbclone.gui.theme import Theme
+from atbclone.validation import redact_url_credentials
 
 
 def copy_to_clipboard(text: str) -> bool:
@@ -52,7 +53,7 @@ class CloneDetailWindow(toga.Window):
         self.record = record
         self.details: InjectedDetails = CloneInspector.inspect(record)
 
-        proxy_str = record.proxy_summary if record.proxy_enabled else t("list_proxy_disabled")
+        proxy_str = redact_url_credentials(record.proxy_summary) if record.proxy_enabled else t("list_proxy_disabled")
         strat_badge = t("card_strategy_soft") if record.strategy == "soft_clone" else t("card_strategy_hard")
 
         from atbclone.core.locale import SUPPORTED_LANGUAGES
@@ -157,7 +158,7 @@ class CloneDetailWindow(toga.Window):
 
     def get_summary_text(self) -> str:
         """Generate a complete formatted text report of clone details for easy copying/reporting."""
-        proxy_str = self.record.proxy_summary if self.record.proxy_enabled else t("list_proxy_disabled")
+        proxy_str = redact_url_credentials(self.record.proxy_summary) if self.record.proxy_enabled else t("list_proxy_disabled")
         strat_badge = t("card_strategy_soft") if self.record.strategy == "soft_clone" else t("card_strategy_hard")
 
         from atbclone.core.locale import SUPPORTED_LANGUAGES

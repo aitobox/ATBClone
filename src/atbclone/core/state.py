@@ -1,5 +1,6 @@
 from dataclasses import asdict, dataclass
 from pathlib import Path
+import os
 
 import yaml
 
@@ -66,6 +67,12 @@ class StateManager:
         raw_list = [asdict(r) for r in records]
         with open(self.state_file, "w", encoding="utf-8") as f:
             yaml.safe_dump(raw_list, f, allow_unicode=True, sort_keys=False)
+        # Records may embed proxy credentials in proxy_summary; keep the file
+        # owner-readable only.
+        try:
+            os.chmod(self.state_file, 0o600)
+        except OSError:
+            pass
 
     def add(self, record: CloneRecord) -> None:
         """Append or update a record and persist."""

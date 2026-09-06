@@ -7,6 +7,7 @@ from rich.table import Table
 
 from atbclone.core.i18n import t
 from atbclone.core.state import StateManager
+from atbclone.validation import redact_url_credentials
 
 console = Console()
 
@@ -43,7 +44,7 @@ def list_clones() -> None:
     table.add_column(t("list_col_proxy"))
 
     for r in records:
-        proxy_display = r.proxy_summary if r.proxy_enabled else t("list_proxy_disabled")
+        proxy_display = redact_url_credentials(r.proxy_summary) if r.proxy_enabled else t("list_proxy_disabled")
         table.add_row(
             r.clone_name,
             r.source_app,

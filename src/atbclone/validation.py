@@ -7,7 +7,9 @@ The rules are deliberately strict: values that cannot be represented safely are
 rejected with a clear error instead of being escaped aggressively.
 """
 
+import os
 import re
+from pathlib import Path
 
 # Reverse-DNS style bundle identifier: letters, digits, dots, hyphens, underscores.
 # Anything else (quotes, spaces, "$", backticks, slashes...) can smuggle shell
@@ -158,3 +160,96 @@ def validate_proxy_credential(value: str, *, field: str = "credential") -> str:
             f"backticks and whitespace are not supported."
         )
     return value
+
+
+def redact_url_credentials(url: str) -> str:
+    """Redact the password component of a persisted proxy URL for display.
+
+    clones.yaml stores the full proxy URL (required to rebuild the proxy on
+    `update`), but it must never be rendered with credentials in CLI tables,
+    GUI cards or log-like views.
+    """
+    try:
+        from urllib.parse import urlunparse, urlparse
+
+        parsed = urlparse(url)
+        if parsed.username and parsed.password:
+            hostinfo = parsed.hostname or ""
+            if parsed.port:
+                hostinfo = f"{hostinfo}:{parsed.port}"
+            netloc = f"{parsed.username}:***@{hostinfo}"
+            return urlunparse(parsed._replace(netloc=netloc))
+    except (ValueError, AttributeError):
+        pass
+    return url
+
+
+# Paths that must never be accepted as deletion targets, whatever the state
+# file claims. Exact matches refuse deleting the directory itself; clones
+# legitimately live *inside* /Applications and $HOME, so those are exact-only.
+_CRITICAL_EXACT_PATHS = frozenset(
+    {
+        "/",
+        "/Applications",
+        "/Users",
+        "/System",
+        "/Library",
+        "/private",
+        "/usr",
+        "/var",
+        "/etc",
+        "/opt",
+        "/bin",
+        "/sbin",
+        "/Volumes",
+        "/Network",
+        "/dev",
+        "/tmp",
+        "/private/tmp",
+        "/private/var",
+    }
+)
+
+# Nothing inside these trees may ever be deleted via the remove/update flows.
+_CRITICAL_PREFIX_PATHS = frozenset(
+    {
+        "/System",
+        "/usr",
+        "/bin",
+        "/sbin",
+        "/etc",
+        "/Library",
+        "/private/etc",
+    }
+)
+
+
+def validate_deletion_target(path_str: str, *, expect_bundle: bool = False, field: str = "path") -> str:
+    """Guard a path read from clones.yaml before it is passed to `rm -rf`.
+
+    The state file is user-writable and carries no integrity protection; these
+    checks ensure a tampered record cannot turn `remove`/`update` (which may
+    run with administrator privileges) into arbitrary deletion.
+    """
+    if not path_str:
+        raise ValueError(f"Refusing to delete: {field} is empty.")
+    norm = Path(os.path.normpath(str(Path(path_str).expanduser())))
+    text = str(norm)
+    if not norm.is_absolute():
+        raise ValueError(f"Refusing to delete non-absolute {field}: {text!r}.")
+    home = str(Path.home())
+    if text == home or text in _CRITICAL_EXACT_PATHS:
+        raise ValueError(f"Refusing to delete critical {field}: {text!r}.")
+    for prefix in _CRITICAL_PREFIX_PATHS:
+        if text == prefix or text.startswith(prefix + "/"):
+            raise ValueError(f"Refusing to delete {field} inside {prefix!r}: {text!r}.")
+    if len(norm.parts) < 3:
+        raise ValueError(
+            f"Refusing to delete top-level {field}: {text!r}. "
+            f"Clone bundles and data directories are always nested deeper."
+        )
+    if expect_bundle and norm.suffix != ".app":
+        raise ValueError(
+            f"Refusing to delete {field} without a .app suffix: {text!r}."
+        )
+    return text

@@ -202,6 +202,21 @@ def test_load_builtin_qq():
     assert "TMPDIR" in recipe.environment_injection
 
 
+def test_load_builtin_wework(monkeypatch, tmp_path):
+    monkeypatch.setattr(RecipeLoader, "LOCAL_DIR", tmp_path)
+    recipe = RecipeLoader.match("com.tencent.WeWorkMac")
+    assert recipe is not None
+    assert recipe.bundle_id == "com.tencent.WeWorkMac"
+    assert recipe.app_name == "企业微信"
+    assert recipe.strategy == "hard_clone"
+    assert recipe.app_type == "chromium"
+    assert recipe.strip_sandbox is True
+    assert recipe.injection_strategy == "dylib"
+    assert "HOME" in recipe.environment_injection
+    assert "TMPDIR" in recipe.environment_injection
+    assert "Library/Keychains" in recipe.symlink_whitelist
+
+
 def test_load_builtin_chatgpt():
     recipe = RecipeLoader.match("com.openai.codex")
     assert recipe is not None
@@ -301,6 +316,7 @@ def test_all_builtin_recipes_valid(monkeypatch, tmp_path):
 
     expected_recipes = {
         "com.tencent.xinWeChat": ("微信", "hard_clone", True),
+        "com.tencent.WeWorkMac": ("企业微信", "hard_clone", True),
         "com.google.Chrome": ("Chrome", "hard_clone", False),
         "com.tencent.qq": ("QQ", "hard_clone", True),
         "ru.keepcoder.Telegram": ("Telegram", "hard_clone", True),

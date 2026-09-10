@@ -57,6 +57,15 @@ class CloneService:
                     else:
                         HardCloneEngine.execute(task, needs_admin)
 
+                    summary = ""
+                    if task.recipe.proxy.enabled:
+                        p = task.recipe.proxy
+                        if p.password:
+                            from atbclone.core.keychain import save_clone_proxy_password
+                            save_clone_proxy_password(task.clone_name, p.password)
+                        u = f"{p.username}@" if p.username else ""
+                        summary = f"{p.type}://{u}{p.host}:{p.port}"
+
                     record = CloneRecord(
                         clone_name=task.clone_name,
                         source_app=task.source.app_name,
@@ -67,7 +76,7 @@ class CloneService:
                         data_dir=str(task.data_dir),
                         created_at=datetime.now(timezone.utc).isoformat(),
                         proxy_enabled=task.recipe.proxy.enabled,
-                        proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",
+                        proxy_summary=summary,
                         new_bundle_id=task.new_bundle_id,
                         language=task.language,
                         display_name=task.display_name,
@@ -146,6 +155,11 @@ class CloneService:
                         task.recipe.proxy.username = parsed.username
                     if parsed.password:
                         task.recipe.proxy.password = parsed.password
+                    elif parsed.username:
+                        from atbclone.core.keychain import get_clone_proxy_password
+                        passw = get_clone_proxy_password(record.clone_name)
+                        if passw:
+                            task.recipe.proxy.password = passw
 
                 try:
                     if record.strategy == "soft_clone":

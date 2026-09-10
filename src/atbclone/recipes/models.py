@@ -43,6 +43,11 @@ class ProxyConfig(BaseModel):
         auth = f"{self.username}:{self.password}@" if self.username else ""
         return f"{self.type}://{auth}{self.host}:{self.port}"
 
+    @property
+    def safe_url(self) -> str:
+        auth = f"{self.username}@" if self.username else ""
+        return f"{self.type}://{auth}{self.host}:{self.port}"
+
 
 AppType = Literal["cocoa", "chromium", "electron", "firefox", "generic"]
 InjectionStrategy = Literal["auto", "dylib", "launcher"]

@@ -12,6 +12,7 @@ from atbclone.core.state import CloneRecord
 from atbclone.recipes.models import ProxyConfig
 from atbclone.gui.patch_cocoa import configure_cocoa_window
 from atbclone.gui.theme import Theme
+from atbclone.validation import validate_host, validate_proxy_port, validate_proxy_credential
 
 
 class CloneEditWindow(toga.Window):
@@ -20,7 +21,7 @@ class CloneEditWindow(toga.Window):
         record: CloneRecord,
         on_save: Callable[[CloneRecord], Coroutine[Any, Any, None]] | None = None,
     ):
-        super().__init__(title=t("win_edit_title", name=record.clone_name), size=(500, 390))
+        super().__init__(title=t("win_edit_title", name=record.clone_name), size=(520, 440))
         configure_cocoa_window(self, floating=True)
         self.record = record
         self.on_save_callback = on_save
@@ -29,6 +30,9 @@ class CloneEditWindow(toga.Window):
         proxy_type = "http"
         proxy_host = "127.0.0.1"
         proxy_port = "7890"
+        proxy_user = ""
+        proxy_pass = ""
+        has_auth = False
         if record.proxy_summary:
             parsed = urlparse(record.proxy_summary)
             if parsed.scheme:
@@ -37,10 +41,31 @@ class CloneEditWindow(toga.Window):
                 proxy_host = parsed.hostname
             if parsed.port:
                 proxy_port = str(parsed.port)
+            if parsed.username:
+                proxy_user = parsed.username
+                has_auth = True
+            if parsed.password:
+                proxy_pass = parsed.password
+                has_auth = True
+
+        if not proxy_pass and (has_auth or proxy_user):
+            try:
+                from atbclone.core.keychain import get_clone_proxy_password
+                keychain_pass = get_clone_proxy_password(record.clone_name)
+                if keychain_pass:
+                    proxy_pass = keychain_pass
+                    has_auth = True
+            except Exception:
+                pass
+
+        self._initial_auth = has_auth
+        self._initial_password = proxy_pass
+        self.credential_changed: bool = False
 
         self.switch_proxy = toga.Switch(
             text=t("win_edit_switch_proxy"),
             value=record.proxy_enabled,
+            on_change=self._on_proxy_toggle,
             style=Pack(margin_bottom=8, font_size=13.5),
         )
         self.select_proxy_type = toga.Selection(
@@ -55,6 +80,24 @@ class CloneEditWindow(toga.Window):
         self.input_proxy_port = toga.TextInput(
             value=proxy_port,
             style=Pack(width=90, font_size=13.5),
+        )
+
+        # Proxy Authentication switch and inputs
+        self.switch_proxy_auth = toga.Switch(
+            text=t("proxy_auth_enable"),
+            value=has_auth,
+            on_change=self._on_auth_toggle,
+            style=Pack(margin_top=8, margin_bottom=6, font_size=13),
+        )
+        self.input_proxy_user = toga.TextInput(
+            value=proxy_user,
+            placeholder=t("proxy_auth_username"),
+            style=Pack(flex=1, margin_right=8, font_size=13),
+        )
+        self.input_proxy_pass = toga.PasswordInput(
+            value=proxy_pass,
+            placeholder=t("proxy_auth_password"),
+            style=Pack(flex=1, font_size=13),
         )
 
         # Language selection
@@ -74,6 +117,22 @@ class CloneEditWindow(toga.Window):
         self.btn_cancel = toga.Button(t("btn_cancel"), on_press=lambda w: self.close(), style=Pack(flex=1, height=30, font_size=13))
 
         self.content = self._build_content()
+        self._on_proxy_toggle(self.switch_proxy)
+
+    def _on_proxy_toggle(self, widget: toga.Switch) -> None:
+        enabled = bool(widget.value)
+        self.select_proxy_type.enabled = enabled
+        self.input_proxy_host.enabled = enabled
+        self.input_proxy_port.enabled = enabled
+        self.switch_proxy_auth.enabled = enabled
+        auth_enabled = enabled and bool(self.switch_proxy_auth.value)
+        self.input_proxy_user.enabled = auth_enabled
+        self.input_proxy_pass.enabled = auth_enabled
+
+    def _on_auth_toggle(self, widget: toga.Switch) -> None:
+        auth_enabled = bool(self.switch_proxy.value) and bool(widget.value)
+        self.input_proxy_user.enabled = auth_enabled
+        self.input_proxy_pass.enabled = auth_enabled
 
     def _build_content(self) -> toga.Box:
         box = toga.Box(style=Pack(direction=COLUMN, margin=(18, 20, 18, 20)))
@@ -97,6 +156,20 @@ class CloneEditWindow(toga.Window):
         row_proxy.add(self.input_proxy_port)
         box.add(row_proxy)
 
+        # Proxy Auth Section
+        box_auth = toga.Box(style=Pack(direction=COLUMN, margin_top=8, margin_left=12))
+        box_auth.add(self.switch_proxy_auth)
+
+        row_auth = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=4))
+        row_auth.add(toga.Label(t("proxy_auth_username"), style=Pack(width=80, font_size=12.5, color=Theme.TEXT_PRIMARY)))
+        row_auth.add(self.input_proxy_user)
+        row_auth.add(toga.Label(t("proxy_auth_password"), style=Pack(margin_left=8, margin_right=6, font_size=12.5, color=Theme.TEXT_PRIMARY)))
+        row_auth.add(self.input_proxy_pass)
+        box_auth.add(row_auth)
+
+        box_auth.add(toga.Label(t("proxy_auth_password_hint"), style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_top=4, margin_left=80)))
+        box.add(box_auth)
+
         # Action Buttons
         btn_box = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=20))
         btn_box.add(self.btn_cancel)
@@ -115,16 +188,58 @@ class CloneEditWindow(toga.Window):
         return "system"
 
     def get_updated_record(self) -> CloneRecord:
-        port = 1080
-        try:
-            port = int(self.input_proxy_port.value)
-        except ValueError:
-            pass
-
-        proxy_enabled = self.switch_proxy.value
+        proxy_enabled = bool(self.switch_proxy.value)
         proxy_type = str(self.select_proxy_type.value)
         proxy_host = self.input_proxy_host.value.strip() or "127.0.0.1"
-        proxy_summary = f"{proxy_type}://{proxy_host}:{port}" if proxy_enabled else ""
+
+        port = 1080
+        if proxy_enabled:
+            validate_host(proxy_host)
+            try:
+                port = int(self.input_proxy_port.value)
+            except ValueError:
+                raise ValueError(f"Invalid proxy port: {self.input_proxy_port.value!r}. Expected an integer 1-65535.")
+            validate_proxy_port(port)
+
+        auth_enabled = proxy_enabled and bool(self.switch_proxy_auth.value)
+        if auth_enabled:
+            username = self.input_proxy_user.value.strip()
+            password = self.input_proxy_pass.value or ""
+            validate_proxy_credential(username, field="username")
+            validate_proxy_credential(password, field="password")
+
+            self.credential_changed = (
+                not self._initial_auth
+                or password != self._initial_password
+            )
+
+            try:
+                from atbclone.core.keychain import save_clone_proxy_password, delete_clone_proxy_password
+                if password:
+                    save_clone_proxy_password(self.record.clone_name, password)
+                else:
+                    delete_clone_proxy_password(self.record.clone_name)
+            except Exception:
+                pass
+            user_part = f"{username}@" if username else ""
+            proxy_summary = f"{proxy_type}://{user_part}{proxy_host}:{port}"
+        elif proxy_enabled:
+            self.credential_changed = self._initial_auth
+            try:
+                from atbclone.core.keychain import delete_clone_proxy_password
+                delete_clone_proxy_password(self.record.clone_name)
+            except Exception:
+                pass
+            proxy_summary = f"{proxy_type}://{proxy_host}:{port}"
+        else:
+            self.credential_changed = self._initial_auth
+            try:
+                from atbclone.core.keychain import delete_clone_proxy_password
+                delete_clone_proxy_password(self.record.clone_name)
+            except Exception:
+                pass
+            proxy_summary = ""
+
         lang = self._get_selected_language()
 
         # Clone current record with updated proxy and language info
@@ -141,11 +256,18 @@ class CloneEditWindow(toga.Window):
             proxy_summary=proxy_summary,
             new_bundle_id=self.record.new_bundle_id,
             language=lang,
+            display_name=getattr(self.record, "display_name", None),
+            injection_strategy=getattr(self.record, "injection_strategy", "auto"),
         )
         return updated
 
     async def on_save_press(self, widget: toga.Button):
-        updated = self.get_updated_record()
+        try:
+            updated = self.get_updated_record()
+        except ValueError as err:
+            await self.error_dialog(t("dialog_validation_error_title"), str(err))
+            return
+
         if self.on_save_callback:
             await self.on_save_callback(updated)
         self.close()

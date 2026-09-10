@@ -325,3 +325,42 @@ def test_clone_record_language_support_and_backward_compatibility(tmp_path):
     assert loaded_old[0].clone_name == "OldClone"
     assert loaded_old[0].language == "system"
 
+
+def test_proxy_password_migration_and_cleanup(tmp_path):
+    from atbclone.core.keychain import get_clone_proxy_password, set_mock_mode, clear_mock_storage
+
+    set_mock_mode(True)
+    clear_mock_storage()
+
+    state_file = tmp_path / "clones.yaml"
+    legacy_yaml = """
+- clone_name: SecretProxyClone
+  source_app: Slack
+  source_path: /Applications/Slack.app
+  bundle_id: com.tinyspeck.slackmacgap
+  strategy: soft_clone
+  dest_path: /Applications/SlackClone.app
+  data_dir: /Data/SlackClone
+  created_at: 2026-08-01T00:00:00+00:00
+  proxy_enabled: true
+  proxy_summary: "http://myuser:secret123@127.0.0.1:8080"
+"""
+    state_file.write_text(legacy_yaml, encoding="utf-8")
+    mgr = StateManager(state_file)
+
+    # When loaded, password should be extracted to keychain and redacted from summary
+    records = mgr.load()
+    assert len(records) == 1
+    assert records[0].proxy_summary == "http://myuser@127.0.0.1:8080"
+    assert get_clone_proxy_password("SecretProxyClone") == "secret123"
+
+    # Verify that the file on disk was rewritten without plaintext password
+    saved_text = state_file.read_text(encoding="utf-8")
+    assert "secret123" not in saved_text
+    assert "myuser@127.0.0.1:8080" in saved_text
+
+    # Removing clone should clean up Keychain entry
+    assert mgr.remove("SecretProxyClone") is True
+    assert get_clone_proxy_password("SecretProxyClone") is None
+
+

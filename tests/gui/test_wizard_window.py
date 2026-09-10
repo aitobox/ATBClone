@@ -250,3 +250,116 @@ def test_wizard_step1_non_builtin_app_triggers_probe(tmp_path: Path):
     asyncio.run(_test())
 
 
+def test_wizard_proxy_auth_configuration_and_keychain(tmp_path: Path):
+    async def _test():
+        from atbclone.core.keychain import set_mock_mode, clear_mock_storage, get_clone_proxy_password
+
+        set_mock_mode(True)
+        clear_mock_storage()
+
+        state_file = tmp_path / "clones.yaml"
+        clone_service = CloneService(state_file=state_file)
+        wizard = WizardWindow(clone_service=clone_service)
+        wizard.info_dialog = AsyncMock()
+
+        # Mock app info for Step 1
+        wizard.input_app_path.value = "/Applications/WeChat.app"
+        mock_info = AppInfo(
+            path=Path("/Applications/WeChat.app"),
+            bundle_id="com.tencent.xinWeChat",
+            app_name="WeChat",
+            executable=Path("/Applications/WeChat.app/Contents/MacOS/WeChat"),
+            has_sandbox=False,
+        )
+
+        with patch("atbclone.core.app_inspector.AppInspector.inspect", return_value=mock_info):
+            # Step 1 -> Step 2
+            await wizard.go_next()
+            # Step 2 -> Step 3
+            await wizard.go_next()
+            wizard.input_clone_name.value = "WeChatProxyClone"
+            # Step 3 -> Step 4
+            await wizard.go_next()
+            # Step 4 -> Step 5
+            await wizard.go_next()
+            # Step 5 -> Step 6
+            await wizard.go_next()
+            assert wizard.current_step == 6
+
+            # Configure Proxy with Auth in Step 6
+            wizard.switch_proxy.value = True
+            assert wizard.select_proxy_type.enabled is True
+            wizard.switch_proxy_auth.value = True
+            assert wizard.input_proxy_user.enabled is True
+            assert wizard.input_proxy_pass.enabled is True
+
+            wizard.select_proxy_type.value = "http"
+            wizard.input_proxy_host.value = "proxy.company.com"
+            wizard.input_proxy_port.value = "8888"
+            wizard.input_proxy_user.value = "worker_1"
+            wizard.input_proxy_pass.value = "super_secret_proxy_pass"
+
+            # Step 6 -> Step 7 (Summary)
+            await wizard.go_next()
+            assert wizard.current_step == 7
+            # Password must be redacted with *** in summary
+            assert "worker_1:***@proxy.company.com:8888" in wizard.label_summary.text
+            assert "super_secret_proxy_pass" not in wizard.label_summary.text
+
+            # Execute clone
+            created_task = None
+            async def mock_create_clone(task):
+                nonlocal created_task
+                created_task = task
+                return MagicMock()
+
+            wizard.clone_service.create_clone = mock_create_clone
+            wizard.error_dialog = AsyncMock()
+            wizard.info_dialog = AsyncMock()
+
+            await wizard.go_next()
+
+            # Verify task had proxy auth credentials passed
+            assert created_task is not None
+            assert created_task.recipe.proxy.enabled is True
+            assert created_task.recipe.proxy.username == "worker_1"
+            assert created_task.recipe.proxy.password == "super_secret_proxy_pass"
+
+            # Now verify clone_service.create_clone behavior with the task
+            with patch("atbclone.core.engines.HardCloneEngine.execute"), \
+                 patch("atbclone.core.engines.SoftCloneEngine.execute"):
+                real_service = CloneService(state_file=state_file)
+                rec = await real_service.create_clone(created_task)
+                assert rec.proxy_summary == "http://worker_1@proxy.company.com:8888"
+                assert "super_secret_proxy_pass" not in state_file.read_text(encoding="utf-8")
+                assert get_clone_proxy_password("WeChatProxyClone") == "super_secret_proxy_pass"
+
+    asyncio.run(_test())
+
+
+def test_wizard_step6_validation_error(tmp_path: Path):
+    async def _test():
+        wizard = WizardWindow()
+        wizard.error_dialog = AsyncMock()
+        wizard.current_step = 6
+        wizard.switch_proxy.value = True
+        wizard.input_proxy_host.value = "127.0.0.1"
+        wizard.input_proxy_port.value = "99999"  # invalid port
+
+        await wizard.go_next()
+        assert wizard.current_step == 6
+        wizard.error_dialog.assert_awaited_once()
+
+        wizard.error_dialog.reset_mock()
+        wizard.input_proxy_port.value = "1080"
+        wizard.switch_proxy_auth.value = True
+        wizard.input_proxy_user.value = "invalid user with spaces"
+
+        await wizard.go_next()
+        assert wizard.current_step == 6
+        wizard.error_dialog.assert_awaited_once()
+
+    asyncio.run(_test())
+
+
+

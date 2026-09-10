@@ -101,6 +101,11 @@ def update(clone_name: str) -> None:
                 task.recipe.proxy.username = parsed.username
             if parsed.password:
                 task.recipe.proxy.password = parsed.password
+            elif parsed.username:
+                from atbclone.core.keychain import get_clone_proxy_password
+                passw = get_clone_proxy_password(record.clone_name)
+                if passw:
+                    task.recipe.proxy.password = passw
 
         if record.strategy == "soft_clone":
             SoftCloneEngine.execute(task, needs_admin)

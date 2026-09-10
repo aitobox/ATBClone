@@ -436,6 +436,60 @@ def test_clone_with_proxy_options(tmp_path: Path, mock_app_info: AppInfo, mock_s
         assert record.proxy_summary == "socks5://127.0.0.1:1080"
 
 
+def test_clone_with_proxy_auth(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
+    from atbclone.core.keychain import set_mock_mode, clear_mock_storage, get_clone_proxy_password
+    set_mock_mode(True)
+    clear_mock_storage()
+
+    runner = CliRunner()
+    output_dir = tmp_path / "Applications"
+
+    with patch("atbclone.cli.cmd_clone.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_clone.RecipeLoader.match", return_value=mock_soft_recipe), \
+         patch("atbclone.cli.cmd_clone.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_clone.SoftCloneEngine.execute") as mock_soft_exec, \
+         patch("atbclone.cli.cmd_clone.StateManager.load", return_value=[]), \
+         patch("atbclone.cli.cmd_clone.StateManager.add") as mock_state_add:
+
+        result = runner.invoke(
+            cli,
+            [
+                "clone",
+                str(mock_app_info.path),
+                "--output-dir",
+                str(output_dir),
+                "--proxy-host",
+                "127.0.0.1",
+                "--proxy-port",
+                "1080",
+                "--proxy-type",
+                "http",
+                "--proxy-user",
+                "myuser",
+                "--proxy-password",
+                "mypass123",
+            ],
+        )
+
+        assert result.exit_code == 0
+        mock_soft_exec.assert_called_once()
+        task, _ = mock_soft_exec.call_args[0]
+        assert task.recipe.proxy.enabled is True
+        assert task.recipe.proxy.host == "127.0.0.1"
+        assert task.recipe.proxy.port == 1080
+        assert task.recipe.proxy.type == "http"
+        assert task.recipe.proxy.username == "myuser"
+        assert task.recipe.proxy.password == "mypass123"
+
+        mock_state_add.assert_called_once()
+        record = mock_state_add.call_args[0][0]
+        assert record.proxy_enabled is True
+        # Plaintext password must NOT be in proxy_summary
+        assert record.proxy_summary == "http://myuser@127.0.0.1:1080"
+        # Password must be securely stored in Keychain
+        assert get_clone_proxy_password("WeChat2") == "mypass123"
+
+
 def test_clone_proxy_host_without_explicit_port(tmp_path: Path, mock_app_info: AppInfo, mock_soft_recipe: Recipe):
     runner = CliRunner()
     output_dir = tmp_path / "Applications"

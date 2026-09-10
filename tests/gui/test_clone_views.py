@@ -58,6 +58,113 @@ def test_clone_edit_window_save():
     assert "socks5://127.0.0.1:1080" in updated.proxy_summary
 
 
+def test_clone_edit_window_proxy_auth_keychain_lifecycle():
+    from atbclone.core.keychain import (
+        set_mock_mode,
+        clear_mock_storage,
+        get_clone_proxy_password,
+    )
+
+    set_mock_mode(True)
+    clear_mock_storage()
+
+    record = CloneRecord(
+        clone_name="AuthClone",
+        source_app="Slack",
+        source_path="/Applications/Slack.app",
+        bundle_id="com.tinyspeck.slackmacgap",
+        strategy="soft_clone",
+        dest_path="/Applications/AuthClone.app",
+        data_dir="/Data/AuthClone",
+        created_at="2026-08-18T00:00:00Z",
+        proxy_enabled=True,
+        proxy_summary="http://127.0.0.1:7890",
+    )
+    window = CloneEditWindow(record=record)
+    assert window.switch_proxy.value is True
+    assert window.switch_proxy_auth.value is False
+
+    # Enable auth and enter credentials
+    window.switch_proxy_auth.value = True
+    window.input_proxy_user.value = "admin_user"
+    window.input_proxy_pass.value = "secret_pass_999"
+
+    updated = window.get_updated_record()
+    assert updated.proxy_enabled is True
+    # proxy_summary should contain username but NOT password
+    assert updated.proxy_summary == "http://admin_user@127.0.0.1:7890"
+    # Password must be in Keychain
+    assert get_clone_proxy_password("AuthClone") == "secret_pass_999"
+
+    # Re-opening CloneEditWindow with updated record should prefill password from Keychain
+    window2 = CloneEditWindow(record=updated)
+    assert window2.switch_proxy.value is True
+    assert window2.switch_proxy_auth.value is True
+    assert window2.input_proxy_user.value == "admin_user"
+    assert window2.input_proxy_pass.value == "secret_pass_999"
+
+    # Disable proxy auth and save -> password should be deleted from Keychain
+    window2.switch_proxy_auth.value = False
+    updated2 = window2.get_updated_record()
+    assert updated2.proxy_summary == "http://127.0.0.1:7890"
+    assert get_clone_proxy_password("AuthClone") is None
+
+
+def test_clone_edit_window_validation_and_credential_changed():
+    async def _test():
+        from atbclone.core.keychain import set_mock_mode, clear_mock_storage
+        set_mock_mode(True)
+        clear_mock_storage()
+
+        record = CloneRecord(
+            clone_name="ValClone",
+            source_app="Slack",
+            source_path="/Applications/Slack.app",
+            bundle_id="com.tinyspeck.slackmacgap",
+            strategy="soft_clone",
+            dest_path="/Applications/ValClone.app",
+            data_dir="/Data/ValClone",
+            created_at="2026-08-18T00:00:00Z",
+            proxy_enabled=True,
+            proxy_summary="http://127.0.0.1:7890",
+        )
+        window = CloneEditWindow(record=record)
+        window.error_dialog = AsyncMock()
+        window.close = MagicMock()
+
+        # Case 1: Invalid port (non-integer or out of range)
+        window.input_proxy_port.value = "99999"
+        await window.on_save_press(None)
+        window.error_dialog.assert_awaited_once()
+        assert window.close.call_count == 0
+
+        # Case 2: Invalid credential character (e.g. space or quote)
+        window.error_dialog.reset_mock()
+        window.input_proxy_port.value = "8080"
+        window.switch_proxy_auth.value = True
+        window.input_proxy_user.value = "bad user name"
+        await window.on_save_press(None)
+        window.error_dialog.assert_awaited_once()
+        assert window.close.call_count == 0
+
+        # Case 3: Valid credentials and save callback
+        window.error_dialog.reset_mock()
+        window.input_proxy_user.value = "good_user"
+        window.input_proxy_pass.value = "secret123"
+        saved = []
+        async def mock_save(rec):
+            saved.append(rec)
+        window.on_save_callback = mock_save
+        await window.on_save_press(None)
+        window.error_dialog.assert_not_awaited()
+        window.close.assert_called_once()
+        assert len(saved) == 1
+        assert window.credential_changed is True
+
+    asyncio.run(_test())
+
+
+
 def test_clone_list_view_refresh(tmp_path):
     async def _test():
         state_file = tmp_path / "clones.yaml"

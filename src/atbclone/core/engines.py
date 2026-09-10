@@ -18,6 +18,40 @@ logger = get_logger("core.engines")
 class CloneEngine:
     """Base class providing shared helper methods for clone engines."""
 
+    _cached_clang_cmd: str | None = None
+
+    @classmethod
+    def _resolve_clang_command(cls) -> str:
+        """Resolve a working clang invocation that pairs the compiler with a compatible macOS SDK."""
+        if cls._cached_clang_cmd is not None:
+            return cls._cached_clang_cmd
+
+        import subprocess
+        candidates = [
+            "xcrun --sdk macosx clang",
+            "DEVELOPER_DIR=/Library/Developer/CommandLineTools xcrun --sdk macosx clang",
+            "clang",
+        ]
+        test_c = "int main(void){return 0;}"
+        for cmd in candidates:
+            try:
+                res = subprocess.run(
+                    f'echo "{test_c}" | {cmd} -x c - -o /dev/null',
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                )
+                if res.returncode == 0:
+                    cls._cached_clang_cmd = cmd
+                    logger.debug(f"Resolved working clang command: {cmd}")
+                    return cmd
+            except Exception:
+                continue
+
+        cls._cached_clang_cmd = "xcrun --sdk macosx clang"
+        return cls._cached_clang_cmd
+
     @staticmethod
     def _build_language_env_and_args(task: CloneTask) -> tuple[str, list[str]]:
         """Generate shell exports and launch arguments for language/locale configuration."""
@@ -37,9 +71,23 @@ class CloneEngine:
         proxy = task.recipe.proxy
         if not proxy.enabled:
             return ""
+
+        username = proxy.username
+        password = proxy.password
+        if username and not password and getattr(task, "clone_name", None):
+            try:
+                from atbclone.core.keychain import get_clone_proxy_password
+                stored_pass = get_clone_proxy_password(task.clone_name)
+                if stored_pass:
+                    password = stored_pass
+            except Exception:
+                pass
+
+        auth = f"{username}:{password}@" if username else ""
+        proxy_url = f"{proxy.type}://{auth}{proxy.host}:{proxy.port}"
         return textwrap.dedent(f"""
-            export HTTP_PROXY="{proxy.url}"
-            export HTTPS_PROXY="{proxy.url}"
+            export HTTP_PROXY="{proxy_url}"
+            export HTTPS_PROXY="{proxy_url}"
             export http_proxy="$HTTP_PROXY"
             export https_proxy="$HTTPS_PROXY"
             export NO_PROXY="{proxy.no_proxy}"
@@ -258,8 +306,9 @@ class CloneEngine:
         lines.append("fi")
         return "\n".join(lines)
 
-    @staticmethod
+    @classmethod
     def _build_c_launcher_compile_cmd(
+        cls,
         dst_wrapper: str,
         target_bin_statement: str,
         effective_env: dict[str, str],
@@ -360,13 +409,15 @@ int main(int argc, char *argv[]) {{
     return 1;
 }}
 """
-        return f"""clang -O2 -x c - -o {dst_wrapper} << 'LAUNCHER_C_EOF'
+        clang_cmd = cls._resolve_clang_command()
+        return f"""{clang_cmd} -O2 -x c - -o {dst_wrapper} << 'LAUNCHER_C_EOF'
 {c_source}LAUNCHER_C_EOF
 chmod +x {dst_wrapper}
 """
 
-    @staticmethod
+    @classmethod
     def _build_dylib_env_cmd(
+        cls,
         dst_frameworks: str,
         effective_env: dict[str, str],
         proxy_env: str,
@@ -375,6 +426,9 @@ chmod +x {dst_wrapper}
         bin_orig: str,
     ) -> str:
         """Compile a lightweight environment injection dylib and insert LC_LOAD_DYLIB into bin_orig."""
+        # Clean quotes around paths before inserting into python script template
+        clean_bin = bin_orig.strip("'\"")
+
         setenv_c_lines = [
             '    const char *orig_home = getenv("HOME");',
             '    if (orig_home && !getenv("REAL_USER_HOME")) {',
@@ -412,42 +466,52 @@ chmod +x {dst_wrapper}
         setenv_block = "\n".join(setenv_c_lines)
 
         c_source = f"""#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <string.h>
 
 __attribute__((constructor))
 static void atbclone_env_init(void) {{
 {setenv_block}
 }}
 """
-        clean_bin = bin_orig.strip("'\"")
         py_insert_dylib = f"""python3 -c "
 import struct
+import sys
+
 def insert_dylib(macho_path, dylib_path):
     with open(macho_path, 'rb') as fp:
         data = bytearray(fp.read())
-    magic = struct.unpack('<I', data[:4])[0]
-    archs = []
-    if magic in (0xcafebabe, 0xbebafeca):
-        nfat = struct.unpack('>I', data[4:8])[0]
+    m_magic = struct.unpack_from('<I', data, 0)[0]
+    is_fat = (m_magic in (0xcafebabe, 0xbebafeca))
+    headers = []
+    if is_fat:
+        nfat = struct.unpack_from('>I', data, 4)[0]
         for i in range(nfat):
-            cputype, cpusubtype, offset, size, align = struct.unpack('>IIIII', data[8+i*20:28+i*20])
-            archs.append(offset)
-    elif magic in (0xfeedfacf, 0xcffaedfe, 0xfeedface, 0xcefaedfe):
-        archs.append(0)
+            arch_offset = struct.unpack_from('>I', data, 8 + i * 20 + 8)[0]
+            headers.append(arch_offset)
     else:
-        return
-    dylib_bytes = dylib_path.encode('utf-8') + b'\\x00'
-    cmdsize = 24 + len(dylib_bytes)
-    if cmdsize % 8 != 0:
-        cmdsize += (8 - (cmdsize % 8))
-        dylib_bytes = dylib_bytes.ljust(cmdsize - 24, b'\\x00')
-    load_cmd = struct.pack('<IIIIII', 0x0c, cmdsize, 24, 0, 0, 0) + dylib_bytes
-    for offset in archs:
-        m_magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags, reserved = struct.unpack('<IIIIIIII', data[offset:offset+32])
+        headers.append(0)
+
+    for offset in headers:
+        magic = struct.unpack_from('<I', data, offset)[0]
+        if magic != 0xfeedfacf:
+            continue
+        m_magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags, reserved = struct.unpack_from('<IIIIIIII', data, offset)
+        path_bytes = dylib_path.encode('utf-8') + b'\\0'
+        aligned_path_len = (len(path_bytes) + 7) & ~7
+        cmdsize = 24 + aligned_path_len
+        load_cmd = struct.pack('<IIIIII', 0x0c, cmdsize, 24, 0, 0, 0) + path_bytes + b'\\0' * (aligned_path_len - len(path_bytes))
+
+        # Check existing commands to avoid duplicates
+        existing_cmds = set()
+        cmd_offset = offset + 32
+        for _ in range(ncmds):
+            cmd, csize = struct.unpack_from('<II', data, cmd_offset)
+            if cmd in (0x0c, 0x8000001c):
+                stroff = struct.unpack_from('<I', data, cmd_offset + 8)[0]
+                str_end = data.find(b'\\0', cmd_offset + stroff)
+                existing_cmds.add(bytes(data[cmd_offset + stroff:str_end]))
+            cmd_offset += csize
+
         end_of_cmds = offset + 32 + sizeofcmds
-        existing_cmds = bytes(data[offset+32:end_of_cmds])
         if dylib_path.encode('utf-8') in existing_cmds:
             continue
         data[end_of_cmds:end_of_cmds+cmdsize] = load_cmd
@@ -461,8 +525,9 @@ raw_bin = {clean_bin!r}
 insert_dylib(raw_bin, '@executable_path/../Frameworks/libatbclone_env.dylib')
 "
 """
+        clang_cmd = cls._resolve_clang_command()
         return f"""mkdir -p {dst_frameworks}
-clang -dynamiclib -O2 -arch arm64 -arch x86_64 -install_name @executable_path/../Frameworks/libatbclone_env.dylib -o {dst_frameworks}/libatbclone_env.dylib -x c - << 'ATB_DYLIB_EOF'
+{clang_cmd} -dynamiclib -O2 -arch arm64 -arch x86_64 -install_name @executable_path/../Frameworks/libatbclone_env.dylib -o {dst_frameworks}/libatbclone_env.dylib -x c - << 'ATB_DYLIB_EOF'
 {c_source}ATB_DYLIB_EOF
 chmod +x {dst_frameworks}/libatbclone_env.dylib
 if [ -d {dst_frameworks}/ld ]; then
@@ -927,11 +992,12 @@ if os.path.exists(cef_path) and not os.path.islink(cef_path):
             strip_schemes_cmd = f'/usr/libexec/PlistBuddy -c "Delete :CFBundleURLTypes" {dst_plist} 2>/dev/null || true\n'
 
         hook_m = cls._cocoa_hook_source()
+        clang_cmd = cls._resolve_clang_command()
 
         return textwrap.dedent(f"""\
             # Lark/Feishu isolation: compile Cocoa/POSIX hook dylib and strip URL schemes
             {strip_schemes_cmd}mkdir -p {dst_frameworks}
-            clang -dynamiclib -O2 -arch arm64 -arch x86_64 -framework Foundation -install_name @executable_path/../Frameworks/libatbclone_lark_hook.dylib -o {dst_frameworks}/libatbclone_lark_hook.dylib -x objective-c - << 'LARK_HOOK_EOF'
+            {clang_cmd} -dynamiclib -O2 -arch arm64 -arch x86_64 -framework Foundation -install_name @executable_path/../Frameworks/libatbclone_lark_hook.dylib -o {dst_frameworks}/libatbclone_lark_hook.dylib -x objective-c - << 'LARK_HOOK_EOF'
 {hook_m}
 LARK_HOOK_EOF
             chmod +x {dst_frameworks}/libatbclone_lark_hook.dylib
@@ -960,11 +1026,12 @@ LARK_HOOK_EOF
             strip_schemes_cmd = f'/usr/libexec/PlistBuddy -c "Delete :CFBundleURLTypes" {dst_plist} 2>/dev/null || true\n'
 
         hook_m = cls._cocoa_hook_source()
+        clang_cmd = cls._resolve_clang_command()
 
         return textwrap.dedent(f"""\
             # ChatGPT isolation: compile Cocoa/POSIX hook dylib and strip URL schemes
             {strip_schemes_cmd}mkdir -p {dst_frameworks}
-            clang -dynamiclib -O2 -arch arm64 -arch x86_64 -framework Foundation -install_name @executable_path/../Frameworks/libatbclone_chatgpt_hook.dylib -o {dst_frameworks}/libatbclone_chatgpt_hook.dylib -x objective-c - << 'CHATGPT_HOOK_EOF'
+            {clang_cmd} -dynamiclib -O2 -arch arm64 -arch x86_64 -framework Foundation -install_name @executable_path/../Frameworks/libatbclone_chatgpt_hook.dylib -o {dst_frameworks}/libatbclone_chatgpt_hook.dylib -x objective-c - << 'CHATGPT_HOOK_EOF'
 {hook_m}
 CHATGPT_HOOK_EOF
             chmod +x {dst_frameworks}/libatbclone_chatgpt_hook.dylib

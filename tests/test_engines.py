@@ -126,6 +126,29 @@ class TestCloneEngineProxyHelper:
         assert 'export HTTP_PROXY="socks5://alice:secretpassword@proxy.corp.internal:1080"' in env
         assert 'export HTTPS_PROXY="socks5://alice:secretpassword@proxy.corp.internal:1080"' in env
 
+    def test_proxy_env_with_keychain_auth(self, sample_task):
+        from atbclone.core.keychain import (
+            set_mock_mode,
+            clear_mock_storage,
+            save_clone_proxy_password,
+        )
+
+        set_mock_mode(True)
+        clear_mock_storage()
+        save_clone_proxy_password(sample_task.clone_name, "keychain_secret")
+
+        sample_task.recipe.proxy = ProxyConfig(
+            enabled=True,
+            type="socks5",
+            host="proxy.corp.internal",
+            port=1080,
+            username="alice",
+            password="",  # Empty in recipe/task, should be fetched from keychain
+        )
+        env = CloneEngine._build_proxy_env(sample_task)
+        assert 'export HTTP_PROXY="socks5://alice:keychain_secret@proxy.corp.internal:1080"' in env
+        assert 'export HTTPS_PROXY="socks5://alice:keychain_secret@proxy.corp.internal:1080"' in env
+
 
 class TestSoftCloneEngine:
     def test_soft_clone_basic_script(self, sample_task):

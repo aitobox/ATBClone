@@ -438,6 +438,7 @@ class CloneListView(toga.Box):
                 updated_record.language != record.language
                 or updated_record.proxy_summary != record.proxy_summary
                 or updated_record.proxy_enabled != record.proxy_enabled
+                or getattr(win, "credential_changed", False)
             ):
                 try:
                     await self.clone_service.update_clone(updated_record.clone_name)

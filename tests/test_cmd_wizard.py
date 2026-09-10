@@ -184,8 +184,9 @@ def test_wizard_with_proxy(tmp_path: Path, mock_app_info: AppInfo, mock_hard_rec
     # 8. proxy host: 192.168.1.100
     # 9. proxy port: 7890
     # 10. proxy type: socks5
-    # 11. confirm: y (\n)
-    inputs = f"{mock_app_info.path}\n\n\n\n\n\ny\n192.168.1.100\n7890\nsocks5\n\n"
+    # 11. proxy auth: default n (\n)
+    # 12. confirm: y (\n)
+    inputs = f"{mock_app_info.path}\n\n\n\n\n\ny\n192.168.1.100\n7890\nsocks5\n\n\n"
 
     with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
          patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
@@ -196,7 +197,7 @@ def test_wizard_with_proxy(tmp_path: Path, mock_app_info: AppInfo, mock_hard_rec
         result = runner.invoke(cli, ["wizard"], input=inputs)
 
         assert result.exit_code == 0
-        assert "Proxy: Configured" in result.output or "代理: 已配置" in result.output
+        assert "Proxy: Configured" in result.output or "代理: 已配置" in result.output or "socks5://" in result.output
         mock_hard_exec.assert_called_once()
         task, _ = mock_hard_exec.call_args[0]
         assert task.recipe.proxy.enabled is True
@@ -208,6 +209,58 @@ def test_wizard_with_proxy(tmp_path: Path, mock_app_info: AppInfo, mock_hard_rec
         record = mock_state_add.call_args[0][0]
         assert record.proxy_enabled is True
         assert record.proxy_summary == "socks5://192.168.1.100:7890"
+
+
+def test_wizard_with_proxy_auth(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):
+    from atbclone.core.keychain import set_mock_mode, clear_mock_storage, get_clone_proxy_password
+    set_mock_mode(True)
+    clear_mock_storage()
+
+    runner = CliRunner()
+    # Prompts:
+    # 1. app path
+    # 2. clone name: default (\n)
+    # 3. display_name: empty (\n)
+    # 4. icon_path: empty (\n)
+    # 5. output dir: default (\n)
+    # 6. data dir: default (\n)
+    # 7. proxy: y
+    # 8. proxy host: 192.168.1.100
+    # 9. proxy port: 7890
+    # 10. proxy type: socks5
+    # 11. proxy auth: y
+    # 12. proxy username: admin
+    # 13. proxy password: my_secure_password
+    # 14. confirm: y (\n)
+    inputs = f"{mock_app_info.path}\n\n\n\n\n\ny\n192.168.1.100\n7890\nsocks5\ny\nadmin\nmy_secure_password\n\n"
+
+    with patch("atbclone.cli.cmd_wizard.AppInspector.inspect", return_value=mock_app_info), \
+         patch("atbclone.cli.cmd_wizard.RecipeLoader.match", return_value=mock_hard_recipe), \
+         patch("atbclone.cli.cmd_wizard.AppInspector.next_available_name", return_value=("WeChat2", 2)), \
+         patch("atbclone.cli.cmd_wizard.HardCloneEngine.execute") as mock_hard_exec, \
+         patch("atbclone.cli.cmd_wizard.StateManager.add") as mock_state_add:
+
+        result = runner.invoke(cli, ["wizard"], input=inputs)
+
+        assert result.exit_code == 0
+        assert "admin:***@192.168.1.100:7890" in result.output
+        mock_hard_exec.assert_called_once()
+        task, _ = mock_hard_exec.call_args[0]
+        assert task.recipe.proxy.enabled is True
+        assert task.recipe.proxy.host == "192.168.1.100"
+        assert task.recipe.proxy.port == 7890
+        assert task.recipe.proxy.type == "socks5"
+        assert task.recipe.proxy.username == "admin"
+        assert task.recipe.proxy.password == "my_secure_password"
+
+        mock_state_add.assert_called_once()
+        record = mock_state_add.call_args[0][0]
+        assert record.proxy_enabled is True
+        # Plaintext password must NOT be in proxy_summary
+        assert record.proxy_summary == "socks5://admin@192.168.1.100:7890"
+        # Password must be securely stored in Keychain
+        assert get_clone_proxy_password("WeChat2") == "my_secure_password"
+
 
 
 def test_wizard_cancel(tmp_path: Path, mock_app_info: AppInfo, mock_hard_recipe: Recipe):

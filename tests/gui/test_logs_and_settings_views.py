@@ -133,4 +133,107 @@ def test_settings_view_labels_rendered_correctly():
         assert str(DEFAULT_DATA_DIR) in joined_texts
 
 
+def test_settings_view_default_proxy_auth_keychain(tmp_path, monkeypatch):
+    async def _test():
+        from unittest.mock import AsyncMock
+        from atbclone.core import config
+        from atbclone.core.config import get_config_value
+        from atbclone.core.keychain import (
+            set_mock_mode,
+            clear_mock_storage,
+            get_default_proxy_password,
+        )
+
+        set_mock_mode(True)
+        clear_mock_storage()
+
+        test_cfg_file = tmp_path / "config.yaml"
+        monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", test_cfg_file)
+        monkeypatch.setattr(config, "DEFAULT_ATB_DIR", tmp_path)
+
+        mock_app = MagicMock()
+        mock_app.main_window = MagicMock()
+        mock_app.main_window.info_dialog = AsyncMock()
+
+        view = SettingsView(app=mock_app)
+        assert view.switch_proxy.value is False
+        assert view.switch_proxy_auth.value is False
+
+        # Configure proxy and auth
+        view.switch_proxy.value = True
+        view.select_proxy_type.value = "https"
+        view.input_proxy_host.value = "proxy.corp.internal"
+        view.input_proxy_port.value = "8080"
+        view.switch_proxy_auth.value = True
+        view.input_proxy_user.value = "global_user"
+        view.input_proxy_pass.value = "global_pass_888"
+
+        await view.on_save_settings(None)
+
+        # Verify config saved
+        cfg = get_config_value("default_proxy", {})
+        assert cfg.get("enabled") is True
+        assert cfg.get("type") == "https"
+        assert cfg.get("host") == "proxy.corp.internal"
+        assert cfg.get("port") == 8080
+        assert cfg.get("username") == "global_user"
+        # Password must NOT be in config dict or file
+        assert "password" not in cfg
+        assert "global_pass_888" not in test_cfg_file.read_text(encoding="utf-8")
+
+        # Password must be in Keychain
+        assert get_default_proxy_password() == "global_pass_888"
+
+        # Reopen SettingsView and verify prefill
+        view2 = SettingsView(app=mock_app)
+        assert view2.switch_proxy.value is True
+        assert view2.select_proxy_type.value == "https"
+        assert view2.input_proxy_host.value == "proxy.corp.internal"
+        assert view2.input_proxy_port.value == "8080"
+        assert view2.switch_proxy_auth.value is True
+        assert view2.input_proxy_user.value == "global_user"
+        assert view2.input_proxy_pass.value == "global_pass_888"
+
+        # Turn off proxy auth and save
+        view2.switch_proxy_auth.value = False
+        await view2.on_save_settings(None)
+
+        assert get_default_proxy_password() is None
+
+    asyncio.run(_test())
+
+
+def test_settings_view_proxy_validation_errors(tmp_path: Path, monkeypatch):
+    async def _test():
+        from unittest.mock import AsyncMock
+        from atbclone.core import config
+        test_cfg_file = tmp_path / "config.yaml"
+        monkeypatch.setattr(config, "DEFAULT_CONFIG_FILE", test_cfg_file)
+        monkeypatch.setattr(config, "DEFAULT_ATB_DIR", tmp_path)
+
+        mock_app = MagicMock()
+        mock_app.main_window = MagicMock()
+        mock_app.main_window.error_dialog = AsyncMock()
+        mock_app.main_window.info_dialog = AsyncMock()
+
+        view = SettingsView(app=mock_app)
+        view.switch_proxy.value = True
+        view.input_proxy_port.value = "invalid_port"
+
+        await view.on_save_settings(None)
+        mock_app.main_window.error_dialog.assert_awaited_once()
+        mock_app.main_window.info_dialog.assert_not_awaited()
+
+        mock_app.main_window.error_dialog.reset_mock()
+        view.input_proxy_port.value = "1080"
+        view.switch_proxy_auth.value = True
+        view.input_proxy_user.value = "user with space"
+        await view.on_save_settings(None)
+        mock_app.main_window.error_dialog.assert_awaited_once()
+        mock_app.main_window.info_dialog.assert_not_awaited()
+
+    asyncio.run(_test())
+
+
+
 

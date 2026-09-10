@@ -9,18 +9,18 @@ from toga.style.pack import COLUMN, ROW, CENTER
 
 from atbclone.core.app_inspector import AppInspector
 from atbclone.core.clone_task import CloneTask
-from atbclone.core.config import DEFAULT_APPS_DIR, DEFAULT_DATA_DIR
+from atbclone.core.config import DEFAULT_APPS_DIR, DEFAULT_DATA_DIR, get_config_value
 from atbclone.core.i18n import t
 from atbclone.core.logger import get_logger
 from atbclone.core.models import AppInfo
 from atbclone.gui.services.clone_service import CloneService
 from atbclone.gui.services.probe_service import ProbeService
 from atbclone.recipes.loader import RecipeLoader
-from atbclone.recipes.loader import RecipeLoader
 from atbclone.recipes.models import Recipe, ProxyConfig, supports_data_dir
 from atbclone.gui.components.wrapping_label import WrappingLabel
 from atbclone.gui.patch_cocoa import patch_cocoa_widgets, configure_cocoa_window
 from atbclone.gui.theme import Theme
+from atbclone.validation import validate_host, validate_proxy_port, validate_proxy_credential
 
 logger = get_logger("gui.wizard")
 
@@ -120,15 +120,74 @@ class WizardWindow(toga.Window):
         self.btn_browse_data = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_data, style=Pack(height=30, font_size=13))
 
         # Step 6: Proxy Settings
-        self.switch_proxy = toga.Switch(t("win_wizard_step6_switch"), value=False, style=Pack(margin_bottom=8, font_size=13.5))
-        self.select_proxy_type = toga.Selection(items=["http", "https", "socks5"], style=Pack(width=105, margin_right=8, font_size=12.0))
-        self.input_proxy_host = toga.TextInput(value="127.0.0.1", style=Pack(flex=1, margin_right=8, font_size=13.5))
-        self.input_proxy_port = toga.TextInput(value="7890", style=Pack(width=90, font_size=13.5))
+        cfg_proxy = get_config_value("default_proxy", {})
+        default_proxy_enabled = bool(cfg_proxy.get("enabled", False))
+        default_proxy_type = cfg_proxy.get("type", "http")
+        default_proxy_host = cfg_proxy.get("host", "127.0.0.1")
+        default_proxy_port = str(cfg_proxy.get("port", 7890))
+        default_proxy_user = cfg_proxy.get("username", "")
+        default_proxy_has_auth = bool(default_proxy_user)
+        default_proxy_pass = ""
+        if default_proxy_has_auth:
+            try:
+                from atbclone.core.keychain import get_default_proxy_password
+                p = get_default_proxy_password()
+                if p:
+                    default_proxy_pass = p
+            except Exception:
+                pass
+
+        self.switch_proxy = toga.Switch(
+            t("win_wizard_step6_switch"),
+            value=default_proxy_enabled,
+            on_change=self._on_proxy_toggle,
+            style=Pack(margin_bottom=8, font_size=13.5),
+        )
+        self.select_proxy_type = toga.Selection(
+            items=["http", "https", "socks5"],
+            value=default_proxy_type if default_proxy_type in ["http", "https", "socks5"] else "http",
+            style=Pack(width=105, margin_right=8, font_size=12.0),
+        )
+        self.input_proxy_host = toga.TextInput(value=default_proxy_host, style=Pack(flex=1, margin_right=8, font_size=13.5))
+        self.input_proxy_port = toga.TextInput(value=default_proxy_port, style=Pack(width=90, font_size=13.5))
+
+        self.switch_proxy_auth = toga.Switch(
+            t("proxy_auth_enable"),
+            value=default_proxy_has_auth,
+            on_change=self._on_auth_toggle,
+            style=Pack(margin_top=8, margin_bottom=6, font_size=13),
+        )
+        self.input_proxy_user = toga.TextInput(
+            value=default_proxy_user,
+            placeholder=t("proxy_auth_username"),
+            style=Pack(flex=1, margin_right=8, font_size=13),
+        )
+        self.input_proxy_pass = toga.PasswordInput(
+            value=default_proxy_pass,
+            placeholder=t("proxy_auth_password"),
+            style=Pack(flex=1, font_size=13),
+        )
 
         # Step 7: Confirmation & Execution
         self.label_summary = WrappingLabel("", style=Pack(font_size=12.5, color=Theme.TEXT_MUTED, margin_bottom=10))
         self.label_status = toga.Label(t("win_wizard_status_ready"), style=Pack(font_size=13.5, font_weight="bold", margin_bottom=8, color=Theme.TEXT_PRIMARY))
         self.progress_bar = toga.ProgressBar(max=None, style=Pack(flex=1, margin_top=4))  # indeterminate
+        self._on_proxy_toggle(self.switch_proxy)
+
+    def _on_proxy_toggle(self, widget: toga.Switch) -> None:
+        enabled = bool(widget.value)
+        self.select_proxy_type.enabled = enabled
+        self.input_proxy_host.enabled = enabled
+        self.input_proxy_port.enabled = enabled
+        self.switch_proxy_auth.enabled = enabled
+        auth_enabled = enabled and bool(self.switch_proxy_auth.value)
+        self.input_proxy_user.enabled = auth_enabled
+        self.input_proxy_pass.enabled = auth_enabled
+
+    def _on_auth_toggle(self, widget: toga.Switch) -> None:
+        auth_enabled = bool(self.switch_proxy.value) and bool(widget.value)
+        self.input_proxy_user.enabled = auth_enabled
+        self.input_proxy_pass.enabled = auth_enabled
 
     def _build_layout(self) -> toga.Box:
         root = toga.Box(style=Pack(direction=COLUMN, margin=(18, 20, 18, 20), flex=1))
@@ -229,6 +288,21 @@ class WizardWindow(toga.Window):
             row.add(self.input_proxy_host)
             row.add(self.input_proxy_port)
             box.add(row)
+
+            # Proxy Auth Section
+            box_auth = toga.Box(style=Pack(direction=COLUMN, margin_top=8, margin_left=12))
+            box_auth.add(self.switch_proxy_auth)
+
+            row_auth = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=4))
+            row_auth.add(toga.Label(t("proxy_auth_username"), style=Pack(width=80, font_size=12.5, color=Theme.TEXT_PRIMARY)))
+            row_auth.add(self.input_proxy_user)
+            row_auth.add(toga.Label(t("proxy_auth_password"), style=Pack(margin_left=8, margin_right=6, font_size=12.5, color=Theme.TEXT_PRIMARY)))
+            row_auth.add(self.input_proxy_pass)
+            box_auth.add(row_auth)
+
+            box_auth.add(toga.Label(t("proxy_auth_password_hint"), style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_top=4, margin_left=80)))
+            box.add(box_auth)
+
             self.step_container.add(box)
 
         elif self.current_step == 7:
@@ -376,9 +450,37 @@ class WizardWindow(toga.Window):
                 self.input_data_dir.readonly = False
 
         elif self.current_step == 6:
+            # Validate proxy settings before advancing
+            if self.switch_proxy.value:
+                host = self.input_proxy_host.value.strip() or "127.0.0.1"
+                port_str = self.input_proxy_port.value.strip()
+                try:
+                    validate_host(host)
+                    try:
+                        port = int(port_str)
+                    except ValueError:
+                        raise ValueError(f"Invalid proxy port: {port_str!r}. Expected an integer 1-65535.")
+                    validate_proxy_port(port)
+
+                    if self.switch_proxy_auth.value:
+                        user = self.input_proxy_user.value.strip()
+                        pwd = self.input_proxy_pass.value or ""
+                        validate_proxy_credential(user, field="username")
+                        validate_proxy_credential(pwd, field="password")
+                except ValueError as e:
+                    await self.error_dialog(t("dialog_validation_error_title"), str(e))
+                    return
+
             # Prepare summary for step 7
             clone_name = self.input_clone_name.value.strip()
-            proxy_str = t("list_proxy_enabled") if self.switch_proxy.value else t("list_proxy_disabled")
+            if self.switch_proxy.value:
+                if self.switch_proxy_auth.value and self.input_proxy_user.value.strip():
+                    user_str = f"{self.input_proxy_user.value.strip()}:***@"
+                else:
+                    user_str = ""
+                proxy_str = f"{self.select_proxy_type.value}://{user_str}{self.input_proxy_host.value.strip()}:{self.input_proxy_port.value.strip()}"
+            else:
+                proxy_str = t("list_proxy_disabled")
             data_label = t("win_wizard_step5_label").rstrip(":")
             summary_text = (
                 f"{t('card_label_source', source_app=self.app_info.app_name)} ({self.app_info.bundle_id})\n"
@@ -453,6 +555,9 @@ class WizardWindow(toga.Window):
             recipe.proxy.type = str(self.select_proxy_type.value)
             recipe.proxy.host = self.input_proxy_host.value.strip() or "127.0.0.1"
             recipe.proxy.port = port
+            if self.switch_proxy_auth.value:
+                recipe.proxy.username = self.input_proxy_user.value.strip()
+                recipe.proxy.password = self.input_proxy_pass.value or ""
 
         try:
             task = CloneTask(

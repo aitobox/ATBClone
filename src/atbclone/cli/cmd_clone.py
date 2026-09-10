@@ -35,6 +35,8 @@ logger = get_logger("cli.clone")
 @click.option("--proxy-host", default=None, help="Proxy host (overrides recipe)")
 @click.option("--proxy-port", default=None, type=int, help="Proxy port")
 @click.option("--proxy-type", default="http", type=click.Choice(["http", "https", "socks5"]), help="Proxy type")
+@click.option("--proxy-user", default=None, help="Proxy username")
+@click.option("--proxy-password", default=None, help="Proxy password (stored securely in Keychain)")
 @click.option("--injection-strategy", default=None, type=click.Choice(["auto", "dylib", "launcher"]), help="Injection strategy (auto, dylib, or launcher).")
 def clone(
     app_path: str,
@@ -48,6 +50,8 @@ def clone(
     proxy_host: str | None,
     proxy_port: int | None,
     proxy_type: str,
+    proxy_user: str | None = None,
+    proxy_password: str | None = None,
     injection_strategy: str | None = None,
 ) -> None:
     """Clone a macOS application."""
@@ -134,8 +138,12 @@ def clone(
             task.recipe.proxy.host = proxy_host
             task.recipe.proxy.port = proxy_port or task.recipe.proxy.port
             task.recipe.proxy.type = proxy_type
+            if proxy_user:
+                task.recipe.proxy.username = proxy_user
+            if proxy_password:
+                task.recipe.proxy.password = proxy_password
         except ValueError as e:
-            console.print(f"[bold red]--proxy-host:[/bold red] {e}", soft_wrap=True)
+            console.print(f"[bold red]Proxy configuration error:[/bold red] {e}", soft_wrap=True)
             sys.exit(1)
 
     needs_admin = not dest_path.is_relative_to(Path.home())
@@ -148,6 +156,10 @@ def clone(
         else:
             HardCloneEngine.execute(task, needs_admin)
 
+        if task.recipe.proxy.enabled and task.recipe.proxy.password:
+            from atbclone.core.keychain import save_clone_proxy_password
+            save_clone_proxy_password(clone_name, task.recipe.proxy.password)
+
         record = CloneRecord(
             clone_name=clone_name,
             source_app=info.app_name,
@@ -158,7 +170,7 @@ def clone(
             data_dir=str(target_data_dir),
             created_at=datetime.now(timezone.utc).isoformat(),
             proxy_enabled=task.recipe.proxy.enabled,
-            proxy_summary=task.recipe.proxy.url if task.recipe.proxy.enabled else "",
+            proxy_summary=task.recipe.proxy.safe_url if task.recipe.proxy.enabled else "",
             new_bundle_id=new_bundle_id,
             language=language,
             display_name=display_name or None,

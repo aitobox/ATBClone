@@ -145,10 +145,12 @@ class CloneInspector:
 
         # 3. Proxy
         if record.proxy_enabled and record.proxy_summary:
-            env_vars["HTTP_PROXY"] = record.proxy_summary
-            env_vars["HTTPS_PROXY"] = record.proxy_summary
-            env_vars["http_proxy"] = record.proxy_summary
-            env_vars["https_proxy"] = record.proxy_summary
+            from atbclone.validation import redact_url_credentials
+            clean_proxy = redact_url_credentials(record.proxy_summary)
+            env_vars["HTTP_PROXY"] = clean_proxy
+            env_vars["HTTPS_PROXY"] = clean_proxy
+            env_vars["http_proxy"] = clean_proxy
+            env_vars["https_proxy"] = clean_proxy
 
         # 4. Launch args from recipe + lang args
         for arg in recipe.launch_args:

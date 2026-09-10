@@ -114,12 +114,14 @@ atbclone clone /Applications/ATBCmder.app --name "ATBCmder-Work"
 
 #### 为分身配置专属独立网络代理 (HTTP / SOCKS5)
 ```bash
-# 配置 HTTP 代理
+# 配置 HTTP 代理并指定账号密码（密码安全保存至 macOS 系统钥匙串）
 atbclone clone /Applications/Telegram.app \
   --name "Telegram-Proxy" \
   --proxy-host 127.0.0.1 \
   --proxy-port 7890 \
-  --proxy-type http
+  --proxy-type http \
+  --proxy-user alice \
+  --proxy-password "my_secret_token"
 
 # 配置 SOCKS5 代理
 atbclone clone /Applications/ChatGPT.app \

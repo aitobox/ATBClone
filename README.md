@@ -114,12 +114,14 @@ atbclone clone /Applications/ATBCmder.app --name "ATBCmder-Work"
 
 #### Configure Dedicated Network Proxies (HTTP / SOCKS5)
 ```bash
-# Configure HTTP proxy
+# Configure HTTP proxy with credentials (passwords stored securely in macOS Keychain)
 atbclone clone /Applications/Telegram.app \
   --name "Telegram-Proxy" \
   --proxy-host 127.0.0.1 \
   --proxy-port 7890 \
-  --proxy-type http
+  --proxy-type http \
+  --proxy-user alice \
+  --proxy-password "my_secret_token"
 
 # Configure SOCKS5 proxy
 atbclone clone /Applications/ChatGPT.app \

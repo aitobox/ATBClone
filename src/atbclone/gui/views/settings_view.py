@@ -30,6 +30,12 @@ from atbclone.core.logger import get_logger
 from atbclone.gui.components.top_bar import TopHeaderBar
 from atbclone.gui.theme import Theme
 from atbclone.gui.windows.release_notes import ReleaseNotesWindow
+from atbclone.validation import (
+    validate_host,
+    validate_path_component,
+    validate_proxy_credential,
+    validate_proxy_port,
+)
 
 logger = get_logger("gui.settings")
 
@@ -115,17 +121,73 @@ class SettingsView(toga.Box):
         inner_proxy = toga.Box(style=Pack(direction=COLUMN, margin=(14, 18, 14, 18)))
         inner_proxy.add(toga.Label(t("settings_card_proxy"), style=Pack(font_weight="bold", font_size=15, margin_bottom=12, color=Theme.TEXT_PRIMARY)))
 
-        self.switch_proxy = toga.Switch(t("settings_switch_proxy_default"), value=False, style=Pack(margin_bottom=8, font_size=13.5))
+        cfg_proxy = get_config_value("default_proxy", {})
+        default_proxy_enabled = bool(cfg_proxy.get("enabled", False))
+        default_proxy_type = cfg_proxy.get("type", "http")
+        default_proxy_host = cfg_proxy.get("host", "127.0.0.1")
+        default_proxy_port = str(cfg_proxy.get("port", 7890))
+        default_proxy_user = cfg_proxy.get("username", "")
+        default_proxy_has_auth = bool(default_proxy_user)
+        default_proxy_pass = ""
+        if default_proxy_has_auth:
+            try:
+                from atbclone.core.keychain import get_default_proxy_password
+                p = get_default_proxy_password()
+                if p:
+                    default_proxy_pass = p
+            except Exception:
+                pass
+
+        self.switch_proxy = toga.Switch(
+            t("settings_switch_proxy_default"),
+            value=default_proxy_enabled,
+            on_change=self._on_proxy_toggle,
+            style=Pack(margin_bottom=8, font_size=13.5),
+        )
         inner_proxy.add(self.switch_proxy)
 
         row_proxy = toga.Box(style=Pack(direction=ROW, align_items=CENTER))
-        self.select_proxy_type = toga.Selection(items=["http", "https", "socks5"], style=Pack(width=105, margin_right=8, font_size=12.0))
-        self.input_proxy_host = toga.TextInput(value="127.0.0.1", style=Pack(flex=1, margin_right=8, font_size=13.5))
-        self.input_proxy_port = toga.TextInput(value="7890", style=Pack(width=90, font_size=13.5))
+        self.select_proxy_type = toga.Selection(
+            items=["http", "https", "socks5"],
+            value=default_proxy_type if default_proxy_type in ["http", "https", "socks5"] else "http",
+            style=Pack(width=105, margin_right=8, font_size=12.0),
+        )
+        self.input_proxy_host = toga.TextInput(value=default_proxy_host, style=Pack(flex=1, margin_right=8, font_size=13.5))
+        self.input_proxy_port = toga.TextInput(value=default_proxy_port, style=Pack(width=90, font_size=13.5))
         row_proxy.add(self.select_proxy_type)
         row_proxy.add(self.input_proxy_host)
         row_proxy.add(self.input_proxy_port)
         inner_proxy.add(row_proxy)
+
+        # Proxy Auth Section
+        box_auth = toga.Box(style=Pack(direction=COLUMN, margin_top=8, margin_left=12))
+        self.switch_proxy_auth = toga.Switch(
+            t("proxy_auth_enable"),
+            value=default_proxy_has_auth,
+            on_change=self._on_auth_toggle,
+            style=Pack(margin_top=6, margin_bottom=6, font_size=13),
+        )
+        box_auth.add(self.switch_proxy_auth)
+
+        row_auth = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=4))
+        row_auth.add(toga.Label(t("proxy_auth_username"), style=Pack(width=80, font_size=12.5, color=Theme.TEXT_PRIMARY)))
+        self.input_proxy_user = toga.TextInput(
+            value=default_proxy_user,
+            placeholder=t("proxy_auth_username"),
+            style=Pack(flex=1, margin_right=8, font_size=13),
+        )
+        row_auth.add(self.input_proxy_user)
+        row_auth.add(toga.Label(t("proxy_auth_password"), style=Pack(margin_left=8, margin_right=6, font_size=12.5, color=Theme.TEXT_PRIMARY)))
+        self.input_proxy_pass = toga.PasswordInput(
+            value=default_proxy_pass,
+            placeholder=t("proxy_auth_password"),
+            style=Pack(flex=1, font_size=13),
+        )
+        row_auth.add(self.input_proxy_pass)
+        box_auth.add(row_auth)
+
+        box_auth.add(toga.Label(t("proxy_auth_password_hint"), style=Pack(font_size=11, color=Theme.TEXT_MUTED, margin_top=4, margin_left=80)))
+        inner_proxy.add(box_auth)
         card_proxy.add(inner_proxy)
         content_box.add(card_proxy)
 
@@ -164,6 +226,22 @@ class SettingsView(toga.Box):
         content_box.add(card_info)
 
         self.release_notes_window: Optional[ReleaseNotesWindow] = None
+        self._on_proxy_toggle(self.switch_proxy)
+
+    def _on_proxy_toggle(self, widget: toga.Switch) -> None:
+        enabled = bool(widget.value)
+        self.select_proxy_type.enabled = enabled
+        self.input_proxy_host.enabled = enabled
+        self.input_proxy_port.enabled = enabled
+        self.switch_proxy_auth.enabled = enabled
+        auth_enabled = enabled and bool(self.switch_proxy_auth.value)
+        self.input_proxy_user.enabled = auth_enabled
+        self.input_proxy_pass.enabled = auth_enabled
+
+    def _on_auth_toggle(self, widget: toga.Switch) -> None:
+        auth_enabled = bool(self.switch_proxy.value) and bool(widget.value)
+        self.input_proxy_user.enabled = auth_enabled
+        self.input_proxy_pass.enabled = auth_enabled
 
     def on_open_release_notes(self, widget: toga.Button):
         """Open or focus the ReleaseNotesWindow."""
@@ -241,9 +319,73 @@ class SettingsView(toga.Box):
 
     async def on_save_settings(self, widget: toga.Button):
         base_dir = self.input_base_dir.value.strip()
-        proxy_enabled = self.switch_proxy.value
+        proxy_enabled = bool(self.switch_proxy.value)
         minimize_to_tray = self.switch_minimize_to_tray.value
         set_config_value("minimize_to_tray", bool(minimize_to_tray))
+
+        if base_dir:
+            try:
+                validate_path_component(base_dir, field="base_dir")
+            except ValueError as e:
+                if self.app_instance and hasattr(self.app_instance, "main_window"):
+                    await self.app_instance.main_window.error_dialog(
+                        t("dialog_validation_error_title"),
+                        str(e),
+                    )
+                return
+
+        port = 7890
+        host = self.input_proxy_host.value.strip() or "127.0.0.1"
+        if proxy_enabled:
+            try:
+                validate_host(host)
+                port_str = self.input_proxy_port.value.strip()
+                try:
+                    port = int(port_str)
+                except ValueError:
+                    raise ValueError(f"Invalid proxy port: {port_str!r}. Expected an integer 1-65535.")
+                validate_proxy_port(port)
+
+                if self.switch_proxy_auth.value:
+                    user = self.input_proxy_user.value.strip()
+                    pwd = self.input_proxy_pass.value or ""
+                    validate_proxy_credential(user, field="username")
+                    validate_proxy_credential(pwd, field="password")
+            except ValueError as e:
+                if self.app_instance and hasattr(self.app_instance, "main_window"):
+                    await self.app_instance.main_window.error_dialog(
+                        t("dialog_validation_error_title"),
+                        str(e),
+                    )
+                return
+
+        proxy_dict = {
+            "enabled": proxy_enabled,
+            "type": str(self.select_proxy_type.value),
+            "host": host,
+            "port": port,
+        }
+
+        if proxy_enabled and self.switch_proxy_auth.value:
+            user = self.input_proxy_user.value.strip()
+            pwd = self.input_proxy_pass.value or ""
+            proxy_dict["username"] = user
+            try:
+                from atbclone.core.keychain import save_default_proxy_password, delete_default_proxy_password
+                if pwd:
+                    save_default_proxy_password(pwd)
+                else:
+                    delete_default_proxy_password()
+            except Exception:
+                pass
+        else:
+            try:
+                from atbclone.core.keychain import delete_default_proxy_password
+                delete_default_proxy_password()
+            except Exception:
+                pass
+
+        set_config_value("default_proxy", proxy_dict)
         logger.info(f"Settings saved: base_dir='{base_dir}', proxy_enabled={proxy_enabled}, minimize_to_tray={minimize_to_tray}")
         if self.app_instance and hasattr(self.app_instance, "main_window"):
             await self.app_instance.main_window.info_dialog(

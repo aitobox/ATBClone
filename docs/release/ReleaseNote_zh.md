@@ -2,7 +2,35 @@
 
 # ATBClone 更新日志 (Release Notes)
 
-本文档记录了 **ATBClone** 的所有重要更新、新功能、性能优化及问题修复。
+## [v1.5.1] - 2026-09-13
+
+### 💬 内置 KakaoTalk 分身规则
+- **开箱即用的原生多开支持**：
+  - 新增 KakaoTalk（`com.kakao.KakaoTalkMac`）内置配方，采用 Cocoa 硬克隆策略，支持沙盒剥离与独立数据目录（`HOME`/`TMPDIR`）隔离。
+  - 内置应用规则库扩展至 34+ 款常用软件。
+  - 补充说明验证范围（已验证双开同时运行及系统通知功能）。
+
+### 🚀 GitHub Actions arm64 自动发布与打包工作流
+- **持续部署与发布工程化**：
+  - 新增 `.github/workflows/release.yml`，在推送版本 Tag（`v*`）时自动触发发布流程。
+  - 自动编译并打包 CLI 独立二进制压缩包（`ATBCloneCli-arm64.tar.gz`）与 GUI 安装镜像（`ATBClone-*.dmg`），并附带 SHA256 校验和。
+  - 新增 `scripts/build_release_packages.sh` 统一发布打包脚本。
+  - 修复 `scripts/build_cli.sh` 与 `scripts/build_release_packages.sh` 中 bash `set -u` 空数组展开报错问题。
+
+### 🛡️ GUI 构建脚手架与弱网韧性增强
+- **不完整构建自动恢复**：
+  - 增强 `scripts/build_gui.sh` 脚手架完整性检查，全面校验 `Python.framework`、可执行文件 `ATBClone` 与 `Stub`。
+  - 在因网络不畅导致资源下载残缺时，自动清理并重建损坏脚手架，保障构建成功率。
+
+### 🔒 开源安全策略规范 (SECURITY.md)
+- **负责任的漏洞披露**：
+  - 添加 `.github/SECURITY.md`，明确支持版本范围、私密漏洞提报通道、评估响应时限与受影响组件定义。
+
+### 🧪 质量保障与自动化测试
+- **测试套件扩充**：
+  - 自动化测试用例扩充至 561 项，覆盖 KakaoTalk 配方、构建脚本鲁棒性与打包逻辑，保持 100% 通过率。
+
+---
 
 ## [v1.5.0] - 2026-09-10
 

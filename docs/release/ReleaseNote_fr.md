@@ -2,7 +2,35 @@
 
 # Notes de publication d'ATBClone (Release Notes)
 
-Ce document répertorie l'ensemble des mises à jour majeures, nouvelles fonctionnalités, optimisations et correctifs apportés à **ATBClone**.
+## [v1.5.1] - 2026-09-13
+
+### 💬 Recette intégrée pour KakaoTalk
+- **Support multi-instance natif**:
+  - Ajout d'une recette intégrée pour KakaoTalk (`com.kakao.KakaoTalkMac`) basée sur la stratégie de clonage dur Cocoa, le retrait du bac à sable (sandbox) et l'isolation des répertoires de données (`HOME`/`TMPDIR`).
+  - Élargissement du catalogue de recettes intégrées à plus de 34 applications.
+  - Précision du périmètre de validation dans la documentation (exécution simultanée et notifications validées).
+
+### 🚀 Flux de publication automatisé GitHub Actions arm64
+- **Déploiement continu et automatisation des paquets**:
+  - Ajout de `.github/workflows/release.yml` pour générer automatiquement les artefacts de version lors du push de balises de version (`v*`).
+  - Compilation et création automatique des archives CLI (`ATBCloneCli-arm64.tar.gz`) et des installateurs graphiques (`ATBClone-*.dmg`) avec sommes de contrôle SHA256.
+  - Ajout du script unifié `scripts/build_release_packages.sh`.
+  - Correction de l'erreur bash `set -u` liée à l'expansion de tableaux vides dans `scripts/build_cli.sh` et `scripts/build_release_packages.sh`.
+
+### 🛡️ Échafaudage de build GUI et résilience réseau
+- **Récupération automatique des builds incomplets**:
+  - Renforcement des vérifications d'intégrité dans `scripts/build_gui.sh` (`Python.framework`, exécutable `ATBClone` et `Stub`).
+  - Nettoyage et recréation automatique des structures incomplètes causées par des interruptions de téléchargement réseau.
+
+### 🔒 Politique de sécurité (SECURITY.md)
+- **Divulgation responsable des vulnérabilités**:
+  - Ajout de `.github/SECURITY.md` définissant les canaux de signalement privé, les versions prises en charge et les délais de réponse.
+
+### 🧪 Assurance qualité et suite de tests
+- **Couverture de tests étendue**:
+  - Extension de la suite de tests automatisés à 561 tests avec un taux de réussite de 100 %.
+
+---
 
 ## [v1.5.0] - 2026-09-10
 

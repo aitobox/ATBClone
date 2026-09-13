@@ -2,7 +2,35 @@
 
 # Notas de la versión de ATBClone (Release Notes)
 
-En este documento se registran todas las actualizaciones principales, nuevas características, mejoras de rendimiento y correcciones de errores para **ATBClone**.
+## [v1.5.1] - 2026-09-13
+
+### 💬 Receta integrada para KakaoTalk
+- **Soporte nativo para múltiples instancias**:
+  - Incorporación de la receta integrada para KakaoTalk (`com.kakao.KakaoTalkMac`) mediante clonación dura Cocoa, eliminación de sandbox y directorios de datos aislados (`HOME`/`TMPDIR`).
+  - Ampliación de la biblioteca de recetas integradas a más de 34 aplicaciones.
+  - Detalle del alcance de verificación en la documentación (ejecución simultánea y notificaciones verificadas).
+
+### 🚀 Flujo automatizado de lanzamiento en GitHub Actions arm64
+- **Integración continua y empaquetado de versiones**:
+  - Creación de `.github/workflows/release.yml` para generar artefactos de versión automáticamente al enviar etiquetas (`v*`).
+  - Compilación y empaquetado del archivo CLI (`ATBCloneCli-arm64.tar.gz`) y del instalador GUI (`ATBClone-*.dmg`) junto con sumas de comprobación SHA256.
+  - Incorporación del script unificado `scripts/build_release_packages.sh`.
+  - Corrección del error de bash `set -u` al expandir matrices vacías en `scripts/build_cli.sh` y `scripts/build_release_packages.sh`.
+
+### 🛡️ Estructura de compilación GUI y resiliencia de red
+- **Recuperación automática de compilaciones incompletas**:
+  - Mejora en las verificaciones de integridad de `scripts/build_gui.sh` comprobando `Python.framework`, el ejecutable `ATBClone` y `Stub`.
+  - Limpieza y recreación automática de estructuras incompletas derivadas de descargas interrumpidas.
+
+### 🔒 Política de seguridad (SECURITY.md)
+- **Divulgación responsable de vulnerabilidades**:
+  - Publicación de `.github/SECURITY.md` con los canales para reportar vulnerabilidades de forma privada, plazos de respuesta y alcance.
+
+### 🧪 Aseguramiento de calidad y pruebas
+- **Ampliación de pruebas**:
+  - Conjunto de pruebas automatizadas ampliado a 561 pruebas con un 100 % de éxito.
+
+---
 
 ## [v1.5.0] - 2026-09-10
 

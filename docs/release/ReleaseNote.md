@@ -2,7 +2,35 @@
 
 # ATBClone Release Notes
 
-All notable changes, new features, improvements, and bug fixes for **ATBClone** are documented in this file.
+## [v1.5.1] - 2026-09-13
+
+### 💬 KakaoTalk Built-in Application Recipe
+- **Native Multi-Instance Support**:
+  - Added built-in recipe for KakaoTalk (`com.kakao.KakaoTalkMac`) using Cocoa hard-clone strategy, sandbox stripping, and isolated data directories (`HOME`/`TMPDIR`).
+  - Expanded built-in recipe collection to 34+ applications.
+  - Documented verification scope (concurrent execution and notification features verified).
+
+### 🚀 Automated GitHub Actions arm64 Release Workflow
+- **Continuous Deployment & Packaging Automation**:
+  - Added `.github/workflows/release.yml` automating release artifact generation upon pushing version tags (`v*`).
+  - Builds and packages both standalone CLI archive (`ATBCloneCli-arm64.tar.gz`) and GUI installer (`ATBClone-*.dmg`) with SHA256 checksums.
+  - Added `scripts/build_release_packages.sh` for unified packaging of release artifacts.
+  - Fixed bash `set -u` unbound variable error on empty array expansion in `scripts/build_cli.sh` and `scripts/build_release_packages.sh`.
+
+### 🛡️ Build Scaffolding & Network Resilience
+- **Incomplete Build Recovery**:
+  - Enhanced `scripts/build_gui.sh` scaffolding integrity checks to verify `Python.framework`, `ATBClone` executable, and `Stub`.
+  - Automatically cleans and recreates corrupted or partial scaffolds caused by poor network downloads.
+
+### 🔒 Security Policy (SECURITY.md)
+- **Vulnerability Disclosure Guidelines**:
+  - Added `.github/SECURITY.md` establishing private vulnerability reporting channels, in-scope components, and response SLAs.
+
+### 🧪 Quality Assurance & Test Suite Expansion
+- **Comprehensive Coverage**:
+  - Expanded test suite to 561 unit, recipe, GUI, and packaging tests with a 100% pass rate.
+
+---
 
 ## [v1.5.0] - 2026-09-10
 

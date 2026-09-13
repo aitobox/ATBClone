@@ -2,7 +2,35 @@
 
 # ATBClone Versionshinweise (Release Notes)
 
-Dieses Dokument erfasst alle wesentlichen Aktualisierungen, neuen Funktionen, Optimierungen und Fehlerbehebungen für **ATBClone**.
+## [v1.5.1] - 2026-09-13
+
+### 💬 KakaoTalk Integriertes App-Rezept
+- **Native Multi-Instanz-Unterstützung**:
+  - Neues integriertes Rezept für KakaoTalk (`com.kakao.KakaoTalkMac`) mit Cocoa-Hard-Clone-Strategie, Sandbox-Bereinigung und isolierten Datenverzeichnissen (`HOME`/`TMPDIR`).
+  - Erweiterung der integrierten Rezeptsammlung auf 34+ Anwendungen.
+  - Dokumentation des Verifizierungsumfangs (gleichzeitiger Betrieb und Benachrichtigungsfunktionen verifiziert).
+
+### 🚀 Automatisierter GitHub Actions arm64 Release-Workflow
+- **Kontinuierliche Bereitstellung & Paketierungs-Automatisierung**:
+  - Neuer Workflow `.github/workflows/release.yml` zur automatischen Erstellung von Release-Artefakten beim Pushen von Versions-Tags (`v*`).
+  - Automatisches Kompilieren und Paketieren des CLI-Archivs (`ATBCloneCli-arm64.tar.gz`) und des GUI-Installers (`ATBClone-*.dmg`) inklusive SHA256-Prüfsummen.
+  - Neues Skript `scripts/build_release_packages.sh` für die einheitliche Release-Paketierung.
+  - Behebung des Bash-`set -u`-Fehlers bei der Expansion leerer Arrays in `scripts/build_cli.sh` und `scripts/build_release_packages.sh`.
+
+### 🛡️ GUI-Build-Scaffolding & Netzwerk-Resilienz
+- **Automatische Wiederherstellung bei unvollständigem Build**:
+  - Verbesserte Integritätsprüfungen in `scripts/build_gui.sh` für `Python.framework`, die ausführbare Datei `ATBClone` und den `Stub`.
+  - Beschädigte oder unvollständige Scaffolds infolge instabiler Netzwerkverbindungen werden automatisch bereinigt und neu erstellt.
+
+### 🔒 Sicherheitsrichtlinie (SECURITY.md)
+- **Leitfaden zur verantwortungsvollen Offenlegung**:
+  - Bereitstellung von `.github/SECURITY.md` mit Richtlinien zur Meldung von Sicherheitslücken, Reaktionsfristen und Geltungsbereich.
+
+### 🧪 Qualitätssicherung & Test-Suite
+- **Erweiterte Testabdeckung**:
+  - Erweiterung der automatisierten Test-Suite auf 561 Tests mit einer Erfolgsquote von 100 %.
+
+---
 
 ## [v1.5.0] - 2026-09-10
 

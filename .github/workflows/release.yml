@@ -157,6 +157,17 @@ jobs:
           print(f"Extracted release notes ({len(notes_content)} bytes)")
           PY_EOF
 
+      - name: Upload Workflow Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ATBClone-${{ env.VERSION }}-arm64
+          path: |
+            dist/ATBCloneCli-${{ env.VERSION }}-arm64.tar.gz
+            dist/ATBClone-${{ env.VERSION }}-arm64.dmg
+            dist/checksums.txt
+          if-no-files-found: ignore
+
       - name: Create or Update GitHub Release
         run: |
           CLI_PKG="dist/ATBCloneCli-${VERSION}-arm64.tar.gz"
@@ -168,31 +179,51 @@ jobs:
             exit 1
           fi
 
-          if gh release view "${TAG_NAME}" &>/dev/null; then
-            echo "Release ${TAG_NAME} already exists. Updating release notes and assets..."
-            gh release edit "${TAG_NAME}" --notes-file dist/release_notes.md
-            gh release upload "${TAG_NAME}" "${CLI_PKG}" "${GUI_PKG}" "${CHECKSUMS}" --clobber
-          else
+          # 1. Ensure GitHub Release exists with notes
+          if ! gh release view "${TAG_NAME}" &>/dev/null; then
             echo "Creating GitHub Release ${TAG_NAME}..."
-            gh release create "${TAG_NAME}" \
-              "${CLI_PKG}" \
-              "${GUI_PKG}" \
-              "${CHECKSUMS}" \
-              --title "ATBClone ${TAG_NAME}" \
-              --notes-file dist/release_notes.md
+            RELEASE_CREATED=0
+            for attempt in {1..5}; do
+              echo "Release creation attempt $attempt/5..."
+              if gh release create "${TAG_NAME}" \
+                --title "ATBClone ${TAG_NAME}" \
+                --notes-file dist/release_notes.md; then
+                RELEASE_CREATED=1
+                break
+              fi
+              echo "Release creation attempt $attempt failed. Retrying in 6 seconds..."
+              sleep 6
+            done
+            if [[ "${RELEASE_CREATED}" -eq 0 ]]; then
+              echo "[-] Error: Failed to create GitHub Release after 5 attempts." >&2
+              exit 1
+            fi
+          else
+            echo "Release ${TAG_NAME} already exists. Updating release notes..."
+            gh release edit "${TAG_NAME}" --notes-file dist/release_notes.md || true
+          fi
+
+          # 2. Upload assets with clobber and retry
+          echo "Uploading release assets to ${TAG_NAME}..."
+          ASSETS_UPLOADED=0
+          for attempt in {1..5}; do
+            echo "Asset upload attempt $attempt/5..."
+            if gh release upload "${TAG_NAME}" "${CLI_PKG}" "${GUI_PKG}" "${CHECKSUMS}" --clobber; then
+              ASSETS_UPLOADED=1
+              echo "[✔] Release assets uploaded successfully."
+              break
+            fi
+            echo "Asset upload attempt $attempt failed. Retrying in 6 seconds..."
+            sleep 6
+          done
+
+          if [[ "${ASSETS_UPLOADED}" -eq 0 ]]; then
+            echo "[-] Error: Failed to upload release assets after 5 attempts." >&2
+            exit 1
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Workflow Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ATBClone-${{ env.VERSION }}-arm64
-          path: |
-            dist/ATBCloneCli-${{ env.VERSION }}-arm64.tar.gz
-            dist/ATBClone-${{ env.VERSION }}-arm64.dmg
-            dist/checksums.txt
-          if-no-files-found: error
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cleanup Keychain and Credentials
         if: always()

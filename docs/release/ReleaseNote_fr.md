@@ -2,6 +2,17 @@
 
 # Notes de publication d'ATBClone (Release Notes)
 
+## [v1.6.0] - 2026-09-13
+
+### 🪟 Élimination du blocage lors de la fermeture depuis la zone de notification
+- **Fermeture fiable et sécurisée du processus**:
+  - Correction d'un interblocage (deadlock) empêchant l'application de se fermer lorsqu'elle était minimisée et que l'utilisateur cliquait sur « Quitter » depuis l'icône de la barre des menus (systray) ou le menu contextuel du Dock.
+  - Ajout d'un indicateur de garde `_is_exiting` sur `ATBCloneApp`, garantissant que `_on_window_close` ne bloque plus jamais la procédure de fermeture.
+  - Suppression de l'appel prématuré à `set_macos_dock_visible(True)` dans `exit_application()`, évitant ainsi le traitement d'événements Cocoa superflus qui perturbaient l'arrêt du processus.
+  - Sécurisation des deux parcours d'arrêt (Dock via `_on_app_exit` et zone de notification via `exit_application`) pour une libération propre des ressources et une sortie immédiate.
+
+---
+
 ## [v1.5.1] - 2026-09-13
 
 ### 💬 Recette intégrée pour KakaoTalk

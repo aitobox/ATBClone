@@ -2,6 +2,17 @@
 
 # ATBClone Versionshinweise (Release Notes)
 
+## [v1.6.0] - 2026-09-13
+
+### 🪟 Behebung des Tray-Beendigungs-Deadlocks & Härtung des App-Lebenszyklus
+- **Zuverlässiges Beenden der Anwendung**:
+  - Ein Deadlock wurde behoben, bei dem das Klicken auf „Beenden“ im Menüleisten-Symbol (Tray) oder im Dock-Kontextmenü die Anwendung einfrieren ließ, wenn sie in den Tray minimiert war.
+  - Einführung des Guard-Flags `_is_exiting` in `ATBCloneApp`, sodass `_on_window_close` den regulären Beendigungsprozess niemals abfangen oder blockieren kann.
+  - Entfernung des vorzeitigen Aufrufs von `set_macos_dock_visible(True)` in `exit_application()`, wodurch unerwünschte Re-Entrancy-Ereignisse im Cocoa-Runloop vor dem Stoppen der Event-Schleife vermieden werden.
+  - Härtung der Beendigung sowohl über das Dock (`_on_app_exit`) als auch über den Tray (`exit_application`) für eine saubere und verzögerungsfreie Terminierung.
+
+---
+
 ## [v1.5.1] - 2026-09-13
 
 ### 💬 KakaoTalk Integriertes App-Rezept

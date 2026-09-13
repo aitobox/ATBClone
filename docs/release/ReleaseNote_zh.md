@@ -2,6 +2,17 @@
 
 # ATBClone 更新日志 (Release Notes)
 
+## [v1.6.0] - 2026-09-13
+
+### 🪟 托盘退出死锁消除与应用退出生命周期加固
+- **解决最小化托盘退出卡死问题**：
+  - 彻底修复应用最小化至托盘时，通过托盘菜单或 Dock 栏右键菜单点击“退出”导致程序死锁、无法正常退出的缺陷。
+  - 在 `ATBCloneApp` 中引入 `_is_exiting` 退出保护标志位，确保 `_on_window_close` 窗口关闭拦截在退出流程中立即放行，绝不阻断进程终止。
+  - 移除 `exit_application()` 中在退出前过早调用 `set_macos_dock_visible(True)` 的逻辑，杜绝恢复 Dock 栏激活策略触发 Cocoa 事件循环重入与窗口关闭拦截循环。
+  - 加固 Dock 栏退出（`_on_app_exit`）与托盘退出（`exit_application`）双链路，确保托盘服务干净卸载并实现秒级平稳退出。
+
+---
+
 ## [v1.5.1] - 2026-09-13
 
 ### 💬 内置 KakaoTalk 分身规则

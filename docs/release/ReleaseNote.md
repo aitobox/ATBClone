@@ -2,6 +2,17 @@
 
 # ATBClone Release Notes
 
+## [v1.6.0] - 2026-09-13
+
+### 🪟 Tray-to-Quit Deadlock Elimination & Lifecycle Hardening
+- **Reliable Process Termination**:
+  - Resolved a deadlock where clicking "Quit" from the macOS system tray icon or Dock right-click menu could freeze the application and fail to terminate while minimized to tray.
+  - Introduced `_is_exiting` guard flag on `ATBCloneApp`, ensuring `_on_window_close` never intercepts or blocks shutdown sequences.
+  - Fixed re-entrancy issue by removing premature `set_macos_dock_visible(True)` calls during `exit_application()`, eliminating redundant activation policy transitions in Cocoa run loop before termination.
+  - Hardened both Dock quit (`_on_app_exit`) and tray quit (`exit_application`) lifecycles, guaranteeing immediate, clean teardown.
+
+---
+
 ## [v1.5.1] - 2026-09-13
 
 ### 💬 KakaoTalk Built-in Application Recipe

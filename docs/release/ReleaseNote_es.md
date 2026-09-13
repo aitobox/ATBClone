@@ -2,6 +2,17 @@
 
 # Notas de la versión de ATBClone (Release Notes)
 
+## [v1.6.0] - 2026-09-13
+
+### 🪟 Eliminación del bloqueo al salir desde la bandeja del sistema y estabilización del cierre
+- **Terminación fiable y limpia del proceso**:
+  - Corrección de un bloqueo mutuo (deadlock) que impedía que la aplicación se cerrara al hacer clic en «Salir» desde el icono de la bandeja del sistema o el menú contextual del Dock mientras estaba minimizada.
+  - Incorporación del indicador de protección `_is_exiting` en `ATBCloneApp`, asegurando que `_on_window_close` no intercepte ni bloquee la secuencia de cierre.
+  - Eliminación de la llamada prematura a `set_macos_dock_visible(True)` en `exit_application()`, evitando transiciones de políticas de activación en el bucle de eventos de Cocoa que provocaban el reingreso al cierre de ventana.
+  - Refuerzo en las rutas de salida tanto desde el Dock (`_on_app_exit`) como desde la bandeja (`exit_application`), garantizando la desactivación inmediata del icono y un cierre fluido.
+
+---
+
 ## [v1.5.1] - 2026-09-13
 
 ### 💬 Receta integrada para KakaoTalk

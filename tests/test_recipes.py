@@ -218,6 +218,7 @@ def test_load_builtin_wework(monkeypatch, tmp_path):
 
 
 def test_load_builtin_kakaotalk(monkeypatch, tmp_path):
+    """Load the built-in KakaoTalk settings without relying on local overrides."""
     monkeypatch.setattr(RecipeLoader, "LOCAL_DIR", tmp_path)
     recipe = RecipeLoader.get("com.kakao.KakaoTalkMac")
     assert recipe is not None

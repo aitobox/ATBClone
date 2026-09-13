@@ -430,7 +430,7 @@ src/atbclone/
 │   └── views/            # GUI 视图 (仪表盘、规则库、探测器、自检、设置、日志)
 ├── executor/             # 底层执行器 (Direct Subprocess / AppleScript 提权)
 │   └── runner.py
-└── recipes/              # 规则模型、加载器与 33 个内置规则
+└── recipes/              # 规则模型、加载器与 34 个内置规则
     ├── builtin/          # 内置 YAML 规则
     ├── loader.py         # 规则匹配与优先级加载
     └── models.py         # Pydantic 校验模型

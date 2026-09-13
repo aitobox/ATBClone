@@ -98,6 +98,8 @@ class ATBCloneApp(toga.App):
                 kwargs["icon"] = icon_path
         if version is None:
             version = __version__
+        # Guard flag to prevent _on_window_close from blocking a deliberate exit
+        self._is_exiting: bool = False
         super().__init__(
             formal_name=formal_name,
             app_id=app_id,
@@ -211,6 +213,9 @@ class ATBCloneApp(toga.App):
 
     def _on_window_close(self, window: Any) -> bool:
         """Handle window close event: hide to tray if minimize_to_tray is enabled, else allow exit."""
+        # If we are already in the process of exiting, allow the close unconditionally.
+        if self._is_exiting:
+            return True
         if hasattr(self, "tray_service") and self.tray_service and self.tray_service.is_enabled:
             try:
                 native_win = getattr(getattr(window, "_impl", None), "native", None)
@@ -225,6 +230,8 @@ class ATBCloneApp(toga.App):
     def _on_app_exit(self, app: Any) -> bool:
         """Handle application exit event: teardown tray icon, restore dock, and allow shutdown."""
         logger.info("Application shutdown initiated via on_exit hook.")
+        # Mark as exiting so that any pending on_close handlers don't block the exit.
+        self._is_exiting = True
         try:
             if hasattr(self, "tray_service") and self.tray_service:
                 self.tray_service.disable()
@@ -314,9 +321,17 @@ class ATBCloneApp(toga.App):
 
     def exit_application(self) -> None:
         """Cleanly terminate the application and remove status tray icon."""
-        if hasattr(self, "tray_service") and self.tray_service:
-            self.tray_service.disable()
-        set_macos_dock_visible(True)
+        logger.info("exit_application called — beginning forced shutdown sequence.")
+        # Set the exiting flag first so that _on_window_close never blocks the shutdown.
+        self._is_exiting = True
+        try:
+            if hasattr(self, "tray_service") and self.tray_service:
+                self.tray_service.disable()
+        except Exception as e:
+            logger.warning(f"Error disabling tray during exit: {e}")
+        # Do NOT call set_macos_dock_visible(True) here: restoring the Dock activation
+        # policy just before loop.stop() can cause the run loop to process additional
+        # events that block the exit. The Dock icon vanishes automatically on process end.
         self.exit()
 
     def switch_view(self, view_name: str):

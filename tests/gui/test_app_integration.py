@@ -113,8 +113,13 @@ def test_app_show_main_window_and_exit():
          patch("atbclone.gui.app.set_macos_dock_visible") as mock_dock_vis, \
          patch.object(app, "exit") as mock_exit:
         app.exit_application()
+        # _is_exiting must be set before exit() is called
+        assert app._is_exiting is True
         mock_disable.assert_called_once()
-        mock_dock_vis.assert_called_with(True)
+        # set_macos_dock_visible(True) must NOT be called from exit_application:
+        # restoring the Dock activation policy before loop.stop() can cause the run
+        # loop to process extra events that prevent the exit from completing.
+        mock_dock_vis.assert_not_called()
         mock_exit.assert_called_once()
 
 

@@ -2,6 +2,37 @@
 
 # Notes de publication d'ATBClone (Release Notes)
 
+## [v1.7.0] - 2026-09-13
+
+### 🔄 Sous-système de mise à jour automatique intégrée et installation silencieuse
+- **Mises à jour automatisées de bout en bout**:
+  - Implémentation de `UpdateService` pour interroger automatiquement le manifeste GitHub `latest.json` et détecter les nouvelles versions via comparaison sémantique.
+  - Téléchargement adapté à l'architecture (Apple Silicon arm64 et Intel x86_64) avec flux par blocs et affichage du pourcentage de progression en direct.
+  - Vérification automatique de la somme de contrôle SHA256 par rapport au manifeste avant toute installation pour prévenir les corruptions de paquets.
+  - Prise en charge automatique des configurations proxy (`HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`) pour garantir les mises à jour en environnement réseau restreint.
+  - Installation silencieuse sur place : montage automatique du DMG dans un répertoire temporaire isolé, remplacement de `ATBClone.app`, nettoyage des attributs de quarantaine macOS Gatekeeper (`xattr -cr`) et démontage propre.
+
+### ⚙️ Flux de mise à jour dans les paramètres graphiques
+- **Gestion visuelle des mises à jour**:
+  - Ajout d'un bouton « Rechercher les mises à jour » et d'un indicateur d'état dynamique dans `SettingsView`.
+  - Progression multi-états : Vérification en cours → Mise à jour disponible (avec numéro de version et notes de publication) / Déjà à jour → Téléchargement (avec progression en %) → Installation → Terminé / Invitation au redémarrage.
+  - Messages d'erreur clairs en cas de dépassement de délai réseau, d'erreur HTTP ou d'échec de vérification de somme de contrôle.
+
+### 🌐 Traduction intégrale en 9 langues
+- **Prise en charge i18n**:
+  - Traduction complète de tous les boutons, libellés d'état et fenêtres de dialogue liés à la mise à jour dans les 9 langues supportées.
+
+### 📦 Génération automatique du manifeste de publication (`latest.json`)
+- **Métadonnées de publication automatisées**:
+  - Amélioration de `scripts/build_release_packages.sh` pour extraire les notes de publication, calculer les sommes de contrôle SHA256 et produire `dist/latest.json`.
+  - Mise à jour de `.github/workflows/release.yml` pour publier `latest.json` sur GitHub Releases avec mécanisme de nouvelle tentative.
+
+### 🧪 Assurance qualité et suite de tests
+- **Couverture de tests étendue**:
+  - Extension de la suite de tests à 585 tests automatisés avec un taux de réussite de 100 %.
+
+---
+
 ## [v1.6.0] - 2026-09-13
 
 ### 🪟 Élimination du blocage lors de la fermeture depuis la zone de notification

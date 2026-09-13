@@ -2,6 +2,37 @@
 
 # Notas de la versión de ATBClone (Release Notes)
 
+## [v1.7.0] - 2026-09-13
+
+### 🔄 Subsistema de actualización automática integrada e instalación silenciosa
+- **Actualización automática de extremo a extremo**:
+  - Implementación de `UpdateService` para consultar automáticamente el manifiesto de GitHub `latest.json` y detectar nuevas versiones mediante versionado semántico.
+  - Descarga según la arquitectura (Apple Silicon arm64 e Intel x86_64) con transferencia por bloques y visualización del porcentaje de progreso en tiempo real.
+  - Verificación automática de la suma de comprobación SHA256 contra el manifiesto antes de la instalación para prevenir archivos dañados o alterados.
+  - Compatibilidad completa con servidores proxy configurados (`HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`) para garantizar la actualización en redes restringidas.
+  - Instalación silenciosa: montaje automático del DMG en una carpeta temporal aislada, sustitución de `ATBClone.app`, eliminación de atributos de cuarentena de macOS Gatekeeper (`xattr -cr`) y desmontaje seguro del volumen.
+
+### ⚙️ Flujo interactivo de actualización en la vista de ajustes
+- **Gestión visual de actualizaciones**:
+  - Incorporación del botón «Buscar actualizaciones» e indicador de estado en tiempo real en `SettingsView`.
+  - Transición visual de estados: Comprobando → Actualización disponible (con versión y notas de la versión) / Ya está actualizado → Descargando (progreso en %) → Instalando → Completado / Solicitud de reinicio.
+  - Mensajes de error claros ante tiempos de espera de red, fallos HTTP o discrepancias en las sumas de comprobación.
+
+### 🌐 Traducción completa a 9 idiomas
+- **Cobertura total de i18n**:
+  - Traducción de todos los controles, etiquetas de estado y mensajes de diálogo del flujo de actualización en los 9 idiomas disponibles.
+
+### 📦 Generación del manifiesto de versiones en CI/CD (`latest.json`)
+- **Metadatos de lanzamiento automatizados**:
+  - Actualización de `scripts/build_release_packages.sh` para extraer notas de versión, calcular sumas SHA256 de los DMG y generar `dist/latest.json`.
+  - Integración en `.github/workflows/release.yml` para publicar `latest.json` en GitHub Releases con reintentos automáticos.
+
+### 🧪 Aseguramiento de la calidad y pruebas
+- **Ampliación de la suite de pruebas**:
+  - Conjunto de pruebas ampliado a 585 pruebas automatizadas con una tasa de éxito del 100 %.
+
+---
+
 ## [v1.6.0] - 2026-09-13
 
 ### 🪟 Eliminación del bloqueo al salir desde la bandeja del sistema y estabilización del cierre

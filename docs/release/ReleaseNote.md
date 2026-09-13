@@ -2,6 +2,37 @@
 
 # ATBClone Release Notes
 
+## [v1.7.0] - 2026-09-13
+
+### 🔄 In-App Auto-Update Subsystem & Silent Installer
+- **End-to-End Automatic Updates**:
+  - Implemented `UpdateService` to automatically query GitHub release manifest `latest.json` and detect newer versions via semantic version comparison.
+  - Architecture-aware download resolution for Apple Silicon (arm64) and Intel (x86_64) DMG installers with streaming chunk downloads and live progress percentage reporting.
+  - Automatic SHA256 checksum verification against release manifest metadata prior to installation, preventing corrupted or tampered downloads from executing.
+  - Inherits configured system/application proxy settings (`HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`) for seamless updates in restricted network environments.
+  - Silent in-place installation: automatically mounts update DMG in an isolated temporary directory, replaces `ATBClone.app`, strips macOS Gatekeeper quarantine attributes (`xattr -cr`), and unmounts cleanly.
+
+### ⚙️ GUI Settings View Update Flow
+- **Visual Update Management**:
+  - Added "Check for Updates" button and live status progression in `SettingsView`.
+  - Multi-stage visual state transitions: Checking → Update available (with version & release notes) / Already up to date → Downloading (with percentage progress) → Installing → Update complete / Restart prompt.
+  - User-friendly error reporting for network timeouts, HTTP issues, and checksum mismatches.
+
+### 🌐 Comprehensive Multilingual Translations
+- **Full i18n Coverage**:
+  - Added localized strings across all 9 supported languages for update controls, status indicators, and notification dialogues.
+
+### 📦 CI/CD Manifest Generation (`latest.json`)
+- **Automated Release Metadata**:
+  - Enhanced `scripts/build_release_packages.sh` to extract release notes, compute DMG SHA256 checksums, and generate `dist/latest.json`.
+  - Updated `.github/workflows/release.yml` to upload `latest.json` to GitHub Releases with automated retry resilience.
+
+### 🧪 Comprehensive Quality Assurance
+- **Expanded Test Coverage**:
+  - Test suite expanded to 585 unit, service, GUI, and CI packaging tests with a 100% pass rate.
+
+---
+
 ## [v1.6.0] - 2026-09-13
 
 ### 🪟 Tray-to-Quit Deadlock Elimination & Lifecycle Hardening

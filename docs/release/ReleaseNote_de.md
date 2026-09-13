@@ -2,6 +2,37 @@
 
 # ATBClone Versionshinweise (Release Notes)
 
+## [v1.7.0] - 2026-09-13
+
+### 🔄 In-App-Auto-Update-Subsystem & Stille Installation
+- **Automatisierte End-to-End-Aktualisierung**:
+  - Implementierung von `UpdateService` zum automatischen Abrufen des GitHub-Release-Manifests `latest.json` und Erkennen neuer Versionen mittels Semantic Versioning.
+  - Architektur-spezifische Auflösung für Apple Silicon (arm64) und Intel (x86_64) DMG-Pakete mit Streaming-Download und prozentualer Fortschrittsanzeige in Echtzeit.
+  - Automatische SHA256-Prüfsummenvalidierung anhand der Manifest-Metadaten vor der Installation zum Schutz vor beschädigten oder manipulierten Downloads.
+  - Automatische Übernahme konfigurierter Proxy-Einstellungen (`HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`) für reibungslose Updates in eingeschränkten Netzwerken.
+  - Stille Aktualisierung: Automatisches Mounten der DMG in einem isolierten temporären Verzeichnis, Ersetzen von `ATBClone.app`, Bereinigung von macOS Gatekeeper-Attributen (`xattr -cr`) und sauberes Unmounten.
+
+### ⚙️ GUI-Aktualisierungsfluss in den Einstellungen
+- **Visuelle Update-Verwaltung**:
+  - Schaltfläche „Nach Updates suchen“ und dynamische Statusanzeige in `SettingsView` integriert.
+  - Mehrstufige Statusübergänge: Prüfung läuft → Update verfügbar (mit Versionsnummer & Versionshinweisen) / Auf neuestem Stand → Download läuft (Fortschritt in %) → Installation läuft → Abgeschlossen / Neustartaufforderung.
+  - Benutzerfreundliche Fehlermeldungen bei Netzwerk-Timeouts, HTTP-Problemen oder Prüfsummenfehlern.
+
+### 🌐 Vollständige Lokalisierung in 9 Sprachen
+- **Vollständige i18n-Abdeckung**:
+  - Hinzufügen lokalisierter Texte für Schaltflächen, Statusanzeigen und Fehlermeldungen in allen 9 unterstützten Sprachen.
+
+### 📦 CI/CD Release-Manifest-Generierung (`latest.json`)
+- **Automatisierte Release-Metadaten**:
+  - Erweiterung von `scripts/build_release_packages.sh` zur Extraktion von Versionshinweisen, Berechnung von SHA256-Prüfsummen und Erstellung von `dist/latest.json`.
+  - Anpassung von `.github/workflows/release.yml` zur Veröffentlichung von `latest.json` in GitHub Releases.
+
+### 🧪 Qualitätssicherung & Test-Suite
+- **Erweiterte Testabdeckung**:
+  - Erweiterung der Test-Suite auf 585 Tests mit 100 % Erfolgsquote.
+
+---
+
 ## [v1.6.0] - 2026-09-13
 
 ### 🪟 Behebung des Tray-Beendigungs-Deadlocks & Härtung des App-Lebenszyklus

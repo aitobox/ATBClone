@@ -430,7 +430,7 @@ src/atbclone/
 │   └── views/            # GUI views (dashboard, recipes, probe, doctor, settings, logs)
 ├── executor/             # Low-level executors (Subprocess / AppleScript elevation)
 │   └── runner.py
-└── recipes/              # Recipe models, loaders & 33 built-in rules
+└── recipes/              # Recipe models, loaders & 34 built-in rules
     ├── builtin/          # Built-in YAML recipes
     ├── loader.py         # Recipe matching & priority loader
     └── models.py         # Pydantic validation models

@@ -2,6 +2,27 @@
 
 # ATBClone Versionshinweise (Release Notes)
 
+## [v1.8.0] - 2026-09-13
+
+### 📢 ATBCmder-Werbekarte & [AD]-Kennzeichnung in der Navigations-Seitenleiste
+- **Produktivitäts-Ökosystem & UI-Erweiterung**:
+  - Hinzufügen einer eleganten Werbekarte für ATBCmder (`https://aitobox.com/atbcmder`) im flexiblen Freiraum der Seitenleiste.
+  - Native macOS-Ästhetik mit abgerundetem, halbtransparentem Hintergrund, gut sichtbarem `[AD]`-Hinweis, hochauflösendem App-Icon, mehrsprachigem Untertitel und externem Link-Button.
+  - Vollständige Integration in das 9-Sprachen-System mit sofortiger Aktualisierung von Titel, Untertitel und Aktionsbutton bei Sprachwechsel in den Einstellungen.
+  - Dedizierter Ressourcen-Helfer für `ATBCmderIcon.png` / `.icns` mit robuster Fallback-Behandlung.
+
+### 🛡️ CI/CD-Versionshinweis-Schutz & Paketierungs-Härtung
+- **Zuverlässigkeit der Veröffentlichungs-Pipelines**:
+  - Behebung eines Fehlers, bei dem `build_cli.sh` durch das Leeren des `dist/`-Verzeichnisses die generierten `dist/release_notes.md` vor dem GitHub-Release-Upload löschte.
+  - Automatische Sicherung und Wiederherstellung der Versionshinweise in `scripts/build_release_packages.sh`.
+  - Fallback-Generierung in `.github/workflows/release.yml` über Git-Tag-Annotationen und Commit-Historie zur Vermeidung leerer Release-Texte.
+
+### 🧪 Qualitätssicherung und automatisierte Tests
+- **Erweiterte Testabdeckung**:
+  - Testsuite auf 588 Tests mit 100% Erfolgsquote erweitert; Abdeckung für Seitenleisten-Kartenlayout, URL-Weiterleitung, i18n-Reaktivität und Release-Skripte.
+
+---
+
 ## [v1.7.0] - 2026-09-13
 
 ### 🔄 In-App-Auto-Update-Subsystem & Stille Installation

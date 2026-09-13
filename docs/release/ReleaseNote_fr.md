@@ -2,6 +2,27 @@
 
 # Notes de publication d'ATBClone (Release Notes)
 
+## [v1.8.0] - 2026-09-13
+
+### 📢 Carte de promotion ATBCmder et badge [AD] dans la barre latérale
+- **Découverte de l'écosystème de productivité et interface**:
+  - Ajout d'une carte promotionnelle adaptative pour ATBCmder (`https://aitobox.com/atbcmder`) dans l'espace disponible de la barre latérale de navigation.
+  - Conception native macOS avec arrière-plan translucide aux angles arrondis, badge d'identification publicitaire `[AD]`, icône haute résolution, sous-titre multilingue et bouton d'ouverture du lien dans le navigateur.
+  - Prise en charge i18n complète dans les 9 langues, avec actualisation dynamique instantanée du titre, du sous-titre et du bouton d'action lors d'un changement de langue.
+  - Assistant de résolution de ressources pour `ATBCmderIcon.png` / `.icns` avec gestion des chemins de secours.
+
+### 🛡️ Préservation des notes de publication CI/CD et durcissement de l'empaquetage
+- **Fiabilité de l'automatisation des versions**:
+  - Correction d'un problème où le nettoyage du répertoire `dist/` par `build_cli.sh` supprimait le fichier `dist/release_notes.md` avant le téléversement sur GitHub Releases.
+  - Implémentation d'une sauvegarde et d'une restauration automatiques des notes de publication dans `scripts/build_release_packages.sh`.
+  - Ajout d'une génération de secours dans `.github/workflows/release.yml` via les annotations de tag Git et l'historique des commits afin d'éviter toute perte de documentation.
+
+### 🧪 Assurance qualité et tests automatisés
+- **Couverture des tests étendue**:
+  - Suite de tests élargie à 588 tests avec un taux de réussite de 100%, validant la mise en page de la carte latérale, la gestion des URL, la réactivité multilingue et les scripts de publication.
+
+---
+
 ## [v1.7.0] - 2026-09-13
 
 ### 🔄 Sous-système de mise à jour automatique intégrée et installation silencieuse

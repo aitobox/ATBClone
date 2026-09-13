@@ -2,6 +2,27 @@
 
 # Notas de la versión de ATBClone (Release Notes)
 
+## [v1.8.0] - 2026-09-13
+
+### 📢 Tarjeta de promoción de ATBCmder y distintivo [AD] en la barra lateral
+- **Ecosistema de productividad e interfaz**:
+  - Incorporación de una tarjeta de promoción adaptativa para ATBCmder (`https://aitobox.com/atbcmder`) en el espacio flexible de la barra lateral de navegación.
+  - Diseño nativo de macOS con contenedor redondeado translúcido, etiqueta identificativa publicitaria `[AD]`, icono de aplicación de alta resolución, subtítulo multilingüe y botón de enlace externo en el navegador.
+  - Integración completa en el sistema i18n de 9 idiomas, con actualización dinámica instantánea de título, subtítulo y botón de acción al cambiar el idioma en los ajustes.
+  - Asistente de resolución de recursos para `ATBCmderIcon.png` / `.icns` con gestión de rutas de respaldo.
+
+### 🛡️ Preservación de notas de versión en CI/CD y robustecimiento del empaquetado
+- **Estabilidad de la automatización de publicaciones**:
+  - Corrección de un problema por el cual la limpieza del directorio `dist/` en `build_cli.sh` eliminaba `dist/release_notes.md` antes de subirse a GitHub Releases.
+  - Implementación de copia de seguridad y restauración automática de notas de versión en `scripts/build_release_packages.sh`.
+  - Generación de respaldo en `.github/workflows/release.yml` mediante anotaciones de etiquetas Git e historial de commits para garantizar notas de versión completas.
+
+### 🧪 Aseguramiento de la calidad y pruebas automáticas
+- **Ampliación de la suite de pruebas**:
+  - Conjunto de pruebas ampliado a 588 pruebas con una tasa de éxito del 100%, cubriendo el diseño de la tarjeta lateral, gestión de enlaces externos, reactividad multilingüe y scripts de publicación.
+
+---
+
 ## [v1.7.0] - 2026-09-13
 
 ### 🔄 Subsistema de actualización automática integrada e instalación silenciosa

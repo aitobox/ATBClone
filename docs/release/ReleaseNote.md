@@ -2,6 +2,27 @@
 
 # ATBClone Release Notes
 
+## [v1.8.0] - 2026-09-13
+
+### 📢 ATBCmder Promotion Card & [AD] Badge in Navigation Sidebar
+- **Productivity Ecosystem Discovery**:
+  - Added a clean, adaptive promotion card for ATBCmder (`https://aitobox.com/atbcmder`) in the navigation sidebar's flexible empty area.
+  - Native macOS styling with rounded translucent container, prominent `[AD]` disclosure tag, high-resolution application icon, and external browser link button.
+  - Dynamic i18n support across all 9 languages with instant real-time UI text refresh upon changing language preferences.
+  - Dedicated asset resolution helper for `ATBCmderIcon.png` / `.icns` with robust fallback paths.
+
+### 🛡️ CI/CD Release Notes Preservation & Packaging Hardening
+- **Release Automation Resilience**:
+  - Fixed an issue where `build_cli.sh` cleaning `dist/` wiped previously generated `dist/release_notes.md` before GitHub Releases upload.
+  - Implemented automatic backup and restoration of release notes in `scripts/build_release_packages.sh`.
+  - Added fallback release note extraction in `.github/workflows/release.yml` via `git tag` annotations and commit history to guarantee non-empty release documentation.
+
+### 🧪 Comprehensive Quality Assurance
+- **Expanded Test Coverage**:
+  - Test suite expanded to 588 tests with 100% pass rate, covering sidebar promotion card layout, URL handling, dynamic translations, and packaging scripts.
+
+---
+
 ## [v1.7.0] - 2026-09-13
 
 ### 🔄 In-App Auto-Update Subsystem & Silent Installer

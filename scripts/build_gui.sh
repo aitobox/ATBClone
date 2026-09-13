@@ -21,6 +21,7 @@ cd "${PROJECT_ROOT}"
 
 # ── Defaults ──────────────────────────────────────────────────────────────── #
 TEAM_ID="WC7C59Q92T"
+TEAM_ID="${APPLE_TEAM_ID:-$TEAM_ID}"
 DEFAULT_CERT="Developer ID Application: Shanghai Tianzhi Cloud Information Technology Co., LTD (${TEAM_ID})"
 SIGN_IDENTITY="${APPLE_SIGN_IDENTITY:-${DEFAULT_CERT}}"
 SKIP_SIGN="${SKIP_SIGN:-0}"
@@ -211,7 +212,7 @@ if [[ ! -d "${APP_DIR}" ]] || [[ ! -d "${PY_FRAMEWORK}" ]] || [[ ( ! -f "${APP_S
     fi
     echo ""
     echo "==> [1/3] briefcase create macOS ..."
-    PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase create macOS
+    PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase create macOS --no-input
 else
     echo ""
     echo "==> [1/3] macOS app scaffolding already present (skipping create)."
@@ -220,7 +221,7 @@ fi
 # ── 8. briefcase build ────────────────────────────────────────────────────── #
 echo ""
 echo "==> [2/3] briefcase build macOS ..."
-PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase build macOS -u
+PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase build macOS -u --no-input
 
 # Verify app bundle integrity
 APP_BUNDLE=$(find build/ -name "ATBClone.app" -type d 2>/dev/null | head -1 || true)
@@ -288,11 +289,12 @@ echo ""
 echo "==> [3/3] briefcase package macOS (DMG) ..."
 
 if [[ "${SKIP_SIGN}" -eq 1 || "${SIGN_IDENTITY}" == "-" ]]; then
-    PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase package macOS -p dmg --adhoc-sign --no-notarize
+    PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase package macOS -p dmg --adhoc-sign --no-notarize --no-input
 else
     PYTHONPATH="src" "${PYTHON_BIN}" -m briefcase package macOS -p dmg \
         --identity "${SIGN_IDENTITY}" \
-        --no-notarize
+        --no-notarize \
+        --no-input
 fi
 
 # ── 9. Locate produced .dmg ───────────────────────────────────────────────── #
@@ -345,14 +347,15 @@ if [[ "${DO_NOTARIZE}" -eq 1 ]]; then
     else
         echo ""
         echo "==> Notarizing ${DMG_PATH} ..."
+        NOTARY_PASSWORD="${APPLE_APP_SPECIFIC_PASSWORD:-${APPLE_PASSWORD:-}}"
         if [[ -n "${NOTARIZE_PROFILE}" ]]; then
             xcrun notarytool submit "${DMG_PATH}" \
                 --keychain-profile "${NOTARIZE_PROFILE}" --wait
-        elif [[ -n "${APPLE_ID:-}" && -n "${APPLE_TEAM_ID:-}" && -n "${APPLE_APP_SPECIFIC_PASSWORD:-}" ]]; then
+        elif [[ -n "${APPLE_ID:-}" && -n "${APPLE_TEAM_ID:-}" && -n "${NOTARY_PASSWORD}" ]]; then
             xcrun notarytool submit "${DMG_PATH}" \
                 --apple-id "${APPLE_ID}" \
                 --team-id "${APPLE_TEAM_ID}" \
-                --password "${APPLE_APP_SPECIFIC_PASSWORD}" \
+                --password "${NOTARY_PASSWORD}" \
                 --wait
         else
             echo "[-] No notarization credentials provided." >&2

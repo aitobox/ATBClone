@@ -221,3 +221,82 @@ def test_codesign_wrapper_logic():
     assert extracted == ["build/App.app"]
 
 
+def test_build_release_packages_script_exists_and_executable():
+    root = Path(__file__).parent.parent
+    script = root / "scripts" / "build_release_packages.sh"
+    assert script.exists(), "scripts/build_release_packages.sh does not exist"
+    assert os.access(script, os.X_OK), "scripts/build_release_packages.sh is not executable"
+
+
+def test_build_release_packages_bash_syntax():
+    root = Path(__file__).parent.parent
+    script = root / "scripts" / "build_release_packages.sh"
+    result = subprocess.run(
+        ["bash", "-n", str(script)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, f"Bash syntax error: {result.stderr}"
+
+
+def test_build_release_packages_help():
+    root = Path(__file__).parent.parent
+    script = root / "scripts" / "build_release_packages.sh"
+    result = subprocess.run(
+        ["bash", str(script), "--help"],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0
+    assert "Usage:" in result.stdout
+    assert "ATBCloneCli-<VERSION>-arm64.tar.gz" in result.stdout
+    assert "ATBClone-<VERSION>-arm64.dmg" in result.stdout
+    assert "--sign" in result.stdout
+    assert "--notarize" in result.stdout
+
+
+def test_build_release_packages_content_contracts():
+    root = Path(__file__).parent.parent
+    script = root / "scripts" / "build_release_packages.sh"
+    content = script.read_text(encoding="utf-8")
+    assert "ATBCloneCli-${TARGET_VERSION}-arm64.tar.gz" in content
+    assert "ATBClone-${TARGET_VERSION}-arm64.dmg" in content
+    assert "-Wl,-needed_framework,AppKit" in content
+    assert "checksums.txt" in content
+    assert "scripts/build_cli.sh" in content
+    assert "scripts/build_gui.sh" in content
+
+
+def test_release_workflow_syntax_and_structure():
+    import yaml
+
+    root = Path(__file__).parent.parent
+    workflow_path = root / ".github" / "workflows" / "release.yml"
+    assert workflow_path.exists(), ".github/workflows/release.yml does not exist"
+
+    data = yaml.safe_load(workflow_path.read_text(encoding="utf-8"))
+    assert data["name"] == "Release"
+    on_trigger = data.get("on") or data.get(True)
+    assert on_trigger is not None, "Missing 'on' trigger configuration"
+    assert "push" in on_trigger
+    assert "tags" in on_trigger["push"]
+    assert "workflow_dispatch" in on_trigger
+
+    job = data["jobs"]["build-and-release"]
+    assert job["runs-on"] == "macos-14"
+    assert data["permissions"]["contents"] == "write"
+
+    workflow_text = workflow_path.read_text(encoding="utf-8")
+    assert "MAC_CERTS_P12_BASE64" in workflow_text
+    assert "MAC_CERTS_PASSWORD" in workflow_text
+    assert "MAC_PROVISION_PROFILE_BASE64" in workflow_text
+    assert "APPLE_ID" in workflow_text
+    assert "APPLE_PASSWORD" in workflow_text
+    assert "APPLE_TEAM_ID" in workflow_text
+    assert "ATBCloneCli-${VERSION}-arm64.tar.gz" in workflow_text
+    assert "ATBClone-${VERSION}-arm64.dmg" in workflow_text
+    assert "gh release create" in workflow_text
+    assert "build_release_packages.sh" in workflow_text
+
+
+

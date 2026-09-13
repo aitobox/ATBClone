@@ -11,6 +11,7 @@ cd "${PROJECT_ROOT}"
 
 # Default parameters
 TEAM_ID="WC7C59Q92T"
+TEAM_ID="${APPLE_TEAM_ID:-$TEAM_ID}"
 
 # Code signing certificate for Direct Distribution (Developer ID Application)
 DEFAULT_DEV_ID_CERT="Developer ID Application: Shanghai Tianzhi Cloud Information Technology Co., LTD (${TEAM_ID})"

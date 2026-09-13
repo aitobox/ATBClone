@@ -1,6 +1,11 @@
 from pathlib import Path
 import pytest
-from atbclone.core.resources import get_resource_dir, get_resource_path, get_app_icon_path
+from atbclone.core.resources import (
+    get_resource_dir,
+    get_resource_path,
+    get_app_icon_path,
+    get_cmder_icon_path,
+)
 
 
 def test_get_resource_dir_exists():
@@ -34,3 +39,16 @@ def test_get_app_icon_path_invalid_format():
     # Falls back to png or icns if exists
     assert icon_path is not None
     assert icon_path.exists()
+
+
+def test_get_cmder_icon_path_png_and_icns():
+    png_path = get_cmder_icon_path("png")
+    assert png_path is not None
+    assert png_path.exists()
+    assert png_path.suffix == ".png"
+
+    icns_path = get_cmder_icon_path("icns")
+    assert icns_path is not None
+    assert icns_path.exists()
+    assert icns_path.suffix == ".icns"
+

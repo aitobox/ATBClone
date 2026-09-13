@@ -1033,6 +1033,41 @@ MESSAGES: dict[str, dict[str, str]] = {
         "es": "⚙️ Ajustes",
     },
 
+    # ── GUI: Sidebar Promotion (promo_*) ───────────────────────────────── #
+    "promo_cmder_title": {
+        "en": "ATBCmder",
+        "zh": "ATBCmder",
+        "zh_TW": "ATBCmder",
+        "ja": "ATBCmder",
+        "ko": "ATBCmder",
+        "de": "ATBCmder",
+        "fr": "ATBCmder",
+        "ru": "ATBCmder",
+        "es": "ATBCmder",
+    },
+    "promo_cmder_subtitle": {
+        "en": "Dual-panel File Manager",
+        "zh": "双面板文件管理工具",
+        "zh_TW": "雙面板檔案管理工具",
+        "ja": "2画面ファイラー",
+        "ko": "듀얼 패널 파일 관리자",
+        "de": "Zwei-Fenster-Dateimanager",
+        "fr": "Gestionnaire de fichiers",
+        "ru": "Двухпанельный менеджер файлов",
+        "es": "Gestor de archivos de doble panel",
+    },
+    "promo_cmder_btn": {
+        "en": "Visit Website ↗",
+        "zh": "访问官网 ↗",
+        "zh_TW": "造訪官網 ↗",
+        "ja": "公式サイト ↗",
+        "ko": "공식 웹사이트 ↗",
+        "de": "Website besuchen ↗",
+        "fr": "Site officiel ↗",
+        "ru": "Официальный сайт ↗",
+        "es": "Sitio oficial ↗",
+    },
+
     # ── GUI: Top Header Bar (topbar_*) ──────────────────────────────────── #
     "topbar_view_grid": {
         "en": "🔲 Grid View",

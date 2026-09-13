@@ -79,6 +79,24 @@ def get_app_icon_path(prefer_format: str = "png") -> Optional[Path]:
     return fallback_icns if fallback_icns.exists() else None
 
 
+def get_cmder_icon_path(prefer_format: str = "png") -> Optional[Path]:
+    """Retrieve absolute path to ATBCmder promotional logo icon (.png or .icns)."""
+    fmt = prefer_format.lower().lstrip(".")
+    if fmt == "icns":
+        candidate = get_resource_path("images/ATBCmderIcon.icns")
+        if candidate.exists():
+            return candidate
+        fallback_png = get_resource_path("images/ATBCmderIcon.png")
+        return fallback_png if fallback_png.exists() else None
+
+    # Default prefer png
+    candidate = get_resource_path("images/ATBCmderIcon.png")
+    if candidate.exists():
+        return candidate
+    fallback_icns = get_resource_path("images/ATBCmderIcon.icns")
+    return fallback_icns if fallback_icns.exists() else None
+
+
 LANGUAGE_RELEASE_NOTE_FILES: dict[str, str] = {
     "en": "ReleaseNote.md",
     "zh": "ReleaseNote_zh.md",

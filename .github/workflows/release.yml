@@ -1,0 +1,205 @@
+name: Release
+
+'on':
+  push:
+    tags:
+      - 'v[0-9]*.[0-9]*.[0-9]*'
+      - '[0-9]*.[0-9]*.[0-9]*'
+      - 'v*'
+      - '*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag (e.g. 1.1.0 or v1.1.0)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-release:
+    name: Build & Release macOS Packages (arm64)
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Resolve Release Version
+        id: version
+        run: |
+          RAW_TAG="${{ github.event.inputs.tag_name }}"
+          if [[ -z "${RAW_TAG}" ]]; then
+            RAW_TAG="${{ github.ref_name }}"
+          fi
+          # Strip leading v for version number
+          VERSION="${RAW_TAG#v}"
+          TAG_NAME="${RAW_TAG}"
+
+          if [[ -z "${VERSION}" || "${VERSION}" == "main" || "${VERSION}" == "dev" ]]; then
+            VERSION=$(grep -m 1 '^version =' pyproject.toml | cut -d '"' -f 2 || echo "0.1.0")
+            TAG_NAME="v${VERSION}"
+          fi
+
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+          echo "Resolved version=${VERSION}, tag=${TAG_NAME}"
+
+      - name: Install build tools and project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,gui]"
+          pip install "nuitka>=2.0" "briefcase>=0.3.17"
+
+      - name: Configure Apple Developer Certificate & Keychain
+        run: |
+          if [[ -n "${{ secrets.MAC_CERTS_P12_BASE64 }}" && -n "${{ secrets.MAC_CERTS_PASSWORD }}" ]]; then
+            echo "Setting up temporary build keychain..."
+            KEYCHAIN_PATH="${RUNNER_TEMP}/build.keychain"
+            KEYCHAIN_PASSWORD=$(openssl rand -base64 24)
+
+            echo "KEYCHAIN_PATH=${KEYCHAIN_PATH}" >> $GITHUB_ENV
+
+            security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+            security set-keychain-settings -lut 21600 "${KEYCHAIN_PATH}"
+            security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+
+            CERT_PATH="${RUNNER_TEMP}/certificate.p12"
+            echo "${{ secrets.MAC_CERTS_P12_BASE64 }}" | base64 --decode -o "${CERT_PATH}"
+
+            security import "${CERT_PATH}" \
+              -k "${KEYCHAIN_PATH}" \
+              -P "${{ secrets.MAC_CERTS_PASSWORD }}" \
+              -T /usr/bin/codesign \
+              -T /usr/bin/productsign \
+              -T /usr/bin/pkgbuild \
+              -T /usr/bin/security
+
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+
+            EXISTING_KEYCHAINS=$(security list-keychains -d user | tr -d '"' | tr '\n' ' ')
+            security list-keychains -d user -s "${KEYCHAIN_PATH}" ${EXISTING_KEYCHAINS}
+
+            echo "Keychain configured successfully."
+            security find-identity -v -p codesigning || true
+
+            if [[ -n "${{ secrets.MAC_PROVISION_PROFILE_BASE64 }}" ]]; then
+              echo "Installing provisioning profile..."
+              mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+              echo "${{ secrets.MAC_PROVISION_PROFILE_BASE64 }}" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/embedded.provisionprofile
+            fi
+
+            echo "APPLE_SIGNING_READY=1" >> $GITHUB_ENV
+          else
+            echo "Apple signing certificates not provided. Using ad-hoc signature."
+            echo "APPLE_SIGNING_READY=0" >> $GITHUB_ENV
+          fi
+
+      - name: Build & Package Release Artifacts (arm64)
+        run: |
+          BUILD_OPTS=("--version" "${VERSION}")
+          if [[ "${APPLE_SIGNING_READY}" == "1" ]]; then
+            if [[ -n "${{ secrets.APPLE_ID }}" && -n "${{ secrets.APPLE_PASSWORD }}" ]]; then
+              BUILD_OPTS+=("--notarize")
+            fi
+          else
+            BUILD_OPTS+=("--skip-sign")
+          fi
+
+          bash scripts/build_release_packages.sh "${BUILD_OPTS[@]}"
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          LDFLAGS: "-Wl,-needed_framework,AppKit"
+          MACOSX_DEPLOYMENT_TARGET: "12.0"
+
+      - name: Extract Release Notes
+        run: |
+          python3 - << 'PY_EOF'
+          import os
+          import re
+          from pathlib import Path
+
+          version = os.environ.get("VERSION", "").strip()
+          tag_name = os.environ.get("TAG_NAME", "").strip()
+          release_file = Path("docs/release/ReleaseNote.md")
+          output_file = Path("dist/release_notes.md")
+          output_file.parent.mkdir(parents=True, exist_ok=True)
+
+          notes_content = ""
+          if release_file.exists():
+              text = release_file.read_text(encoding="utf-8")
+              pattern = rf"(?ms)^##\s*\[v?{re.escape(version)}\][^\n]*\n(.*?)(?=^##\s*\[|\Z)"
+              match = re.search(pattern, text)
+              if match:
+                  notes_content = match.group(1).strip()
+
+          if not notes_content:
+              notes_content = f"## ATBClone {tag_name}\n\nAutomated release build for macOS Apple Silicon (arm64).\n\n### Packages\n- `ATBCloneCli-{version}-arm64.tar.gz`\n- `ATBClone-{version}-arm64.dmg`"
+
+          output_file.write_text(notes_content, encoding="utf-8")
+          print(f"Extracted release notes ({len(notes_content)} bytes)")
+          PY_EOF
+
+      - name: Create or Update GitHub Release
+        run: |
+          CLI_PKG="dist/ATBCloneCli-${VERSION}-arm64.tar.gz"
+          GUI_PKG="dist/ATBClone-${VERSION}-arm64.dmg"
+          CHECKSUMS="dist/checksums.txt"
+
+          if [[ ! -f "${CLI_PKG}" || ! -f "${GUI_PKG}" ]]; then
+            echo "[-] Error: Expected release assets not found in dist/." >&2
+            exit 1
+          fi
+
+          if gh release view "${TAG_NAME}" &>/dev/null; then
+            echo "Release ${TAG_NAME} already exists. Updating release notes and assets..."
+            gh release edit "${TAG_NAME}" --notes-file dist/release_notes.md
+            gh release upload "${TAG_NAME}" "${CLI_PKG}" "${GUI_PKG}" "${CHECKSUMS}" --clobber
+          else
+            echo "Creating GitHub Release ${TAG_NAME}..."
+            gh release create "${TAG_NAME}" \
+              "${CLI_PKG}" \
+              "${GUI_PKG}" \
+              "${CHECKSUMS}" \
+              --title "ATBClone ${TAG_NAME}" \
+              --notes-file dist/release_notes.md
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Workflow Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ATBClone-${{ env.VERSION }}-arm64
+          path: |
+            dist/ATBCloneCli-${{ env.VERSION }}-arm64.tar.gz
+            dist/ATBClone-${{ env.VERSION }}-arm64.dmg
+            dist/checksums.txt
+          if-no-files-found: error
+
+      - name: Cleanup Keychain and Credentials
+        if: always()
+        run: |
+          if [[ -n "${KEYCHAIN_PATH:-}" && -f "${KEYCHAIN_PATH}" ]]; then
+            echo "Deleting temporary keychain..."
+            security delete-keychain "${KEYCHAIN_PATH}" || true
+          fi
+          rm -f "${RUNNER_TEMP}/certificate.p12" || true
+          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/embedded.provisionprofile || true

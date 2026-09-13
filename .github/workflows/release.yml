@@ -134,6 +134,9 @@ jobs:
               notes_content = f"## ATBClone {tag_name}\n\nAutomated release build for macOS Apple Silicon (arm64).\n\n### Packages\n- `ATBCloneCli-{version}-arm64.tar.gz`\n- `ATBClone-{version}-arm64.dmg`"
 
           output_file.write_text(notes_content, encoding="utf-8")
+          runner_temp = os.environ.get("RUNNER_TEMP")
+          if runner_temp:
+              (Path(runner_temp) / "release_notes.md").write_text(notes_content, encoding="utf-8")
           print(f"Extracted release notes ({len(notes_content)} bytes)")
           PY_EOF
 
@@ -167,6 +170,7 @@ jobs:
             dist/ATBClone-${{ env.VERSION }}-arm64.dmg
             dist/checksums.txt
             dist/latest.json
+            dist/release_notes.md
           if-no-files-found: ignore
 
       - name: Create or Update GitHub Release
@@ -181,6 +185,18 @@ jobs:
             exit 1
           fi
 
+          NOTES_FILE="dist/release_notes.md"
+          if [[ ! -f "${NOTES_FILE}" && -n "${RUNNER_TEMP:-}" && -f "${RUNNER_TEMP}/release_notes.md" ]]; then
+            echo "[*] Restoring release_notes.md from RUNNER_TEMP..."
+            mkdir -p dist
+            cp -f "${RUNNER_TEMP}/release_notes.md" "${NOTES_FILE}"
+          fi
+          if [[ ! -f "${NOTES_FILE}" ]]; then
+            echo "[!] Warning: release_notes.md not found, creating fallback..."
+            mkdir -p dist
+            echo "## ATBClone ${TAG_NAME}" > "${NOTES_FILE}"
+          fi
+
           # 1. Ensure GitHub Release exists with notes
           if ! gh release view "${TAG_NAME}" &>/dev/null; then
             echo "Creating GitHub Release ${TAG_NAME}..."
@@ -189,7 +205,7 @@ jobs:
               echo "Release creation attempt $attempt/5..."
               if gh release create "${TAG_NAME}" \
                 --title "ATBClone ${TAG_NAME}" \
-                --notes-file dist/release_notes.md; then
+                --notes-file "${NOTES_FILE}"; then
                 RELEASE_CREATED=1
                 break
               fi
@@ -202,7 +218,7 @@ jobs:
             fi
           else
             echo "Release ${TAG_NAME} already exists. Updating release notes..."
-            gh release edit "${TAG_NAME}" --notes-file dist/release_notes.md || true
+            gh release edit "${TAG_NAME}" --notes-file "${NOTES_FILE}" || true
           fi
 
           # 2. Upload assets with clobber and retry

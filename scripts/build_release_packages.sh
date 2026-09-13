@@ -267,6 +267,12 @@ tag_name = os.environ.get("TAG_NAME", f"v{version}")
 pub_date = os.environ["PUB_DATE"]
 dmg_path = Path(f"dist/ATBClone-{version}-arm64.dmg")
 notes_path = Path("dist/release_notes.md")
+runner_temp = os.environ.get("RUNNER_TEMP")
+if not notes_path.exists() and runner_temp:
+    temp_notes = Path(runner_temp) / "release_notes.md"
+    if temp_notes.exists():
+        notes_path = temp_notes
+        Path("dist/release_notes.md").write_text(temp_notes.read_text(encoding="utf-8"), encoding="utf-8")
 
 sha256 = hashlib.sha256(dmg_path.read_bytes()).hexdigest()
 notes = notes_path.read_text(encoding="utf-8") if notes_path.exists() else ""

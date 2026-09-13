@@ -142,8 +142,8 @@ echo "[+] Nuitka is available."
 
 # 3. Clean previous build artifacts
 echo "[*] Cleaning previous build outputs..."
-rm -rf dist/
 mkdir -p dist/
+rm -f dist/ATBCloneCli dist/ATBCloneCli*.tar.gz dist/ATBCloneCli*.zip
 
 # 4. Extract version from pyproject.toml
 VERSION=$(grep -m 1 '^version =' pyproject.toml | cut -d '"' -f 2 || echo "0.1.0")

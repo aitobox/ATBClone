@@ -299,4 +299,12 @@ def test_release_workflow_syntax_and_structure():
     assert "build_release_packages.sh" in workflow_text
 
 
+def test_build_cli_notarize_args_guard():
+    root = Path(__file__).parent.parent
+    script = root / "scripts" / "build_cli.sh"
+    content = script.read_text(encoding="utf-8")
+    assert "${#NOTARIZE_ARGS[@]}" in content
+
+
+
 

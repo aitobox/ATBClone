@@ -279,5 +279,9 @@ if [[ "${DO_NOTARIZE}" -eq 1 ]]; then
     if [[ -n "${NOTARIZE_PROFILE}" ]]; then
         NOTARIZE_ARGS+=("--profile" "${NOTARIZE_PROFILE}")
     fi
-    bash scripts/notarize.sh "${NOTARIZE_ARGS[@]}" dist/ATBCloneCli
+    if [[ ${#NOTARIZE_ARGS[@]} -gt 0 ]]; then
+        bash scripts/notarize.sh "${NOTARIZE_ARGS[@]}" dist/ATBCloneCli
+    else
+        bash scripts/notarize.sh dist/ATBCloneCli
+    fi
 fi

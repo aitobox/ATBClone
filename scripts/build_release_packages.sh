@@ -164,7 +164,11 @@ echo ""
 echo "======================================================"
 echo "  [1/2] Building ATBCloneCli Binary..."
 echo "======================================================"
-bash scripts/build_cli.sh "${CLI_ARGS[@]}"
+if [[ ${#CLI_ARGS[@]} -gt 0 ]]; then
+    bash scripts/build_cli.sh "${CLI_ARGS[@]}"
+else
+    bash scripts/build_cli.sh
+fi
 
 CLI_BIN="dist/ATBCloneCli"
 if [[ ! -f "${CLI_BIN}" || ! -x "${CLI_BIN}" ]]; then
@@ -191,7 +195,11 @@ echo ""
 echo "======================================================"
 echo "  [2/2] Building ATBClone GUI DMG..."
 echo "======================================================"
-bash scripts/build_gui.sh "${GUI_ARGS[@]}"
+if [[ ${#GUI_ARGS[@]} -gt 0 ]]; then
+    bash scripts/build_gui.sh "${GUI_ARGS[@]}"
+else
+    bash scripts/build_gui.sh
+fi
 
 # Locate produced DMG
 PRODUCED_DMG=""

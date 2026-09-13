@@ -39,7 +39,7 @@ Release 页面主要提供两个发布文件，**核心功能完全一致**：
   - **软克隆 (Soft Clone)**：面向现代代码编辑器与浏览器（Cursor、VS Code、Firefox、Brave、Tor、Zed 等）。生成轻量级启动器包装（Wrapper Bundle），自动注入 `--user-data-dir` / `--profile` 参数与独立代理环境变量。
 - 🔍 **智能应用探测 (App Prober)**：遇到未预设规则的任意 macOS 应用程序时，自动分析其 Mach-O 架构、Frameworks 与代码签名沙盒权限，动态决定软/硬克隆策略并提取推荐规则。
 - 🌐 **独立网络代理 (Isolated Network Proxies)**：为每个分身实例配置独立的 HTTP 或 SOCKS5 代理（支持认证），与系统主网络及母体应用互不干扰。
-- 📑 **规则引擎 (Recipe Engine)**：内置 33+ 常用应用与 AI Agent 工具分身规则，支持通过 `~/ATBClone/recipes/` 本地优先级覆盖自定义规则。
+- 📑 **规则引擎 (Recipe Engine)**：内置 34+ 常用应用与 AI Agent 工具分身规则，支持通过 `~/ATBClone/recipes/` 本地优先级覆盖自定义规则。
 - 🪄 **交互式向导 (Interactive Wizard)**：全流程引导式 CLI，支持终端拖拽 `.app` 路径、自动命名递增、自定义数据目录与快捷代理配置。
 - 🔄 **生命周期管理**：查看已有分身（`list`）、主应用升级后一键重克隆并保留用户数据（`update`）、安全删除分身（`remove` 支持 `--with-data` / `--keep-data` 与交互确认）。
 - 🛡️ **安全与提权机制**：默认克隆至 `~/ATBClone/Apps` 无需 root/sudo 权限；如需写入系统级 `/Applications` 采用原生单次 `osascript` 授权提权；严格使用 `shlex.quote` 保证路径转义安全。
@@ -61,7 +61,7 @@ macOS 原生桌面图形客户端提供直观、全功能的应用分身管理�
    - 自动匹配内置规则或动态触发深度架构探测。
    - 可视化自定义分身名称、显示标题、独立数据目录（如外接移动硬盘）以及 HTTP/SOCKS5 专属代理配置。
 3. **内置规则库 (Recipe Library)**：
-   - 分类浏览内置的 33+ 热门应用规则（微信、QQ、Chrome、Cursor、ChatGPT、Claude 等），查看沙盒剥离与隔离策略。
+   - 分类浏览内置的 34+ 热门应用规则（微信、QQ、Chrome、Cursor、ChatGPT、Claude 等），查看沙盒剥离与隔离策略。
 4. **应用深度探测器 (App Prober)**：
    - 可视化检测任意未知应用的 Mach-O 架构、Frameworks 与沙盒权限，一键生成专属分身规则。
 5. **系统健康自检 (Doctor)**：
@@ -282,6 +282,7 @@ atbclone --version
 | | Telegram (原生 Swift) | `ru.keepcoder.Telegram` | Hard Clone | `cocoa` | ✔ |
 | | Telegram Desktop | `org.telegram.desktop` | Hard Clone | `generic` | ✔ |
 | | LINE | `jp.naver.line.mac` | Hard Clone | `cocoa` | ✔ |
+| | KakaoTalk | `com.kakao.KakaoTalkMac` | Hard Clone | `cocoa` | ✔ |
 | | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | `electron` | ✔ |
 | | Discord | `com.hnc.Discord` | Hard Clone | `electron` | ✔ |
 | | Skype | `com.skype.skype` | Hard Clone | `electron` | ✔ |
@@ -308,6 +309,8 @@ atbclone --version
 | | VS Code | `com.microsoft.VSCode` | Soft Clone | `electron` | — |
 | | Android Studio | `com.google.android.studio` | Hard Clone | `generic` | ✔ |
 | | Zed | `dev.zed.Zed` | Soft Clone | `generic` | — |
+
+**KakaoTalk 验证范围：** 已验证与原应用同时运行及通知功能。分身登录、不同账号之间的数据隔离，以及重启分身后保持登录状态尚未验证。
 
 ---
 

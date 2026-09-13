@@ -38,7 +38,7 @@ ATBClone provides two distribution packages with **identical core functionality*
   - **Soft Clone**: Designed for modern code editors and browsers (Cursor, VS Code, Firefox, Brave, Tor, Zed, etc.). Generates a lightweight wrapper bundle, automatically injecting isolated `--user-data-dir` / `--profile` launch arguments and proxy environment variables.
 - 🔍 **Intelligent App Prober**: Automatically inspects Mach-O architectures, frameworks, and code signing sandbox entitlements for any application without a pre-configured recipe, dynamically determining the optimal soft/hard clone strategy and generating recommended recipes.
 - 🌐 **Isolated Network Proxies**: Configure dedicated HTTP or SOCKS5 proxies (with authentication support) per cloned application without interfering with host system or primary application traffic.
-- 📑 **Recipe Engine**: 33+ built-in recipes for popular apps and AI Agent tools, with local override support via `~/ATBClone/recipes/`.
+- 📑 **Recipe Engine**: 34+ built-in recipes for popular apps and AI Agent tools, with local override support via `~/ATBClone/recipes/`.
 - 🪄 **Interactive Wizard**: Step-by-step interactive CLI guide supporting terminal drag-and-drop application paths, automatic name incrementing, custom data directory configuration, and on-the-fly proxy setup.
 - 🔄 **Lifecycle Management**: View cloned apps (`list`), re-clone after primary app updates while preserving user and chat data (`update`), and safely remove clones with interactive prompts or flag controls (`remove` with `--with-data` / `--keep-data`).
 - 🛡️ **Security & Privilege Elevation**: Writing to `~/ATBClone/Apps` requires no admin privileges; writing to `/Applications` uses native single-prompt macOS `osascript` authorization; robust path escaping via `shlex.quote` throughout.
@@ -60,7 +60,7 @@ The native macOS desktop interface provides a visual, streamlined experience:
    - Automatically matches built-in recipes or runs the App Prober on unlisted applications.
    - Customize clone name, display title, custom icon, dedicated data directory (e.g. on external SSDs), and independent HTTP / SOCKS5 proxies.
 3. **Built-in Recipe Library**:
-   - Explore 33+ pre-configured application recipes (WeChat, QQ, Chrome, Cursor, ChatGPT, Claude, etc.) categorized by type, complete with sandbox stripping rules and isolation strategies.
+   - Explore 34+ pre-configured application recipes (WeChat, QQ, Chrome, Cursor, ChatGPT, Claude, etc.) categorized by type, complete with sandbox stripping rules and isolation strategies.
 4. **App Prober (Deep Architecture Inspection)**:
    - Inspect any unknown macOS app's Mach-O architecture, frameworks, and sandbox entitlements, and generate custom recipe YAML files with one click.
 5. **System Diagnostics (Doctor)**:
@@ -282,6 +282,7 @@ atbclone --version
 | | Telegram (Native Swift) | `ru.keepcoder.Telegram` | Hard Clone | `cocoa` | ✔ |
 | | Telegram Desktop | `org.telegram.desktop` | Hard Clone | `generic` | ✔ |
 | | LINE | `jp.naver.line.mac` | Hard Clone | `cocoa` | ✔ |
+| | KakaoTalk | `com.kakao.KakaoTalkMac` | Hard Clone | `cocoa` | ✔ |
 | | Slack | `com.tinyspeck.slackmacgap` | Hard Clone | `electron` | ✔ |
 | | Discord | `com.hnc.Discord` | Hard Clone | `electron` | ✔ |
 | | Skype | `com.skype.skype` | Hard Clone | `electron` | ✔ |
@@ -308,6 +309,8 @@ atbclone --version
 | | VS Code | `com.microsoft.VSCode` | Soft Clone | `electron` | — |
 | | Android Studio | `com.google.android.studio` | Hard Clone | `generic` | ✔ |
 | | Zed | `dev.zed.Zed` | Soft Clone | `generic` | — |
+
+**KakaoTalk validation:** Concurrent launch with the original app and notifications have been checked. Clone login, separate-account data isolation, and login persistence after restarting the clone have not yet been verified.
 
 ---
 

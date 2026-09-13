@@ -217,6 +217,24 @@ def test_load_builtin_wework(monkeypatch, tmp_path):
     assert "Library/Keychains" in recipe.symlink_whitelist
 
 
+def test_load_builtin_kakaotalk(monkeypatch, tmp_path):
+    monkeypatch.setattr(RecipeLoader, "LOCAL_DIR", tmp_path)
+    recipe = RecipeLoader.get("com.kakao.KakaoTalkMac")
+    assert recipe is not None
+    assert recipe.bundle_id == "com.kakao.KakaoTalkMac"
+    assert recipe.app_name == "KakaoTalk"
+    assert recipe.strategy == "hard_clone"
+    assert recipe.app_type == "cocoa"
+    assert recipe.strip_sandbox is True
+    assert recipe.injection_strategy == "auto"
+    assert recipe.environment_injection == {
+        "HOME": "{{ATB_DATA_DIR}}/Home",
+        "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
+    }
+    assert recipe.proxy.enabled is False
+    assert recipe.launch_args == []
+
+
 def test_load_builtin_chatgpt():
     recipe = RecipeLoader.match("com.openai.codex")
     assert recipe is not None
@@ -322,6 +340,7 @@ def test_all_builtin_recipes_valid(monkeypatch, tmp_path):
         "ru.keepcoder.Telegram": ("Telegram", "hard_clone", True),
         "org.telegram.desktop": ("Telegram Desktop", "hard_clone", True),
         "jp.naver.line.mac": ("LINE", "hard_clone", True),
+        "com.kakao.KakaoTalkMac": ("KakaoTalk", "hard_clone", True),
         "com.tinyspeck.slackmacgap": ("Slack", "hard_clone", True),
         "com.hnc.Discord": ("Discord", "hard_clone", True),
         "com.skype.skype": ("Skype", "hard_clone", True),

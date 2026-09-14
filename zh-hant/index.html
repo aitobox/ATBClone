@@ -1,0 +1,812 @@
+
+<!doctype html>
+<html lang="zh-Hant" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ATBClone（艾特智能分身）官方使用手冊 — macOS 應用程式多開與沙盒隔離引擎">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/zh-hant/">
+      
+      
+      
+        <link rel="next" href="./01-basic-operations/">
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+          <link rel="alternate" href="/zh-hant/" hreflang="zh-hant">
+        
+          <link rel="alternate" href="/ja/" hreflang="ja">
+        
+          <link rel="alternate" href="/ko/" hreflang="ko">
+        
+          <link rel="alternate" href="/de/" hreflang="de">
+        
+          <link rel="alternate" href="/fr/" hreflang="fr">
+        
+          <link rel="alternate" href="/es/" hreflang="es">
+        
+          <link rel="alternate" href="/ru/" hreflang="ru">
+        
+      
+      
+      <link rel="icon" href="./assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.62">
+    
+    
+      
+        <title>手冊總覽 - ATBClone 使用者手冊</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="./assets/stylesheets/modern/main.ce62732f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="./assets/stylesheets/modern/palette.812a03bb.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="./stylesheets/extra.css">
+    
+    <script>__md_scope=new URL(".",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="./javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="導航"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#atbclone" class="md-skip">
+          跳轉至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="頁首">
+    <a href="" title="ATBClone 使用者手冊" class="md-header__button md-logo" aria-label="ATBClone 使用者手冊" data-md-component="logo">
+      
+  <img src="./assets/images/logo.png" alt="ATBClone 使用者手冊">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="導航">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ATBClone 使用者手冊
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              手冊總覽
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="搜尋">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="搜尋">
+  <button type="button" class="md-search__button">
+    搜尋
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="導航" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="" title="ATBClone 使用者手冊" class="md-nav__button md-logo" aria-label="ATBClone 使用者手冊" data-md-component="logo">
+      
+  <img src="./assets/images/logo.png" alt="ATBClone 使用者手冊">
+
+    </a>
+    ATBClone 使用者手冊
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  手冊總覽
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  手冊總覽
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🧭 章節導航地圖
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atbclone_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🌟 為什麼選擇 ATBClone？
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📚 核心概念與術語速查
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🚀 極速入門指引
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./01-basic-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第一章：基礎操作與分身管理
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./02-advanced-custom-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第二章：冷門應用規則定制與基礎參數
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./03-under-the-hood-and-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第三章：實現原理解析與高級參數全解
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./04-faq-and-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第四章：常見問題 (FAQ)、系統體檢與反饋
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🧭 章節導航地圖
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atbclone_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🌟 為什麼選擇 ATBClone？
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📚 核心概念與術語速查
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🚀 極速入門指引
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="atbclone">📖 ATBClone 使用者手冊（繁體中文版）<a class="headerlink" href="#atbclone" title="Permanent link">&para;</a></h1>
+<p><a href="../en/">English Version (英文版)</a> | 繁體中文版</p>
+<p>歡迎查閱 <strong>ATBClone（艾特智慧分身）官方使用手冊</strong>。本手冊將手把手帶您熟悉 macOS 應用多開與沙盒隔離的各項功能，涵蓋從新手基礎操作、日常管理、冷門應用規則定製、底層隔離原理解析到系統體檢與故障反饋的完整內容。</p>
+<hr />
+<h2 id="_1">🧭 章節導航地圖<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>無論您是剛接觸多開工具的小白使用者，還是需要配置獨立代理與 Mach-O 沙盒剝離的極客玩家 / 開發者，均可按需查閱對應章節：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">章節</th>
+<th style="text-align: left;">章節名稱</th>
+<th style="text-align: left;">適用人群</th>
+<th style="text-align: left;">核心內容提要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><a href="01-basic-operations/">第一章</a></strong></td>
+<td style="text-align: left;"><strong><a href="01-basic-operations/">基礎操作與分身管理</a></strong></td>
+<td style="text-align: left;">👶 <strong>小白使用者 / 普通使用者</strong></td>
+<td style="text-align: left;">7 步互動式嚮導建立分身、快捷啟動、一鍵直達資料目錄、母體升級<strong>無損同步更新</strong>、表格檢視<strong>批次更新與批次刪除</strong>、安全刪除（保留資料 vs 徹底清理）。</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="02-advanced-custom-recipes/">第二章</a></strong></td>
+<td style="text-align: left;"><strong><a href="02-advanced-custom-recipes/">冷門應用規則定製與基礎引數</a></strong></td>
+<td style="text-align: left;">⚡ <strong>進階使用者</strong></td>
+<td style="text-align: left;">使用 <strong>App Prober (智慧探針)</strong> 深度掃描未知應用、視覺化規則編輯器、<strong>基礎引數全解</strong>（<code>bundle_id</code>、<code>strategy</code>、<code>strip_sandbox</code>、<code>proxy</code>）。</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="03-under-the-hood-and-internals/">第三章</a></strong></td>
+<td style="text-align: left;"><strong><a href="03-under-the-hood-and-internals/">實現原理解析與高階引數全解</a></strong></td>
+<td style="text-align: left;">🔬 <strong>極客玩家 / 開發者 / 開發者</strong></td>
+<td style="text-align: left;">軟分身 (Soft Clone)與硬分身 (Hard Clone)底層機制、<strong>硬分身 (Hard Clone)“三板斧”與二進位制殼劫持 (Wrapper Hijack)</strong> 深度剖析、資料-邏輯分離架構、<strong>高階引數詳解</strong>（<code>environment_injection</code>、<code>symlink_whitelist</code>、動態路徑宏）。</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="04-faq-and-troubleshooting/">第四章</a></strong></td>
+<td style="text-align: left;"><strong><a href="04-faq-and-troubleshooting/">常見問題 (FAQ)、系統體檢與反饋</a></strong></td>
+<td style="text-align: left;">🩺 <strong>全體使用者</strong></td>
+<td style="text-align: left;">高頻 FAQ（資料安全隔離、存放路徑與備份遷移、封號風險與防關聯原理解析、免 Root 許可權機制）、Doctor 系統體檢、<strong>分身詳情資訊提取與提報 GitHub Issue 標準指引</strong>。</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="atbclone_1">🌟 為什麼選擇 ATBClone？<a class="headerlink" href="#atbclone_1" title="Permanent link">&para;</a></h2>
+<p>在 macOS 平臺上，傳統的應用多開方法（例如簡單的 <code>cp -R</code> 複製應用或簡單的終端符號連結 (Symlink)別名）極易崩潰或失效，因為絕大多數現代 macOS 應用程式共享使用者首選項、系統鑰匙圈及資料庫。</p>
+<p>ATBClone 通過獨創的引擎體系，實現了真正的<strong>“四重隔離”</strong>：</p>
+<pre class="mermaid"><code>graph TD
+    A[ATBClone 隔离引擎] --&gt; B[1. 数据与缓存隔离]
+    A --&gt; C[2. 视觉与交互隔离]
+    A --&gt; D[3. 系统安全权限 TCC 隔离]
+    A --&gt; E[4. 网络流量代理隔离]
+
+    B --&gt; B1["独立 $HOME 与 $TMPDIR，本地数据库互不锁死"]
+    C --&gt; C1["独立 Dock 图标、自定义名称与 Spotlight 聚焦搜索"]
+    D --&gt; D1["独立的麦克风、摄像头与本地网络授权记录"]
+    E --&gt; E1["单应用注入专属 HTTP/SOCKS5 代理（独立 IP 防指纹关联）"]</code></pre>
+<ol>
+<li><strong>📦 資料與快取隔離</strong>：每個分身擁有專屬的獨立家目錄（<code>$HOME</code>）或自定義資料儲存路徑（<code>--user-data-dir</code>）。多賬號同時登入，本地 SQLite 資料庫與快取互不衝突。</li>
+<li><strong>🎨 視覺與互動隔離</strong>：分身應用擁有獨立的名稱與圖示，在 Spotlight（Spotlight 搜尋）、Launchpad（啟動臺）和 Dock（程式塢）中均作為獨立應用存在。</li>
+<li><strong>🛡️ 系統許可權 (TCC) 隔離</strong>：硬分身 (Hard Clone)通過修改 <code>CFBundleIdentifier</code> 賦予應用全新的系統身份，攝像頭、麥克風、輔助功能等系統授權與母體完全獨立。</li>
+<li><strong>🌐 網路流量代理隔離</strong>：支援為指定分身應用單獨配置獨立的 HTTP 或 SOCKS5 代理通道，不影響宿主系統網路與母體應用，實現單應用獨立 IP 防指紋關聯。</li>
+</ol>
+<hr />
+<h2 id="_2">📚 核心概念與術語速查<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>在閱讀本手冊前，您可以先了解以下常用名詞：</p>
+<ul>
+<li><strong>母體應用 (Host App)</strong>：您 Mac 上安裝的原版應用程式（通常位於 <code>/Applications</code>）。</li>
+<li><strong>分身應用 (Clone App)</strong>：由 ATBClone 引擎生成的獨立副本體（預設存放在 <code>~/ATBClone/Apps</code>）。</li>
+<li><strong>硬分身 (Hard Clone) (Hard Clone / 物理克隆 + 殼劫持)</strong>：完整複製 App 實體，修改唯一 Bundle ID，注入環境變數啟動指令碼並重新簽名。適合微信、Telegram、QQ、飛書、Discord 等絕大多數社交和原生應用。</li>
+<li><strong>軟分身 (Soft Clone) (Soft Clone / 軟包裝啟動器)</strong>：僅生成輕量級啟動器外殼，通過啟動引數（如 <code>--user-data-dir</code>）重定向資料。適合 Cursor、VS Code、Chrome、Edge、Firefox 等瀏覽器與開發工具。</li>
+<li><strong>規則 (Recipe)</strong>：指示 ATBClone 如何處理該應用的 YAML 格式配置說明書。</li>
+<li><strong>資料目錄 (Data Directory)</strong>：分身應用存放聊天記錄、配置、快取和資料庫的獨立資料夾（預設位於 <code>~/ATBClone/Data/&lt;分身名称&gt;</code>）。</li>
+</ul>
+<hr />
+<h2 id="_3">🚀 極速入門指引<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>下載與安裝</strong>：前往 <a href="https://github.com/aitobox/ATBClone/releases">GitHub Releases</a> 下載 <code>ATBClone-arm-0.9.7.dmg</code>。開啟 DMG 並將 <code>ATBClone.app</code> 拖入 <code>Applications</code> 資料夾。</li>
+<li><strong>開啟 ATBClone</strong>：在啟動臺或應用程式資料夾中啟動 ATBClone。</li>
+<li><strong>啟動向導</strong>：點選主介面右上角的 <strong>"+ 新建分身"</strong> 按鈕。</li>
+<li><strong>跟隨 7 步指引</strong>：選擇應用 ➔ 確認規則 ➔ 設定分身名稱 ➔ 確認安裝與資料目錄 ➔ 點選 <strong>"立即克隆"</strong>。</li>
+<li><strong>開始使用</strong>：點選 <strong>"啟動"</strong> 按鈕，或者直接通過 Spotlight 搜尋啟動分身！</li>
+</ol>
+<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>多語言版本</strong>：本手冊提供 English 與 簡體中文雙語版本。歡迎查閱頂部的語言切換連結。</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  回到頂部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">回報問題與建議</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":".","features":["navigation.top","search.highlight","content.code.copy"],"redirect":null,"search":"./assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"已拷貝","clipboard.copy":"拷貝","search.result.more.one":"此頁尚有 1 個符合的項目","search.result.more.other":"此頁尚有 # 個符合的項目","search.result.none":"沒有找到符合條件的結果","search.result.one":"找到 1 个符合條件的結果","search.result.other":"找到 # 個符合條件的結果","search.result.placeholder":"鍵入以開始檢索","search.result.term.missing":"缺失","select.version":"選擇版本"},"version":null}</script>
+    
+    
+      <script src="./assets/javascripts/bundle.8dcc8e9c.min.js"></script>
+      
+        <script src="./javascripts/language-detector.js"></script>
+      
+        <script src="./javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

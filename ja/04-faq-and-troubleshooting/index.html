@@ -1,0 +1,1080 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ATBClone 公式ユーザーマニュアル — macOS アプリ多重起動＆サンドボックス分離エンジン">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/ja/04-faq-and-troubleshooting/">
+      
+      
+        <link rel="prev" href="../03-under-the-hood-and-internals/">
+      
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+          <link rel="alternate" href="/zh-hant/" hreflang="zh-hant">
+        
+          <link rel="alternate" href="/ja/" hreflang="ja">
+        
+          <link rel="alternate" href="/ko/" hreflang="ko">
+        
+          <link rel="alternate" href="/de/" hreflang="de">
+        
+          <link rel="alternate" href="/fr/" hreflang="fr">
+        
+          <link rel="alternate" href="/es/" hreflang="es">
+        
+          <link rel="alternate" href="/ru/" hreflang="ru">
+        
+      
+      
+      <link rel="icon" href="../assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.62">
+    
+    
+      
+        <title>第4章：よくある質問 (FAQ)・システム診断・フィードバック - ATBClone ユーザーマニュアル</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.ce62732f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.812a03bb.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="../javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="ナビゲーション"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#4-faq" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="./.." title="ATBClone ユーザーマニュアル" class="md-header__button md-logo" aria-label="ATBClone ユーザーマニュアル" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone ユーザーマニュアル">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="ナビゲーション">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ATBClone ユーザーマニュアル
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第4章：よくある質問 (FAQ)・システム診断・フィードバック
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="検索">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="検索">
+  <button type="button" class="md-search__button">
+    検索
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="ATBClone ユーザーマニュアル" class="md-nav__button md-logo" aria-label="ATBClone ユーザーマニュアル" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone ユーザーマニュアル">
+
+    </a>
+    ATBClone ユーザーマニュアル
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  マニュアル概要
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-basic-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第1章：基本操作とクローン管理
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-advanced-custom-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第2章：カスタムレシピの作成と基本パラメータ
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-under-the-hood-and-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第3章：動作原理の解説と高度な設定パラメータ
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第4章：よくある質問 (FAQ)・システム診断・フィードバック
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第4章：よくある質問 (FAQ)・システム診断・フィードバック
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 目次
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ❓ よくある質問 (FAQ)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❓ よくある質問 (FAQ)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. クローンを作成すると元のアプリのデータに影響はありますか？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. クローンのデータはどこに保存されますか？バックアップと移行方法は？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-ban" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. アカウントが BAN されるリスクはありますか？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-root-sudo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. 管理者パスワード (Root / Sudo) は必要ですか？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. 「開発元が未確認のため開けません」または破損エラーが出た場合の対処法は？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. クローンのアプリアイコンを変更するには？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7. メッセンジャー系アプリでメニューバー常駐や通知が機能しない場合の対処法は？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#doctor" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🩺 システム環境診断 (Doctor ツール)
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#github-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🐞 問題の発見と GitHub Issue 報告手順 (標準トラブルシューティング)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐞 問題の発見と GitHub Issue 報告手順 (標準トラブルシューティング)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ステップ 1: メイン画面で異常が発生したクローンを選択し「詳細」を開く
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ステップ 2: 「クローン詳細」から診断レポートをコピー
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-github-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ステップ 3: GitHub Issue に投稿
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        💬 コミュニティとサポート
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 目次
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ❓ よくある質問 (FAQ)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❓ よくある質問 (FAQ)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. クローンを作成すると元のアプリのデータに影響はありますか？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. クローンのデータはどこに保存されますか？バックアップと移行方法は？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-ban" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. アカウントが BAN されるリスクはありますか？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-root-sudo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. 管理者パスワード (Root / Sudo) は必要ですか？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. 「開発元が未確認のため開けません」または破損エラーが出た場合の対処法は？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. クローンのアプリアイコンを変更するには？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7. メッセンジャー系アプリでメニューバー常駐や通知が機能しない場合の対処法は？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#doctor" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🩺 システム環境診断 (Doctor ツール)
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#github-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🐞 問題の発見と GitHub Issue 報告手順 (標準トラブルシューティング)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐞 問題の発見と GitHub Issue 報告手順 (標準トラブルシューティング)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ステップ 1: メイン画面で異常が発生したクローンを選択し「詳細」を開く
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ステップ 2: 「クローン詳細」から診断レポートをコピー
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-github-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ステップ 3: GitHub Issue に投稿
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        💬 コミュニティとサポート
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="4-faq">第4章：よくある質問 (FAQ)・システム診断・フィードバック<a class="headerlink" href="#4-faq" title="Permanent link">&para;</a></h1>
+<p>本章では、ユーザーからよく寄せられる疑問、セキュリティやアカウント保護に関する注意事項、内蔵診断ツール「Doctor」による環境チェック、そして不具合発生時の GitHub Issue 報告手順を解説します。</p>
+<hr />
+<h2 id="_1">📑 目次<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#faq">よくある質問 (FAQ)</a></li>
+<li><a href="#1">1. クローンを作成すると元のアプリのデータに影響はありますか？</a></li>
+<li><a href="#2">2. クローンのデータはどこに保存されますか？バックアップと移行方法は？</a></li>
+<li><a href="#3-ban">3. アカウントが BAN されるリスクはありますか？</a></li>
+<li><a href="#4-root-sudo">4. 管理者パスワード (Root / Sudo) は必要ですか？</a></li>
+<li><a href="#5">5. 「開発元が未確認のため開けません」または破損エラーが出た場合の対処法は？</a></li>
+<li><a href="#6">6. クローンのアプリアイコンを変更するには？</a></li>
+<li><a href="#7">7. メッセンジャー系アプリでメニューバー常駐や通知が機能しない場合の対処法は？</a></li>
+<li><a href="#doctor">システム環境診断 (Doctor ツール)</a></li>
+<li><a href="#github-issue">問題の発見と GitHub Issue 報告手順 (標準トラブルシューティング)</a></li>
+<li><a href="#1_1">ステップ 1: メイン画面で異常が発生したクローンを選択し「詳細」を開く</a></li>
+<li><a href="#2_1">ステップ 2: 「クローン詳細」から診断レポートをコピー</a></li>
+<li><a href="#3-github-issue">ステップ 3: GitHub Issue に投稿</a></li>
+<li><a href="#_1">コミュニティとサポート</a></li>
+</ul>
+<hr />
+<h2 id="faq">❓ よくある質問 (FAQ)<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
+<h3 id="1">1. クローンを作成すると元のアプリのデータに影響はありますか？<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<p><strong>全く影響ありません。</strong>
+ATBClone は完全な独立データディレクトリ（<code>~/ATBClone/Data/&lt;クローン名&gt;</code>）を分離して使用します。元の親アプリのデータやキャッシュディレクトリには一切触れません。</p>
+<h3 id="2">2. クローンのデータはどこに保存されますか？バックアップと移行方法は？<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>保存場所</strong>：デフォルトで <code>~/ATBClone/Data/&lt;クローン名&gt;</code> にすべて保存されます。</li>
+<li><strong>バックアップと移行</strong>：ダッシュボードでクローンの <strong>「フォルダを開く」</strong> アイコンをクリックし、表示されたフォルダを外付け SSD や別の Mac にコピーするだけで、完全にデータ移行が可能です。</li>
+</ul>
+<h3 id="3-ban">3. アカウントが BAN されるリスクはありますか？<a class="headerlink" href="#3-ban" title="Permanent link">&para;</a></h3>
+<p>ATBClone は <strong>「非侵入型（Non-Invasive）サンドボックス分離技術」</strong> を採用しています。アプリの通信プロトコルを偽装したり、メモリ内のゲームデータを改ざんしたりする「チートツール / フック」ではありません。macOS ネイティブの安全な環境変数差し替えにより動作するため、公式アプリそのものが動作している状態とシステム上区別されず、安全にご利用いただけます。</p>
+<p>さらに、<strong>独立プロキシ機能</strong>を併用することで、アプリごとに IP アドレスを分散させ、同一 IP からの複数アカウント同時アクセスによる検知リスクも低減できます。</p>
+<h3 id="4-root-sudo">4. 管理者パスワード (Root / Sudo) は必要ですか？<a class="headerlink" href="#4-root-sudo" title="Permanent link">&para;</a></h3>
+<p><strong>一切不要です。</strong>
+ATBClone のすべての複製、バイナリラッパー生成、アドホック署名、データ管理は、すべて現在のユーザー権限（User Space）内で完結します。システムファイル（<code>/System</code>）を改ざんすることはありません。</p>
+<h3 id="5">5. 「開発元が未確認のため開けません」または破損エラーが出た場合の対処法は？<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<p>macOS Gatekeeper のセキュリティ保護によるものです。以下のいずれかの方法で解消できます：
+1. <strong>Finder から右クリックで開く</strong>：クローンアプリ（<code>.app</code>）を右クリック（二本指タップ）し、<strong>「開く」</strong> を選択してダイアログで「開く」をクリック。
+2. <strong>ターミナルコマンドで隔離属性を解除</strong>：
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>xattr<span class="w"> </span>-cr<span class="w"> </span>~/ATBClone/Apps/&lt;クローン名&gt;.app
+</span></code></pre></div></p>
+<h3 id="6">6. クローンのアプリアイコンを変更するには？<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<ol>
+<li>ATBClone ダッシュボードで対象クローンカードの <strong>「編集」</strong> をクリックします。</li>
+<li>アイコン表示領域に、お好みの <code>.png</code> または <code>.icns</code> 画像をドラッグ＆ドロップして保存します。</li>
+</ol>
+<h3 id="7">7. メッセンジャー系アプリでメニューバー常駐や通知が機能しない場合の対処法は？<a class="headerlink" href="#7" title="Permanent link">&para;</a></h3>
+<p>一部のアプリ（WeChat や Slack など）は、ハードクローン時に Bundle ID が変更されると通知センターへの登録がリセットされる場合があります：
+* macOS の <strong>「システム設定 ➔ 通知」</strong> を開き、クローンアプリ名（例：<code>WeChat-Work</code>）の通知が許可されているか確認してください。</p>
+<hr />
+<h2 id="doctor">🩺 システム環境診断 (Doctor ツール)<a class="headerlink" href="#doctor" title="Permanent link">&para;</a></h2>
+<p>環境の依存関係や権限が正常か確認するには、内蔵の Doctor ツールをご利用ください：</p>
+<ul>
+<li><strong>GUI から</strong>：左サイドバーの <strong>「システム環境健診 (Doctor)」</strong> をクリック。</li>
+<li><strong>CLI から</strong>：
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>atbclone<span class="w"> </span>doctor
+</span></code></pre></div></li>
+</ul>
+<p>Doctor ツールは以下を自動チェックします：
+* [✔] macOS バージョン互換性 (macOS 12+ Monterey / Ventura / Sonoma / Sequoia)
+* [✔] Xcode Command Line Tools または <code>codesign</code> コマンドの稼働状態
+* [✔] アプリおよびデータ保存ディレクトリの書き込み権限
+* [✔] ビルトインレシピ定義の構文整合性</p>
+<hr />
+<h2 id="github-issue">🐞 問題の発見と GitHub Issue 報告手順 (標準トラブルシューティング)<a class="headerlink" href="#github-issue" title="Permanent link">&para;</a></h2>
+<p>アプリの起動に失敗したり異常が発生した場合は、以下の手順で正確な診断情報を取得してご報告いただけます：</p>
+<h3 id="1_1">ステップ 1: メイン画面で異常が発生したクローンを選択し「詳細」を開く<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h3>
+<p>対象クローンカードをクリックし、ツールバーの <strong>「詳細 (Details)」</strong> ボタンを押します。</p>
+<h3 id="2_1">ステップ 2: 「クローン詳細」から診断レポートをコピー<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h3>
+<p>「分身詳細」ダイアログが表示されます。ここには以下の技術情報が自動収集されています：
+* 基礎情報（クローン名、戦略、Bundle ID、元アプリパス）
+* 実行可能バイナリ種別とアーキテクチャ（arm64 / x86_64）
+* 注入された環境変数とプロキシ設定
+* 直近のクラッシュログ・起動ログの抜粋</p>
+<p>下部の <strong>「診断情報をコピー (Copy Diagnostic Info)」</strong> ボタンをクリックします。</p>
+<h3 id="3-github-issue">ステップ 3: GitHub Issue に投稿<a class="headerlink" href="#3-github-issue" title="Permanent link">&para;</a></h3>
+<ol>
+<li>ブラウザで <a href="https://github.com/aitobox/ATBClone/issues">ATBClone Issues</a> を開きます。</li>
+<li><strong>「New Issue」</strong> をクリックし、「Bug Report」を選択します。</li>
+<li>コピーした診断情報を貼り付けて送信してください。開発チームが迅速に原因を調査します。</li>
+</ol>
+<hr />
+<h2 id="_2">💬 コミュニティとサポート<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>GitHub 公式リポジトリ</strong>：<a href="https://github.com/aitobox/ATBClone">https://github.com/aitobox/ATBClone</a></li>
+<li><strong>ドキュメント公式サイト</strong>：<a href="https://clone.aitobox.com">https://clone.aitobox.com</a></li>
+<li><strong>ディスカッション・Q&amp;A</strong>：<a href="https://github.com/aitobox/ATBClone/discussions">GitHub Discussions</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">問題の報告と提案</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"redirect":null,"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"コピーしました","clipboard.copy":"クリップボードへコピー","search.result.more.one":"このページ内にもう1件見つかりました","search.result.more.other":"このページ内にあと#件見つかりました","search.result.none":"何も見つかりませんでした","search.result.one":"1件見つかりました","search.result.other":"#件見つかりました","search.result.placeholder":"検索キーワードを入力してください","search.result.term.missing":"検索に含まれない","select.version":"バージョン切り替え"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8dcc8e9c.min.js"></script>
+      
+        <script src="../javascripts/language-detector.js"></script>
+      
+        <script src="../javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

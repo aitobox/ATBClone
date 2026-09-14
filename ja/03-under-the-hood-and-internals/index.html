@@ -1,0 +1,1162 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ATBClone 公式ユーザーマニュアル — macOS アプリ多重起動＆サンドボックス分離エンジン">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/ja/03-under-the-hood-and-internals/">
+      
+      
+        <link rel="prev" href="../02-advanced-custom-recipes/">
+      
+      
+        <link rel="next" href="../04-faq-and-troubleshooting/">
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+          <link rel="alternate" href="/zh-hant/" hreflang="zh-hant">
+        
+          <link rel="alternate" href="/ja/" hreflang="ja">
+        
+          <link rel="alternate" href="/ko/" hreflang="ko">
+        
+          <link rel="alternate" href="/de/" hreflang="de">
+        
+          <link rel="alternate" href="/fr/" hreflang="fr">
+        
+          <link rel="alternate" href="/es/" hreflang="es">
+        
+          <link rel="alternate" href="/ru/" hreflang="ru">
+        
+      
+      
+      <link rel="icon" href="../assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.62">
+    
+    
+      
+        <title>第3章：動作原理の解説と高度な設定パラメータ - ATBClone ユーザーマニュアル</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.ce62732f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.812a03bb.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="../javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="ナビゲーション"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#3" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="./.." title="ATBClone ユーザーマニュアル" class="md-header__button md-logo" aria-label="ATBClone ユーザーマニュアル" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone ユーザーマニュアル">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="ナビゲーション">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ATBClone ユーザーマニュアル
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第3章：動作原理の解説と高度な設定パラメータ
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="検索">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="検索">
+  <button type="button" class="md-search__button">
+    検索
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="ATBClone ユーザーマニュアル" class="md-nav__button md-logo" aria-label="ATBClone ユーザーマニュアル" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone ユーザーマニュアル">
+
+    </a>
+    ATBClone ユーザーマニュアル
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  マニュアル概要
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-basic-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第1章：基本操作とクローン管理
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-advanced-custom-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第2章：カスタムレシピの作成と基本パラメータ
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第3章：動作原理の解説と高度な設定パラメータ
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第3章：動作原理の解説と高度な設定パラメータ
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 目次
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🏗️ クローン分離アーキテクチャの比較
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🏗️ クローン分離アーキテクチャの比較">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#soft-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ソフトクローン (Soft Clone) の内部構造
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hard-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ハードクローン (Hard Clone) の内部構造
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⚡ ハードクローン「3つのコア技術」解説
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚡ ハードクローン「3つのコア技術」解説">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-bundle-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. バンドル識別子 (Bundle ID) の改変
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-wrapper-hijack" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. バイナリラッパーハイジャック (Wrapper Hijack)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. サンドボックス剥離とアドホック再署名
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        💎 データとロジックの完全分離設計
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⚙️ 高度なレシピパラメータ解説
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚙️ 高度なレシピパラメータ解説">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-environment_injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. environment_injection (環境変数注入)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-symlink_whitelist" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. symlink_whitelist (シンボリックリンク白名単)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-launch_arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. launch_arguments (起動引数)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-plist_overrides-infoplist" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. plist_overrides (Info.plist 上書き)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. 動的パス環境変数マクロ
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📋 高度なカスタムレシピの完全な YAML サンプル
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-faq-and-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第4章：よくある質問 (FAQ)・システム診断・フィードバック
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 目次
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🏗️ クローン分離アーキテクチャの比較
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🏗️ クローン分離アーキテクチャの比較">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#soft-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ソフトクローン (Soft Clone) の内部構造
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hard-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ハードクローン (Hard Clone) の内部構造
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⚡ ハードクローン「3つのコア技術」解説
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚡ ハードクローン「3つのコア技術」解説">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-bundle-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. バンドル識別子 (Bundle ID) の改変
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-wrapper-hijack" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. バイナリラッパーハイジャック (Wrapper Hijack)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. サンドボックス剥離とアドホック再署名
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        💎 データとロジックの完全分離設計
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⚙️ 高度なレシピパラメータ解説
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚙️ 高度なレシピパラメータ解説">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-environment_injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. environment_injection (環境変数注入)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-symlink_whitelist" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. symlink_whitelist (シンボリックリンク白名単)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-launch_arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. launch_arguments (起動引数)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-plist_overrides-infoplist" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. plist_overrides (Info.plist 上書き)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. 動的パス環境変数マクロ
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📋 高度なカスタムレシピの完全な YAML サンプル
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="3">第3章：動作原理の解説と高度な設定パラメータ<a class="headerlink" href="#3" title="Permanent link">&para;</a></h1>
+<p>本章では、ATBClone の深層アーキテクチャ、ソフトクローンとハードクローンの低レベル実装、バイナリラッパーハイジャック技術、そして高度なカスタムレシピを作成するための全パラメータと動的マクロについて詳細に解説します。</p>
+<hr />
+<h2 id="_1">📑 目次<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#_1">クローン分離アーキテクチャの比較</a></li>
+<li><a href="#soft-clone">ソフトクローン (Soft Clone) の内部構造</a></li>
+<li><a href="#hard-clone">ハードクローン (Hard Clone) の内部構造</a></li>
+<li><a href="#3">ハードクローン「3つのコア技術」解説</a></li>
+<li><a href="#1-bundle-id">1. バンドル識別子 (Bundle ID) の改変</a></li>
+<li><a href="#2-wrapper-hijack">2. バイナリラッパーハイジャック (Wrapper Hijack)</a></li>
+<li><a href="#3-">3. サンドボックス剥離とアドホック再署名</a></li>
+<li><a href="#_2">データとロジックの完全分離設計</a></li>
+<li><a href="#_3">高度なレシピパラメータ解説</a></li>
+<li><a href="#1-environment_injection">1. environment_injection (環境変数注入)</a></li>
+<li><a href="#2-symlink_whitelist">2. symlink_whitelist (シンボリックリンク白名単)</a></li>
+<li><a href="#3-launch_arguments">3. launch_arguments (起動引数)</a></li>
+<li><a href="#4-plist_overrides-infoplist-">4. plist_overrides (Info.plist 上書き)</a></li>
+<li><a href="#5">5. 動的パス環境変数マクロ</a></li>
+<li><a href="#yaml">高度なカスタムレシピの完全な YAML サンプル</a></li>
+</ul>
+<hr />
+<h2 id="_2">🏗️ クローン分離アーキテクチャの比較<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="soft-clone">ソフトクローン (Soft Clone) の内部構造<a class="headerlink" href="#soft-clone" title="Permanent link">&para;</a></h3>
+<p>ソフトクローンは、Chromium や Electron、またはコマンドライン引数によるデータディレクトリ切り替えに対応したアプリケーション向けの手法です。親アプリのバイナリ（数十〜数百MB）を複製せず、軽量なランチャースクリプト（約数KB）のみを生成します。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>[Soft Clone ランチャー] 
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>       │ 起動引数を付与して呼び出し
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>       ▼
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>/Applications/Cursor.app/Contents/MacOS/Cursor --user-data-dir="~/ATBClone/Data/Cursor-Work"
+</span></code></pre></div>
+<ul>
+<li><strong>メリット</strong>：ディスク消費がほぼゼロ、作成・アップデートが一瞬で完了。</li>
+<li><strong>制限事項</strong>：Dock でアプリアイコンが元の親アプリにグループ化される場合があり、システム TCC 権限は親アプリと共有されます。</li>
+</ul>
+<hr />
+<h3 id="hard-clone">ハードクローン (Hard Clone) の内部構造<a class="headerlink" href="#hard-clone" title="Permanent link">&para;</a></h3>
+<p>ハードクローンは、WeChat、LINE、Telegram、Discord、Slack など、独立したシステム識別と完全なデータ隔離が必要なすべてのネイティブアプリに対応します。</p>
+<pre class="mermaid"><code>graph TD
+    A[親アプリ /Applications/WeChat.app] --&gt;|App バンドル完全複製| B[クローンアプリ ~/ATBClone/Apps/WeChat-2.app]
+    B --&gt; C[1. CFBundleIdentifier を固有値に変更]
+    B --&gt; D[2. オリジナル実行バイナリを .real にリネーム]
+    B --&gt; E[3. ラッパーシェルスクリプトをバイナリ位置に配置]
+    B --&gt; F[4. サンドボックス Entitlements 剥離 &amp; 再署名]
+
+    E --&gt;|起動時に環境変数を差し替え| G["HOME=~/ATBClone/Data/WeChat-2"]
+    G --&gt; H[WeChat.real を起動]</code></pre>
+<hr />
+<h2 id="3_1">⚡ ハードクローン「3つのコア技術」解説<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h2>
+<h3 id="1-bundle-id">1. バンドル識別子 (Bundle ID) の改変<a class="headerlink" href="#1-bundle-id" title="Permanent link">&para;</a></h3>
+<p><code>Info.plist</code> 内の <code>CFBundleIdentifier</code>（例：<code>com.tencent.xinWeChat</code>）を固有のクローン用識別子（例：<code>com.tencent.xinWeChat.atbclone.work</code>）に書き換えます。これにより、macOS システムはこれを完全に別のアプリとして認識し、通知設定、TCC 安全許可、ウィンドウ管理が完全に独立します。</p>
+<h3 id="2-wrapper-hijack">2. バイナリラッパーハイジャック (Wrapper Hijack)<a class="headerlink" href="#2-wrapper-hijack" title="Permanent link">&para;</a></h3>
+<p>ハードクローンの中核技術です：
+1. <code>Contents/MacOS/&lt;Executable&gt;</code> を <code>&lt;Executable&gt;.real</code> にリネームします。
+2. 同名の POSIX シェルスクリプトを新規作成し、実行権限（<code>chmod +x</code>）を付与します。
+3. ラッパー内で以下の環境変数をフック・再定義してから、バックグラウンドの <code>.real</code> バイナリを実行します：
+   * <code>export HOME="&lt;Isolated Data Dir&gt;"</code>
+   * <code>export TMPDIR="&lt;Isolated Data Dir&gt;/tmp"</code>
+   * <code>export XDG_DATA_HOME="&lt;Isolated Data Dir&gt;/Library/Application Support"</code>
+   * <code>export XDG_CONFIG_HOME="&lt;Isolated Data Dir&gt;/Library/Preferences"</code></p>
+<p>これにより、親アプリ側のコードを一行も改変することなく、あらゆるファイル I/O とローカルストレージアクセスを強制的に独立したデータフォルダへ誘導します。</p>
+<h3 id="3_2">3. サンドボックス剥離とアドホック再署名<a class="headerlink" href="#3_2" title="Permanent link">&para;</a></h3>
+<p>macOS の App Sandbox が有効なアプリは、システムによって厳密に <code>~/Library/Containers/&lt;BundleID&gt;</code> へのアクセスしか許可されません。ATBClone はバイナリから <code>com.apple.security.app-sandbox</code> フラグを取り除き、macOS 標準の <code>codesign -f -s -</code> コマンドでアドホック再署名を行います。これにより、アプリは任意のカスタムデータディレクトリへ自在にアクセスできるようになります。</p>
+<hr />
+<h2 id="_3">💎 データとロジックの完全分離設計<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>ATBClone は <strong>「プログラムロジック（Apps）」</strong> と <strong>「ユーザーデータ（Data）」</strong> を完全に分離して管理します：</p>
+<ul>
+<li><strong>ロジック層 (<code>~/ATBClone/Apps/</code>)</strong>：いつでも安全に再作成・削除・上書き同期が可能。</li>
+<li><strong>データ層 (<code>~/ATBClone/Data/</code>)</strong>：ユーザーのチャット履歴、ローカルキャッシュ、設定情報が永続化。</li>
+</ul>
+<p>親アプリがバージョンアップされた際も、古いクローンアプリ本体を置き換えるだけで、データフォルダは一切手を触れずに保持されるため、安全かつ確実な無損失アップデートが保証されます。</p>
+<hr />
+<h2 id="_4">⚙️ 高度なレシピパラメータ解説<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="1-environment_injection">1. environment_injection (環境変数注入)<a class="headerlink" href="#1-environment_injection" title="Permanent link">&para;</a></h3>
+<p>クローンアプリ起動時に追加で注入する環境変数をキー・バリュー形式で指定します：</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">environment_injection</span><span class="p">:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">ELECTRON_ENABLE_LOGGING</span><span class="p">:</span><span class="w"> </span><span class="s">"1"</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">NODE_ENV</span><span class="p">:</span><span class="w"> </span><span class="s">"production"</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">SSL_CERT_FILE</span><span class="p">:</span><span class="w"> </span><span class="s">"{DATA_DIR}/certs/ca.pem"</span>
+</span></code></pre></div>
+<h3 id="2-symlink_whitelist">2. symlink_whitelist (シンボリックリンク白名単)<a class="headerlink" href="#2-symlink_whitelist" title="Permanent link">&para;</a></h3>
+<p>分離された環境内でも、特定のシステムリソースやフォント、ハードウェア支援機能のみ親アプリと共有したい場合に使用します：</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">symlink_whitelist</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"~/Library/Fonts"</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"~/Library/ColorSync"</span>
+</span></code></pre></div>
+<h3 id="3-launch_arguments">3. launch_arguments (起動引数)<a class="headerlink" href="#3-launch_arguments" title="Permanent link">&para;</a></h3>
+<p>起動時に自動付与されるコマンドラインフラグを設定します：</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">launch_arguments</span><span class="p">:</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"--disable-gpu-shader-disk-cache"</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"--no-first-run"</span>
+</span></code></pre></div>
+<h3 id="4-plist_overrides-infoplist">4. plist_overrides (Info.plist 上書き)<a class="headerlink" href="#4-plist_overrides-infoplist" title="Permanent link">&para;</a></h3>
+<p><code>Info.plist</code> の特定キーをカスタマイズします：</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">plist_overrides</span><span class="p">:</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">NSHighResolutionCapable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">LSUIElement</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span></code></pre></div>
+<h3 id="5">5. 動的パス環境変数マクロ<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<p>レシピ内の文字列に以下のマクロを埋め込むと、実行時に実際のパスへと自動置換されます：</p>
+<ul>
+<li><code>{DATA_DIR}</code>：対象クローンの専用データ保存先パス。</li>
+<li><code>{CLONE_NAME}</code>：クローンアプリの表示名。</li>
+<li><code>{BUNDLE_ID}</code>：生成された新しい Bundle Identifier。</li>
+<li><code>{HOST_APP}</code>：元の親アプリのフルパス。</li>
+</ul>
+<hr />
+<h2 id="yaml">📋 高度なカスタムレシピの完全な YAML サンプル<a class="headerlink" href="#yaml" title="Permanent link">&para;</a></h2>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"1.0"</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"Discord"</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"Discord</span><span class="nv"> </span><span class="s">用のプロキシ＆環境変数注入付きハードクローン設定"</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nt">bundle_id</span><span class="p">:</span><span class="w"> </span><span class="s">"com.hnc.discord"</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="s">"hard_clone"</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="nt">strip_sandbox</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="nt">injection_mode</span><span class="p">:</span><span class="w"> </span><span class="s">"wrapper_hijack"</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="c1"># ネットワークプロキシ</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="nt">proxy</span><span class="p">:</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">"socks5"</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">"127.0.0.1"</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10808</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="c1"># 環境変数注入</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="nt">environment_injection</span><span class="p">:</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">  </span><span class="nt">DISCORD_USER_DATA_DIR</span><span class="p">:</span><span class="w"> </span><span class="s">"{DATA_DIR}/discord_data"</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="c1"># 起動引数</span>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="nt">launch_arguments</span><span class="p">:</span>
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"--start-minimized"</span>
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="c1"># シンボリックリンク共有白名単</span>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="nt">symlink_whitelist</span><span class="p">:</span>
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"~/Library/Audio"</span>
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">問題の報告と提案</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"redirect":null,"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"コピーしました","clipboard.copy":"クリップボードへコピー","search.result.more.one":"このページ内にもう1件見つかりました","search.result.more.other":"このページ内にあと#件見つかりました","search.result.none":"何も見つかりませんでした","search.result.one":"1件見つかりました","search.result.other":"#件見つかりました","search.result.placeholder":"検索キーワードを入力してください","search.result.term.missing":"検索に含まれない","select.version":"バージョン切り替え"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8dcc8e9c.min.js"></script>
+      
+        <script src="../javascripts/language-detector.js"></script>
+      
+        <script src="../javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

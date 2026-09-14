@@ -1,0 +1,1122 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ATBClone 공식 사용자 설명서 — macOS 앱 멀티 인스턴스 및 샌드박스 격리 엔진">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/ko/01-basic-operations/">
+      
+      
+        <link rel="prev" href="./..">
+      
+      
+        <link rel="next" href="../02-advanced-custom-recipes/">
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+          <link rel="alternate" href="/zh-hant/" hreflang="zh-hant">
+        
+          <link rel="alternate" href="/ja/" hreflang="ja">
+        
+          <link rel="alternate" href="/ko/" hreflang="ko">
+        
+          <link rel="alternate" href="/de/" hreflang="de">
+        
+          <link rel="alternate" href="/fr/" hreflang="fr">
+        
+          <link rel="alternate" href="/es/" hreflang="es">
+        
+          <link rel="alternate" href="/ru/" hreflang="ru">
+        
+      
+      
+      <link rel="icon" href="../assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.62">
+    
+    
+      
+        <title>제1장: 기본 작업 및 클론 관리 - ATBClone 사용자 설명서</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.ce62732f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.812a03bb.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="../javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="네비게이션"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#1" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="./.." title="ATBClone 사용자 설명서" class="md-header__button md-logo" aria-label="ATBClone 사용자 설명서" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone 사용자 설명서">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="네비게이션">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ATBClone 사용자 설명서
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              제1장: 기본 작업 및 클론 관리
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="검색">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="검색">
+  <button type="button" class="md-search__button">
+    검색
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/01-basic-operations/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/01-basic-operations/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/01-basic-operations/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/01-basic-operations/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/01-basic-operations/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/01-basic-operations/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/01-basic-operations/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/01-basic-operations/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/01-basic-operations/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="ATBClone 사용자 설명서" class="md-nav__button md-logo" aria-label="ATBClone 사용자 설명서" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone 사용자 설명서">
+
+    </a>
+    ATBClone 사용자 설명서
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/01-basic-operations/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/01-basic-operations/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/01-basic-operations/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/01-basic-operations/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/01-basic-operations/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/01-basic-operations/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/01-basic-operations/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/01-basic-operations/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/01-basic-operations/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  설명서 개요
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  제1장: 기본 작업 및 클론 관리
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  제1장: 기본 작업 및 클론 관리
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 목차
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🪄 클론 애플리케이션 생성 (7단계 마법사)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🪄 클론 애플리케이션 생성 (7단계 마법사)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1단계: 대상 애플리케이션 선택
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2단계: 레시피 및 격리 전략 확인
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3단계: 클론 식별 정보 및 언어 설정
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4단계: 설치 대상 경로 확인
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5단계: 전용 데이터 디렉토리 설정
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6단계: 독립 네트워크 프록시 설정 (선택 사항)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7단계: 설정 확인 및 복제 실행
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🖥️ 클론 애플리케이션 관리
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🖥️ 클론 애플리케이션 관리">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        클론 앱 실행 방법
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        데이터 디렉토리 원클릭 이동
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        클론 구성 수정
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        원본 앱 업데이트 시 무손실 동기화 업데이트
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        테이블 뷰 일괄 작업 (일괄 업데이트 및 일괄 삭제)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vs" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        안전 삭제 (데이터 유지 vs 완전 삭제)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-advanced-custom-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  제2장: 사용자 정의 레시피 및 기본 매개변수
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-under-the-hood-and-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  제3장: 내부 동작 원리 및 고급 매개변수 심층 분석
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-faq-and-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  제4장: 자주 묻는 질문 (FAQ), 시스템 진단 및 피드백
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 목차
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🪄 클론 애플리케이션 생성 (7단계 마법사)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🪄 클론 애플리케이션 생성 (7단계 마법사)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1단계: 대상 애플리케이션 선택
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2단계: 레시피 및 격리 전략 확인
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3단계: 클론 식별 정보 및 언어 설정
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4단계: 설치 대상 경로 확인
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5단계: 전용 데이터 디렉토리 설정
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6단계: 독립 네트워크 프록시 설정 (선택 사항)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7단계: 설정 확인 및 복제 실행
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🖥️ 클론 애플리케이션 관리
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🖥️ 클론 애플리케이션 관리">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        클론 앱 실행 방법
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        데이터 디렉토리 원클릭 이동
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        클론 구성 수정
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        원본 앱 업데이트 시 무손실 동기화 업데이트
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        테이블 뷰 일괄 작업 (일괄 업데이트 및 일괄 삭제)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vs" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        안전 삭제 (데이터 유지 vs 완전 삭제)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="1">제1장: 기본 작업 및 클론 관리<a class="headerlink" href="#1" title="Permanent link">&para;</a></h1>
+<p>본 장에서는 7단계 대화형 마법사를 사용하여 첫 번째 앱 클론을 생성하는 방법부터 일상적인 실행, 데이터 디렉토리 접근, 원본 앱 업데이트 시 무손실 동기화 업데이트, 테이블 뷰 일괄 작업 및 안전 삭제에 이르기까지 전반적인 관리 절차를 안내합니다.</p>
+<hr />
+<h2 id="_1">📑 목차<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#-7">클론 애플리케이션 생성 (7단계 마법사)</a></li>
+<li><a href="#1">1단계: 대상 애플리케이션 선택</a></li>
+<li><a href="#2">2단계: 레시피 및 격리 전략 확인</a></li>
+<li><a href="#3">3단계: 클론 식별 정보 및 언어 설정</a></li>
+<li><a href="#4">4단계: 설치 대상 경로 확인</a></li>
+<li><a href="#5">5단계: 전용 데이터 디렉토리 설정</a></li>
+<li><a href="#6-">6단계: 독립 네트워크 프록시 설정 (선택 사항)</a></li>
+<li><a href="#7-">7단계: 설정 확인 및 복제 실행</a></li>
+<li><a href="#_1">클론 애플리케이션 관리</a></li>
+<li><a href="#_2">클론 앱 실행 방법</a></li>
+<li><a href="#_3">데이터 디렉토리 원클릭 이동</a></li>
+<li><a href="#_4">클론 구성 수정</a></li>
+<li><a href="#_5">원본 앱 업데이트 시 무손실 동기화 업데이트</a></li>
+<li><a href="#-">테이블 뷰 일괄 작업 (일괄 업데이트 및 일괄 삭제)</a></li>
+<li><a href="#-vs-">안전 삭제 (데이터 유지 vs 완전 삭제)</a></li>
+</ul>
+<hr />
+<h2 id="7">🪄 클론 애플리케이션 생성 (7단계 마법사)<a class="headerlink" href="#7" title="Permanent link">&para;</a></h2>
+<p>ATBClone 대시보드 우측 상단의 <strong>"+ 새 클론"</strong> 버튼을 클릭하여 마법사를 시작합니다.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>|  🧙 새 클론 생성 - 1 / 7 단계                                |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>|                                                             |
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>|  대상 애플리케이션 (.app) 선택                                |
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>|  [/Applications/WeChat.app                   ] [ 찾아보기.. ]|
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>|                                                             |
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>|  [ 취소 ]                                      [ 다음 단계 &gt; ]|
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>+-------------------------------------------------------------+
+</span></code></pre></div>
+<h3 id="1_1">1단계: 대상 애플리케이션 선택<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>"찾아보기..."</strong> 버튼을 클릭하여 macOS 네이티브 파일 선택기를 엽니다 (기본 위치: <code>/Applications</code>).</li>
+<li>대상 애플리케이션 번들(예: <code>WeChat.app</code>, <code>Telegram.app</code>, <code>Google Chrome.app</code>, <code>Cursor.app</code> 등)을 선택합니다.</li>
+<li><strong>"다음 단계 &gt;"</strong> 를 클릭합니다.</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>외장 드라이브나 임의의 위치에 있는 <code>.app</code> 번들도 절대 경로를 직접 입력하여 지정할 수 있습니다.</p>
+</div>
+<hr />
+<h3 id="2">2단계: 레시피 및 격리 전략 확인<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<p>ATBClone 은 선택한 애플리케이션을 자동으로 정밀 분석합니다:</p>
+<ul>
+<li><strong>내장 레시피 매칭</strong>: 33개 이상의 내장 레시피에 포함된 앱인 경우 최적의 전략이 자동 선택됩니다 (예: WeChat 은 <code>Hard Clone</code>, Cursor 및 VS Code 는 <code>Soft Clone</code>).</li>
+<li><strong>스마트 프로버 (Smart Prober)</strong>: 목록에 없는 앱이라도 Mach-O 바이너리와 샌드박스 권한을 동적으로 스캔하여 최적의 전략을 추천합니다.</li>
+<li><strong>전략 전환</strong>:</li>
+<li><code>hard_clone</code>: 앱 번들을 물리적으로 복제하고 번들 ID 및 환경 변수 래퍼를 주입합니다.</li>
+<li><code>soft_clone</code>: 바이너리를 복제하지 않고 데이터 격리 인자를 전달하는 경량 런처를 생성합니다.</li>
+<li><strong>주입 방식 (Injection Strategy)</strong>: 하드 클론 시 다음 주입 기술을 선택할 수 있습니다:</li>
+<li><code>wrapper_hijack</code> (권장): 바이너리 래퍼 셸을 통한 환경 격리로 최고의 안정성을 보장합니다.</li>
+<li><code>posix_spawn</code> / <code>dyld_insert_libraries</code>: 저수준 API 후킹 격리 방식.</li>
+</ul>
+<hr />
+<h3 id="3">3단계: 클론 식별 정보 및 언어 설정<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>클론 이름</strong>: 한글, 영문 또는 숫자로 알아보기 쉬운 이름을 지정합니다 (예: <code>WeChat-업무용</code>, <code>Telegram-부계정</code>).</li>
+<li><strong>Bundle Identifier</strong>: 고유한 식별자가 자동 생성됩니다 (예: <code>com.tencent.xinWeChat.atbclone.work</code>).</li>
+<li><strong>앱 아이콘</strong>: 기본 아이콘이 복사되며, 원하는 <code>.icns</code> 또는 <code>.png</code> 이미지를 드래그하여 맞춤 아이콘으로 변경할 수 있습니다.</li>
+<li><strong>UI 언어 재정의</strong>: 클론 앱의 인터페이스 표시 언어를 한국어, 영어, 일본어, 중국어 등으로 고정할 수 있습니다.</li>
+</ol>
+<hr />
+<h3 id="4">4단계: 설치 대상 경로 확인<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<p>클론 앱 자체의 저장 위치를 지정합니다.
+* <strong>기본 경로</strong>: <code>~/ATBClone/Apps/&lt;클론이름&gt;.app</code>
+* Spotlight 및 Launchpad 에서 자연스럽게 인식되도록 기본 경로를 유지하는 것이 권장됩니다.</p>
+<hr />
+<h3 id="5">5단계: 전용 데이터 디렉토리 설정<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<p>클론 앱이 사용할 대화 내용, 캐시, 설정 파일의 저장 위치를 지정합니다.
+* <strong>기본 경로</strong>: <code>~/ATBClone/Data/&lt;클론이름&gt;</code>
+* <strong>데이터-로직 완전 분리</strong>: 프로그램 실행 파일(<code>Apps/</code>)과 사용자 데이터(<code>Data/</code>)가 완전히 분리되어 있어 앱을 재설치하거나 업데이트해도 데이터가 유실되지 않습니다.</p>
+<hr />
+<h3 id="6">6단계: 독립 네트워크 프록시 설정 (선택 사항)<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<p>클론 앱별로 독립된 네트워크 트래픽 경로를 지정할 수 있습니다:
+* <strong>프록시 유형</strong>: <code>HTTP</code> / <code>HTTPS</code> / <code>SOCKS5</code>
+* <strong>호스트 및 포트</strong>: 예: <code>127.0.0.1:7890</code>
+* <strong>인증 지원</strong>: 계정 및 비밀번호 인증 프록시 완벽 지원.</p>
+<hr />
+<h3 id="7_1">7단계: 설정 확인 및 복제 실행<a class="headerlink" href="#7_1" title="Permanent link">&para;</a></h3>
+<p>설정 요약 정보를 검토한 후 <strong>"지금 복제"</strong> 를 클릭합니다. 진행률 표시줄이 100% 에 도달하면 완료됩니다!</p>
+<hr />
+<h2 id="_2">🖥️ 클론 애플리케이션 관리<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">클론 앱 실행 방법<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>대시보드에서</strong>: 대상 카드의 <strong>"실행"</strong> 버튼 클릭.</li>
+<li><strong>Spotlight 검색</strong>: <code>Cmd + Space</code> 를 누르고 클론 이름을 입력하여 즉시 실행.</li>
+<li><strong>Dock 고정</strong>: 생성된 앱을 독에 고정하여 일반 네이티브 앱처럼 클릭 실행.</li>
+</ul>
+<h3 id="_4">데이터 디렉토리 원클릭 이동<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>카드 우측의 <strong>"폴더 열기"</strong> 아이콘을 클릭하면 Finder 가 즉시 열리며 전용 데이터 디렉토리(<code>~/ATBClone/Data/&lt;클론이름&gt;</code>)로 이동합니다.</p>
+<h3 id="_5">클론 구성 수정<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>카드의 <strong>"설정 / 편집"</strong> 버튼을 클릭하여 할당된 프록시, 실행 인수, 앱 아이콘 등을 언제든지 재설정할 수 있습니다.</p>
+<h3 id="_6">원본 앱 업데이트 시 무손실 동기화 업데이트<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>App Store 나 웹사이트를 통해 원본 앱이 새 버전으로 업데이트된 경우:
+1. ATBClone 메인 화면에서 대상 카드의 <strong>"업데이트"</strong> 버튼을 클릭합니다.
+2. 엔진이 <strong>사용자 데이터를 100% 보존한 상태로</strong> 최신 바이너리와 리소스 파일만 클론으로 안전하게 동기화합니다.</p>
+<h3 id="_7">테이블 뷰 일괄 작업 (일괄 업데이트 및 일괄 삭제)<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>우측 상단 보기 전환 메뉴에서 "테이블 뷰"를 선택하면:
+* 체크박스를 통해 여러 클론을 한 번에 다중 선택할 수 있습니다.
+* 하단 툴바의 <strong>"선택 항목 일괄 업데이트"</strong> 또는 <strong>"선택 항목 일괄 삭제"</strong> 를 실행할 수 있습니다.</p>
+<h3 id="vs">안전 삭제 (데이터 유지 vs 완전 삭제)<a class="headerlink" href="#vs" title="Permanent link">&para;</a></h3>
+<p>클론을 삭제할 때 두 가지 옵션이 제공됩니다:
+* <strong>앱 본체만 삭제</strong>: 클론 실행 파일(<code>.app</code>)만 삭제하고 대화 기록과 설정 데이터는 보존합니다.
+* <strong>완전 삭제 (데이터 포함)</strong>: 앱 실행 파일과 데이터 디렉토리를 모두 휴지통으로 이동합니다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  맨위로
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">문제 보고 및 피드백</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"redirect":null,"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"클립보드에 복사됨","clipboard.copy":"클립보드로 복사","search.result.more.one":"이 문서에서 1개의 검색 결과 더 보기","search.result.more.other":"이 문서에서 #개의 검색 결과 더 보기","search.result.none":"검색어와 일치하는 문서가 없습니다","search.result.one":"1개의 일치하는 문서","search.result.other":"#개의 일치하는 문서","search.result.placeholder":"검색어를 입력하세요","search.result.term.missing":"포함되지 않은 검색어","select.version":"버전 선택"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8dcc8e9c.min.js"></script>
+      
+        <script src="../javascripts/language-detector.js"></script>
+      
+        <script src="../javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

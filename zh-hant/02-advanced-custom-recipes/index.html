@@ -1,0 +1,1175 @@
+
+<!doctype html>
+<html lang="zh-Hant" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ATBClone（艾特智能分身）官方使用手冊 — macOS 應用程式多開與沙盒隔離引擎">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/zh-hant/02-advanced-custom-recipes/">
+      
+      
+        <link rel="prev" href="../01-basic-operations/">
+      
+      
+        <link rel="next" href="../03-under-the-hood-and-internals/">
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+          <link rel="alternate" href="/zh-hant/" hreflang="zh-hant">
+        
+          <link rel="alternate" href="/ja/" hreflang="ja">
+        
+          <link rel="alternate" href="/ko/" hreflang="ko">
+        
+          <link rel="alternate" href="/de/" hreflang="de">
+        
+          <link rel="alternate" href="/fr/" hreflang="fr">
+        
+          <link rel="alternate" href="/es/" hreflang="es">
+        
+          <link rel="alternate" href="/ru/" hreflang="ru">
+        
+      
+      
+      <link rel="icon" href="../assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.62">
+    
+    
+      
+        <title>第二章：冷門應用規則定制與基礎參數 - ATBClone 使用者手冊</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.ce62732f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.812a03bb.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="../javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="導航"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳轉至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="頁首">
+    <a href="./.." title="ATBClone 使用者手冊" class="md-header__button md-logo" aria-label="ATBClone 使用者手冊" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone 使用者手冊">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="導航">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ATBClone 使用者手冊
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第二章：冷門應用規則定制與基礎參數
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="搜尋">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="搜尋">
+  <button type="button" class="md-search__button">
+    搜尋
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="導航" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="ATBClone 使用者手冊" class="md-nav__button md-logo" aria-label="ATBClone 使用者手冊" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone 使用者手冊">
+
+    </a>
+    ATBClone 使用者手冊
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/02-advanced-custom-recipes/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  手冊總覽
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-basic-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第一章：基礎操作與分身管理
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第二章：冷門應用規則定制與基礎參數
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第二章：冷門應用規則定制與基礎參數
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 本章目錄
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🧩 理解分身規則 (Recipe) 的作用
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#app-prober" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔍 方法一：使用 App Prober 智慧探針（強烈推薦）
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔍 方法一：使用 App Prober 智慧探針（強烈推薦）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        操作步驟：
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ✏️ 方法二：使用視覺化規則編輯器
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📖 規則基礎引數全解
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📖 規則基礎引數全解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-bundle_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. <code>bundle_id</code>（應用唯一標識）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-app_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. <code>app_name</code>（應用名稱）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. <code>strategy</code>（克隆策略）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-strip_sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. <code>strip_sandbox</code>（沙盒剝離）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. <code>proxy</code>（獨立代理配置）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-injection_strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. <code>injection_strategy</code>（環境注入模式）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📄 自定義規則 YAML 完整範例
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⏭️ 下一步指引
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-under-the-hood-and-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第三章：實現原理解析與高級參數全解
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-faq-and-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第四章：常見問題 (FAQ)、系統體檢與反饋
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 本章目錄
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🧩 理解分身規則 (Recipe) 的作用
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#app-prober" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔍 方法一：使用 App Prober 智慧探針（強烈推薦）
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔍 方法一：使用 App Prober 智慧探針（強烈推薦）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        操作步驟：
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ✏️ 方法二：使用視覺化規則編輯器
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📖 規則基礎引數全解
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📖 規則基礎引數全解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-bundle_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. <code>bundle_id</code>（應用唯一標識）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-app_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. <code>app_name</code>（應用名稱）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. <code>strategy</code>（克隆策略）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-strip_sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. <code>strip_sandbox</code>（沙盒剝離）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. <code>proxy</code>（獨立代理配置）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-injection_strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. <code>injection_strategy</code>（環境注入模式）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📄 自定義規則 YAML 完整範例
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⏭️ 下一步指引
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="_1">第二章：冷門應用規則定製與基礎引數詳解<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>雖然 ATBClone 內建了 33+ 熱門應用的預設規則，但在日常工作與學習中，您可能會遇到未經適配的冷門小眾軟體（例如企業自研內部辦公工具、特定領域的設計建模軟體、或地區性即時通訊工具）。</p>
+<p>本章將介紹如何通過內建的 <strong>App Prober (智慧探針)</strong> 和 <strong>視覺化規則編輯器</strong> 為任意冷門應用建立專屬分身規則，並詳細解析規則中的基礎引數含義。</p>
+<hr />
+<h2 id="_2">📑 本章目錄<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#理解分身規則-recipe-的作用">理解分身規則 (Recipe) 的作用</a></li>
+<li><a href="#方法一使用-app-prober-智慧探針強烈推薦">方法一：使用 App Prober 智慧探針（強烈推薦）</a></li>
+<li><a href="#方法二使用視覺化規則編輯器">方法二：使用視覺化規則編輯器</a></li>
+<li><a href="#規則基礎引數全解">規則基礎引數全解</a></li>
+<li><a href="#1-bundle_id應用唯一標識">1. <code>bundle_id</code>（應用唯一標識）</a></li>
+<li><a href="#2-app_name應用名稱">2. <code>app_name</code>（應用名稱）</a></li>
+<li><a href="#3-strategy克隆策略">3. <code>strategy</code>（克隆策略）</a></li>
+<li><a href="#4-strip_sandbox沙盒剝離">4. <code>strip_sandbox</code>（沙盒剝離）</a></li>
+<li><a href="#5-proxy獨立代理配置">5. <code>proxy</code>（獨立代理配置）</a></li>
+<li><a href="#6-injection_strategy環境注入模式">6. <code>injection_strategy</code>（環境注入模式）</a></li>
+<li><a href="#自定義規則-yaml-完整範例">自定義規則 YAML 完整範例</a></li>
+<li><a href="#下一步指引">下一步指引</a></li>
+</ul>
+<hr />
+<h2 id="recipe">🧩 理解分身規則 (Recipe) 的作用<a class="headerlink" href="#recipe" title="Permanent link">&para;</a></h2>
+<p><strong>App Recipe（分身規則）</strong> 是一份結構清晰的 YAML 宣告檔案，它相當於分身引擎的“操作說明書”，用於指導 ATBClone：</p>
+<ul>
+<li>該應用適合採用哪種克隆引擎（<strong>物理克隆</strong> 還是 <strong>軟包裝</strong>）；</li>
+<li>如何實現資料重定向（通過環境變數 <code>$HOME</code> 劫持還是 <code>--user-data-dir</code> 啟動引數）；</li>
+<li>是否需要移除 Apple App Sandbox 沙盒限制；</li>
+<li>哪些敏感系統路徑（如鑰匙圈憑據）需要建立符號連結 (Symlink)橋接。</li>
+</ul>
+<p>所有使用者自定義的規則均存放在：
+<code>~/ATBClone/recipes/&lt;bundle_id&gt;.yaml</code></p>
+<p>當您克隆某個應用時，ATBClone 會優先載入您本地的自定義規則，優先順序高於系統內建規則庫。</p>
+<hr />
+<h2 id="app-prober">🔍 方法一：使用 App Prober 智慧探針（強烈推薦）<a class="headerlink" href="#app-prober" title="Permanent link">&para;</a></h2>
+<p><strong>App Prober（應用智慧探針）</strong> 是 ATBClone 內建的二進位制深度靜態分析工具。它能夠毫秒級分析任意 Mach-O 架構、識別底層框架（Electron、CEF、Qt、Flutter、Cocoa 等）、掃描沙盒授權並自動生成最佳克隆規則。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>|  🔍 智能应用探针 (App Prober)                               |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>|                                                             |
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>|  目标应用路径:                                              |
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>|  [/Applications/CustomTool.app               ] [ 浏览... ]  |
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>|                                              [ 开始探测 ]   |
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>|  ─────────────────────────────────────────────────────────  |
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>|  深度分析结果:                                              |
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>|  • 应用名称:   CustomTool                                   |
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>|  • Bundle ID:  com.example.customtool                       |
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>|  • 沙盒状态:   已启用 (检测到 App Sandbox 限制)              |
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>|  • 依赖框架:   Electron, Node.js                            |
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>|  • 推荐策略:   hard_clone (物理克隆)                        |
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>|                                                             |
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>|  [ 保存为规则 💾 ]                                          |
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>+-------------------------------------------------------------+
+</span></code></pre></div>
+<h3 id="_3">操作步驟：<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<ol>
+<li>點選 ATBClone 側邊欄的 <strong>"智慧探針"</strong>（<code>🔍</code>）導航項。</li>
+<li>點選 <strong>"瀏覽..."</strong> 選中您想要分析的冷門 <code>.app</code> 應用程式包。</li>
+<li>點選 <strong>"開始探測"</strong> 按鈕。</li>
+<li>探針將在毫秒內完成深度掃描並展示分析結果：</li>
+<li><strong>應用名稱與 Bundle ID</strong>：從應用 <code>Info.plist</code> 中解析。</li>
+<li><strong>沙盒狀態</strong>：檢查是否包含 <code>com.apple.security.app-sandbox</code> 授權。</li>
+<li><strong>執行時框架</strong>：自動識別 Electron、Chromium、Qt、Flutter、React Native 或原生 Cocoa 框架。</li>
+<li><strong>推薦克隆策略</strong>：智慧研判應採用 <code>hard_clone</code> 還是 <code>soft_clone</code>。</li>
+<li>點選 <strong>"儲存為規則 💾"</strong>。</li>
+</ol>
+<p>儲存成功後，該規則將立即生效並註冊到您的本地規則庫。此時回到主介面點選 <strong>"+ 新建分身"</strong>，嚮導將直接識別併為您完成完美隔離！</p>
+<hr />
+<h2 id="_4">✏️ 方法二：使用視覺化規則編輯器<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>如果您想完全手動編寫或微調規則：</p>
+<ol>
+<li>點選側邊欄的 <strong>"規則庫"</strong>（<code>📑</code>）導航項。</li>
+<li>點選右上角的 <strong>"+ 新建規則"</strong> 按鈕。</li>
+<li>在彈出的規則編輯面板中填寫基礎資訊：</li>
+<li><strong>Bundle ID</strong>：如 <code>com.company.internaltool</code></li>
+<li><strong>應用名稱</strong>：如 <code>InternalTool</code></li>
+<li><strong>克隆策略</strong>：選擇 <code>hard_clone</code> 或 <code>soft_clone</code></li>
+<li><strong>剝離沙盒</strong>：按需勾選</li>
+<li><strong>代理配置</strong>：設定預設代理引數</li>
+<li>點選 <strong>"儲存規則"</strong>。</li>
+</ol>
+<p>您也可以在規則庫列表中選中任意內建規則，點選 <strong>"編輯"</strong> 生成一份本地自定義覆蓋規則。</p>
+<hr />
+<h2 id="_5">📖 規則基礎引數全解<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>以下為規則檔案中各基礎引數的詳細含義與取值說明：</p>
+<h3 id="1-bundle_id">1. <code>bundle_id</code>（應用唯一標識）<a class="headerlink" href="#1-bundle_id" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>型別</strong>：<code>string</code>（如 <code>com.tencent.xinWeChat</code>、<code>com.google.Chrome</code>）</li>
+<li><strong>說明</strong>：macOS 應用程式的唯一反向域名識別符號。ATBClone 通過匹配此 ID 來索引對應的分身規則。</li>
+</ul>
+<hr />
+<h3 id="2-app_name">2. <code>app_name</code>（應用名稱）<a class="headerlink" href="#2-app_name" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>型別</strong>：<code>string</code>（如 <code>微信</code>、<code>Telegram</code>、<code>Cursor</code>）</li>
+<li><strong>說明</strong>：規則的人類可讀顯示標題。</li>
+</ul>
+<hr />
+<h3 id="3-strategy">3. <code>strategy</code>（克隆策略）<a class="headerlink" href="#3-strategy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>型別</strong>：<code>enum</code>（可選值：<code>hard_clone</code> | <code>soft_clone</code>）</li>
+<li><strong>說明</strong>：決定分身引擎採用的底層技術路線。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">策略型別</th>
+<th style="text-align: left;">底層實現機制</th>
+<th style="text-align: left;">適用場景與推薦應用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>hard_clone</code>（物理克隆）</strong></td>
+<td style="text-align: left;">完整複製應用實體，修改 <code>CFBundleIdentifier</code> 基因身份，注入二進位制啟動劫持指令碼，執行 Ad-hoc 重新簽名。</td>
+<td style="text-align: left;">原生 Cocoa 應用、社交軟體（微信、QQ、Telegram、飛書、Discord）及需要獨立 TCC 系統許可權的應用。</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>soft_clone</code>（軟包裝）</strong></td>
+<td style="text-align: left;">僅生成一個輕量級的 <code>.app</code> 啟動器外殼，通過注入 <code>--user-data-dir</code> 或 <code>--profile</code> 引數啟動母體二進位制。</td>
+<td style="text-align: left;">瀏覽器（Chrome、Edge、Firefox、Brave）與現代程式碼編輯器（Cursor、VS Code、Zed）。</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="4-strip_sandbox">4. <code>strip_sandbox</code>（沙盒剝離）<a class="headerlink" href="#4-strip_sandbox" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>型別</strong>：<code>boolean</code>（<code>true</code> | <code>false</code>，預設建議：<code>false</code>）</li>
+<li><strong>說明</strong>：控制在執行硬克隆時，是否強制移除應用簽名中的 <code>com.apple.security.app-sandbox</code> 沙盒限制。</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<ul>
+<li><strong><code>false</code>（預設推薦）</strong>：保持 macOS 原生沙盒隔離機制。分身會使用獨立的 <code>~/Library/Containers/&lt;新BundleID&gt;</code> 容器，實現乾淨的資料隔離。</li>
+<li><strong><code>true</code>（僅用於嚴格受限的應用）</strong>：如果應用在修改 Bundle ID 後由於沙盒許可權受阻導致白屏或閃退，開啟此選項將徹底剝離沙盒限制。</li>
+</ul>
+</div>
+<hr />
+<h3 id="5-proxy">5. <code>proxy</code>（獨立代理配置）<a class="headerlink" href="#5-proxy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>型別</strong>：<code>object</code></li>
+<li><strong>說明</strong>：定義建立分身時預設使用的網路代理設定。</li>
+</ul>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">proxy</span><span class="p">:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">       </span><span class="c1"># boolean: 是否默认开启代理 (true/false)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w">          </span><span class="c1"># enum: 代理类型，可选 "http"、"https" 或 "socks5"</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">127.0.0.1</span><span class="w">     </span><span class="c1"># string: 代理服务器主机 IP 或域名</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7890</span><span class="w">          </span><span class="c1"># integer: 代理服务器端口号</span>
+</span></code></pre></div>
+<hr />
+<h3 id="6-injection_strategy">6. <code>injection_strategy</code>（環境注入模式）<a class="headerlink" href="#6-injection_strategy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>型別</strong>：<code>enum</code>（可選值：<code>auto</code> | <code>dylib</code> | <code>launcher</code>，預設：<code>auto</code>）</li>
+<li><strong>說明</strong>：配置針對物理克隆（<code>hard_clone</code>）應用的環境變數重定向底層機制。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">注入模式</th>
+<th style="text-align: left;">執行機制</th>
+<th style="text-align: left;">核心優勢與適用場景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>auto</code>（預設推薦）</strong></td>
+<td style="text-align: left;">智慧靜態探測 Mach-O 頭部 Padding 空間。空間充足時使用 <code>dylib</code>，空間不足或需額外引數時自動平滑回退為 <code>launcher</code>。</td>
+<td style="text-align: left;">絕大多數場景首選。保證對未知軟體的最大相容性與後續更新韌性。</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>dylib</code>（強制動態庫注入）</strong></td>
+<td style="text-align: left;">往 Mach-O 插入 <code>LC_LOAD_DYLIB</code>，啟動階段由 dyld 直接呼叫 <code>libatbclone_env.dylib</code> 完成環境變數隔離，<strong>零程序替換 (<code>execv</code>)</strong>。</td>
+<td style="text-align: left;">原生通訊軟體（微信、QQ、Telegram、企業微信）。完美支援頂部狀態列圖示與 macOS 系統通知中心。</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>launcher</code>（強制啟動器包裝）</strong></td>
+<td style="text-align: left;">編譯原生 Mach-O C 二進位制啟動器替代主程式，將原主程式重新命名為 <code>.bin</code> 並通過 <code>execv</code> 代理啟動。</td>
+<td style="text-align: left;">需追加特定命令列啟動引數或 Mach-O 頭部極度緊湊的應用。</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="yaml">📄 自定義規則 YAML 完整範例<a class="headerlink" href="#yaml" title="Permanent link">&para;</a></h2>
+<p>下面是一份標準的自定義規則檔案示例：</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># ========================================================</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1"># ATBClone 自定义规则 - ExampleApp</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># 存放路径: ~/ATBClone/recipes/com.example.app.yaml</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># ========================================================</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nt">bundle_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">com.example.app</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nt">app_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExampleApp</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hard_clone</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="nt">app_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cocoa</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="nt">strip_sandbox</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="nt">injection_strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="nt">proxy</span><span class="p">:</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">127.0.0.1</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7890</span>
+</span></code></pre></div>
+<hr />
+<h2 id="_6">⏭️ 下一步指引<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<ul>
+<li>想要了解 <code>environment_injection</code>、<code>symlink_whitelist</code> 等高階引數與底層機制？請閱讀 <strong><a href="../03-under-the-hood-and-internals/">第三章：實現原理解析與高階引數全解</a></strong>。</li>
+<li>遇到分身無法執行或閃退？請查閱 <strong><a href="../04-faq-and-troubleshooting/">第四章：常見問題 (FAQ)、系統體檢與反饋</a></strong>。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  回到頂部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">回報問題與建議</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"redirect":null,"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"已拷貝","clipboard.copy":"拷貝","search.result.more.one":"此頁尚有 1 個符合的項目","search.result.more.other":"此頁尚有 # 個符合的項目","search.result.none":"沒有找到符合條件的結果","search.result.one":"找到 1 个符合條件的結果","search.result.other":"找到 # 個符合條件的結果","search.result.placeholder":"鍵入以開始檢索","search.result.term.missing":"缺失","select.version":"選擇版本"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8dcc8e9c.min.js"></script>
+      
+        <script src="../javascripts/language-detector.js"></script>
+      
+        <script src="../javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

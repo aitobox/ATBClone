@@ -1,0 +1,774 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Manual oficial de ATBClone — Motor de multi-instancia y aislamiento de sandbox para macOS">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/es/">
+      
+      
+      
+        <link rel="next" href="./01-basic-operations/">
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+          <link rel="alternate" href="/zh-hant/" hreflang="zh-hant">
+        
+          <link rel="alternate" href="/ja/" hreflang="ja">
+        
+          <link rel="alternate" href="/ko/" hreflang="ko">
+        
+          <link rel="alternate" href="/de/" hreflang="de">
+        
+          <link rel="alternate" href="/fr/" hreflang="fr">
+        
+          <link rel="alternate" href="/es/" hreflang="es">
+        
+          <link rel="alternate" href="/ru/" hreflang="ru">
+        
+      
+      
+      <link rel="icon" href="./assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.62">
+    
+    
+      
+        <title>Resumen de la Guía - Manual de Usuario de ATBClone</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="./assets/stylesheets/modern/main.ce62732f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="./assets/stylesheets/modern/palette.812a03bb.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="./stylesheets/extra.css">
+    
+    <script>__md_scope=new URL(".",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="./javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navegación"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#manual-de-usuario-de-atbclone-version-en-espanol" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="" title="Manual de Usuario de ATBClone" class="md-header__button md-logo" aria-label="Manual de Usuario de ATBClone" data-md-component="logo">
+      
+  <img src="./assets/images/logo.png" alt="Manual de Usuario de ATBClone">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navegación">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Manual de Usuario de ATBClone
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Resumen de la Guía
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Buscar">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Buscar">
+  <button type="button" class="md-search__button">
+    Buscar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="" title="Manual de Usuario de ATBClone" class="md-nav__button md-logo" aria-label="Manual de Usuario de ATBClone" data-md-component="logo">
+      
+  <img src="./assets/images/logo.png" alt="Manual de Usuario de ATBClone">
+
+    </a>
+    Manual de Usuario de ATBClone
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+      <a href="/zh-hant/" class="atb-lang-item" data-lang="zh-hant" role="menuitem">繁體中文</a>
+      
+      <a href="/ja/" class="atb-lang-item" data-lang="ja" role="menuitem">日本語</a>
+      
+      <a href="/ko/" class="atb-lang-item" data-lang="ko" role="menuitem">한국어</a>
+      
+      <a href="/de/" class="atb-lang-item" data-lang="de" role="menuitem">Deutsch</a>
+      
+      <a href="/fr/" class="atb-lang-item" data-lang="fr" role="menuitem">Français</a>
+      
+      <a href="/es/" class="atb-lang-item" data-lang="es" role="menuitem">Español</a>
+      
+      <a href="/ru/" class="atb-lang-item" data-lang="ru" role="menuitem">Русский</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Resumen de la Guía
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Resumen de la Guía
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#navegacion-por-capitulos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🧭 Navegación por capítulos
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#por-que-elegir-atbclone" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🌟 ¿Por qué elegir ATBClone?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#glosario-y-conceptos-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📚 Glosario y conceptos clave
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./01-basic-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Capítulo 1: Operaciones básicas y gestión de clones
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./02-advanced-custom-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Capítulo 2: Recetas personalizadas y parámetros básicos
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./03-under-the-hood-and-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Capítulo 3: Funcionamiento interno y parámetros avanzados
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./04-faq-and-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Capítulo 4: Preguntas frecuentes (FAQ), diagnóstico y soporte
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#navegacion-por-capitulos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🧭 Navegación por capítulos
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#por-que-elegir-atbclone" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🌟 ¿Por qué elegir ATBClone?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#glosario-y-conceptos-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📚 Glosario y conceptos clave
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="manual-de-usuario-de-atbclone-version-en-espanol">📖 Manual de Usuario de ATBClone (Versión en español)<a class="headerlink" href="#manual-de-usuario-de-atbclone-version-en-espanol" title="Permanent link">&para;</a></h1>
+<p><a href="../en/">English Version</a> | <a href="../zh/">簡體中文</a> | <a href="../zh-hant/">繁體中文</a> | <a href="../ja/">日本語</a> | <a href="../ko/">한국어</a> | <a href="../de/">Deutsch</a> | <a href="../fr/">Français</a> | Versión en español</p>
+<p>Bienvenido al <strong>Manual Oficial de Usuario de ATBClone</strong>. Esta guía le acompañará paso a paso en el dominio de las capacidades de ejecución multi-instancia y aislamiento en sandbox para aplicaciones de macOS, desde operaciones básicas hasta diagnósticos y arquitectura interna.</p>
+<hr />
+<h2 id="navegacion-por-capitulos">🧭 Navegación por capítulos<a class="headerlink" href="#navegacion-por-capitulos" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Capítulo</th>
+<th style="text-align: left;">Título</th>
+<th style="text-align: left;">Audiencia</th>
+<th style="text-align: left;">Temas principales</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><a href="01-basic-operations/">Capítulo 1</a></strong></td>
+<td style="text-align: left;"><strong><a href="01-basic-operations/">Operaciones básicas &amp; Gestión de clones</a></strong></td>
+<td style="text-align: left;">👶 <strong>Principiantes / Todos</strong></td>
+<td style="text-align: left;">Asistente interactivo en 7 pasos, lanzamiento, acceso directo a la carpeta de datos, <strong>actualizaciones sincronizadas sin pérdida de datos</strong>, vista de tabla (<strong>actualización y eliminación por lotes</strong>), desinstalación segura.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="02-advanced-custom-recipes/">Capítulo 2</a></strong></td>
+<td style="text-align: left;"><strong><a href="02-advanced-custom-recipes/">Recetas personalizadas &amp; Parámetros básicos</a></strong></td>
+<td style="text-align: left;">⚡ <strong>Usuarios intermedios</strong></td>
+<td style="text-align: left;">Uso de <strong>App Prober (Sonda inteligente)</strong> para escanear apps no listadas, editor visual de recetas, <strong>parámetros esenciales</strong> (<code>bundle_id</code>, <code>strategy</code>, <code>strip_sandbox</code>, <code>proxy</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="03-under-the-hood-and-internals/">Capítulo 3</a></strong></td>
+<td style="text-align: left;"><strong><a href="03-under-the-hood-and-internals/">Funcionamiento interno &amp; Parámetros avanzados</a></strong></td>
+<td style="text-align: left;">🔬 <strong>Avanzados / Desarrolladores</strong></td>
+<td style="text-align: left;">Mecanismos de Soft vs Hard Clone, <strong>pilares de Hard Clone y secuestro de wrapper binario (Wrapper Hijack)</strong>, arquitectura desacoplada de datos y lógica, <strong>parámetros YAML avanzados</strong> (<code>environment_injection</code>, <code>symlink_whitelist</code>, macros dinámicas).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="04-faq-and-troubleshooting/">Capítulo 4</a></strong></td>
+<td style="text-align: left;"><strong><a href="04-faq-and-troubleshooting/">Preguntas frecuentes (FAQ), Diagnóstico &amp; Soporte</a></strong></td>
+<td style="text-align: left;">🩺 <strong>Todos los usuarios</strong></td>
+<td style="text-align: left;">Preguntas frecuentes (seguridad de datos, rutas de almacenamiento y migración, prevención de bloqueos, sin necesidad de permisos root), diagnóstico con Doctor, <strong>extracción de detalles de clones y reporte de Issues en GitHub</strong>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="por-que-elegir-atbclone">🌟 ¿Por qué elegir ATBClone?<a class="headerlink" href="#por-que-elegir-atbclone" title="Permanent link">&para;</a></h2>
+<p>En macOS, los métodos tradicionales de clonación (como simplemente copiar <code>.app</code> con <code>cp -R</code> o crear alias en la Terminal) fallan constantemente porque las aplicaciones modernas comparten preferencias, bases de datos y elementos del llavero a nivel del sistema.</p>
+<p>ATBClone resuelve esto ofreciendo un <strong>Aislamiento Cuádruple (Quadruple Isolation)</strong>:</p>
+<pre class="mermaid"><code>graph TD
+    A[Motor de Aislamiento ATBClone] --&gt; B[1. Aislamiento de datos &amp; caché]
+    A --&gt; C[2. Identidad visual &amp; Dock independiente]
+    A --&gt; D[3. Permisos de seguridad macOS TCC]
+    A --&gt; E[4. Aislamiento de red mediante proxy]
+
+    B --&gt; B1["$HOME y $TMPDIR independientes, cero bloqueos en SQLite"]
+    C --&gt; C1["Icono de Dock independiente, nombre personalizado, soporte Spotlight"]
+    D --&gt; D1["Permisos de cámara, micrófono y disco gestionados por separado"]
+    E --&gt; E1["Enrutamiento de proxy HTTP/SOCKS5 dedicado por clon"]</code></pre>
+<ol>
+<li><strong>📦 Aislamiento de datos y caché</strong>: Cada clon opera con su propio <code>$HOME</code> o <code>--user-data-dir</code>. Múltiples cuentas pueden coexistir sin colisión de bases de datos.</li>
+<li><strong>🎨 Identidad visual y Dock</strong>: Cada clon tiene su propio nombre e icono en Spotlight, Launchpad y el Dock.</li>
+<li><strong>🛡️ Aislamiento de permisos (TCC)</strong>: Al contar con un <code>CFBundleIdentifier</code> único, macOS gestiona los permisos de privacidad de forma aislada.</li>
+<li><strong>🌐 Tráfico de red por proxy</strong>: Posibilidad de asignar un proxy HTTP o SOCKS5 dedicado a cada clon sin alterar la red del sistema anfitrión.</li>
+</ol>
+<hr />
+<h2 id="glosario-y-conceptos-clave">📚 Glosario y conceptos clave<a class="headerlink" href="#glosario-y-conceptos-clave" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Aplicación anfitriona (Host App)</strong>: La aplicación original instalada en su Mac (generalmente en <code>/Applications</code>).</li>
+<li><strong>Aplicación clonada (Clone App)</strong>: La instancia generada por ATBClone (por defecto en <code>~/ATBClone/Apps</code>).</li>
+<li><strong>Hard Clone (Duplicación física y secuestro de wrapper)</strong>: Duplica el bundle, modifica el Bundle ID, inyecta scripts de entorno y refirma. Ideal para apps de mensajería (WeChat, Telegram, Discord, Slack).</li>
+<li><strong>Soft Clone (Lanzador wrapper)</strong>: Crea un lanzador ligero que pasa parámetros de datos aislados (<code>--user-data-dir</code>). Ideal para navegadores y editores (Cursor, VS Code, Chrome).</li>
+<li><strong>Receta (Recipe)</strong>: Archivo YAML con las instrucciones de aislamiento y arranque.</li>
+<li><strong>Directorio de datos aislado</strong>: Carpeta donde se guardan chats, cachés y ajustes (<code>~/ATBClone/Data/&lt;NombreClon&gt;</code>).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">Reportar problemas y sugerencias</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":".","features":["navigation.top","search.highlight","content.code.copy"],"redirect":null,"search":"./assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copiado al portapapeles","clipboard.copy":"Copiar al portapapeles","search.result.more.one":"1 más en esta página","search.result.more.other":"# más en esta página","search.result.none":"No se encontraron documentos","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Teclee para comenzar búsqueda","search.result.term.missing":"Falta","select.version":"Seleccionar versión"},"version":null}</script>
+    
+    
+      <script src="./assets/javascripts/bundle.8dcc8e9c.min.js"></script>
+      
+        <script src="./javascripts/language-detector.js"></script>
+      
+        <script src="./javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

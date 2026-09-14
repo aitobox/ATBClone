@@ -1,0 +1,862 @@
+/* ==========================================================================
+   ATBCmder Documentation — "Glacier & Ocean Tech" Design System
+   Modern Light-Blue & Apple-Inspired Visual Theme
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Root Typography & Monospace Normalization
+   -------------------------------------------------------------------------- */
+:root {
+  --atb-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --md-text-font: var(--atb-font-sans);
+  --md-code-font: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* Brand Colors */
+  --atb-sky-50: #f0f9ff;
+  --atb-sky-100: #e0f2fe;
+  --atb-sky-200: #bae6fd;
+  --atb-sky-300: #7dd3fc;
+  --atb-sky-400: #38bdf8;
+  --atb-sky-500: #0ea5e9;
+  --atb-sky-600: #0284c7;
+  --atb-sky-700: #0369a1;
+  --atb-sky-800: #075985;
+  --atb-sky-900: #0c4a6e;
+}
+
+/* Ensure code blocks render with native monospace font, zero letter-spacing, and preformatted text */
+.highlight pre,
+pre code,
+code,
+kbd {
+  font-family: var(--md-code-font) !important;
+  letter-spacing: 0;
+}
+
+/* CJK Monospace Character Normalizer for ASCII Diagrams (DO NOT REMOVE) */
+.cjk-char {
+  display: inline-block;
+  width: 2ch;
+  text-align: center;
+  vertical-align: baseline;
+  font-style: normal;
+}
+
+/* --------------------------------------------------------------------------
+   2. Light Theme Palette: Glacier & Ocean Blue
+   -------------------------------------------------------------------------- */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #0284c7;
+  --md-primary-fg-color--light: #38bdf8;
+  --md-primary-fg-color--dark: #0369a1;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
+
+  --md-accent-fg-color: #0ea5e9;
+  --md-accent-fg-color--transparent: rgba(14, 165, 233, 0.12);
+
+  --md-default-fg-color: #0f172a;
+  --md-default-fg-color--light: #475569;
+  --md-default-fg-color--lighter: #94a3b8;
+  --md-default-fg-color--lightest: #e2e8f0;
+
+  --md-default-bg-color: #ffffff;
+  --md-default-bg-color--light: #f8fafc;
+  --md-default-bg-color--lighter: #f1f5f9;
+  --md-default-bg-color--lightest: #e0f2fe;
+
+  --md-typeset-color: #334155;
+  --md-typeset-a-color: #0284c7;
+
+  --atb-page-bg: #f8fafc;
+  --atb-header-bg: rgba(255, 255, 255, 0.86);
+  --atb-header-border: rgba(226, 232, 240, 0.85);
+  --atb-card-bg: #ffffff;
+  --atb-card-border: rgba(2, 132, 199, 0.12);
+  --atb-card-shadow: 0 8px 24px -4px rgba(2, 132, 199, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* --------------------------------------------------------------------------
+   3. Dark Theme Palette: Deep Midnight Navy
+   -------------------------------------------------------------------------- */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #38bdf8;
+  --md-primary-fg-color--light: #7dd3fc;
+  --md-primary-fg-color--dark: #0284c7;
+  --md-primary-bg-color: #0b132b;
+  --md-primary-bg-color--light: rgba(11, 19, 43, 0.7);
+
+  --md-accent-fg-color: #38bdf8;
+  --md-accent-fg-color--transparent: rgba(56, 189, 248, 0.15);
+
+  --md-default-fg-color: #f1f5f9;
+  --md-default-fg-color--light: #94a3b8;
+  --md-default-fg-color--lighter: #64748b;
+  --md-default-fg-color--lightest: #1e293b;
+
+  --md-default-bg-color: #0b132b;
+  --md-default-bg-color--light: #111d3d;
+  --md-default-bg-color--lighter: #18284e;
+  --md-default-bg-color--lightest: rgba(56, 189, 248, 0.1);
+
+  --md-typeset-color: #cbd5e1;
+  --md-typeset-a-color: #38bdf8;
+
+  --md-code-bg-color: #080d1e;
+  --md-code-fg-color: #e2e8f0;
+
+  --atb-page-bg: #0b132b;
+  --atb-header-bg: rgba(11, 19, 43, 0.86);
+  --atb-header-border: rgba(56, 189, 248, 0.18);
+  --atb-card-bg: #111d3d;
+  --atb-card-border: rgba(56, 189, 248, 0.16);
+  --atb-card-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.45);
+}
+
+/* --------------------------------------------------------------------------
+   4. Layout, Canvas & Ambient Atmosphere
+   -------------------------------------------------------------------------- */
+body {
+  font-family: var(--atb-font-sans);
+  background-color: var(--atb-page-bg);
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Subtle ambient top sky-blue light glow */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 380px;
+  background: radial-gradient(ellipse 90% 50% at 50% -10%, rgba(186, 230, 253, 0.4) 0%, rgba(224, 242, 254, 0.12) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-md-color-scheme="slate"] body::before {
+  background: radial-gradient(ellipse 90% 50% at 50% -10%, rgba(14, 165, 233, 0.18) 0%, rgba(15, 23, 42, 0.2) 60%, transparent 100%);
+}
+
+.md-main {
+  position: relative;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   5. Apple Glassmorphic Header
+   -------------------------------------------------------------------------- */
+.md-header {
+  background: var(--atb-header-bg) !important;
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border-bottom: 1px solid var(--atb-header-border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02) !important;
+  color: var(--md-default-fg-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Top accent gradient line */
+.md-header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #38bdf8 0%, #0284c7 50%, #6366f1 100%);
+  opacity: 0.85;
+}
+
+.md-header__topic .md-ellipsis {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--md-default-fg-color);
+}
+
+/* Header Action Buttons & Badges */
+.atb-header-ph {
+  display: flex;
+  align-items: center;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.atb-header-ph img {
+  height: 36px;
+  width: auto;
+  border-radius: 6px;
+}
+
+.atb-header-ph:hover {
+  transform: translateY(-1px);
+  opacity: 0.92;
+}
+
+.atb-header-appstore {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem !important;
+  border-radius: 9999px;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: auto !important;
+  margin-right: 0.5rem;
+  background: rgba(2, 132, 199, 0.08);
+  border: 1px solid rgba(2, 132, 199, 0.22);
+  color: var(--md-primary-fg-color) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.atb-header-appstore:hover {
+  background: var(--md-primary-fg-color) !important;
+  border-color: var(--md-primary-fg-color);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+  transform: translateY(-1px);
+}
+
+.atb-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.atb-header-action {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.65rem !important;
+  border-radius: 8px;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  color: var(--md-default-fg-color--light) !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: auto !important;
+  transition: all 0.15s ease;
+}
+
+.atb-header-action:hover {
+  background: rgba(2, 132, 199, 0.08);
+  color: var(--md-primary-fg-color) !important;
+}
+
+.atb-header-lang {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem !important;
+  border-radius: 9999px;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  color: var(--md-primary-fg-color) !important;
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: auto !important;
+  transition: all 0.2s ease;
+}
+
+.atb-header-lang:hover {
+  background: rgba(14, 165, 233, 0.16);
+  border-color: var(--md-primary-fg-color);
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   Header Language Dropdown Switcher
+   -------------------------------------------------------------------------- */
+.atb-lang-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.atb-lang-dropdown > summary::-webkit-details-marker,
+.atb-lang-dropdown > summary::marker {
+  display: none;
+}
+
+.atb-lang-dropdown > summary {
+  list-style: none;
+}
+
+.atb-lang-summary {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem !important;
+  border-radius: 9999px;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  color: var(--md-primary-fg-color) !important;
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: auto !important;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.atb-lang-summary:hover,
+.atb-lang-dropdown[open] > .atb-lang-summary {
+  background: rgba(14, 165, 233, 0.16);
+  border-color: var(--md-primary-fg-color);
+  transform: translateY(-1px);
+}
+
+.atb-lang-summary svg {
+  flex-shrink: 0;
+}
+
+.atb-lang-caret {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: 0.1rem;
+}
+
+.atb-lang-dropdown[open] .atb-lang-caret {
+  transform: rotate(180deg);
+}
+
+.atb-lang-current {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.atb-lang-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  max-height: 420px;
+  overflow-y: auto;
+  z-index: 100;
+  border-radius: 8px;
+  padding: 6px 0;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  list-style: none;
+  margin: 0;
+}
+
+[data-md-color-scheme="slate"] .atb-lang-menu {
+  background: #1f232a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.atb-lang-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  line-height: 1.4;
+}
+
+.atb-lang-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--md-primary-fg-color);
+}
+
+[data-md-color-scheme="slate"] .atb-lang-item {
+  color: inherit;
+}
+
+[data-md-color-scheme="slate"] .atb-lang-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--md-primary-fg-color);
+}
+
+.atb-lang-item.is-active {
+  font-weight: bold;
+  color: var(--md-typeset-a-color) !important;
+  background-color: rgba(2, 132, 199, 0.08);
+}
+
+[data-md-color-scheme="slate"] .atb-lang-item.is-active {
+  background-color: rgba(56, 189, 248, 0.12);
+}
+
+.atb-lang-item.is-active::after {
+  content: "✓";
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--md-typeset-a-color);
+  margin-left: 12px;
+}
+
+@media screen and (max-width: 76.1875em) {
+  .atb-lang-current {
+    max-width: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 960px) {
+  .atb-header-ph {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .atb-header-appstore span,
+  .atb-header-action span,
+  .atb-lang-current {
+    display: none;
+  }
+  .atb-header-appstore,
+  .atb-header-action {
+    padding: 0.35rem 0.45rem !important;
+  }
+  .atb-lang-summary {
+    padding: 0.35rem 0.5rem !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. Sidebar Navigation Polish
+   -------------------------------------------------------------------------- */
+.md-nav__link {
+  border-radius: 6px;
+  padding: 0.3rem 0.55rem !important;
+  font-size: 0.7rem;
+  transition: all 0.15s ease;
+}
+
+.md-nav__link:hover {
+  background: rgba(2, 132, 199, 0.06);
+  color: var(--md-primary-fg-color);
+}
+
+.md-nav__item--active > .md-nav__link {
+  background: rgba(2, 132, 199, 0.1) !important;
+  color: var(--md-primary-fg-color) !important;
+  font-weight: 600;
+  border-left: 3px solid var(--md-primary-fg-color);
+  border-radius: 0 6px 6px 0;
+}
+
+[data-md-color-scheme="slate"] .md-nav__item--active > .md-nav__link {
+  background: rgba(56, 189, 248, 0.12) !important;
+  color: var(--md-primary-fg-color) !important;
+  border-left: 3px solid var(--md-primary-fg-color);
+}
+
+/* --------------------------------------------------------------------------
+   7. Typography, Headings & Content Flow
+   -------------------------------------------------------------------------- */
+.md-typeset {
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--md-typeset-color);
+}
+
+.md-typeset h1 {
+  font-size: 1.85em;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--md-default-fg-color);
+  margin-bottom: 1.25rem;
+}
+
+.md-typeset h2 {
+  font-size: 1.38em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--md-default-fg-color);
+  margin-top: 1.85rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  position: relative;
+}
+
+.md-typeset h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--md-primary-fg-color), var(--atb-sky-400));
+  border-radius: 2px;
+}
+
+.md-typeset h3 {
+  font-size: 1.15em;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--md-default-fg-color);
+  margin-top: 1.45rem;
+}
+
+/* Links */
+.md-typeset a {
+  color: var(--md-typeset-a-color);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.md-typeset a:hover {
+  border-bottom-color: var(--md-typeset-a-color);
+}
+
+/* --------------------------------------------------------------------------
+   8. Apple Keyboard Keycaps (<kbd>)
+   -------------------------------------------------------------------------- */
+kbd {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.8em;
+  font-family: var(--md-code-font) !important;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #0f172a;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  border: 1px solid #cbd5e1;
+  border-bottom: 2px solid #94a3b8;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  margin: 0 0.15rem;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+[data-md-color-scheme="slate"] kbd {
+  color: #f1f5f9;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid #334155;
+  border-bottom: 2px solid #080d1e;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Inline Code Badges */
+.md-typeset code:not(pre code) {
+  font-size: 0.85em;
+  color: var(--atb-sky-700);
+  background: rgba(224, 242, 254, 0.6);
+  border: 1px solid rgba(186, 230, 253, 0.8);
+  border-radius: 5px;
+  padding: 0.15rem 0.4rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset code:not(pre code) {
+  color: var(--atb-sky-300);
+  background: rgba(14, 165, 233, 0.12);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   9. Tables with Modern Light-Blue Header & Card Enclosure
+   -------------------------------------------------------------------------- */
+.md-typeset table:not([class]) {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  box-shadow: 0 4px 16px -4px rgba(2, 132, 199, 0.06);
+  margin: 1.5rem 0;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--atb-sky-50);
+  color: var(--atb-sky-700);
+  font-weight: 600;
+  border-bottom: 2px solid var(--atb-sky-200);
+  padding: 0.6rem 0.85rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background-color: rgba(14, 165, 233, 0.12);
+  color: var(--atb-sky-300);
+  border-bottom: 2px solid rgba(56, 189, 248, 0.2);
+}
+
+.md-typeset table:not([class]) td {
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.md-typeset table:not([class]) tr:last-child td {
+  border-bottom: none;
+}
+
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: rgba(2, 132, 199, 0.03);
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:hover {
+  background-color: rgba(56, 189, 248, 0.05);
+}
+
+/* --------------------------------------------------------------------------
+   10. Screenshots & Images (Apple Window Aesthetic)
+   -------------------------------------------------------------------------- */
+.md-typeset img {
+  border-radius: 10px;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  box-shadow: var(--atb-card-shadow);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.md-typeset img:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -6px rgba(2, 132, 199, 0.18), 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+[data-md-color-scheme="slate"] .md-typeset img:hover {
+  box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.6);
+}
+
+/* --------------------------------------------------------------------------
+   11. Admonitions & Callout Blocks
+   -------------------------------------------------------------------------- */
+.md-typeset .admonition {
+  border-radius: 10px;
+  border-left-width: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.md-typeset .admonition.note,
+.md-typeset .admonition.info {
+  border-left-color: var(--md-primary-fg-color);
+}
+
+.md-typeset .admonition.tip {
+  border-left-color: #10b981;
+}
+
+.md-typeset .admonition.warning {
+  border-left-color: #f59e0b;
+}
+
+.md-typeset .admonition.important {
+  border-left-color: #8b5cf6;
+  background-color: rgba(139, 92, 246, 0.08);
+}
+
+.md-typeset .important > .admonition-title:before,
+.md-typeset .important > summary:before {
+  background-color: #8b5cf6;
+  -webkit-mask-image: var(--md-admonition-icon--warning);
+  mask-image: var(--md-admonition-icon--warning);
+}
+
+.md-typeset .admonition.caution {
+  border-left-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+.md-typeset .caution > .admonition-title:before,
+.md-typeset .caution > summary:before {
+  background-color: #ef4444;
+  -webkit-mask-image: var(--md-admonition-icon--danger);
+  mask-image: var(--md-admonition-icon--danger);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.important {
+  background-color: rgba(139, 92, 246, 0.12);
+  border-left-color: #a78bfa;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .important > .admonition-title:before,
+[data-md-color-scheme="slate"] .md-typeset .important > summary:before {
+  background-color: #a78bfa;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.caution {
+  background-color: rgba(239, 68, 68, 0.12);
+  border-left-color: #f87171;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .caution > .admonition-title:before,
+[data-md-color-scheme="slate"] .md-typeset .caution > summary:before {
+  background-color: #f87171;
+}
+
+/* --------------------------------------------------------------------------
+   12. Code Blocks & Containers
+   -------------------------------------------------------------------------- */
+.highlight {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+[data-md-color-scheme="slate"] .highlight {
+  border-color: rgba(56, 189, 248, 0.15);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+/* --------------------------------------------------------------------------
+   13. Footer Refinement
+   -------------------------------------------------------------------------- */
+.md-footer {
+  background: var(--atb-card-bg);
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color--light);
+}
+
+.md-footer-meta {
+  background-color: transparent !important;
+}
+
+.md-copyright {
+  font-size: 0.825rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.atb-footer-custom-links {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+.atb-footer-custom-links a {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.atb-footer-custom-links a:hover {
+  color: var(--md-primary-fg-color);
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   14. Blockquotes & Emphasis
+   -------------------------------------------------------------------------- */
+.md-typeset blockquote {
+  border-left: 4px solid var(--md-primary-fg-color);
+  background: rgba(2, 132, 199, 0.04);
+  border-radius: 0 8px 8px 0;
+  padding: 0.8rem 1.2rem;
+  margin: 1.2rem 0;
+}
+
+[data-md-color-scheme="slate"] .md-typeset blockquote {
+  background: rgba(56, 189, 248, 0.06);
+  border-left-color: var(--md-primary-fg-color);
+}
+
+/* --------------------------------------------------------------------------
+   15. Mobile Drawer & Header Actions in Drawer
+   -------------------------------------------------------------------------- */
+.md-nav__source .atb-header-actions {
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  background: rgba(2, 132, 199, 0.04);
+  border-radius: 8px;
+  margin: 0.5rem 0.8rem;
+}
+
+[data-md-color-scheme="slate"] .md-nav__source .atb-header-actions {
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.md-nav__source .atb-lang-dropdown {
+  width: 100%;
+}
+
+.md-nav__source .atb-lang-menu {
+  position: static;
+  box-shadow: none;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   16. Search Modal & Highlight
+   -------------------------------------------------------------------------- */
+.md-search__inner {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25) !important;
+}
+
+.md-search-result__meta {
+  background-color: var(--atb-sky-50);
+  color: var(--atb-sky-700);
+  font-weight: 600;
+}
+
+[data-md-color-scheme="slate"] .md-search-result__meta {
+  background-color: rgba(14, 165, 233, 0.15);
+  color: var(--atb-sky-300);
+}
+
+.md-search-result__item:hover {
+  background-color: rgba(2, 132, 199, 0.06);
+}
+
+[data-md-color-scheme="slate"] .md-search-result__item:hover {
+  background-color: rgba(56, 189, 248, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+   17. Sleek Scrollbars
+   -------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(2, 132, 199, 0.22);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(2, 132, 199, 0.45);
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.25);
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.5);
+}
+

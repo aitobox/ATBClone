@@ -6,7 +6,7 @@
   <script>
     (function () {
       var STORAGE_KEY = 'preferred_language';
-      var SUPPORTED = ['en', 'zh'];
+      var SUPPORTED = ['en', 'zh', 'zh-hant', 'ja', 'ko', 'de', 'fr', 'es', 'ru'];
 
       function isSupported(code) {
         return code && SUPPORTED.indexOf(code.toLowerCase()) !== -1;
@@ -57,8 +57,36 @@
       function matchBrowserLocale(localeStr) {
         if (!localeStr || typeof localeStr !== 'string') return null;
         var l = localeStr.toLowerCase().trim();
-        if (l.indexOf('zh') === 0) return 'zh';
-        return 'en';
+
+        // Traditional Chinese prefixes
+        if (
+          l.indexOf('zh-tw') === 0 ||
+          l.indexOf('zh-hk') === 0 ||
+          l.indexOf('zh-mo') === 0 ||
+          l.indexOf('zh-hant') === 0
+        ) {
+          return 'zh-hant';
+        }
+
+        // Simplified / Generic Chinese prefixes
+        if (
+          l.indexOf('zh-cn') === 0 ||
+          l.indexOf('zh-sg') === 0 ||
+          l.indexOf('zh-hans') === 0 ||
+          l.indexOf('zh') === 0
+        ) {
+          return 'zh';
+        }
+
+        if (l.indexOf('ja') === 0) return 'ja';
+        if (l.indexOf('ko') === 0) return 'ko';
+        if (l.indexOf('de') === 0) return 'de';
+        if (l.indexOf('fr') === 0) return 'fr';
+        if (l.indexOf('es') === 0) return 'es';
+        if (l.indexOf('ru') === 0) return 'ru';
+        if (l.indexOf('en') === 0) return 'en';
+
+        return null;
       }
 
       var langs = [];
@@ -92,6 +120,13 @@
   <ul>
     <li><a href="en/">English</a></li>
     <li><a href="zh/">简体中文</a></li>
+    <li><a href="zh-hant/">繁體中文</a></li>
+    <li><a href="ja/">日本語</a></li>
+    <li><a href="ko/">한국어</a></li>
+    <li><a href="de/">Deutsch</a></li>
+    <li><a href="fr/">Français</a></li>
+    <li><a href="es/">Español</a></li>
+    <li><a href="ru/">Русский</a></li>
   </ul>
 </body>
 </html>

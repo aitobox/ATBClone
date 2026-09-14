@@ -1,11 +1,11 @@
 [project]
-site_name        = "ATBClone Documentation"
-site_url         = "https://clone.aitobox.com/en/"
-site_description = "Official User Guide & Manual for ATBClone — macOS Application Multi-Instancing & Sandbox Isolation Engine"
+site_name        = "Manual de Usuario de ATBClone"
+site_url         = "https://clone.aitobox.com/es/"
+site_description = "Manual oficial de ATBClone — Motor de multi-instancia y aislamiento de sandbox para macOS"
 repo_url         = "https://github.com/aitobox/ATBClone"
 repo_name        = "aitobox/ATBClone"
-docs_dir         = "en"
-site_dir         = "site/en"
+docs_dir         = "es"
+site_dir         = "site/es"
 
 extra_javascript = [
   "javascripts/language-detector.js",
@@ -16,17 +16,17 @@ extra_css = [
 ]
 
 nav = [
-  { "User Guide Overview" = "README.md" },
-  { "Chapter 1: Basic Operations & Clone Management" = "01-basic-operations.md" },
-  { "Chapter 2: Custom Recipes for Niche Apps" = "02-advanced-custom-recipes.md" },
-  { "Chapter 3: Under the Hood & Advanced Parameters" = "03-under-the-hood-and-internals.md" },
-  { "Chapter 4: FAQ & Diagnostic Troubleshooting" = "04-faq-and-troubleshooting.md" }
+  { "Resumen de la Guía" = "README.md" },
+  { "Capítulo 1: Operaciones básicas y gestión de clones" = "01-basic-operations.md" },
+  { "Capítulo 2: Recetas personalizadas y parámetros básicos" = "02-advanced-custom-recipes.md" },
+  { "Capítulo 3: Funcionamiento interno y parámetros avanzados" = "03-under-the-hood-and-internals.md" },
+  { "Capítulo 4: Preguntas frecuentes (FAQ), diagnóstico y soporte" = "04-faq-and-troubleshooting.md" },
 ]
 
 [project.theme]
 name        = "material"
 custom_dir  = "overrides"
-language    = "en"
+language    = "es"
 logo        = "assets/images/logo.png"
 favicon     = "assets/images/logo.png"
 palette     = [
@@ -57,7 +57,7 @@ forum_url = "https://github.com/aitobox/ATBClone/issues"
 footer_links = [
   { text = "GitHub Releases", url = "https://github.com/aitobox/ATBClone/releases" },
   { text = "ATBCmder", url = "https://cmder.aitobox.com" },
-  { text = "Feedback & Issues", url = "https://github.com/aitobox/ATBClone/issues" }
+  { text = "Reportar problemas y sugerencias", url = "https://github.com/aitobox/ATBClone/issues" }
 ]
 
 [project.markdown_extensions]
@@ -84,3 +84,4 @@ toc = { permalink = true }
 "pymdownx.tabbed" = { alternate_style = true, combine_header_slug = true }
 "pymdownx.tasklist" = { custom_checkbox = true }
 "pymdownx.tilde" = {}
+

@@ -1,11 +1,11 @@
 [project]
-site_name        = "ATBClone Documentation"
-site_url         = "https://clone.aitobox.com/en/"
-site_description = "Official User Guide & Manual for ATBClone — macOS Application Multi-Instancing & Sandbox Isolation Engine"
+site_name        = "ATBClone 使用者手冊"
+site_url         = "https://clone.aitobox.com/zh-hant/"
+site_description = "ATBClone（艾特智能分身）官方使用手冊 — macOS 應用程式多開與沙盒隔離引擎"
 repo_url         = "https://github.com/aitobox/ATBClone"
 repo_name        = "aitobox/ATBClone"
-docs_dir         = "en"
-site_dir         = "site/en"
+docs_dir         = "zh-hant"
+site_dir         = "site/zh-hant"
 
 extra_javascript = [
   "javascripts/language-detector.js",
@@ -16,17 +16,17 @@ extra_css = [
 ]
 
 nav = [
-  { "User Guide Overview" = "README.md" },
-  { "Chapter 1: Basic Operations & Clone Management" = "01-basic-operations.md" },
-  { "Chapter 2: Custom Recipes for Niche Apps" = "02-advanced-custom-recipes.md" },
-  { "Chapter 3: Under the Hood & Advanced Parameters" = "03-under-the-hood-and-internals.md" },
-  { "Chapter 4: FAQ & Diagnostic Troubleshooting" = "04-faq-and-troubleshooting.md" }
+  { "手冊總覽" = "README.md" },
+  { "第一章：基礎操作與分身管理" = "01-basic-operations.md" },
+  { "第二章：冷門應用規則定制與基礎參數" = "02-advanced-custom-recipes.md" },
+  { "第三章：實現原理解析與高級參數全解" = "03-under-the-hood-and-internals.md" },
+  { "第四章：常見問題 (FAQ)、系統體檢與反饋" = "04-faq-and-troubleshooting.md" },
 ]
 
 [project.theme]
 name        = "material"
 custom_dir  = "overrides"
-language    = "en"
+language    = "zh-Hant"
 logo        = "assets/images/logo.png"
 favicon     = "assets/images/logo.png"
 palette     = [
@@ -57,7 +57,7 @@ forum_url = "https://github.com/aitobox/ATBClone/issues"
 footer_links = [
   { text = "GitHub Releases", url = "https://github.com/aitobox/ATBClone/releases" },
   { text = "ATBCmder", url = "https://cmder.aitobox.com" },
-  { text = "Feedback & Issues", url = "https://github.com/aitobox/ATBClone/issues" }
+  { text = "回報問題與建議", url = "https://github.com/aitobox/ATBClone/issues" }
 ]
 
 [project.markdown_extensions]
@@ -84,3 +84,4 @@ toc = { permalink = true }
 "pymdownx.tabbed" = { alternate_style = true, combine_header_slug = true }
 "pymdownx.tasklist" = { custom_checkbox = true }
 "pymdownx.tilde" = {}
+

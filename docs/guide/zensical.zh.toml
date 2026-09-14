@@ -44,7 +44,14 @@ features    = [
 multilingual = true
 alternate = [
   { name = "English", link = "/en/", lang = "en" },
-  { name = "简体中文", link = "/zh/", lang = "zh" }
+  { name = "简体中文", link = "/zh/", lang = "zh" },
+  { name = "繁體中文", link = "/zh-hant/", lang = "zh-hant" },
+  { name = "日本語", link = "/ja/", lang = "ja" },
+  { name = "한국어", link = "/ko/", lang = "ko" },
+  { name = "Deutsch", link = "/de/", lang = "de" },
+  { name = "Français", link = "/fr/", lang = "fr" },
+  { name = "Español", link = "/es/", lang = "es" },
+  { name = "Русский", link = "/ru/", lang = "ru" }
 ]
 forum_url = "https://github.com/aitobox/ATBClone/issues"
 footer_links = [

@@ -39,11 +39,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install "zensical>=0.0.46" "pymdown-extensions>=10.0" "Pygments>=2.16.0" "markdown-gfm-admonition>=0.3.0"
 
-      - name: Build English documentation
-        run: zensical build -f docs/guide/zensical.en.toml
-
-      - name: Build Chinese documentation
-        run: zensical build -f docs/guide/zensical.zh.toml
+      - name: Build all multilingual documentation sites
+        run: |
+          for cfg in docs/guide/zensical*.toml; do
+            echo "==> Compiling $cfg ..."
+            zensical build -f "$cfg"
+          done
 
       - name: Install root index redirector and CNAME
         run: |

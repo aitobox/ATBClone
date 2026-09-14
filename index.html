@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting to ATBClone Documentation...</title>
+  <script>
+    (function () {
+      var STORAGE_KEY = 'preferred_language';
+      var SUPPORTED = ['en', 'zh'];
+
+      function isSupported(code) {
+        return code && SUPPORTED.indexOf(code.toLowerCase()) !== -1;
+      }
+
+      function getQueryParam(name) {
+        try {
+          var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+          return match ? decodeURIComponent(match[1].replace(/\+/g, ' ')) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function getBasePath() {
+        var p = window.location.pathname;
+        if (!p.endsWith('/')) {
+          p = p.substring(0, p.lastIndexOf('/') + 1);
+        }
+        return p || '/';
+      }
+
+      var basePath = getBasePath();
+
+      // 1. Check query parameter ?lang=<code>
+      var explicitLang = getQueryParam('lang');
+      if (explicitLang && isSupported(explicitLang)) {
+        explicitLang = explicitLang.toLowerCase();
+        try {
+          localStorage.setItem(STORAGE_KEY, explicitLang);
+        } catch (e) {}
+        window.location.replace(basePath + explicitLang + '/' + window.location.search + window.location.hash);
+        return;
+      }
+
+      // 2. Check stored preference
+      var savedPreference = null;
+      try {
+        savedPreference = localStorage.getItem(STORAGE_KEY);
+      } catch (e) {}
+
+      if (savedPreference && isSupported(savedPreference)) {
+        window.location.replace(basePath + savedPreference.toLowerCase() + '/' + window.location.search + window.location.hash);
+        return;
+      }
+
+      // 3. Browser detection
+      function matchBrowserLocale(localeStr) {
+        if (!localeStr || typeof localeStr !== 'string') return null;
+        var l = localeStr.toLowerCase().trim();
+        if (l.indexOf('zh') === 0) return 'zh';
+        return 'en';
+      }
+
+      var langs = [];
+      if (navigator.languages && navigator.languages.length) {
+        langs = navigator.languages;
+      } else if (navigator.language) {
+        langs = [navigator.language];
+      } else if (navigator.userLanguage) {
+        langs = [navigator.userLanguage];
+      }
+
+      var targetLang = 'en';
+      for (var i = 0; i < langs.length; i++) {
+        var match = matchBrowserLocale(langs[i]);
+        if (match) {
+          targetLang = match;
+          break;
+        }
+      }
+
+      window.location.replace(basePath + targetLang + '/' + window.location.search + window.location.hash);
+    })();
+  </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=en/">
+  </noscript>
+  <link rel="canonical" href="https://clone.aitobox.com/en/">
+</head>
+<body>
+  <p>Redirecting to ATBClone Documentation...</p>
+  <ul>
+    <li><a href="en/">English</a></li>
+    <li><a href="zh/">简体中文</a></li>
+  </ul>
+</body>
+</html>

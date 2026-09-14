@@ -1,0 +1,1256 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Official User Guide & Manual for ATBClone — macOS Application Multi-Instancing & Sandbox Isolation Engine">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/en/04-faq-and-troubleshooting/">
+      
+      
+        <link rel="prev" href="../03-under-the-hood-and-internals/">
+      
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.51">
+    
+    
+      
+        <title>Chapter 4: FAQ & Diagnostic Troubleshooting - ATBClone Documentation</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.62c9b9cc.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="../javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chapter-4-faq-diagnostic-troubleshooting" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="./.." title="ATBClone Documentation" class="md-header__button md-logo" aria-label="ATBClone Documentation" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone Documentation">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ATBClone Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chapter 4: FAQ &amp; Diagnostic Troubleshooting
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="ATBClone Documentation" class="md-nav__button md-logo" aria-label="ATBClone Documentation" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone Documentation">
+
+    </a>
+    ATBClone Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  User Guide Overview
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-basic-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 1: Basic Operations & Clone Management
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-advanced-custom-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 2: Custom Recipes for Niche Apps
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-under-the-hood-and-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 3: Under the Hood & Advanced Parameters
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 4: FAQ & Diagnostic Troubleshooting
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 4: FAQ & Diagnostic Troubleshooting
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 Table of Contents
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequently-asked-questions-faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ❓ Frequently Asked Questions (FAQ)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❓ Frequently Asked Questions (FAQ)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-will-creating-a-clone-affect-my-original-apps-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Will creating a clone affect my original app's data?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-where-is-cloned-data-stored-and-how-do-i-back-it-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Where is cloned data stored, and how do I back it up?
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Where is cloned data stored, and how do I back it up?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-back-up-or-migrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        How to Back Up or Migrate:
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-will-my-account-get-banned-for-multi-instancing" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. Will my account get banned for multi-instancing?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-do-i-need-administrator-root-sudo-privileges" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. Do I need Administrator (Root / Sudo) privileges?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-what-should-i-do-if-macos-says-app-is-damaged-and-cant-be-opened" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. What should I do if macOS says "App is damaged and can't be opened"?
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. What should I do if macOS says &quot;App is damaged and can&#x27;t be opened&quot;?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Solution:
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-how-do-i-change-the-clones-icon" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. How do I change the clone's icon?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-how-do-communication-clones-eg-wechat-qq-display-menu-bar-icons-and-receive-background-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7. How do communication clones (e.g., WeChat, QQ) display Menu Bar icons and receive background messages?
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. How do communication clones (e.g., WeChat, QQ) display Menu Bar icons and receive background messages?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-enabling-the-menu-bar-status-icon" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Enabling the Menu Bar Status Icon:
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-background-message-reception-notifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Background Message Reception &amp; Notifications:
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-diagnostics-doctor-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🩺 System Diagnostics (Doctor Tab)
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting-issues-to-github-step-by-step-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🐛 Reporting Issues to GitHub (Step-by-Step Guide)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐛 Reporting Issues to GitHub (Step-by-Step Guide)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-open-clone-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 1: Open Clone Details
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-copy-application-information-from-clone-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 2: Copy Application Information from Clone Details
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-submit-issue-on-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 3: Submit Issue on GitHub
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#community-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🤝 Community &amp; Support
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 Table of Contents
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frequently-asked-questions-faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ❓ Frequently Asked Questions (FAQ)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❓ Frequently Asked Questions (FAQ)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-will-creating-a-clone-affect-my-original-apps-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Will creating a clone affect my original app's data?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-where-is-cloned-data-stored-and-how-do-i-back-it-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Where is cloned data stored, and how do I back it up?
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Where is cloned data stored, and how do I back it up?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-back-up-or-migrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        How to Back Up or Migrate:
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-will-my-account-get-banned-for-multi-instancing" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. Will my account get banned for multi-instancing?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-do-i-need-administrator-root-sudo-privileges" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. Do I need Administrator (Root / Sudo) privileges?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-what-should-i-do-if-macos-says-app-is-damaged-and-cant-be-opened" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. What should I do if macOS says "App is damaged and can't be opened"?
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. What should I do if macOS says &quot;App is damaged and can&#x27;t be opened&quot;?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Solution:
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-how-do-i-change-the-clones-icon" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. How do I change the clone's icon?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-how-do-communication-clones-eg-wechat-qq-display-menu-bar-icons-and-receive-background-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7. How do communication clones (e.g., WeChat, QQ) display Menu Bar icons and receive background messages?
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. How do communication clones (e.g., WeChat, QQ) display Menu Bar icons and receive background messages?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-enabling-the-menu-bar-status-icon" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Enabling the Menu Bar Status Icon:
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-background-message-reception-notifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Background Message Reception &amp; Notifications:
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-diagnostics-doctor-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🩺 System Diagnostics (Doctor Tab)
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting-issues-to-github-step-by-step-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🐛 Reporting Issues to GitHub (Step-by-Step Guide)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐛 Reporting Issues to GitHub (Step-by-Step Guide)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-open-clone-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 1: Open Clone Details
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-copy-application-information-from-clone-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 2: Copy Application Information from Clone Details
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-submit-issue-on-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 3: Submit Issue on GitHub
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#community-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🤝 Community &amp; Support
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="chapter-4-faq-diagnostic-troubleshooting">Chapter 4: FAQ &amp; Diagnostic Troubleshooting<a class="headerlink" href="#chapter-4-faq-diagnostic-troubleshooting" title="Permanent link">&para;</a></h1>
+<p>This chapter answers frequently asked questions regarding data privacy, account safety, storage paths, and macOS permissions. It also provides a step-by-step guide for using the built-in <strong>Doctor</strong> diagnostic tool and copying diagnostic data from the Clone Details dialog to submit a GitHub Issue.</p>
+<hr />
+<h2 id="table-of-contents">📑 Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#frequently-asked-questions-faq">Frequently Asked Questions (FAQ)</a></li>
+<li><a href="#1-will-creating-a-clone-affect-my-original-apps-data">1. Will creating a clone affect my original app's data?</a></li>
+<li><a href="#2-where-is-cloned-data-stored-and-how-do-i-back-it-up">2. Where is cloned data stored, and how do I back it up?</a></li>
+<li><a href="#3-will-my-account-get-banned-for-multi-instancing">3. Will my account get banned for multi-instancing?</a></li>
+<li><a href="#4-do-i-need-administrator-root--sudo-privileges">4. Do I need Administrator (Root / Sudo) privileges?</a></li>
+<li><a href="#5-what-should-i-do-if-macos-says-app-is-damaged-and-cant-be-opened">5. What should I do if macOS says "App is damaged and can't be opened"?</a></li>
+<li><a href="#6-how-do-i-change-the-clones-icon">6. How do I change the clone's icon?</a></li>
+<li><a href="#7-how-do-communication-clones-eg-wechat-qq-display-menu-bar-icons-and-receive-background-messages">7. How do communication clones (e.g., WeChat, QQ) display Menu Bar icons and receive background messages?</a></li>
+<li><a href="#system-diagnostics-doctor-tab">System Diagnostics (Doctor Tab)</a></li>
+<li><a href="#reporting-issues-to-github-step-by-step-guide">Reporting Issues to GitHub (Step-by-Step Guide)</a></li>
+<li><a href="#step-1-open-clone-details">Step 1: Open Clone Details</a></li>
+<li><a href="#step-2-copy-application-information-from-clone-details">Step 2: Copy Application Information from Clone Details</a></li>
+<li><a href="#step-3-submit-issue-on-github">Step 3: Submit Issue on GitHub</a></li>
+<li><a href="#community--support">Community &amp; Support</a></li>
+</ul>
+<hr />
+<h2 id="frequently-asked-questions-faq">❓ Frequently Asked Questions (FAQ)<a class="headerlink" href="#frequently-asked-questions-faq" title="Permanent link">&para;</a></h2>
+<h3 id="1-will-creating-a-clone-affect-my-original-apps-data">1. Will creating a clone affect my original app's data?<a class="headerlink" href="#1-will-creating-a-clone-affect-my-original-apps-data" title="Permanent link">&para;</a></h3>
+<p><strong>No. Never.</strong></p>
+<p>ATBClone enforces strict physical and container-level isolation:</p>
+<ul>
+<li>The primary application continues reading and writing to its original standard paths (such as <code>~/Library/Application Support/</code> or <code>~/Library/Containers/&lt;OriginalBundleID&gt;</code>).</li>
+<li>The clone operates exclusively inside its own isolated folder (e.g., <code>~/ATBClone/Data/&lt;CloneName&gt;/</code>).</li>
+<li>Both instances run concurrently without database locking, preference collisions, or cache pollution.</li>
+</ul>
+<hr />
+<h3 id="2-where-is-cloned-data-stored-and-how-do-i-back-it-up">2. Where is cloned data stored, and how do I back it up?<a class="headerlink" href="#2-where-is-cloned-data-stored-and-how-do-i-back-it-up" title="Permanent link">&para;</a></h3>
+<p>By default, all user data (databases, local chat archives, cache, cookies, and preferences) is stored in:
+<code>~/ATBClone/Data/&lt;CloneName&gt;/</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>~/ATBClone/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── config.yaml           # User configuration &amp; preferences
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── clones.yaml           # Registry of all created clones
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── recipes/              # User custom recipe directory
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>└── Data/
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    ├── WeChat2/          # WeChat clone data sandbox
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    │   ├── Home/         # Isolated $HOME directory
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    │   └── Tmp/          # Isolated $TMPDIR directory
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    └── Telegram-Work/    # Telegram clone data sandbox
+</span></code></pre></div>
+<h4 id="how-to-back-up-or-migrate">How to Back Up or Migrate:<a class="headerlink" href="#how-to-back-up-or-migrate" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>To Back Up</strong>: Copy or compress the <code>~/ATBClone/Data/&lt;CloneName&gt;</code> folder to an external backup drive or cloud storage.</li>
+<li><strong>To Migrate to a New Mac</strong>: Copy your entire <code>~/ATBClone/</code> directory to the new Mac, install ATBClone, and clone your apps using the same names. Your accounts and chat histories will be immediately recognized!</li>
+</ul>
+<hr />
+<h3 id="3-will-my-account-get-banned-for-multi-instancing">3. Will my account get banned for multi-instancing?<a class="headerlink" href="#3-will-my-account-get-banned-for-multi-instancing" title="Permanent link">&para;</a></h3>
+<p><strong>ATBClone operates strictly at the macOS operating system environment level.</strong></p>
+<ul>
+<li><strong>No Reverse-Engineering / Code Injection</strong>: ATBClone does <strong>not</strong> use runtime code hooking (such as Frida, Cycript, or dynamic dylib injection) and does <strong>not</strong> tamper with in-memory application logic or network packets.</li>
+<li><strong>Pure Environment Deception</strong>: The application runs completely unmodified; it is simply presented with an isolated <code>$HOME</code> directory and custom bundle identifier.</li>
+<li><strong>Anti-Fingerprint Proxy Isolation</strong>: By configuring a dedicated HTTP or SOCKS5 proxy per clone, each instance can connect via a distinct IP address, preventing IP-level association across multiple accounts.</li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>While ATBClone provides safe, clean OS-level sandbox isolation, you must still comply with the terms of service of individual platforms (e.g., avoiding abusive mass messaging or unauthorized bot automation).</p>
+</div>
+<hr />
+<h3 id="4-do-i-need-administrator-root-sudo-privileges">4. Do I need Administrator (Root / Sudo) privileges?<a class="headerlink" href="#4-do-i-need-administrator-root-sudo-privileges" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>When installing to <code>~/ATBClone/Apps</code> (Default &amp; Recommended)</strong>: <strong>Zero administrator privileges or passwords required.</strong> Everything runs in standard user space.</li>
+<li><strong>When installing to system <code>/Applications</code></strong>: macOS will prompt you once via standard native system dialog for authorization to write to the global application folder.</li>
+</ul>
+<hr />
+<h3 id="5-what-should-i-do-if-macos-says-app-is-damaged-and-cant-be-opened">5. What should I do if macOS says "App is damaged and can't be opened"?<a class="headerlink" href="#5-what-should-i-do-if-macos-says-app-is-damaged-and-cant-be-opened" title="Permanent link">&para;</a></h3>
+<p>This is caused by macOS Gatekeeper flagging modified application bundles with the quarantine extended attribute (<code>com.apple.quarantine</code>).</p>
+<h4 id="solution">Solution:<a class="headerlink" href="#solution" title="Permanent link">&para;</a></h4>
+<p>Open Terminal and run the quarantine removal command:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>xattr<span class="w"> </span>-cr<span class="w"> </span><span class="s2">&quot;/path/to/YourClonedApp.app&quot;</span>
+</span></code></pre></div>
+Or simply select the clone inside ATBClone and click <strong>"Update"</strong> to allow ATBClone to automatically strip quarantine attributes and refresh the ad-hoc signature.</p>
+<hr />
+<h3 id="6-how-do-i-change-the-clones-icon">6. How do I change the clone's icon?<a class="headerlink" href="#6-how-do-i-change-the-clones-icon" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open Finder and locate your clone in <code>~/ATBClone/Apps</code>.</li>
+<li>Select the app and press <code>Cmd + I</code> (Get Info).</li>
+<li>Drag any <code>.icns</code> or <code>.png</code> image file onto the small application icon at the top-left of the Info inspector window.</li>
+</ol>
+<hr />
+<h3 id="7-how-do-communication-clones-eg-wechat-qq-display-menu-bar-icons-and-receive-background-messages">7. How do communication clones (e.g., WeChat, QQ) display Menu Bar icons and receive background messages?<a class="headerlink" href="#7-how-do-communication-clones-eg-wechat-qq-display-menu-bar-icons-and-receive-background-messages" title="Permanent link">&para;</a></h3>
+<p>Instant messaging apps like WeChat and QQ support residing in the macOS top Menu Bar (Status Bar) and receiving incoming messages in the background.</p>
+<h4 id="1-enabling-the-menu-bar-status-icon">1. Enabling the Menu Bar Status Icon:<a class="headerlink" href="#1-enabling-the-menu-bar-status-icon" title="Permanent link">&para;</a></h4>
+<ul>
+<li>After launching and logging into the cloned WeChat, press <code>Cmd + ,</code> or navigate to <strong>WeChat -&gt; Settings / Preferences</strong>.</li>
+<li>In the <strong>General</strong> settings tab, verify and enable <strong>"Show WeChat in Menu Bar"</strong> (在菜单栏显示微信图标).</li>
+<li>The ATBClone engine automatically seeds your primary app's initial preferences on first launch; if this option was enabled in your main app, the clone will inherit it immediately.</li>
+</ul>
+<h4 id="2-background-message-reception-notifications">2. Background Message Reception &amp; Notifications:<a class="headerlink" href="#2-background-message-reception-notifications" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Background Long-Polling Connection</strong>: Because clones use ad-hoc re-signing, Apple's push notification service (APNs) cannot directly route to clones. Instead, WeChat maintains its own active TCP/WebSocket connection (<code>LongLink</code>) in the background to receive private and group messages in real time.</li>
+<li><strong>Keep Running in the Background</strong>: When finished chatting, simply click the red close button (<code>x</code>) on the main window. The clone will remain active in the Menu Bar and background; <strong>do not press <code>Cmd + Q</code> to terminate it</strong>.</li>
+<li><strong>Alerts &amp; Badges</strong>: When a new message arrives, the Menu Bar icon displays an unread indicator/red dot, the Dock icon badge updates, and alert sounds play.</li>
+<li><strong>Notification Permissions</strong>: When prompted with "Allow notifications for WeChat", click "Allow". You can also verify notification permissions in macOS <strong>System Settings -&gt; Notifications</strong>.</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><strong>Under the Hood</strong>: Communication apps like WeChat and Telegram rely on ATBClone's <strong><code>dylib</code> native in-process injection mode</strong> (keep <code>auto</code> or select <code>dylib</code> when cloning). This avoids <code>execv</code> process replacement, which alters process version (<code>PIDVersion</code>) and breaks macOS Notification Center (<code>usernoted</code>) and Menu Bar status item (<code>MenuBarAgent</code>) registration. If <code>launcher</code> mode is accidentally selected, notifications and menu bar status icons may be silently suppressed by macOS.</p>
+</div>
+<hr />
+<h2 id="system-diagnostics-doctor-tab">🩺 System Diagnostics (Doctor Tab)<a class="headerlink" href="#system-diagnostics-doctor-tab" title="Permanent link">&para;</a></h2>
+<p>If you encounter unexpected behavior during cloning or signing, run our built-in system diagnostic check:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>|  🩺 System Doctor                                           |
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>|                                                             |
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>|  System Environment Checks:                                 |
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>|  [✔] macOS Architecture: Apple Silicon (arm64)              |
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>|  [✔] Xcode Command Line Tools: Installed (/Library/...)     |
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>|  [✔] Code Signing Utility (codesign): Available             |
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>|  [✔] Plist Processor (PlistBuddy): Available                |
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>|  [✔] Application Directory Permissions: Writable            |
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>|  [✔] Data Directory Permissions: Writable                   |
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>|                                                             |
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>|  [ Re-run Diagnostics 🔄 ]                                  |
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>+-------------------------------------------------------------+
+</span></code></pre></div>
+<ol>
+<li>Click <strong>"Doctor"</strong> (<code>🩺</code>) in the ATBClone sidebar navigation.</li>
+<li>The Doctor probe automatically validates:</li>
+<li><strong>Xcode Command Line Tools (<code>xcode-select -p</code>)</strong>: Ensures Apple developer tools are installed for code signing.</li>
+<li><strong>Codesign &amp; PlistBuddy</strong>: Verifies system binary utilities.</li>
+<li><strong>Storage Directory Access</strong>: Checks read/write permissions for <code>~/ATBClone/Apps</code> and <code>~/ATBClone/Data</code>.</li>
+<li>If any item shows an error or warning, follow the on-screen resolution tips (e.g., running <code>xcode-select --install</code>).</li>
+</ol>
+<hr />
+<h2 id="reporting-issues-to-github-step-by-step-guide">🐛 Reporting Issues to GitHub (Step-by-Step Guide)<a class="headerlink" href="#reporting-issues-to-github-step-by-step-guide" title="Permanent link">&para;</a></h2>
+<p>If you find an application that fails to clone, or crashes upon opening after cloning, please report it to our GitHub repository:</p>
+<h3 id="step-1-open-clone-details">Step 1: Open Clone Details<a class="headerlink" href="#step-1-open-clone-details" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open the ATBClone main window.</li>
+<li>In either <strong>Card Grid View</strong> or <strong>Table View</strong>, select the problematic clone.</li>
+<li>Click the <strong>"Details"</strong> (<code>ℹ️</code> / <code>详情</code>) button to open the Clone Details dialog.</li>
+</ol>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>|  ℹ️ Clone Details - WeChat2                                 |
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>|                                                             |
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>|  Basic Information:                                         |
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>|  • Source App:      /Applications/WeChat.app                |
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>|  • Bundle ID:       com.tencent.xinWeChat                   |
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>|  • New Bundle ID:   com.tencent.xinWeChat.atbclone.WeChat2  |
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>|  • Strategy:        hard_clone                              |
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>|  • Destination:     /Users/username/ATBClone/Apps/WeChat2.app|
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>|  • Data Directory:  /Users/username/ATBClone/Data/WeChat2   |
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>|  • Proxy:           http://127.0.0.1:7890                   |
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>|                                                             |
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>|  Injected Parameters &amp; Environment:                         |
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>|  • Launch Args:     --user-data-dir=...                     |
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>|  • Env Vars:        HOME=..., TMPDIR=...                    |
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>|  • Exec Command:    env HOME=... /path/to/WeChat.bin        |
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>|                                                             |
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>|  [ Close ]                                                  |
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>+-------------------------------------------------------------+
+</span></code></pre></div>
+<hr />
+<h3 id="step-2-copy-application-information-from-clone-details">Step 2: Copy Application Information from Clone Details<a class="headerlink" href="#step-2-copy-application-information-from-clone-details" title="Permanent link">&para;</a></h3>
+<p>The Clone Details dialog displays all critical runtime parameters:</p>
+<ul>
+<li><strong>Basic Information</strong>: Exact source path, mutated bundle identifier, strategy, and directory destinations.</li>
+<li><strong>Launch Arguments</strong>: Injected command-line parameters.</li>
+<li><strong>Environment Variables</strong>: Injected <code>$HOME</code>, <code>$TMPDIR</code>, and proxy configurations.</li>
+<li><strong>Execution Command</strong>: The exact startup command.</li>
+</ul>
+<p>Simply select and copy the configuration and environment text from the dialog.</p>
+<hr />
+<h3 id="step-3-submit-issue-on-github">Step 3: Submit Issue on GitHub<a class="headerlink" href="#step-3-submit-issue-on-github" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Navigate to the official ATBClone Issues page:
+   👉 <strong><a href="https://github.com/aitobox/ATBClone/issues">https://github.com/aitobox/ATBClone/issues</a></strong></li>
+<li>Click <strong>"New Issue"</strong>.</li>
+<li>Fill out the issue template with:</li>
+<li><strong>App Name &amp; Version</strong>: e.g., WeChat v3.8.7.</li>
+<li><strong>macOS Version &amp; Chip</strong>: e.g., macOS 14.5 Sonoma on M2 Max.</li>
+<li><strong>Cloning Strategy</strong>: <code>hard_clone</code> or <code>soft_clone</code>.</li>
+<li><strong>Clone Details Information</strong>: Paste the text copied from the Clone Details dialog directly into the issue description, along with any error messages from the ATBClone <strong>Logs</strong> tab.</li>
+</ol>
+<p>Our core maintainers will review the issue and release an updated recipe or fix in the next version!</p>
+<hr />
+<h2 id="community-support">🤝 Community &amp; Support<a class="headerlink" href="#community-support" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>GitHub Repository</strong>: <a href="https://github.com/aitobox/ATBClone">https://github.com/aitobox/ATBClone</a></li>
+<li><strong>Release Downloads</strong>: <a href="https://github.com/aitobox/ATBClone/releases">https://github.com/aitobox/ATBClone/releases</a></li>
+<li><strong>Issues &amp; Feedback</strong>: <a href="https://github.com/aitobox/ATBClone/issues">https://github.com/aitobox/ATBClone/issues</a></li>
+</ul>
+<p>Thank you for using ATBClone! 🚀</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">Feedback & Issues</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"search":"../assets/javascripts/workers/search.b6b7e04f.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7f30b55.min.js"></script>
+      
+        <script src="../javascripts/language-detector.js"></script>
+      
+        <script src="../javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

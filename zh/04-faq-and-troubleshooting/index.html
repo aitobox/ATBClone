@@ -1,0 +1,1256 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ATBClone（艾特智能分身）官方使用手册 — macOS 应用多开与沙盒隔离引擎">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/zh/04-faq-and-troubleshooting/">
+      
+      
+        <link rel="prev" href="../03-under-the-hood-and-internals/">
+      
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.51">
+    
+    
+      
+        <title>第四章：常见问题 (FAQ)、系统体检与问题反馈指引 - ATBClone 用户手册</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.62c9b9cc.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="../javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="导航栏"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#faq" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="./.." title="ATBClone 用户手册" class="md-header__button md-logo" aria-label="ATBClone 用户手册" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone 用户手册">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="导航栏">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ATBClone 用户手册
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第四章：常见问题 (FAQ)、系统体检与问题反馈指引
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="查找">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="查找">
+  <button type="button" class="md-search__button">
+    查找
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="ATBClone 用户手册" class="md-nav__button md-logo" aria-label="ATBClone 用户手册" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone 用户手册">
+
+    </a>
+    ATBClone 用户手册
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/04-faq-and-troubleshooting/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  手册总览
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-basic-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第一章：基础操作与分身管理
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-advanced-custom-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第二章：冷门应用规则定制与基础参数
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-under-the-hood-and-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第三章：实现原理解析与高级参数全解
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第四章：常见问题 (FAQ)、系统体检与反馈
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第四章：常见问题 (FAQ)、系统体检与反馈
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 本章目录
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ❓ 常见问题解答 (FAQ)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❓ 常见问题解答 (FAQ)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. 分身会影响原有 App 的数据吗？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. 分身的数据存放在哪里？如何备份与迁移？
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 分身的数据存放在哪里？如何备份与迁移？">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        如何备份与迁移：
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. 会被官方封禁账号吗？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-root-sudo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. 需要管理员密码 (Root / Sudo) 吗？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. 打开分身提示“已损坏，无法打开”怎么办？
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 打开分身提示“已损坏，无法打开”怎么办？">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        解决方法：
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. 如何为分身更换自定义图标？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-qq" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7. 微信/QQ 等通信分身如何在菜单栏显示图标并正常接收消息提醒？
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. 微信&#x2f;QQ 等通信分身如何在菜单栏显示图标并正常接收消息提醒？">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. 开启菜单栏图标显示：
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. 后台消息接收机制与通知：
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#doctor" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🩺 系统环境体检 (Doctor 工具)
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#github" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🐛 发现问题与 GitHub 提报指引（标准排错流程）
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐛 发现问题与 GitHub 提报指引（标准排错流程）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        第一步：在主界面选中异常分身并点击“详情”
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        第二步：复制“分身详情”对话框中的应用信息
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        第三步：前往 GitHub 提交 Issue
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🤝 社区与支持
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 本章目录
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ❓ 常见问题解答 (FAQ)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❓ 常见问题解答 (FAQ)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. 分身会影响原有 App 的数据吗？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. 分身的数据存放在哪里？如何备份与迁移？
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 分身的数据存放在哪里？如何备份与迁移？">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        如何备份与迁移：
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. 会被官方封禁账号吗？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-root-sudo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. 需要管理员密码 (Root / Sudo) 吗？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. 打开分身提示“已损坏，无法打开”怎么办？
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 打开分身提示“已损坏，无法打开”怎么办？">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        解决方法：
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. 如何为分身更换自定义图标？
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-qq" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7. 微信/QQ 等通信分身如何在菜单栏显示图标并正常接收消息提醒？
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. 微信&#x2f;QQ 等通信分身如何在菜单栏显示图标并正常接收消息提醒？">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. 开启菜单栏图标显示：
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. 后台消息接收机制与通知：
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#doctor" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🩺 系统环境体检 (Doctor 工具)
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#github" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🐛 发现问题与 GitHub 提报指引（标准排错流程）
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐛 发现问题与 GitHub 提报指引（标准排错流程）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        第一步：在主界面选中异常分身并点击“详情”
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        第二步：复制“分身详情”对话框中的应用信息
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        第三步：前往 GitHub 提交 Issue
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🤝 社区与支持
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="faq">第四章：常见问题 (FAQ)、系统体检与问题反馈指引<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h1>
+<p>本章汇总了小白用户在使用 ATBClone 过程中的高频疑问（包括数据安全、账号防封禁、存储路径与系统权限），介绍了内置的 <strong>Doctor（系统体检）</strong> 工具，并详细说明了当遇到无法多开或闪退的应用时，如何查看“详情”对话框并向 GitHub 提报 Issue。</p>
+<hr />
+<h2 id="_1">📑 本章目录<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#常见问题解答-faq">常见问题解答 (FAQ)</a></li>
+<li><a href="#1-分身会影响原有-app-的数据吗">1. 分身会影响原有 App 的数据吗？</a></li>
+<li><a href="#2-分身的数据存放在哪里如何备份与迁移">2. 分身的数据存放在哪里？如何备份与迁移？</a></li>
+<li><a href="#3-会被官方封禁账号吗">3. 会被官方封禁账号吗？</a></li>
+<li><a href="#4-需要管理员密码-root--sudo-吗">4. 需要管理员密码 (Root / Sudo) 吗？</a></li>
+<li><a href="#5-打开分身提示已损坏无法打开怎么办">5. 打开分身提示“已损坏，无法打开”怎么办？</a></li>
+<li><a href="#6-如何为分身更换自定义图标">6. 如何为分身更换自定义图标？</a></li>
+<li><a href="#7-微信qq-等通信分身如何在菜单栏显示图标并正常接收消息提醒">7. 微信/QQ 等通信分身如何在菜单栏显示图标并正常接收消息提醒？</a></li>
+<li><a href="#系统环境体检-doctor-工具">系统环境体检 (Doctor 工具)</a></li>
+<li><a href="#发现问题与-github-提报指引标准排错流程">发现问题与 GitHub 提报指引（标准排错流程）</a></li>
+<li><a href="#第一步在主界面选中异常分身并点击详情">第一步：在主界面选中异常分身并点击“详情”</a></li>
+<li><a href="#第二步复制分身详情对话框中的应用信息">第二步：复制“分身详情”对话框中的应用信息</a></li>
+<li><a href="#第三步前往-github-提交-issue">第三步：前往 GitHub 提交 Issue</a></li>
+<li><a href="#社区与支持">社区与支持</a></li>
+</ul>
+<hr />
+<h2 id="faq_1">❓ 常见问题解答 (FAQ)<a class="headerlink" href="#faq_1" title="Permanent link">&para;</a></h2>
+<h3 id="1-app">1. 分身会影响原有 App 的数据吗？<a class="headerlink" href="#1-app" title="Permanent link">&para;</a></h3>
+<p><strong>绝对不会。</strong></p>
+<p>ATBClone 在设计上实现了严格的物理级隔离与沙盒容器隔离：</p>
+<ul>
+<li>原版母体应用依然读取并写入系统默认的真实路径（如 <code>~/Library/Application Support/</code> 或 <code>~/Library/Containers/&lt;原BundleID&gt;</code>）。</li>
+<li>分身应用被限定在其专属的隔离目录中运行（如 <code>~/ATBClone/Data/&lt;分身名称&gt;/</code>）。</li>
+<li>两者同时运行互不抢占本地 SQLite 数据库文件，互不覆盖配置，互不污染缓存。</li>
+</ul>
+<hr />
+<h3 id="2">2. 分身的数据存放在哪里？如何备份与迁移？<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<p>默认情况下，所有分身的用户数据（本地聊天记录、数据库、Cookie、首选项与缓存文件）均存放在您的用户目录下：
+<code>~/ATBClone/Data/&lt;分身名称&gt;/</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>~/ATBClone/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── config.yaml           # 全局偏好设置
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── clones.yaml           # 已创建分身元数据注册表
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── recipes/              # 用户自定义规则库
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>└── Data/
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    ├── WeChat2/          # 微信分身 2 的专属数据目录
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    │   ├── Home/         # 伪装的 $HOME 目录
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    │   └── Tmp/          # 专属临时目录
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    └── Telegram-Work/    # Telegram 工作分身数据目录
+</span></code></pre></div>
+<h4 id="_2">如何备份与迁移：<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>数据备份</strong>：直接将 <code>~/ATBClone/Data/&lt;分身名称&gt;</code> 文件夹复制或压缩打包备份至移动硬盘或网盘。</li>
+<li><strong>换机迁移</strong>：在新 Mac 上安装好 ATBClone，将旧电脑的 <code>~/ATBClone/</code> 整个目录拷贝至新电脑相同路径下，然后使用相同名称重新克隆一次应用，原有的聊天记录与登录态将被直接识别！</li>
+</ul>
+<hr />
+<h3 id="3">3. 会被官方封禁账号吗？<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<p><strong>ATBClone 运行在纯粹的 macOS 操作系统环境层。</strong></p>
+<ul>
+<li><strong>零逆向篡改 / 零内存注入</strong>：ATBClone <strong>不会</strong>注入任何动态链接库（如 Frida、Cycript、Xposed 等 Hook 工具），<strong>不会</strong>修改应用内存或拦截网络数据包，也<strong>不会</strong>篡改编译好的 Mach-O 机器指令。</li>
+<li><strong>纯净环境欺骗</strong>：应用本体以原版逻辑运行，只是被重定向了 <code>$HOME</code> 家目录并赋予了新的合法 Bundle ID。</li>
+<li><strong>单应用独立 IP 代理</strong>：通过为分身配置独立的 HTTP 或 SOCKS5 代理，不同分身可使用完全独立的公网 IP 访问服务器，有效避免多账号在同一 IP 下的高频关联风险。</li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>虽然 ATBClone 提供了最干净安全的操作系统级隔离，但您仍需遵守各平台的用户协议，切勿利用多开进行批量群发、违规外挂或自动化恶意行为。</p>
+</div>
+<hr />
+<h3 id="4-root-sudo">4. 需要管理员密码 (Root / Sudo) 吗？<a class="headerlink" href="#4-root-sudo" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>安装到 <code>~/ATBClone/Apps</code>（默认推荐）</strong>：<strong>全程无需管理员密码，免 Root 权限。</strong> 所有文件均运行在当前普通用户空间中。</li>
+<li><strong>安装到系统全局 <code>/Applications</code></strong>：macOS 会弹出一次系统原生授权窗口，要求输入开机密码以允许向全局系统目录写入文件。</li>
+</ul>
+<hr />
+<h3 id="5">5. 打开分身提示“已损坏，无法打开”怎么办？<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<p>这是因为 macOS Gatekeeper（门禁系统）为修改过签名的应用打上了隔离扩展属性（<code>com.apple.quarantine</code>）。</p>
+<h4 id="_3">解决方法：<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h4>
+<p>打开 macOS 终端（Terminal），运行以下命令清理隔离属性：
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>xattr<span class="w"> </span>-cr<span class="w"> </span><span class="s2">&quot;/path/to/您的分身应用.app&quot;</span>
+</span></code></pre></div>
+或者在 ATBClone 主界面中选中该分身，点击 <strong>"更新"</strong>，引擎将自动为您清除隔离属性并重新完成 Ad-Hoc 签名。</p>
+<hr />
+<h3 id="6">6. 如何为分身更换自定义图标？<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<ol>
+<li>在访达中打开 <code>~/ATBClone/Apps</code>，找到您的分身应用。</li>
+<li>选中分身并按下快捷键 <code>Cmd + I</code>（显示简介）。</li>
+<li>将您准备好的 <code>.icns</code> 或 <code>.png</code> 图标文件，直接拖拽到简介窗口左上角的小图标上即可完成替换。</li>
+</ol>
+<hr />
+<h3 id="7-qq">7. 微信/QQ 等通信分身如何在菜单栏显示图标并正常接收消息提醒？<a class="headerlink" href="#7-qq" title="Permanent link">&para;</a></h3>
+<p>微信、QQ 等即时通讯软件支持在 macOS 顶部菜单栏驻留图标并在后台持续接收新消息。</p>
+<h4 id="1">1. 开启菜单栏图标显示：<a class="headerlink" href="#1" title="Permanent link">&para;</a></h4>
+<ul>
+<li>登录分身微信后，按下快捷键 <code>Cmd + ,</code> 或在顶部菜单选择 <strong>微信 -&gt; 设置</strong>（Settings）。</li>
+<li>进入 <strong>通用</strong>（General）设置页面，勾选 <strong>「在菜单栏显示微信图标」</strong>（Show WeChat in Menu Bar）。</li>
+<li>ATBClone 引擎会在分身首次启动时自动继承母体微信的基础偏好设置，若母体已开启该选项，分身将自动开启。</li>
+</ul>
+<h4 id="2_1">2. 后台消息接收机制与通知：<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>后台长连接</strong>：由于分身使用 Ad-hoc 重签名，macOS 的 Apple 官方远程推送（APNs）无法直接路由至分身，但微信在后台运行时会通过自身独立的 TCP 长连接（<code>LongLink</code>）实时接收所有私聊与群聊消息。</li>
+<li><strong>保持后台运行</strong>：日常使用时，直接点击主窗口红色的「关闭」（<code>x</code>）按钮即可关闭窗口，微信分身将继续在菜单栏和后台驻留运行，<strong>切勿使用 <code>Cmd + Q</code> 彻底退出</strong>。</li>
+<li><strong>消息提醒效果</strong>：当收到新消息时，菜单栏分身图标将显示未读提示（红点/动画），程序坞（Dock）图标将显示未读数字徽标，并伴随提示音。</li>
+<li><strong>系统通知权限</strong>：首次运行分身微信时，若系统弹出「是否允许 WeChat 发送通知」，请点击「允许」。亦可前往 macOS <strong>系统设置 -&gt; 通知</strong> 中确认已为分身应用开启通知横幅与声音提示。</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><strong>底层保障</strong>：微信、QQ 等通信软件依赖 ATBClone 的 <strong><code>dylib</code> 原生动态库注入模式</strong>（创建分身时请保持 <code>auto</code> 或选择 <code>dylib</code>），以避免 <code>execv</code> 导致进程版本号改变而破坏 macOS 通知中心 (<code>usernoted</code>) 与状态栏 (<code>MenuBarAgent</code>)。如果误选为 <code>launcher</code> 模式，通知横幅和菜单栏图标可能会被系统静默屏蔽。</p>
+</div>
+<hr />
+<h2 id="doctor">🩺 系统环境体检 (Doctor 工具)<a class="headerlink" href="#doctor" title="Permanent link">&para;</a></h2>
+<p>如果分身在创建或签名时遇到异常，可以使用内置的 <strong>Doctor (系统体检)</strong> 工具排查底层依赖：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>|  🩺 系统环境体检 (System Doctor)                            |
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>|                                                             |
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>|  环境自检项目:                                              |
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>|  [✔] 处理器架构: Apple Silicon (arm64)                      |
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>|  [✔] Xcode 命令行工具: 已正确安装 (/Library/...)             |
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>|  [✔] 代码签名组件 (codesign): 正常可用                      |
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>|  [✔] Plist 处理器 (PlistBuddy): 正常可用                     |
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>|  [✔] 应用程序目录权限: 读写正常                             |
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>|  [✔] 数据存储目录权限: 读写正常                             |
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>|                                                             |
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>|  [ 重新体检 🔄 ]                                            |
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>+-------------------------------------------------------------+
+</span></code></pre></div>
+<ol>
+<li>点击 ATBClone 侧边栏的 <strong>"系统体检"</strong>（<code>🩺</code>）图标。</li>
+<li>探针将自动校验：</li>
+<li><strong>Xcode Command Line Tools (<code>xcode-select -p</code>)</strong>：确保 Apple 开发者编译工具已安装，这是 <code>codesign</code> 签名的必要条件。</li>
+<li><strong>Codesign 与 PlistBuddy</strong>：确认系统底层工具链可用。</li>
+<li><strong>目录读写权限</strong>：检查 <code>~/ATBClone/Apps</code> 和 <code>~/ATBClone/Data</code> 的写入权限。</li>
+<li>若某一项出现红色警告，根据界面提示进行修复即可（如终端执行 <code>xcode-select --install</code>）。</li>
+</ol>
+<hr />
+<h2 id="github">🐛 发现问题与 GitHub 提报指引（标准排错流程）<a class="headerlink" href="#github" title="Permanent link">&para;</a></h2>
+<p>如果您在多开某个特殊软件时发现<strong>无法完成分身</strong>，或者<strong>分身后打开闪退/报错</strong>，请通过以下标准流程提取诊断信息并提交 GitHub Issue：</p>
+<h3 id="_4">第一步：在主界面选中异常分身并点击“详情”<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ol>
+<li>打开 ATBClone 主界面。</li>
+<li>在卡片视图或表格视图中，选中出现故障的分身应用。</li>
+<li>点击 <strong>"详情"</strong>（<code>ℹ️</code> / <code>详情</code>）按钮打开“分身详情”窗口。</li>
+</ol>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>|  ℹ️ 分身详细信息 - WeChat2                                  |
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>|                                                             |
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>|  基础配置:                                                  |
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>|  • 母体应用:   /Applications/WeChat.app                     |
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>|  • 原始 ID:    com.tencent.xinWeChat                        |
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>|  • 新分身 ID:  com.tencent.xinWeChat.atbclone.WeChat2       |
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>|  • 克隆策略:   hard_clone                                   |
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>|  • 安装目标:   /Users/username/ATBClone/Apps/WeChat2.app     |
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>|  • 数据目录:   /Users/username/ATBClone/Data/WeChat2        |
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>|  • 代理设置:   http://127.0.0.1:7890                        |
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>|                                                             |
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>|  注入参数与运行环境:                                        |
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>|  • 启动参数:   --user-data-dir=...                          |
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>|  • 环境变量:   HOME=..., TMPDIR=...                         |
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>|  • 执行命令:   env HOME=... /path/to/WeChat.bin             |
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>|                                                             |
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>|  [ 关闭 ]                                                   |
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>+-------------------------------------------------------------+
+</span></code></pre></div>
+<hr />
+<h3 id="_5">第二步：复制“分身详情”对话框中的应用信息<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>“分身详情”对话框中清晰列出了该分身的核心运行参数与配置：</p>
+<ul>
+<li><strong>基础信息</strong>：母体路径、变异后的新 Bundle ID、克隆策略与数据存储路径；</li>
+<li><strong>注入参数</strong>：透传给二进制的命令行参数；</li>
+<li><strong>环境变量</strong>：注入的 <code>$HOME</code>、<code>$TMPDIR</code> 与网络代理设置；</li>
+<li><strong>底层执行命令</strong>：完整的启动命令。</li>
+</ul>
+<p>直接将对话框中的这些应用配置信息文本复制下来。</p>
+<hr />
+<h3 id="github-issue">第三步：前往 GitHub 提交 Issue<a class="headerlink" href="#github-issue" title="Permanent link">&para;</a></h3>
+<ol>
+<li>访问 ATBClone 官方 GitHub Issue 页面：
+   👉 <strong><a href="https://github.com/aitobox/ATBClone/issues">https://github.com/aitobox/ATBClone/issues</a></strong></li>
+<li>点击 <strong>"New Issue"</strong> 按钮。</li>
+<li>将您从“分身详情”对话框中复制的应用信息、终端报错日志与应用名称/版本粘贴进来：</li>
+<li><strong>应用名称与版本</strong>：例如 钉钉 v7.5.0</li>
+<li><strong>macOS 系统版本与芯片</strong>：例如 macOS 14.5 Sonoma (M2 芯片)</li>
+<li><strong>克隆策略</strong>：<code>hard_clone</code> 或 <code>soft_clone</code></li>
+<li><strong>分身详情信息与日志</strong>：将“分身详情”对话框中的配置内容直接粘贴到 Issue 描述中，并附带 ATBClone“日志”选项卡中的报错信息。</li>
+</ol>
+<p>维护团队将针对该应用进行定向排查与适配，并在后续版本中更新内置规则！</p>
+<hr />
+<h2 id="_6">🤝 社区与支持<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>GitHub 仓库</strong>：<a href="https://github.com/aitobox/ATBClone">https://github.com/aitobox/ATBClone</a></li>
+<li><strong>下载最新版本</strong>：<a href="https://github.com/aitobox/ATBClone/releases">https://github.com/aitobox/ATBClone/releases</a></li>
+<li><strong>提交问题与建议</strong>：<a href="https://github.com/aitobox/ATBClone/issues">https://github.com/aitobox/ATBClone/issues</a></li>
+</ul>
+<p>感谢您使用 ATBClone！🚀</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">提报问题与建议</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"search":"../assets/javascripts/workers/search.b6b7e04f.min.js","tags":null,"translations":{"clipboard.copied":"已复制","clipboard.copy":"复制","search.result.more.one":"在该页上还有 1 个符合条件的结果","search.result.more.other":"在该页上还有 # 个符合条件的结果","search.result.none":"没有找到符合条件的结果","search.result.one":"找到 1 个符合条件的结果","search.result.other":"# 个符合条件的结果","search.result.placeholder":"键入以开始搜索","search.result.term.missing":"缺少","select.version":"选择当前版本"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7f30b55.min.js"></script>
+      
+        <script src="../javascripts/language-detector.js"></script>
+      
+        <script src="../javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

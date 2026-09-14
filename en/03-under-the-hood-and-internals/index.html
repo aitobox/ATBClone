@@ -1,0 +1,1351 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Official User Guide & Manual for ATBClone — macOS Application Multi-Instancing & Sandbox Isolation Engine">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/en/03-under-the-hood-and-internals/">
+      
+      
+        <link rel="prev" href="../02-advanced-custom-recipes/">
+      
+      
+        <link rel="next" href="../04-faq-and-troubleshooting/">
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.51">
+    
+    
+      
+        <title>Chapter 3: Under the Hood & Advanced Parameters - ATBClone Documentation</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.62c9b9cc.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="../javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chapter-3-under-the-hood-advanced-parameters" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="./.." title="ATBClone Documentation" class="md-header__button md-logo" aria-label="ATBClone Documentation" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone Documentation">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ATBClone Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chapter 3: Under the Hood &amp; Advanced Parameters
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="ATBClone Documentation" class="md-nav__button md-logo" aria-label="ATBClone Documentation" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone Documentation">
+
+    </a>
+    ATBClone Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/03-under-the-hood-and-internals/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  User Guide Overview
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-basic-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 1: Basic Operations & Clone Management
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-advanced-custom-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 2: Custom Recipes for Niche Apps
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 3: Under the Hood & Advanced Parameters
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 3: Under the Hood & Advanced Parameters
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 Table of Contents
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architectural-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🏗️ Architectural Overview
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cloning-mechanics-soft-clone-vs-hard-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⚙️ Cloning Mechanics: Soft Clone vs. Hard Clone
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚙️ Cloning Mechanics: Soft Clone vs. Hard Clone">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-soft-clone-launcher-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Soft Clone (Launcher Mode)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-hard-clone-deep-sandbox-wrapper-hijack" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Hard Clone (Deep Sandbox &amp; Wrapper Hijack)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-three-axes-of-hard-cloning" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🪓 The "Three Axes" of Hard Cloning
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🪓 The &quot;Three Axes&quot; of Hard Cloning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#axis-1-bundle-id-mutation-genetic-re-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Axis 1: Bundle ID Mutation (Genetic Re-identification)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#axis-2-native-in-process-dylib-injection-environment-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Axis 2: Native In-Process Dylib Injection &amp; Environment Isolation
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Axis 2: Native In-Process Dylib Injection &amp; Environment Isolation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-why-traditional-execv-wrapper-launchers-break-on-modern-macos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Why Traditional <code>execv</code> Wrapper Launchers Break on Modern macOS
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-native-in-process-dylib-injection-libatbclone_envdylib" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Native In-Process Dylib Injection (<code>libatbclone_env.dylib</code>)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-static-headroom-probing-graceful-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. Static Headroom Probing &amp; Graceful Fallback
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#axis-3-sandbox-stripping-local-ad-hoc-re-signing" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Axis 3: Sandbox Stripping &amp; Local Ad-Hoc Re-Signing
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-logic-decoupling-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔄 Data-Logic Decoupling Architecture
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-recipe-parameters-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🛠️ Advanced Recipe Parameters Reference
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛠️ Advanced Recipe Parameters Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-app_type-engine-framework-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. <code>app_type</code> (Engine &amp; Framework Type)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-environment_injection-environment-hijacking" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. <code>environment_injection</code> (Environment Hijacking)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-launch_args-command-line-argument-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. <code>launch_args</code> (Command-Line Argument Injection)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-symlink_whitelist-system-path-bridging" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. <code>symlink_whitelist</code> (System Path Bridging)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-dynamic-path-macros" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. Dynamic Path Macros
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-recipe-yaml-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📄 Advanced Recipe YAML Example
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⏭️ Next Steps
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-faq-and-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 4: FAQ & Diagnostic Troubleshooting
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 Table of Contents
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architectural-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🏗️ Architectural Overview
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cloning-mechanics-soft-clone-vs-hard-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⚙️ Cloning Mechanics: Soft Clone vs. Hard Clone
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚙️ Cloning Mechanics: Soft Clone vs. Hard Clone">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-soft-clone-launcher-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Soft Clone (Launcher Mode)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-hard-clone-deep-sandbox-wrapper-hijack" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Hard Clone (Deep Sandbox &amp; Wrapper Hijack)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-three-axes-of-hard-cloning" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🪓 The "Three Axes" of Hard Cloning
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🪓 The &quot;Three Axes&quot; of Hard Cloning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#axis-1-bundle-id-mutation-genetic-re-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Axis 1: Bundle ID Mutation (Genetic Re-identification)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#axis-2-native-in-process-dylib-injection-environment-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Axis 2: Native In-Process Dylib Injection &amp; Environment Isolation
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Axis 2: Native In-Process Dylib Injection &amp; Environment Isolation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-why-traditional-execv-wrapper-launchers-break-on-modern-macos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Why Traditional <code>execv</code> Wrapper Launchers Break on Modern macOS
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-native-in-process-dylib-injection-libatbclone_envdylib" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Native In-Process Dylib Injection (<code>libatbclone_env.dylib</code>)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-static-headroom-probing-graceful-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. Static Headroom Probing &amp; Graceful Fallback
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#axis-3-sandbox-stripping-local-ad-hoc-re-signing" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Axis 3: Sandbox Stripping &amp; Local Ad-Hoc Re-Signing
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-logic-decoupling-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔄 Data-Logic Decoupling Architecture
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-recipe-parameters-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🛠️ Advanced Recipe Parameters Reference
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛠️ Advanced Recipe Parameters Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-app_type-engine-framework-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. <code>app_type</code> (Engine &amp; Framework Type)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-environment_injection-environment-hijacking" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. <code>environment_injection</code> (Environment Hijacking)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-launch_args-command-line-argument-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. <code>launch_args</code> (Command-Line Argument Injection)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-symlink_whitelist-system-path-bridging" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. <code>symlink_whitelist</code> (System Path Bridging)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-dynamic-path-macros" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. Dynamic Path Macros
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-recipe-yaml-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📄 Advanced Recipe YAML Example
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⏭️ Next Steps
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="chapter-3-under-the-hood-advanced-parameters">Chapter 3: Under the Hood &amp; Advanced Parameters<a class="headerlink" href="#chapter-3-under-the-hood-advanced-parameters" title="Permanent link">&para;</a></h1>
+<p>This chapter dives deep into the technical architecture of ATBClone. It explores how <strong>Soft Clone</strong> and <strong>Hard Clone</strong> engines work at the Mach-O and system level, how <strong>Binary Wrapper Hijacking</strong> achieves environmental deception, why our <strong>Data-Logic Decoupling</strong> guarantees zero data loss, and what every advanced recipe parameter does.</p>
+<hr />
+<h2 id="table-of-contents">📑 Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#architectural-overview">Architectural Overview</a></li>
+<li><a href="#cloning-mechanics-soft-clone-vs-hard-clone">Cloning Mechanics: Soft Clone vs. Hard Clone</a></li>
+<li><a href="#1-soft-clone-launcher-mode">1. Soft Clone (Launcher Mode)</a></li>
+<li><a href="#2-hard-clone-deep-sandbox--wrapper-hijack">2. Hard Clone (Deep Sandbox &amp; Wrapper Hijack)</a></li>
+<li><a href="#the-three-axes-of-hard-cloning">The "Three Axes" of Hard Cloning</a></li>
+<li><a href="#axis-1-bundle-id-mutation-genetic-re-identification">Axis 1: Bundle ID Mutation (Genetic Re-identification)</a></li>
+<li><a href="#axis-2-binary-wrapper-hijack--environment-deception">Axis 2: Binary Wrapper Hijack &amp; Environment Deception</a></li>
+<li><a href="#axis-3-sandbox-stripping--local-ad-hoc-re-signing">Axis 3: Sandbox Stripping &amp; Local Ad-Hoc Re-Signing</a></li>
+<li><a href="#data-logic-decoupling-architecture">Data-Logic Decoupling Architecture</a></li>
+<li><a href="#advanced-recipe-parameters-reference">Advanced Recipe Parameters Reference</a></li>
+<li><a href="#1-app_type-engine--framework-type">1. <code>app_type</code> (Engine &amp; Framework Type)</a></li>
+<li><a href="#2-environment_injection-environment-hijacking">2. <code>environment_injection</code> (Environment Hijacking)</a></li>
+<li><a href="#3-launch_args-command-line-argument-injection">3. <code>launch_args</code> (Command-Line Argument Injection)</a></li>
+<li><a href="#4-symlink_whitelist-system-path-bridging">4. <code>symlink_whitelist</code> (System Path Bridging)</a></li>
+<li><a href="#5-dynamic-path-macros">5. Dynamic Path Macros</a></li>
+<li><a href="#advanced-recipe-yaml-example">Advanced Recipe YAML Example</a></li>
+<li><a href="#next-steps">Next Steps</a></li>
+</ul>
+<hr />
+<h2 id="architectural-overview">🏗️ Architectural Overview<a class="headerlink" href="#architectural-overview" title="Permanent link">&para;</a></h2>
+<p>macOS enforces strict isolation boundaries around application identities, user directories, and system security frameworks (such as TCC and Gatekeeper). Standard desktop multi-instancing tools fail because macOS applications frequently:</p>
+<ol>
+<li>Lock SQLite database files in shared user containers (<code>~/Library/Application Support/...</code>).</li>
+<li>Query the system Keychain for credentials using their hardcoded <code>CFBundleIdentifier</code>.</li>
+<li>Rely on helper sub-processes (Mach Ports / XPC services) that verify code signature entitlements.</li>
+</ol>
+<p>ATBClone bridges these challenges through dynamic strategy orchestration:</p>
+<pre class="mermaid"><code>graph TD
+    App[Target Application .app] --&gt; StrategyCheck{Strategy Match / Probe}
+    StrategyCheck --&gt;|Chromium / Editors / Browsers| SoftEngine[Soft Clone Engine]
+    StrategyCheck --&gt;|Cocoa / Native / Social / Electron| HardEngine[Hard Clone Engine]
+
+    SoftEngine --&gt; SoftBundle[1. Lightweight App Wrapper]
+    SoftEngine --&gt; SoftArgs[2. CLI Arg Injection --user-data-dir]
+    SoftEngine --&gt; SoftSym[3. Smart Symlink Bridging]
+
+    HardEngine --&gt; HardCopy[1. Physical Bundle Copy]
+    HardEngine --&gt; HardID[2. Plist Bundle ID Mutation]
+    HardEngine --&gt; HardHijack[3. Binary Wrapper Hijack HOME/TMPDIR/Proxy]
+    HardEngine --&gt; HardSign[4. Sandbox Strip &amp; Ad-Hoc Codesign]</code></pre>
+<hr />
+<h2 id="cloning-mechanics-soft-clone-vs-hard-clone">⚙️ Cloning Mechanics: Soft Clone vs. Hard Clone<a class="headerlink" href="#cloning-mechanics-soft-clone-vs-hard-clone" title="Permanent link">&para;</a></h2>
+<h3 id="1-soft-clone-launcher-mode">1. Soft Clone (Launcher Mode)<a class="headerlink" href="#1-soft-clone-launcher-mode" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Design Philosophy</strong>: Zero disk waste, instant launch, lightweight delegation.</li>
+<li><strong>Mechanism</strong>: </li>
+<li>Creates a minimal <code>.app</code> directory structure (less than 200 KB) in <code>~/ATBClone/Apps/&lt;CloneName&gt;.app</code>.</li>
+<li>Generates an independent <code>Info.plist</code> with a custom bundle ID and icon.</li>
+<li>Places an executable launcher script in <code>Contents/MacOS/&lt;Executable&gt;</code> that directly invokes the primary application's Mach-O binary while passing dedicated data directory flags:
+     <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">ORIGINAL_BIN</span><span class="o">=</span><span class="s2">&quot;/Applications/Google Chrome.app/Contents/MacOS/Google Chrome&quot;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">USER_DATA</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/ATBClone/Data/Chrome2&quot;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">exec</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ORIGINAL_BIN</span><span class="s2">&quot;</span><span class="w"> </span>--user-data-dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$USER_DATA</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+</span></code></pre></div></li>
+</ul>
+<hr />
+<h3 id="2-hard-clone-deep-sandbox-wrapper-hijack">2. Hard Clone (Deep Sandbox &amp; Wrapper Hijack)<a class="headerlink" href="#2-hard-clone-deep-sandbox-wrapper-hijack" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Design Philosophy</strong>: Total physical independence, isolated Dock identity, independent TCC permissions.</li>
+<li><strong>Mechanism</strong>:</li>
+<li>Performs a full duplicate of the <code>.app</code> bundle.</li>
+<li>Modifies <code>CFBundleIdentifier</code> in <code>Info.plist</code>.</li>
+<li>Strips sandbox restrictions if necessary.</li>
+<li>Intercepts process startup by renaming the binary and installing a wrapper launcher script.</li>
+<li>Strips extended quarantine attributes (<code>xattr -cr</code>) and re-signs all frameworks and nested helpers using ad-hoc code signatures (<code>codesign --force --deep --sign -</code>).</li>
+</ul>
+<hr />
+<h2 id="the-three-axes-of-hard-cloning">🪓 The "Three Axes" of Hard Cloning<a class="headerlink" href="#the-three-axes-of-hard-cloning" title="Permanent link">&para;</a></h2>
+<p>ATBClone's proprietary Hard Cloning engine relies on three coordinated techniques:</p>
+<h3 id="axis-1-bundle-id-mutation-genetic-re-identification">Axis 1: Bundle ID Mutation (Genetic Re-identification)<a class="headerlink" href="#axis-1-bundle-id-mutation-genetic-re-identification" title="Permanent link">&para;</a></h3>
+<p>macOS uses the <code>CFBundleIdentifier</code> string in <code>Info.plist</code> to track per-app permissions (camera, microphone, accessibility), Dock identity, and Notification Center queues.</p>
+<p>ATBClone uses <code>/usr/libexec/PlistBuddy</code> to mutate this identity (e.g., <code>com.tencent.xinWeChat</code> becomes <code>com.tencent.xinWeChat.atbclone.WeChat2</code>). This causes macOS to treat the clone as a completely distinct application entity.</p>
+<hr />
+<h3 id="axis-2-native-in-process-dylib-injection-environment-isolation">Axis 2: Native In-Process Dylib Injection &amp; Environment Isolation<a class="headerlink" href="#axis-2-native-in-process-dylib-injection-environment-isolation" title="Permanent link">&para;</a></h3>
+<p>To ensure full data isolation while complying with modern macOS 14 (Sonoma) and macOS 15 (Sequoia) <strong>RunningBoardServices (RBS)</strong> process lifecycle validation, ATBClone implements a dual-mode native injection architecture:</p>
+<h4 id="1-why-traditional-execv-wrapper-launchers-break-on-modern-macos">1. Why Traditional <code>execv</code> Wrapper Launchers Break on Modern macOS<a class="headerlink" href="#1-why-traditional-execv-wrapper-launchers-break-on-modern-macos" title="Permanent link">&para;</a></h4>
+<p>When a shell script or external C binary launcher wraps an app and uses <code>execv</code> to switch into the real binary (e.g. <code>WeChat.bin</code>), the Darwin kernel increments the process version (<code>PIDVersion</code>).
+Core macOS system services:</p>
+<ul>
+<li><strong><code>MenuBarAgent</code></strong> (handles Menu Bar status items and <code>NSStatusItem</code> scenes)</li>
+<li><strong><code>usernoted</code></strong> (handles Notification Center banners, badges, and permissions)</li>
+</ul>
+<p>validate client connections via process <code>audit_token</code>. When an <code>execv</code> process replacement occurs, RBS rejects the handshake with <code>mismatched pid version</code>, causing menu bar icons to vanish and system notification delivery to fail silently.</p>
+<h4 id="2-native-in-process-dylib-injection-libatbclone_envdylib">2. Native In-Process Dylib Injection (<code>libatbclone_env.dylib</code>)<a class="headerlink" href="#2-native-in-process-dylib-injection-libatbclone_envdylib" title="Permanent link">&para;</a></h4>
+<p>ATBClone solves this by injecting dynamic environment hooks directly into the host process:</p>
+<ol>
+<li><strong>Preserving Original Executable</strong>: The original Mach-O binary remains the primary <code>CFBundleExecutable</code>—it is never renamed to <code>.bin</code>.</li>
+<li><strong>Universal Dynamic Library</strong>: Compiles a universal (<code>arm64</code> + <code>x86_64</code>) dylib <code>libatbclone_env.dylib</code> placed inside <code>Contents/Frameworks/</code>. A C <code>__attribute__((constructor))</code> function executes during dyld loading, before <code>main()</code> is entered, applying isolated <code>HOME</code>, <code>TMPDIR</code>, and proxy configurations.</li>
+<li><strong>Mach-O <code>LC_LOAD_DYLIB</code> Hooking</strong>: A pure-Python Mach-O parser safely appends an <code>LC_LOAD_DYLIB</code> command pointing to <code>@executable_path/../Frameworks/libatbclone_env.dylib</code>.</li>
+<li><strong>Zero Process Substitution</strong>: The app runs as a single process throughout its lifecycle, matching LaunchServices and RunningBoard records 100%.</li>
+</ol>
+<h4 id="3-static-headroom-probing-graceful-fallback">3. Static Headroom Probing &amp; Graceful Fallback<a class="headerlink" href="#3-static-headroom-probing-graceful-fallback" title="Permanent link">&para;</a></h4>
+<p>To ensure that modifying Mach-O Load Commands never corrupts packed or non-standard binaries, the engine inspects available header padding:
+$<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32 + \text{sizeofcmds})\)</span>$</p>
+<ul>
+<li><strong>Sufficient Headroom</strong>: Automatically activates native in-process dylib injection (e.g., WeChat with 50KB+ free padding).</li>
+<li><strong>Insufficient Headroom or CLI Arguments Required</strong>: Gracefully falls back to a compiled <strong>Native Mach-O C Launcher</strong>, guaranteeing zero binary corruption.</li>
+</ul>
+<hr />
+<h3 id="axis-3-sandbox-stripping-local-ad-hoc-re-signing">Axis 3: Sandbox Stripping &amp; Local Ad-Hoc Re-Signing<a class="headerlink" href="#axis-3-sandbox-stripping-local-ad-hoc-re-signing" title="Permanent link">&para;</a></h3>
+<p>Applications distributed through the Mac App Store contain the <code>com.apple.security.app-sandbox</code> entitlement, which restricts filesystem writes to <code>~/Library/Containers/&lt;OriginalBundleID&gt;</code>.</p>
+<p>When <code>strip_sandbox: true</code> is configured:</p>
+<ol>
+<li>ATBClone extracts the code signing entitlements using <code>codesign -d --entitlements :-</code>.</li>
+<li>Removes the <code>&lt;key&gt;com.apple.security.app-sandbox&lt;/key&gt;</code> XML node.</li>
+<li>Re-injects the sanitized entitlements and performs deep ad-hoc code re-signing:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>codesign<span class="w"> </span>--force<span class="w"> </span>--deep<span class="w"> </span>--sign<span class="w"> </span>-<span class="w"> </span>--entitlements<span class="w"> </span>/tmp/clean_entitlements.plist<span class="w"> </span><span class="s2">&quot;/Applications/WeChat2.app&quot;</span>
+</span></code></pre></div></li>
+</ol>
+<hr />
+<h2 id="data-logic-decoupling-architecture">🔄 Data-Logic Decoupling Architecture<a class="headerlink" href="#data-logic-decoupling-architecture" title="Permanent link">&para;</a></h2>
+<p>A major issue with naive application duplication is that updating the primary application (e.g., via the Mac App Store) leaves cloned apps stuck on outdated versions.</p>
+<p>ATBClone solves this through <strong>Data-Logic Decoupling</strong>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[ Application Logic / Executable ]         [ User Data &amp; Chat Databases ]
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>~/ATBClone/Apps/WeChat2.app                 ~/ATBClone/Data/WeChat2/
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  ├── Contents/Info.plist                    ├── Home/
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  ├── Contents/MacOS/WeChat (Wrapper)        │   ├── Library/Application Support/...
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  ├── Contents/MacOS/WeChat.bin              │   ├── Library/Preferences/...
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  └── Contents/Frameworks/                   └── Tmp/
+</span></code></pre></div>
+<ul>
+<li><strong>The Logic Tier</strong> (<code>.app</code> bundle) is completely stateless.</li>
+<li><strong>The Data Tier</strong> (<code>~/ATBClone/Data/&lt;CloneName&gt;</code>) stores all persistent databases, cookies, and local chat archives.</li>
+</ul>
+<p>When you click <strong>"Update"</strong>, ATBClone can safely discard and recreate the <code>.app</code> bundle from the upgraded primary app. The newly generated clone immediately remounts the existing data directory, achieving <strong>100% seamless, non-destructive upgrades</strong>.</p>
+<hr />
+<h2 id="advanced-recipe-parameters-reference">🛠️ Advanced Recipe Parameters Reference<a class="headerlink" href="#advanced-recipe-parameters-reference" title="Permanent link">&para;</a></h2>
+<p>When authoring or modifying recipes in <code>~/ATBClone/recipes/&lt;bundle_id&gt;.yaml</code>, the following advanced parameters are available:</p>
+<h3 id="1-app_type-engine-framework-type">1. <code>app_type</code> (Engine &amp; Framework Type)<a class="headerlink" href="#1-app_type-engine-framework-type" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Type</strong>: <code>enum</code> (<code>cocoa</code>, <code>electron</code>, <code>chromium</code>, <code>firefox</code>, <code>generic</code>, default: auto-detected)</li>
+<li><strong>Description</strong>: Guides how ATBClone manages sub-processes and argument formatting:</li>
+<li><code>cocoa</code>: Standard native Swift/Objective-C application.</li>
+<li><code>electron</code>: Electron + Node.js desktop app (Slack, Discord, QQ, Lark).</li>
+<li><code>chromium</code>: Chromium-based application (Chrome, Edge, Arc).</li>
+<li><code>firefox</code>: Gecko-based browser engine.</li>
+<li><code>generic</code>: Non-standard or generic Mach-O binaries.</li>
+</ul>
+<hr />
+<h3 id="2-environment_injection-environment-hijacking">2. <code>environment_injection</code> (Environment Hijacking)<a class="headerlink" href="#2-environment_injection-environment-hijacking" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Type</strong>: <code>map&lt;string, string&gt;</code></li>
+<li><strong>Description</strong>: Custom environment variables injected into the binary wrapper script before launching.</li>
+</ul>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">environment_injection</span><span class="p">:</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">HOME</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{ATB_DATA_DIR}}/Home&quot;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">TMPDIR</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{ATB_DATA_DIR}}/Tmp&quot;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">XDG_CONFIG_HOME</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{ATB_DATA_DIR}}/Config&quot;</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">ELECTRON_ENABLE_LOGGING</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
+</span></code></pre></div>
+<hr />
+<h3 id="3-launch_args-command-line-argument-injection">3. <code>launch_args</code> (Command-Line Argument Injection)<a class="headerlink" href="#3-launch_args-command-line-argument-injection" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Type</strong>: <code>list&lt;string&gt;</code></li>
+<li><strong>Description</strong>: Extra command-line arguments appended when launching the binary.</li>
+</ul>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">launch_args</span><span class="p">:</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;--user-data-dir={{ATB_DATA_DIR}}&quot;</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;--disable-features=Translate&quot;</span>
+</span></code></pre></div>
+<hr />
+<h3 id="4-symlink_whitelist-system-path-bridging">4. <code>symlink_whitelist</code> (System Path Bridging)<a class="headerlink" href="#4-symlink_whitelist-system-path-bridging" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Type</strong>: <code>list&lt;string&gt;</code></li>
+<li><strong>Description</strong>: Paths inside the isolated pseudo-<code>$HOME</code> that should be automatically symlinked back to your real user home directory. This prevents loss of system keychain credentials, developer keys, or system fonts.</li>
+</ul>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">symlink_whitelist</span><span class="p">:</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Library/Keychains&quot;</span><span class="w">    </span><span class="c1"># Retain macOS Keychain access for persistent logins</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;.ssh&quot;</span><span class="w">                 </span><span class="c1"># Retain SSH keys for Git and terminal tools</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Library/Fonts&quot;</span><span class="w">        </span><span class="c1"># Retain access to custom installed system fonts</span>
+</span></code></pre></div>
+<hr />
+<h3 id="5-dynamic-path-macros">5. Dynamic Path Macros<a class="headerlink" href="#5-dynamic-path-macros" title="Permanent link">&para;</a></h3>
+<p>You can use dynamic template macros inside <code>environment_injection</code> and <code>launch_args</code>. ATBClone resolves them at clone creation time:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Macro</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Example Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>{{ATB_DATA_DIR}}</code></td>
+<td style="text-align: left;">Full path to the clone's dedicated data directory</td>
+<td style="text-align: left;"><code>/Users/username/ATBClone/Data/WeChat2</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>{{CLONE_NAME}}</code></td>
+<td style="text-align: left;">Name of the clone instance</td>
+<td style="text-align: left;"><code>WeChat2</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>{{BUNDLE_ID}}</code></td>
+<td style="text-align: left;">Original application bundle identifier</td>
+<td style="text-align: left;"><code>com.tencent.xinWeChat</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>{{ORIGINAL_BIN}}</code></td>
+<td style="text-align: left;">Path to the host app's executable Mach-O binary</td>
+<td style="text-align: left;"><code>/Applications/WeChat.app/Contents/MacOS/WeChat</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="advanced-recipe-yaml-example">📄 Advanced Recipe YAML Example<a class="headerlink" href="#advanced-recipe-yaml-example" title="Permanent link">&para;</a></h2>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># ========================================================</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># ATBClone Advanced Recipe - Cursor AI Editor</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Saved at: ~/ATBClone/recipes/com.todesktop.230313mzl4w4u92.yaml</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># ========================================================</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nt">bundle_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">com.todesktop.230313mzl4w4u92</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nt">app_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Cursor</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">soft_clone</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="nt">app_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">electron</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="nt">strip_sandbox</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="nt">environment_injection</span><span class="p">:</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">  </span><span class="nt">HOME</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{ATB_DATA_DIR}}/Home&quot;</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">  </span><span class="nt">VSCODE_PORTABLE</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{ATB_DATA_DIR}}/UserData&quot;</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="nt">launch_args</span><span class="p">:</span>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;--user-data-dir={{ATB_DATA_DIR}}/UserData&quot;</span>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;--extensions-dir={{ATB_DATA_DIR}}/Extensions&quot;</span>
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="nt">symlink_whitelist</span><span class="p">:</span>
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Library/Keychains&quot;</span>
+</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;.ssh&quot;</span>
+</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;.gitconfig&quot;</span>
+</span><span id="__span-6-24"><a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>
+</span><span id="__span-6-25"><a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="nt">proxy</span><span class="p">:</span>
+</span><span id="__span-6-26"><a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-6-27"><a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+</span><span id="__span-6-28"><a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a><span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">127.0.0.1</span>
+</span><span id="__span-6-29"><a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7890</span>
+</span></code></pre></div>
+<hr />
+<h2 id="next-steps">⏭️ Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<ul>
+<li>To read our FAQ, run diagnostic system health checks, or learn how to report an issue on GitHub, continue to <strong><a href="../04-faq-and-troubleshooting/">Chapter 4: FAQ &amp; Diagnostic Troubleshooting</a></strong>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">Feedback & Issues</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"search":"../assets/javascripts/workers/search.b6b7e04f.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7f30b55.min.js"></script>
+      
+        <script src="../javascripts/language-detector.js"></script>
+      
+        <script src="../javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

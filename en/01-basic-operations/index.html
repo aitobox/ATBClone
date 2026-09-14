@@ -1,0 +1,1183 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Official User Guide & Manual for ATBClone — macOS Application Multi-Instancing & Sandbox Isolation Engine">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/en/01-basic-operations/">
+      
+      
+        <link rel="prev" href="./..">
+      
+      
+        <link rel="next" href="../02-advanced-custom-recipes/">
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.51">
+    
+    
+      
+        <title>Chapter 1: Basic Operations & Clone Management - ATBClone Documentation</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.62c9b9cc.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="../javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chapter-1-basic-operations-clone-management" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="./.." title="ATBClone Documentation" class="md-header__button md-logo" aria-label="ATBClone Documentation" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone Documentation">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ATBClone Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chapter 1: Basic Operations &amp; Clone Management
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/01-basic-operations/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/01-basic-operations/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="ATBClone Documentation" class="md-nav__button md-logo" aria-label="ATBClone Documentation" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone Documentation">
+
+    </a>
+    ATBClone Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/01-basic-operations/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/01-basic-operations/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  User Guide Overview
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 1: Basic Operations & Clone Management
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 1: Basic Operations & Clone Management
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 Table of Contents
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-cloned-application-7-step-wizard" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🪄 Creating a Cloned Application (7-Step Wizard)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🪄 Creating a Cloned Application (7-Step Wizard)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-select-primary-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 1: Select Primary Application
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-inspect-recipe-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 2: Inspect Recipe &amp; Strategy
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-clone-identity-ui-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 3: Clone Identity &amp; UI Language
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-installation-destination" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 4: Installation Destination
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-dedicated-data-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 5: Dedicated Data Directory
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-network-proxy-configuration-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 6: Network Proxy Configuration (Optional)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-confirmation-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 7: Confirmation &amp; Execution
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managing-cloned-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🎛️ Managing Cloned Applications
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎛️ Managing Cloned Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#launching-cloned-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Launching Cloned Applications
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#directly-opening-the-data-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Directly Opening the Data Directory
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-clone-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Editing Clone Configuration
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-clones-after-primary-app-upgrades" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Updating Clones After Primary App Upgrades
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batch-operations-batch-update-batch-delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Batch Operations (Batch Update &amp; Batch Delete)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safe-deletion-keeping-vs-purging-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Safe Deletion (Keeping vs. Purging Data)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⏭️ Next Steps
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-advanced-custom-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 2: Custom Recipes for Niche Apps
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-under-the-hood-and-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 3: Under the Hood & Advanced Parameters
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-faq-and-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Chapter 4: FAQ & Diagnostic Troubleshooting
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 Table of Contents
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-cloned-application-7-step-wizard" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🪄 Creating a Cloned Application (7-Step Wizard)
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🪄 Creating a Cloned Application (7-Step Wizard)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-select-primary-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 1: Select Primary Application
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-inspect-recipe-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 2: Inspect Recipe &amp; Strategy
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-clone-identity-ui-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 3: Clone Identity &amp; UI Language
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-installation-destination" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 4: Installation Destination
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-dedicated-data-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 5: Dedicated Data Directory
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-network-proxy-configuration-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 6: Network Proxy Configuration (Optional)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-confirmation-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Step 7: Confirmation &amp; Execution
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managing-cloned-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🎛️ Managing Cloned Applications
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎛️ Managing Cloned Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#launching-cloned-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Launching Cloned Applications
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#directly-opening-the-data-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Directly Opening the Data Directory
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-clone-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Editing Clone Configuration
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-clones-after-primary-app-upgrades" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Updating Clones After Primary App Upgrades
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batch-operations-batch-update-batch-delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Batch Operations (Batch Update &amp; Batch Delete)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safe-deletion-keeping-vs-purging-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Safe Deletion (Keeping vs. Purging Data)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⏭️ Next Steps
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="chapter-1-basic-operations-clone-management">Chapter 1: Basic Operations &amp; Clone Management<a class="headerlink" href="#chapter-1-basic-operations-clone-management" title="Permanent link">&para;</a></h1>
+<p>This chapter walks you through creating your first cloned application step-by-step using the interactive 7-step wizard, followed by daily management workflows including launching, data inspection, updating after host upgrades, batch operations, and safe deletion.</p>
+<hr />
+<h2 id="table-of-contents">📑 Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#creating-a-cloned-application-7-step-wizard">Creating a Cloned Application (7-Step Wizard)</a></li>
+<li><a href="#step-1-select-primary-application">Step 1: Select Primary Application</a></li>
+<li><a href="#step-2-inspect-recipe--strategy">Step 2: Inspect Recipe &amp; Strategy</a></li>
+<li><a href="#step-3-clone-identity--ui-language">Step 3: Clone Identity &amp; UI Language</a></li>
+<li><a href="#step-4-installation-destination">Step 4: Installation Destination</a></li>
+<li><a href="#step-5-dedicated-data-directory">Step 5: Dedicated Data Directory</a></li>
+<li><a href="#step-6-network-proxy-configuration-optional">Step 6: Network Proxy Configuration (Optional)</a></li>
+<li><a href="#step-7-confirmation--execution">Step 7: Confirmation &amp; Execution</a></li>
+<li><a href="#managing-cloned-applications">Managing Cloned Applications</a></li>
+<li><a href="#launching-cloned-applications">Launching Cloned Applications</a></li>
+<li><a href="#directly-opening-the-data-directory">Directly Opening the Data Directory</a></li>
+<li><a href="#editing-clone-configuration">Editing Clone Configuration</a></li>
+<li><a href="#updating-clones-after-primary-app-upgrades">Updating Clones After Primary App Upgrades</a></li>
+<li><a href="#batch-operations-batch-update--batch-delete">Batch Operations (Batch Update &amp; Batch Delete)</a></li>
+<li><a href="#safe-deletion-keeping-vs-purging-data">Safe Deletion (Keeping vs. Purging Data)</a></li>
+</ul>
+<hr />
+<h2 id="creating-a-cloned-application-7-step-wizard">🪄 Creating a Cloned Application (7-Step Wizard)<a class="headerlink" href="#creating-a-cloned-application-7-step-wizard" title="Permanent link">&para;</a></h2>
+<p>Click the <strong>"+ New Clone"</strong> button in the top right corner of the ATBClone dashboard to launch the interactive wizard.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>|  🧙 Create New Clone - Step 1 of 7                          |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>|                                                             |
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>|  Select Target Application (.app)                           |
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>|  [/Applications/WeChat.app                   ] [ Browse... ]|
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>|                                                             |
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>|  [ Cancel ]                                 [ Next Step &gt; ] |
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>+-------------------------------------------------------------+
+</span></code></pre></div>
+<h3 id="step-1-select-primary-application">Step 1: Select Primary Application<a class="headerlink" href="#step-1-select-primary-application" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Click <strong>"Browse..."</strong> to open the native macOS file picker (defaults to <code>/Applications</code>).</li>
+<li>Select the target application bundle (e.g., <code>WeChat.app</code>, <code>Telegram.app</code>, <code>Google Chrome.app</code>, or <code>Cursor.app</code>).</li>
+<li>Click <strong>"Next Step &gt;"</strong>.</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can also manually paste the full path of any <code>.app</code> located anywhere on your disk (including external drives).</p>
+</div>
+<hr />
+<h3 id="step-2-inspect-recipe-strategy">Step 2: Inspect Recipe &amp; Strategy<a class="headerlink" href="#step-2-inspect-recipe-strategy" title="Permanent link">&para;</a></h3>
+<p>ATBClone automatically inspects the chosen application:</p>
+<ul>
+<li><strong>Built-in Match</strong>: If the app matches one of our 33+ built-in recipes, ATBClone automatically selects the optimal strategy (e.g., <code>Hard Clone</code> for WeChat, <code>Soft Clone</code> for Cursor/VS Code).</li>
+<li><strong>Smart Prober</strong>: If the app is not in the built-in library, the engine dynamically scans its Mach-O binary and sandbox entitlements, determining the best strategy automatically.</li>
+<li><strong>Strategy Selection</strong>: You can manually toggle between:</li>
+<li><code>hard_clone</code>: Duplicates the bundle, mutates bundle ID, and injects environment isolation mechanisms.</li>
+<li><code>soft_clone</code>: Lightweight launcher shell passing isolated parameters.</li>
+<li><strong>Injection Mode (Injection Strategy)</strong>: For Hard Clones, you can configure the underlying injection technology:</li>
+<li><code>auto</code> (Default &amp; Recommended): Automatically probes Mach-O header padding headroom. For native applications with sufficient headroom, it uses <strong>In-Process Dylib Injection (<code>dylib</code>)</strong> (zero <code>execv</code> process substitution, guaranteeing full Notification Center and Menu Bar status item support). If padding is insufficient or custom CLI args are required, it gracefully falls back to <strong>Launcher Packaging (<code>launcher</code>)</strong>.</li>
+<li><code>dylib</code> (Dynamic Library Injection): Forces in-process dylib injection via Mach-O <code>LC_LOAD_DYLIB</code>. If the binary header lacks space, it reports an error rather than corrupting the binary. Ideal for native messengers (WeChat, Telegram).</li>
+<li><code>launcher</code> (Launcher Packaging): Forces the traditional native Mach-O C launcher wrapper with <code>.bin</code> binary backup.</li>
+</ul>
+<p>Click <strong>"Next Step &gt;"</strong> to proceed.</p>
+<hr />
+<h3 id="step-3-clone-identity-ui-language">Step 3: Clone Identity &amp; UI Language<a class="headerlink" href="#step-3-clone-identity-ui-language" title="Permanent link">&para;</a></h3>
+<p>Customize how your clone appears on your system:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Clone Name:    [ WeChat2                         ]  (Used for folder naming &amp; internal ID)
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Display Name:  [ WeChat Work                     ]  (Visible in Dock, Spotlight &amp; Finder)
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>UI Language:   [ English (en)                  v ]  (Independent interface locale)
+</span></code></pre></div>
+<ol>
+<li><strong>Clone Name</strong>: Alphanumeric identifier (e.g., <code>WeChat2</code>, <code>Telegram-Work</code>).</li>
+<li><strong>Display Name</strong>: The friendly title shown in the macOS Dock, Spotlight search, and Finder window titles. By default, it syncs with the Clone Name until you customize it.</li>
+<li><strong>UI Language</strong>: Set an independent language locale for this clone (e.g., keep your primary app in Chinese, but run the clone in English or Japanese).</li>
+</ol>
+<p>Click <strong>"Next Step &gt;"</strong>.</p>
+<hr />
+<h3 id="step-4-installation-destination">Step 4: Installation Destination<a class="headerlink" href="#step-4-installation-destination" title="Permanent link">&para;</a></h3>
+<p>Choose where the newly created cloned <code>.app</code> bundle will reside:</p>
+<ul>
+<li><strong>Default (<code>~/ATBClone/Apps</code> — Recommended)</strong>: Installs directly into your user ATBClone applications folder. <strong>Requires zero administrator passwords or root elevation.</strong></li>
+<li><strong>System (<code>/Applications</code>)</strong>: Installs alongside standard system apps. ATBClone will request standard macOS authorization once via native dialog.</li>
+</ul>
+<p>Click <strong>"Next Step &gt;"</strong>.</p>
+<hr />
+<h3 id="step-5-dedicated-data-directory">Step 5: Dedicated Data Directory<a class="headerlink" href="#step-5-dedicated-data-directory" title="Permanent link">&para;</a></h3>
+<p>Configure where the clone will store its isolated databases, chat logs, cache, and preferences:</p>
+<ul>
+<li><strong>Default (<code>~/ATBClone/Data/&lt;CloneName&gt;</code>)</strong>: Automatically creates an isolated data sandbox.</li>
+<li><strong>Custom Path / External SSD</strong>: Click <strong>"Browse..."</strong> to select an external storage drive, secondary volume, or custom encrypted container.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For applications that do not support dynamic data redirection (such as certain fixed-path command tools), the wizard will display a notice that the data directory is managed by the system.</p>
+</div>
+<p>Click <strong>"Next Step &gt;"</strong>.</p>
+<hr />
+<h3 id="step-6-network-proxy-configuration-optional">Step 6: Network Proxy Configuration (Optional)<a class="headerlink" href="#step-6-network-proxy-configuration-optional" title="Permanent link">&para;</a></h3>
+<p>If you want this specific clone to route its network traffic through a dedicated proxy (e.g., to separate work and personal network environments or prevent IP association):</p>
+<ol>
+<li>Toggle the <strong>"Enable Dedicated Proxy"</strong> switch.</li>
+<li>Choose protocol: <code>HTTP</code>, <code>HTTPS</code>, or <code>SOCKS5</code>.</li>
+<li>Enter your local proxy host (default: <code>127.0.0.1</code>) and port (e.g., <code>7890</code> or <code>1080</code>).</li>
+</ol>
+<p>Click <strong>"Next Step &gt;"</strong>.</p>
+<hr />
+<h3 id="step-7-confirmation-execution">Step 7: Confirmation &amp; Execution<a class="headerlink" href="#step-7-confirmation-execution" title="Permanent link">&para;</a></h3>
+<p>Review the summary configuration card:</p>
+<ul>
+<li><strong>Source Application</strong>: <code>/Applications/WeChat.app</code></li>
+<li><strong>Clone Name</strong>: <code>WeChat2</code></li>
+<li><strong>Strategy</strong>: <code>hard_clone</code></li>
+<li><strong>Destination</strong>: <code>~/ATBClone/Apps/WeChat2.app</code></li>
+<li><strong>Data Storage</strong>: <code>~/ATBClone/Data/WeChat2</code></li>
+<li><strong>Proxy</strong>: <code>http://127.0.0.1:7890</code></li>
+</ul>
+<p>Click <strong>"Clone Now 🚀"</strong>. The progress bar will track physical copying, Plist mutation, sandbox stripping, wrapper injection, and ad-hoc code re-signing. Once complete, your new clone is ready for use!</p>
+<hr />
+<h2 id="managing-cloned-applications">🎛️ Managing Cloned Applications<a class="headerlink" href="#managing-cloned-applications" title="Permanent link">&para;</a></h2>
+<p>ATBClone offers two visual modes for browsing your clones: <strong>Card Grid View</strong> (rich visual cards) and <strong>Table View</strong> (compact list with multi-selection support).</p>
+<pre class="mermaid"><code>graph LR
+    Dashboard[ATBClone Dashboard] --&gt; CardView[Card Grid View]
+    Dashboard --&gt; TableView[Table View]
+    CardView --&gt; SingleOps[Single Actions: Launch, Open Dir, Update, Edit, Details, Delete]
+    TableView --&gt; BatchOps[Batch Actions: Multi-Select, Batch Update, Batch Delete]</code></pre>
+<h3 id="launching-cloned-applications">Launching Cloned Applications<a class="headerlink" href="#launching-cloned-applications" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>From ATBClone</strong>: Click the prominent <strong>"Launch"</strong> button on the application card or table row.</li>
+<li><strong>From macOS Spotlight</strong>: Press <code>Cmd + Space</code>, type your clone's Display Name (e.g. <code>WeChat Work</code>), and press <code>Enter</code>.</li>
+<li><strong>From Dock / Finder</strong>: Double-click <code>~/ATBClone/Apps/WeChat2.app</code> directly.</li>
+</ul>
+<hr />
+<h3 id="directly-opening-the-data-directory">Directly Opening the Data Directory<a class="headerlink" href="#directly-opening-the-data-directory" title="Permanent link">&para;</a></h3>
+<p>Need to inspect downloaded files, clean up storage, or copy offline files?</p>
+<ul>
+<li>Click <strong>"Open Dir"</strong> on the clone card or action bar.</li>
+<li>Finder will instantly open the dedicated storage folder (<code>~/ATBClone/Data/&lt;CloneName&gt;</code>).</li>
+</ul>
+<hr />
+<h3 id="editing-clone-configuration">Editing Clone Configuration<a class="headerlink" href="#editing-clone-configuration" title="Permanent link">&para;</a></h3>
+<p>Need to rename your clone, change its UI language, or adjust its proxy server?</p>
+<ol>
+<li>Click <strong>"Edit"</strong> on the clone card or table toolbar.</li>
+<li>In the <strong>Edit Clone</strong> window, adjust:</li>
+<li><strong>Display Name</strong>: Update how the app is labeled in the Dock and Finder.</li>
+<li><strong>Language Locale</strong>: Switch language between English, 简体中文, 日本語, etc.</li>
+<li><strong>Proxy Settings</strong>: Enable, disable, or modify proxy host/port.</li>
+<li>Click <strong>"Save Changes"</strong>. Changes take effect on the next application launch.</li>
+</ol>
+<hr />
+<h3 id="updating-clones-after-primary-app-upgrades">Updating Clones After Primary App Upgrades<a class="headerlink" href="#updating-clones-after-primary-app-upgrades" title="Permanent link">&para;</a></h3>
+<p>When your primary application (e.g., WeChat or Chrome) is upgraded through the Mac App Store or auto-updater:</p>
+<ol>
+<li>Open ATBClone.</li>
+<li>Select your clone and click <strong>"Update"</strong>.</li>
+<li>ATBClone will seamlessly re-clone the latest binary code from the updated primary application while <strong>preserving 100% of your user data, login sessions, and chat histories</strong>.</li>
+</ol>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>Zero Data Loss Guarantee</strong>: Because ATBClone strictly isolates application executable binaries from your user data directory, re-cloning or updating never touches your local database or chat history.</p>
+</div>
+<hr />
+<h3 id="batch-operations-batch-update-batch-delete">Batch Operations (Batch Update &amp; Batch Delete)<a class="headerlink" href="#batch-operations-batch-update-batch-delete" title="Permanent link">&para;</a></h3>
+<p>When managing multiple cloned applications:</p>
+<ol>
+<li>Switch to <strong>Table View</strong> via the top toolbar view mode toggle.</li>
+<li>Use standard macOS multi-selection:</li>
+<li><code>Cmd + Click</code>: Select multiple non-contiguous rows.</li>
+<li><code>Shift + Click</code>: Select a contiguous range of rows.</li>
+<li>The bottom action bar will adapt dynamically:</li>
+<li><strong>"Update (N Clones)"</strong>: Upgrades all selected clones sequentially.</li>
+<li><strong>"Delete (N Clones)"</strong>: Deletes all selected clones in a single operation.</li>
+</ol>
+<hr />
+<h3 id="safe-deletion-keeping-vs-purging-data">Safe Deletion (Keeping vs. Purging Data)<a class="headerlink" href="#safe-deletion-keeping-vs-purging-data" title="Permanent link">&para;</a></h3>
+<p>When clicking <strong>"Delete"</strong> (or during batch deletion), ATBClone provides a safe two-tier confirmation dialog:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>|  ⚠️ Delete Cloned Application                                |
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>|                                                             |
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>|  Are you sure you want to remove &#39;WeChat2&#39;?                 |
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>|                                                             |
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>|  [X] Also permanently delete data directory (~/ATBClone/...) |
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>|                                                             |
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>|  [ Cancel ]                         [ Confirm Delete ]      |
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>+-------------------------------------------------------------+
+</span></code></pre></div>
+<ul>
+<li><strong>Keep Data (Unchecked - Default)</strong>: Removes the <code>.app</code> bundle from <code>~/ATBClone/Apps</code> while preserving your chats, preferences, and databases in <code>~/ATBClone/Data/WeChat2</code>. You can recreate the clone later and immediately resume where you left off.</li>
+<li><strong>Purge Data (Checked)</strong>: Permanently removes both the <code>.app</code> bundle and the entire data storage directory.</li>
+</ul>
+<hr />
+<h2 id="next-steps">⏭️ Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<ul>
+<li>To learn how to clone unlisted or niche applications and understand recipe parameters, continue to <strong><a href="../02-advanced-custom-recipes/">Chapter 2: Custom Recipes for Niche Apps</a></strong>.</li>
+<li>For under-the-hood engine mechanics, proceed to <strong><a href="../03-under-the-hood-and-internals/">Chapter 3: Under the Hood &amp; Advanced Parameters</a></strong>.</li>
+<li>For FAQs and issue reporting, visit <strong><a href="../04-faq-and-troubleshooting/">Chapter 4: FAQ &amp; Diagnostic Troubleshooting</a></strong>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">Feedback & Issues</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"search":"../assets/javascripts/workers/search.b6b7e04f.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7f30b55.min.js"></script>
+      
+        <script src="../javascripts/language-detector.js"></script>
+      
+        <script src="../javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

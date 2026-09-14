@@ -1,0 +1,1183 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ATBClone（艾特智能分身）官方使用手册 — macOS 应用多开与沙盒隔离引擎">
+      
+      
+      
+        <link rel="canonical" href="https://clone.aitobox.com/zh/01-basic-operations/">
+      
+      
+        <link rel="prev" href="./..">
+      
+      
+        <link rel="next" href="../02-advanced-custom-recipes/">
+      
+      
+        
+          <link rel="alternate" href="/en/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/logo.png">
+      <meta name="generator" content="zensical-0.0.51">
+    
+    
+      
+        <title>第一章：基础操作与分身管理 - ATBClone 用户手册</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.62c9b9cc.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  
+  
+  <script src="../javascripts/language-detector.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="导航栏"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="./.." title="ATBClone 用户手册" class="md-header__button md-logo" aria-label="ATBClone 用户手册" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone 用户手册">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="导航栏">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ATBClone 用户手册
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第一章：基础操作与分身管理
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-blue" data-md-color-accent="cyan"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="查找">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="查找">
+  <button type="button" class="md-search__button">
+    查找
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/01-basic-operations/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/01-basic-operations/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="ATBClone 用户手册" class="md-nav__button md-logo" aria-label="ATBClone 用户手册" data-md-component="logo">
+      
+  <img src="../assets/images/logo.png" alt="ATBClone 用户手册">
+
+    </a>
+    ATBClone 用户手册
+  </label>
+  
+    <div class="md-nav__source">
+      <div class="atb-header-actions">
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone/issues" title="Community Forum" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.53 1.45 4.77 3.65 6.13A8.475 8.475 0 0 1 4 19.5c-.32.74.52 1.44 1.18 1.03 2.1-.87 4.1-2.12 5.76-3.48.35.03.7.05 1.06.05 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+    <span>Forum</span>
+  </a>
+  
+
+  
+  <a href="https://github.com/aitobox/ATBClone" title="aitobox/ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    <span>GitHub</span>
+  </a>
+  
+
+  
+  <details class="atb-lang-dropdown" id="atb-lang-switcher">
+    <summary class="md-header__button atb-lang-summary" aria-label="Select Language" title="Select Language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2.1l1.1-3h4.7l1.1 3h2.1L18.5 10zm-2.62 7l1.62-4.41L19.12 17h-3.24z"/></svg>
+      <span class="atb-lang-current" id="atb-lang-current-label">Language</span>
+      <svg class="atb-lang-caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+    </summary>
+    <div class="atb-lang-menu" role="menu">
+      
+      <a href="/en/01-basic-operations/" class="atb-lang-item" data-lang="en" role="menuitem">English</a>
+      
+      <a href="/zh/01-basic-operations/" class="atb-lang-item" data-lang="zh" role="menuitem">简体中文</a>
+      
+    </div>
+  </details>
+  
+</div>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  手册总览
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第一章：基础操作与分身管理
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第一章：基础操作与分身管理
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 本章目录
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🪄 创建分身应用（7 步交互向导）
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🪄 创建分身应用（7 步交互向导）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 1：选择母体应用
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 2：规则匹配与策略确认
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 3：分身命名与界面语言
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 4：选择安装目标目录
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 5：设置独立数据存储目录
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 6：配置独立网络代理（可选）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 7：确认配置并立即创建
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🎛️ 管理分身应用
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎛️ 管理分身应用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        启动分身应用
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        一键打开独立数据目录
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        编辑分身配置
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        母体升级后的“无损同步更新”
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        批量操作（批量更新与批量删除）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vs" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        安全删除（保留数据 vs 彻底清理）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⏭️ 下一步指引
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-advanced-custom-recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第二章：冷门应用规则定制与基础参数
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-under-the-hood-and-internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第三章：实现原理解析与高级参数全解
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-faq-and-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  第四章：常见问题 (FAQ)、系统体检与反馈
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📑 本章目录
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🪄 创建分身应用（7 步交互向导）
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🪄 创建分身应用（7 步交互向导）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 1：选择母体应用
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 2：规则匹配与策略确认
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 3：分身命名与界面语言
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 4：选择安装目标目录
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 5：设置独立数据存储目录
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 6：配置独立网络代理（可选）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        步骤 7：确认配置并立即创建
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🎛️ 管理分身应用
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎛️ 管理分身应用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        启动分身应用
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        一键打开独立数据目录
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        编辑分身配置
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        母体升级后的“无损同步更新”
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        批量操作（批量更新与批量删除）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vs" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        安全删除（保留数据 vs 彻底清理）
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⏭️ 下一步指引
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="_1">第一章：基础操作与分身管理<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>本章将手把手带您通过 7 步交互式向导创建您的第一个分身应用，并详细介绍分身的日常管理技巧，包括快速启动、一键打开数据目录、母体更新后的无损同步、表格视图批量操作与安全删除。</p>
+<hr />
+<h2 id="_2">📑 本章目录<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#创建分身应用7-步交互向导">创建分身应用（7 步交互向导）</a></li>
+<li><a href="#步骤-1选择母体应用">步骤 1：选择母体应用</a></li>
+<li><a href="#步骤-2规则匹配与策略确认">步骤 2：规则匹配与策略确认</a></li>
+<li><a href="#步骤-3分身命名与界面语言">步骤 3：分身命名与界面语言</a></li>
+<li><a href="#步骤-4选择安装目标目录">步骤 4：选择安装目标目录</a></li>
+<li><a href="#步骤-5设置独立数据存储目录">步骤 5：设置独立数据存储目录</a></li>
+<li><a href="#步骤-6配置独立网络代理可选">步骤 6：配置独立网络代理（可选）</a></li>
+<li><a href="#步骤-7确认配置并立即创建">步骤 7：确认配置并立即创建</a></li>
+<li><a href="#管理分身应用">管理分身应用</a></li>
+<li><a href="#启动分身应用">启动分身应用</a></li>
+<li><a href="#一键打开独立数据目录">一键打开独立数据目录</a></li>
+<li><a href="#编辑分身配置">编辑分身配置</a></li>
+<li><a href="#母体升级后的无损同步更新">母体升级后的“无损同步更新”</a></li>
+<li><a href="#批量操作批量更新与批量删除">批量操作（批量更新与批量删除）</a></li>
+<li><a href="#安全删除保留数据-vs-彻底清理">安全删除（保留数据 vs 彻底清理）</a></li>
+</ul>
+<hr />
+<h2 id="7">🪄 创建分身应用（7 步交互向导）<a class="headerlink" href="#7" title="Permanent link">&para;</a></h2>
+<p>点击 ATBClone 主界面右上角的 <strong>"+ 新建分身"</strong> 按钮，即可唤起 7 步交互式创建向导。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>|  🧙 创建新分身 - 第 1 步 / 共 7 步                            |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>|                                                             |
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>|  选择目标应用程序 (.app)                                     |
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>|  [/Applications/WeChat.app                   ] [ 浏览... ]  |
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>|                                                             |
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>|  [ 取消 ]                                    [ 下一步 &gt; ]   |
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>+-------------------------------------------------------------+
+</span></code></pre></div>
+<h3 id="1">步骤 1：选择母体应用<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>点击 <strong>"浏览..."</strong> 按钮打开 macOS 原生文件选择窗口（默认定位在 <code>/Applications</code>）。</li>
+<li>选择您想要多开的应用程序（如 <code>WeChat.app</code>、<code>Telegram.app</code>、<code>Google Chrome.app</code> 或 <code>Cursor.app</code>）。</li>
+<li>点击 <strong>"下一步 &gt;"</strong>。</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>您也可以直接将 <code>.app</code> 的完整路径复制并粘贴到输入框中。</p>
+</div>
+<hr />
+<h3 id="2">步骤 2：规则匹配与策略确认<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<p>ATBClone 会自动对所选应用进行智能探测：</p>
+<ul>
+<li><strong>内置规则匹配</strong>：如果应用在内置的 33+ 热门规则库中，引擎会自动匹配最佳克隆策略（如微信默认采用“物理克隆”，Cursor 默认采用“软包装”）。</li>
+<li><strong>智能探针推荐</strong>：如果是未预设规则的小众应用，引擎会动态扫描其二进制架构和沙盒权限，自动推荐最优策略。</li>
+<li><strong>策略切换</strong>：您可以按需调整策略：</li>
+<li><code>hard_clone</code>（物理克隆）：完整复制 App，伪装 Bundle ID 并注入环境隔离机制。</li>
+<li><code>soft_clone</code>（软包装）：轻量启动器外壳，通过参数注入实现数据隔离。</li>
+<li><strong>注入模式 (Injection Mode)</strong>：在物理克隆模式下，您可以精细指定环境注入技术：</li>
+<li><code>auto</code>（自动检测，默认推荐）：引擎先静态扫描 Mach-O 二进制头部 Padding 空间。原生应用空间充裕时，自动采用 <strong>动态库无感注入 (<code>dylib</code>)</strong>，零进程替换，完美支持顶部菜单栏图标与系统通知中心；若空间不足或需命令行参数，则自动平滑降级为 <strong>启动器包装 (<code>launcher</code>)</strong>。</li>
+<li><code>dylib</code>（动态库注入）：强制执行原进程动态库注入。如头部空间不足，向导将明确报警避免损坏二进制。适合微信、Telegram 等原生通信软件。</li>
+<li><code>launcher</code>（启动器包装）：强制采用编译原生 Mach-O C 语言启动器并备份 <code>.bin</code> 的传统方案。</li>
+</ul>
+<p>点击 <strong>"下一步 &gt;"</strong> 继续。</p>
+<hr />
+<h3 id="3">步骤 3：分身命名与界面语言<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<p>为您的分身应用配置独立的身份：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>分身代号:     [ WeChat2                         ]  (用于内部目录与配置文件命名)
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>显示名称:     [ 微信工作版                       ]  (显示在 Dock、聚焦搜索和访达中)
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>界面语言:     [ 简体中文 (zh-CN)              v ]  (分身专属独立语言)
+</span></code></pre></div>
+<ol>
+<li><strong>分身代号 (Clone Name)</strong>：字母与数字组合（如 <code>WeChat2</code>、<code>Telegram-Work</code>）。</li>
+<li><strong>显示名称 (Display Name)</strong>：在 macOS 程序坞 (Dock)、聚焦搜索 (Spotlight) 和访达中展示的应用名称。默认会自动跟随分身代号，您可随时自定义。</li>
+<li><strong>界面语言 (UI Language)</strong>：为该分身指定独立的语言环境（例如母体保持中文，分身独立运行为英文或日文）。</li>
+</ol>
+<p>点击 <strong>"下一步 &gt;"</strong>。</p>
+<hr />
+<h3 id="4">步骤 4：选择安装目标目录<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<p>选择新生成的分身 <code>.app</code> 安装位置：</p>
+<ul>
+<li><strong>默认目录（<code>~/ATBClone/Apps</code> —— 强烈推荐）</strong>：安装到当前用户的 ATBClone 应用目录。<strong>全程无需管理员密码，免 Root 提权。</strong></li>
+<li><strong>系统目录（<code>/Applications</code>）</strong>：安装到系统全局应用程序目录。ATBClone 会通过 macOS 原生授权弹窗请求一次写入权限。</li>
+</ul>
+<p>点击 <strong>"下一步 &gt;"</strong>。</p>
+<hr />
+<h3 id="5">步骤 5：设置独立数据存储目录<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<p>配置分身存放独立数据库、聊天记录、首选项和缓存的路径：</p>
+<ul>
+<li><strong>默认路径（<code>~/ATBClone/Data/&lt;分身名称&gt;</code>）</strong>：系统自动分配并管理的专属隔离区。</li>
+<li><strong>自定义路径 / 外接移动硬盘</strong>：点击 <strong>"浏览..."</strong> 可将数据存储指定到外接 SSD 或特定加密盘。</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>对于无需或不支持重定向数据目录的特殊命令行工具，向导会提示该项由系统默认管理。</p>
+</div>
+<p>点击 <strong>"下一步 &gt;"</strong>。</p>
+<hr />
+<h3 id="6">步骤 6：配置独立网络代理（可选）<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<p>如果您希望该分身通过独立的代理线路访问网络（用于办公/私人网络隔离或单应用防指纹关联）：</p>
+<ol>
+<li>开启 <strong>"启用独立网络代理"</strong> 开关。</li>
+<li>选择协议类型：<code>HTTP</code>、<code>HTTPS</code> 或 <code>SOCKS5</code>。</li>
+<li>填入代理服务器地址（默认 <code>127.0.0.1</code>）与端口号（如 <code>7890</code> 或 <code>1080</code>）。</li>
+</ol>
+<p>点击 <strong>"下一步 &gt;"</strong>。</p>
+<hr />
+<h3 id="7_1">步骤 7：确认配置并立即创建<a class="headerlink" href="#7_1" title="Permanent link">&para;</a></h3>
+<p>核对摘要卡片上的所有信息：</p>
+<ul>
+<li><strong>母体应用</strong>：<code>/Applications/WeChat.app</code></li>
+<li><strong>分身代号</strong>：<code>WeChat2</code></li>
+<li><strong>克隆策略</strong>：<code>hard_clone</code></li>
+<li><strong>安装路径</strong>：<code>~/ATBClone/Apps/WeChat2.app</code></li>
+<li><strong>数据目录</strong>：<code>~/ATBClone/Data/WeChat2</code></li>
+<li><strong>独立代理</strong>：<code>http://127.0.0.1:7890</code></li>
+</ul>
+<p>点击 <strong>"立即克隆 🚀"</strong>。进度条将自动完成物理拷贝、Plist 基因改造、沙盒剥离、壳劫持与 Ad-hoc 本地重签名。完成后分身即可立即运行！</p>
+<hr />
+<h2 id="_3">🎛️ 管理分身应用<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>ATBClone 支持两种主视图浏览分身：<strong>卡片网格视图 (Card Grid View)</strong> 与 <strong>表格列表视图 (Table View)</strong>。</p>
+<pre class="mermaid"><code>graph LR
+    Dashboard[ATBClone 主界面] --&gt; CardView[卡片网格视图]
+    Dashboard --&gt; TableView[表格列表视图]
+    CardView --&gt; SingleOps[单卡片操作：启动、打开目录、更新、编辑、详情、删除]
+    TableView --&gt; BatchOps[批量操作：多选行、批量同步更新、批量删除]</code></pre>
+<h3 id="_4">启动分身应用<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>从 ATBClone 启动</strong>：在卡片或表格行中点击 <strong>"启动"</strong> 按钮。</li>
+<li><strong>从 Spotlight 聚焦搜索启动</strong>：按下 <code>Cmd + 空格</code>，输入分身的显示名称（如 <code>微信工作版</code>）回车即可启动。</li>
+<li><strong>从访达或程序坞启动</strong>：直接双击 <code>~/ATBClone/Apps/WeChat2.app</code>。</li>
+</ul>
+<hr />
+<h3 id="_5">一键打开独立数据目录<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>想要查看分身下载的文件、清理缓存或备份数据库？</p>
+<ul>
+<li>点击分身卡片或操作栏上的 <strong>"打开目录"</strong>（Open Dir）按钮。</li>
+<li>访达将立即打开该分身的专属存储目录（<code>~/ATBClone/Data/&lt;分身名称&gt;</code>）。</li>
+</ul>
+<hr />
+<h3 id="_6">编辑分身配置<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>需要修改分身的显示名称、界面语言或代理服务器？</p>
+<ol>
+<li>点击分身卡片或工具栏上的 <strong>"编辑"</strong> 按钮。</li>
+<li>在弹出窗口中调整：</li>
+<li><strong>显示名称</strong>：更改在程序坞和访达中的标题。</li>
+<li><strong>语言环境</strong>：切换分身界面语言。</li>
+<li><strong>代理设置</strong>：开启/关闭或更改代理服务器地址。</li>
+<li>点击 <strong>"保存修改"</strong>，下次启动分身时生效。</li>
+</ol>
+<hr />
+<h3 id="_7">母体升级后的“无损同步更新”<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>当您的母体应用（如微信）通过 Mac App Store 或官方网站完成版本升级后：</p>
+<ol>
+<li>打开 ATBClone。</li>
+<li>选中需要更新的分身，点击 <strong>"更新"</strong>（Update）按钮。</li>
+<li>ATBClone 将自动拉取最新母体二进制重新构建分身，并<strong>100% 完整保留您原有的所有聊天记录、登录状态与配置数据</strong>。</li>
+</ol>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>零数据丢失保障</strong>：由于 ATBClone 采用了“数据与程序本体物理分离”的架构设计，重构或更新 <code>.app</code> 应用程序包绝对不会触碰您的本地数据库与聊天记录。</p>
+</div>
+<hr />
+<h3 id="_8">批量操作（批量更新与批量删除）<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p>当您管理较多分身实例时：</p>
+<ol>
+<li>点击顶部工具栏切换为 <strong>表格视图 (Table View)</strong>。</li>
+<li>使用 macOS 标准快捷键进行多选：</li>
+<li><code>Cmd + 点击</code>：多选不连续的分身行。</li>
+<li><code>Shift + 点击</code>：连续框选多个分身行。</li>
+<li>底部操作栏将自动显示批量操作按钮：</li>
+<li><strong>"更新 (N 个分身)"</strong>：依次自动重新构建选中的全部多开实例。</li>
+<li><strong>"删除 (N 个分身)"</strong>：一键安全清理选中的分身。</li>
+</ol>
+<hr />
+<h3 id="vs">安全删除（保留数据 vs 彻底清理）<a class="headerlink" href="#vs" title="Permanent link">&para;</a></h3>
+<p>点击 <strong>"删除"</strong>（或执行批量删除）时，ATBClone 会弹出双重确认安全对话框：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>|  ⚠️ 删除分身应用确认                                         |
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>|                                                             |
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>|  您确定要删除分身 &#39;WeChat2&#39; 吗？                            |
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>|                                                             |
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>|  [X] 同时彻底删除数据存储目录 (~/ATBClone/Data/WeChat2)      |
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>|                                                             |
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>|  [ 取消 ]                           [ 确认删除 ]            |
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>+-------------------------------------------------------------+
+</span></code></pre></div>
+<ul>
+<li><strong>保留数据（默认不勾选）</strong>：仅从 <code>~/ATBClone/Apps</code> 中移除 <code>.app</code> 应用程序包，聊天记录与数据库完整保存在 <code>~/ATBClone/Data/</code> 中。后续如需恢复，随时使用同名再次克隆即可瞬间找回所有记录。</li>
+<li><strong>彻底清除（勾选复选框）</strong>：同时删除 <code>.app</code> 应用程序包与专属数据目录，释放磁盘空间。</li>
+</ul>
+<hr />
+<h2 id="_9">⏭️ 下一步指引<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<ul>
+<li>想要为冷门应用编写专属分身规则？请阅读 <strong><a href="../02-advanced-custom-recipes/">第二章：冷门应用规则定制与基础参数</a></strong>。</li>
+<li>想要深入探索软硬分身底层原理？请阅读 <strong><a href="../03-under-the-hood-and-internals/">第三章：实现原理解析与高级参数全解</a></strong>。</li>
+<li>遇到疑问或需要提交问题？请阅读 <strong><a href="../04-faq-and-troubleshooting/">第四章：常见问题 (FAQ)、系统体检与反馈</a></strong>。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+  
+  <div class="atb-footer-custom-links">
+    
+    <a href="https://github.com/aitobox/ATBClone/releases" target="_blank" rel="noopener">GitHub Releases</a>
+    
+    <a href="https://cmder.aitobox.com" target="_blank" rel="noopener">ATBCmder</a>
+    
+    <a href="https://github.com/aitobox/ATBClone/issues" target="_blank" rel="noopener">提报问题与建议</a>
+    
+  </div>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"search":"../assets/javascripts/workers/search.b6b7e04f.min.js","tags":null,"translations":{"clipboard.copied":"已复制","clipboard.copy":"复制","search.result.more.one":"在该页上还有 1 个符合条件的结果","search.result.more.other":"在该页上还有 # 个符合条件的结果","search.result.none":"没有找到符合条件的结果","search.result.one":"找到 1 个符合条件的结果","search.result.other":"# 个符合条件的结果","search.result.placeholder":"键入以开始搜索","search.result.term.missing":"缺少","select.version":"选择当前版本"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7f30b55.min.js"></script>
+      
+        <script src="../javascripts/language-detector.js"></script>
+      
+        <script src="../javascripts/ascii-diagram.js"></script>
+      
+    
+  </body>
+</html>

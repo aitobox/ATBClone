@@ -1,0 +1,79 @@
+[project]
+site_name        = "ATBClone 用户手册"
+site_url         = "https://clone.aitobox.com/zh/"
+site_description = "ATBClone（艾特智能分身）官方使用手册 — macOS 应用多开与沙盒隔离引擎"
+repo_url         = "https://github.com/aitobox/ATBClone"
+repo_name        = "aitobox/ATBClone"
+docs_dir         = "zh-cn"
+site_dir         = "site/zh"
+
+extra_javascript = [
+  "javascripts/language-detector.js",
+  "javascripts/ascii-diagram.js"
+]
+extra_css = [
+  "stylesheets/extra.css"
+]
+
+nav = [
+  { "手册总览" = "README.md" },
+  { "第一章：基础操作与分身管理" = "01-basic-operations.md" },
+  { "第二章：冷门应用规则定制与基础参数" = "02-advanced-custom-recipes.md" },
+  { "第三章：实现原理解析与高级参数全解" = "03-under-the-hood-and-internals.md" },
+  { "第四章：常见问题 (FAQ)、系统体检与反馈" = "04-faq-and-troubleshooting.md" }
+]
+
+[project.theme]
+name        = "material"
+custom_dir  = "overrides"
+language    = "zh"
+logo        = "assets/images/logo.png"
+favicon     = "assets/images/logo.png"
+palette     = [
+  { scheme = "default", primary = "light-blue", accent = "cyan", media = "(prefers-color-scheme: light)" },
+  { scheme = "slate", primary = "light-blue", accent = "cyan", media = "(prefers-color-scheme: dark)" }
+]
+font        = { text = "Inter", code = "JetBrains Mono" }
+features    = [
+  "navigation.top",
+  "search.highlight",
+  "content.code.copy"
+]
+
+[project.extra]
+multilingual = true
+alternate = [
+  { name = "English", link = "/en/", lang = "en" },
+  { name = "简体中文", link = "/zh/", lang = "zh" }
+]
+forum_url = "https://github.com/aitobox/ATBClone/issues"
+footer_links = [
+  { text = "GitHub Releases", url = "https://github.com/aitobox/ATBClone/releases" },
+  { text = "ATBCmder", url = "https://cmder.aitobox.com" },
+  { text = "提报问题与建议", url = "https://github.com/aitobox/ATBClone/issues" }
+]
+
+[project.markdown_extensions]
+admonition = {}
+gfm_admonition = {}
+abbr = {}
+attr_list = {}
+def_list = {}
+footnotes = {}
+md_in_html = {}
+toc = { permalink = true }
+"pymdownx.arithmatex" = { generic = true }
+"pymdownx.betterem" = {}
+"pymdownx.caret" = {}
+"pymdownx.details" = {}
+"pymdownx.emoji" = { emoji_generator = "zensical.extensions.emoji.to_svg", emoji_index = "zensical.extensions.emoji.twemoji" }
+"pymdownx.highlight" = { anchor_linenums = true, line_spans = "__span", pygments_lang_class = true }
+"pymdownx.inlinehilite" = {}
+"pymdownx.keys" = {}
+"pymdownx.magiclink" = {}
+"pymdownx.mark" = {}
+"pymdownx.smartsymbols" = {}
+"pymdownx.superfences" = { custom_fences = [{ name = "mermaid", class = "mermaid" }] }
+"pymdownx.tabbed" = { alternate_style = true, combine_header_slug = true }
+"pymdownx.tasklist" = { custom_checkbox = true }
+"pymdownx.tilde" = {}

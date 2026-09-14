@@ -51,6 +51,7 @@ Click the **"+ New Clone"** button in the top right corner of the ATBClone dashb
 
 ### Step 2: Inspect Recipe & Strategy
 ATBClone automatically inspects the chosen application:
+
 * **Built-in Match**: If the app matches one of our 33+ built-in recipes, ATBClone automatically selects the optimal strategy (e.g., `Hard Clone` for WeChat, `Soft Clone` for Cursor/VS Code).
 * **Smart Prober**: If the app is not in the built-in library, the engine dynamically scans its Mach-O binary and sandbox entitlements, determining the best strategy automatically.
 * **Strategy Selection**: You can manually toggle between:
@@ -151,6 +152,7 @@ graph LR
 
 ### Directly Opening the Data Directory
 Need to inspect downloaded files, clean up storage, or copy offline files?
+
 * Click **"Open Dir"** on the clone card or action bar.
 * Finder will instantly open the dedicated storage folder (`~/ATBClone/Data/<CloneName>`).
 
@@ -158,6 +160,7 @@ Need to inspect downloaded files, clean up storage, or copy offline files?
 
 ### Editing Clone Configuration
 Need to rename your clone, change its UI language, or adjust its proxy server?
+
 1. Click **"Edit"** on the clone card or table toolbar.
 2. In the **Edit Clone** window, adjust:
    * **Display Name**: Update how the app is labeled in the Dock and Finder.

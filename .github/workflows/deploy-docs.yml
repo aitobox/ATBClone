@@ -1,0 +1,63 @@
+name: Deploy Documentation to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/guide/**"
+      - ".github/workflows/deploy-docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Zensical and plugins
+        run: |
+          python -m pip install --upgrade pip
+          pip install "zensical>=0.0.46" "pymdown-extensions>=10.0" "Pygments>=2.16.0" "markdown-gfm-admonition>=0.3.0"
+
+      - name: Build English documentation
+        run: zensical build -f docs/guide/zensical.en.toml
+
+      - name: Build Chinese documentation
+        run: zensical build -f docs/guide/zensical.zh.toml
+
+      - name: Install root index redirector and CNAME
+        run: |
+          cp docs/guide/root_index.html docs/guide/site/index.html
+          if [ -f docs/guide/CNAME ]; then cp docs/guide/CNAME docs/guide/site/CNAME; fi
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "docs/guide/site"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -100,6 +100,7 @@ To ensure full data isolation while complying with modern macOS 14 (Sonoma) and 
 #### 1. Why Traditional `execv` Wrapper Launchers Break on Modern macOS
 When a shell script or external C binary launcher wraps an app and uses `execv` to switch into the real binary (e.g. `WeChat.bin`), the Darwin kernel increments the process version (`PIDVersion`).
 Core macOS system services:
+
 * **`MenuBarAgent`** (handles Menu Bar status items and `NSStatusItem` scenes)
 * **`usernoted`** (handles Notification Center banners, badges, and permissions)
 
@@ -107,6 +108,7 @@ validate client connections via process `audit_token`. When an `execv` process r
 
 #### 2. Native In-Process Dylib Injection (`libatbclone_env.dylib`)
 ATBClone solves this by injecting dynamic environment hooks directly into the host process:
+
 1. **Preserving Original Executable**: The original Mach-O binary remains the primary `CFBundleExecutable`—it is never renamed to `.bin`.
 2. **Universal Dynamic Library**: Compiles a universal (`arm64` + `x86_64`) dylib `libatbclone_env.dylib` placed inside `Contents/Frameworks/`. A C `__attribute__((constructor))` function executes during dyld loading, before `main()` is entered, applying isolated `HOME`, `TMPDIR`, and proxy configurations.
 3. **Mach-O `LC_LOAD_DYLIB` Hooking**: A pure-Python Mach-O parser safely appends an `LC_LOAD_DYLIB` command pointing to `@executable_path/../Frameworks/libatbclone_env.dylib`.
@@ -115,6 +117,7 @@ ATBClone solves this by injecting dynamic environment hooks directly into the ho
 #### 3. Static Headroom Probing & Graceful Fallback
 To ensure that modifying Mach-O Load Commands never corrupts packed or non-standard binaries, the engine inspects available header padding:
 $$\text{Padding} = \text{first\_section\_offset} - (32 + \text{sizeofcmds})$$
+
 * **Sufficient Headroom**: Automatically activates native in-process dylib injection (e.g., WeChat with 50KB+ free padding).
 * **Insufficient Headroom or CLI Arguments Required**: Gracefully falls back to a compiled **Native Mach-O C Launcher**, guaranteeing zero binary corruption.
 
@@ -124,6 +127,7 @@ $$\text{Padding} = \text{first\_section\_offset} - (32 + \text{sizeofcmds})$$
 Applications distributed through the Mac App Store contain the `com.apple.security.app-sandbox` entitlement, which restricts filesystem writes to `~/Library/Containers/<OriginalBundleID>`.
 
 When `strip_sandbox: true` is configured:
+
 1. ATBClone extracts the code signing entitlements using `codesign -d --entitlements :-`.
 2. Removes the `<key>com.apple.security.app-sandbox</key>` XML node.
 3. Re-injects the sanitized entitlements and performs deep ad-hoc code re-signing:

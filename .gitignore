@@ -69,3 +69,7 @@ logs/
 # Agent and skill artifacts
 .claude/
 skills-lock.json
+
+# Zensical documentation build output
+site/
+docs/guide/site/

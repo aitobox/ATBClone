@@ -1,0 +1,79 @@
+[project]
+site_name        = "ATBClone Documentation"
+site_url         = "https://clone.aitobox.com/en/"
+site_description = "Official User Guide & Manual for ATBClone — macOS Application Multi-Instancing & Sandbox Isolation Engine"
+repo_url         = "https://github.com/aitobox/ATBClone"
+repo_name        = "aitobox/ATBClone"
+docs_dir         = "en"
+site_dir         = "site/en"
+
+extra_javascript = [
+  "javascripts/language-detector.js",
+  "javascripts/ascii-diagram.js"
+]
+extra_css = [
+  "stylesheets/extra.css"
+]
+
+nav = [
+  { "User Guide Overview" = "README.md" },
+  { "Chapter 1: Basic Operations & Clone Management" = "01-basic-operations.md" },
+  { "Chapter 2: Custom Recipes for Niche Apps" = "02-advanced-custom-recipes.md" },
+  { "Chapter 3: Under the Hood & Advanced Parameters" = "03-under-the-hood-and-internals.md" },
+  { "Chapter 4: FAQ & Diagnostic Troubleshooting" = "04-faq-and-troubleshooting.md" }
+]
+
+[project.theme]
+name        = "material"
+custom_dir  = "overrides"
+language    = "en"
+logo        = "assets/images/logo.png"
+favicon     = "assets/images/logo.png"
+palette     = [
+  { scheme = "default", primary = "light-blue", accent = "cyan", media = "(prefers-color-scheme: light)" },
+  { scheme = "slate", primary = "light-blue", accent = "cyan", media = "(prefers-color-scheme: dark)" }
+]
+font        = { text = "Inter", code = "JetBrains Mono" }
+features    = [
+  "navigation.top",
+  "search.highlight",
+  "content.code.copy"
+]
+
+[project.extra]
+multilingual = true
+alternate = [
+  { name = "English", link = "/en/", lang = "en" },
+  { name = "简体中文", link = "/zh/", lang = "zh" }
+]
+forum_url = "https://github.com/aitobox/ATBClone/issues"
+footer_links = [
+  { text = "GitHub Releases", url = "https://github.com/aitobox/ATBClone/releases" },
+  { text = "ATBCmder", url = "https://cmder.aitobox.com" },
+  { text = "Feedback & Issues", url = "https://github.com/aitobox/ATBClone/issues" }
+]
+
+[project.markdown_extensions]
+admonition = {}
+gfm_admonition = {}
+abbr = {}
+attr_list = {}
+def_list = {}
+footnotes = {}
+md_in_html = {}
+toc = { permalink = true }
+"pymdownx.arithmatex" = { generic = true }
+"pymdownx.betterem" = {}
+"pymdownx.caret" = {}
+"pymdownx.details" = {}
+"pymdownx.emoji" = { emoji_generator = "zensical.extensions.emoji.to_svg", emoji_index = "zensical.extensions.emoji.twemoji" }
+"pymdownx.highlight" = { anchor_linenums = true, line_spans = "__span", pygments_lang_class = true }
+"pymdownx.inlinehilite" = {}
+"pymdownx.keys" = {}
+"pymdownx.magiclink" = {}
+"pymdownx.mark" = {}
+"pymdownx.smartsymbols" = {}
+"pymdownx.superfences" = { custom_fences = [{ name = "mermaid", class = "mermaid" }] }
+"pymdownx.tabbed" = { alternate_style = true, combine_header_slug = true }
+"pymdownx.tasklist" = { custom_checkbox = true }
+"pymdownx.tilde" = {}

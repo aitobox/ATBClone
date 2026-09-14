@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  {% if config.extra and config.extra.multilingual %}
+  <script src="{{ 'javascripts/language-detector.js' | url }}"></script>
+  {% endif %}
+{% endblock %}

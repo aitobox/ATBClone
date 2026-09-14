@@ -127,6 +127,7 @@ Below is a detailed guide to all fundamental recipe parameters:
 * **Description**: Controls whether ATBClone should extract and remove `<key>com.apple.security.app-sandbox</key>` from the app's code signing entitlements during Hard Clone creation.
 
 > [!TIP]
+>
 > * **`false` (Recommended Default)**: Keeps native macOS App Sandbox active. The clone receives a distinct container directory in `~/Library/Containers/<NewBundleID>` for clean sandbox isolation.
 > * **`true` (Fallback for strictly locked apps)**: Strips sandbox restrictions if an app crashes when its bundle ID is modified or requires access to shared host utilities.
 

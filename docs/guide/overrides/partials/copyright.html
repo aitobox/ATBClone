@@ -1,0 +1,20 @@
+<div class="md-copyright">
+  {% if config.copyright %}
+    <div class="md-copyright__highlight">
+      {{ config.copyright }}
+    </div>
+  {% endif %}
+  {% if config.extra and config.extra.made_by %}
+  Made By
+  <a href="{{ config.extra.made_by_url | d('#') }}" target="_blank" rel="noopener">
+    {{ config.extra.made_by }}
+  </a>
+  {% endif %}
+  {% if config.extra and config.extra.footer_links %}
+  <div class="atb-footer-custom-links">
+    {% for item in config.extra.footer_links %}
+    <a href="{{ item.url }}" target="_blank" rel="noopener">{{ item.text }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>

@@ -53,10 +53,13 @@ exec "$ORIGINAL_BIN" --user-data-dir="$USER_DATA" >/dev/null 2>&1 &
 * **执行步骤与原理命令** (需经由 `osascript` 提权执行)：
 1. **物理拷贝**：
 `cp -R "/Applications/WeChat.app" "$HOME/ATBClone/Apps/WeChat_ATB.app"`
+
 2. **修改身份 (基因重组)**：
 `/usr/libexec/PlistBuddy -c 'Set :CFBundleIdentifier com.tencent.xinWeChat.ATB' $HOME/ATBClone/Apps/WeChat_ATB.app/Contents/Info.plist`
+
 3. **沙盒剥离 (Sandbox Stripping - 核心！)**：
 检测是否存在苹果沙盒限制。如果有，提取 Entitlements，用 Python 正则移除 `<key>com.apple.security.app-sandbox</key>`，为后续重签做准备。
+
 4. **壳劫持与网络隔离注入 (Wrapper Hijack)**：
 * 重命名原二进制：`mv "Contents/MacOS/WeChat" "Contents/MacOS/WeChat.bin"`
 * 写入同名中间代理脚本 `Contents/MacOS/WeChat`，进行环境欺骗：
@@ -80,6 +83,7 @@ exec "$DIR/WeChat.bin" "$@"
 
 5. **清理隔离属性**：
 `xattr -cr "$HOME/ATBClone/Apps/WeChat_ATB.app"`
+
 6. **本地临时重签 (Ad-Hoc 签名)**：
 `codesign --force --deep --sign - "$HOME/ATBClone/Apps/WeChat_ATB.app"` (若有修改过 Entitlements，此处需附加 `--entitlements` 参数注入新的授权文件)。
 

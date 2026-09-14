@@ -29,6 +29,7 @@ This chapter answers frequently asked questions regarding data privacy, account 
 **No. Never.**
 
 ATBClone enforces strict physical and container-level isolation:
+
 * The primary application continues reading and writing to its original standard paths (such as `~/Library/Application Support/` or `~/Library/Containers/<OriginalBundleID>`).
 * The clone operates exclusively inside its own isolated folder (e.g., `~/ATBClone/Data/<CloneName>/`).
 * Both instances run concurrently without database locking, preference collisions, or cache pollution.
@@ -59,6 +60,7 @@ By default, all user data (databases, local chat archives, cache, cookies, and p
 
 ### 3. Will my account get banned for multi-instancing?
 **ATBClone operates strictly at the macOS operating system environment level.**
+
 * **No Reverse-Engineering / Code Injection**: ATBClone does **not** use runtime code hooking (such as Frida, Cycript, or dynamic dylib injection) and does **not** tamper with in-memory application logic or network packets.
 * **Pure Environment Deception**: The application runs completely unmodified; it is simply presented with an isolated `$HOME` directory and custom bundle identifier.
 * **Anti-Fingerprint Proxy Isolation**: By configuring a dedicated HTTP or SOCKS5 proxy per clone, each instance can connect via a distinct IP address, preventing IP-level association across multiple accounts.
@@ -177,6 +179,7 @@ If you find an application that fails to clone, or crashes upon opening after cl
 
 ### Step 2: Copy Application Information from Clone Details
 The Clone Details dialog displays all critical runtime parameters:
+
 * **Basic Information**: Exact source path, mutated bundle identifier, strategy, and directory destinations.
 * **Launch Arguments**: Injected command-line parameters.
 * **Environment Variables**: Injected `$HOME`, `$TMPDIR`, and proxy configurations.

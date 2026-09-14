@@ -1,4 +1,4 @@
-[中文版](Readme_zh.md)  [English](Readme.md) | 📖 **[用户使用手册 (中文)](docs/guide/zh-cn/README.md)** | **[User Guide (EN)](docs/guide/en/README.md)**
+[中文版](Readme_zh.md)  [English](Readme.md) | 🌐 **[在线文档](https://clone.aitobox.com)** | 📖 **[用户使用手册 (中文)](https://clone.aitobox.com/zh/)** | **[User Guide (EN)](https://clone.aitobox.com/en/)**
 
 # ATBClone (macOS 应用多开引擎)
 
@@ -6,7 +6,7 @@
 
 > 🚀 **ATBClone** 是一个专为 macOS 设计的现代化应用程序多开（Multi-Instancing）与分身管理引擎。支持独立数据隔离、独立网络代理（HTTP / SOCKS5）、自动化规则匹配、重签名与沙盒解除。
 >
-> 📖 **新手小白入门指引？** 请查阅手把手图文操作指南：**[ATBClone 中文使用手册](docs/guide/zh-cn/README.md)** | **[English Manual](docs/guide/en/README.md)**。
+> 📖 **新手小白入门指引？** 请访问官方在线使用手册：**[clone.aitobox.com](https://clone.aitobox.com)**，或查阅 **[ATBClone 中文使用手册](https://clone.aitobox.com/zh/)** | **[English Manual](https://clone.aitobox.com/en/)**。
 
 <p align="center">
   <img src="resource/images/screenshot-20260821-110121.png" alt="ATBClone 分身管理仪表盘" width="49%">
@@ -438,24 +438,24 @@ src/atbclone/
 
 ## 📖 用户使用手册 (User Guide)
 
-如需查阅小白入门图文教程、规则定制指南、底层原理解析与常见问题解答，请访问完整手册：
+如需查阅小白入门图文教程、规则定制指南、底层原理解析与常见问题解答，请访问官方在线手册 **[clone.aitobox.com](https://clone.aitobox.com)**：
 
-- 🇨🇳 **[简体中文用户使用手册](docs/guide/zh-cn/README.md)**
-  - [第一章：基础操作与分身管理](docs/guide/zh-cn/01-basic-operations.md)（7 步向导、无损更新、批量操作、安全删除）
-  - [第二章：冷门应用规则定制与基础参数详解](docs/guide/zh-cn/02-advanced-custom-recipes.md)（智能探针 Prober、规则编辑器、基础参数）
-  - [第三章：实现原理解析与高级参数全解](docs/guide/zh-cn/03-under-the-hood-and-internals.md)（软硬分身机制、壳劫持、高级参数与路径宏）
-  - [第四章：常见问题 (FAQ)、系统体检与反馈](docs/guide/zh-cn/04-faq-and-troubleshooting.md)（数据安全、防封号原理解析、Doctor 体检、GitHub 提报指引）
-- 🇺🇸 **[English User Guide](docs/guide/en/README.md)**
-  - [Chapter 1: Basic Operations & Clone Management](docs/guide/en/01-basic-operations.md)
-  - [Chapter 2: Custom Recipes for Niche Apps](docs/guide/en/02-advanced-custom-recipes.md)
-  - [Chapter 3: Under the Hood & Advanced Parameters](docs/guide/en/03-under-the-hood-and-internals.md)
-  - [Chapter 4: FAQ & Diagnostic Troubleshooting](docs/guide/en/04-faq-and-troubleshooting.md)
+- 🇨🇳 **[简体中文用户使用手册 (clone.aitobox.com/zh/)](https://clone.aitobox.com/zh/)**
+  - [第一章：基础操作与分身管理](https://clone.aitobox.com/zh/01-basic-operations/)（7 步向导、无损更新、批量操作、安全删除）
+  - [第二章：冷门应用规则定制与基础参数详解](https://clone.aitobox.com/zh/02-advanced-custom-recipes/)（智能探针 Prober、规则编辑器、基础参数）
+  - [第三章：实现原理解析与高级参数全解](https://clone.aitobox.com/zh/03-under-the-hood-and-internals/)（软硬分身机制、壳劫持、高级参数与路径宏）
+  - [第四章：常见问题 (FAQ)、系统体检与反馈](https://clone.aitobox.com/zh/04-faq-and-troubleshooting/)（数据安全、防封号原理解析、Doctor 体检、GitHub 提报指引）
+- 🇺🇸 **[English User Guide (clone.aitobox.com/en/)](https://clone.aitobox.com/en/)**
+  - [Chapter 1: Basic Operations & Clone Management](https://clone.aitobox.com/en/01-basic-operations/)
+  - [Chapter 2: Custom Recipes for Niche Apps](https://clone.aitobox.com/en/02-advanced-custom-recipes/)
+  - [Chapter 3: Under the Hood & Advanced Parameters](https://clone.aitobox.com/en/03-under-the-hood-and-internals/)
+  - [Chapter 4: FAQ & Diagnostic Troubleshooting](https://clone.aitobox.com/en/04-faq-and-troubleshooting/)
 
 ---
 
 ## 📄 License 与 Release Notes
 
-- **使用手册 (Guide)**: [简体中文手册](docs/guide/zh-cn/README.md) | [English Guide](docs/guide/en/README.md)
+- **使用手册 (Guide)**: [在线文档](https://clone.aitobox.com) | [简体中文手册](https://clone.aitobox.com/zh/) | [English Guide](https://clone.aitobox.com/en/)
 - **开源协议**: GPL-3.0 License.
 - **更新日志 (Release Notes)**: [English](docs/release/ReleaseNote.md) | [简体中文](docs/release/ReleaseNote_zh.md) | [繁體中文](docs/release/ReleaseNote_zh_TW.md) | [日本語](docs/release/ReleaseNote_ja.md) | [한국어](docs/release/ReleaseNote_ko.md) | [Deutsch](docs/release/ReleaseNote_de.md) | [Français](docs/release/ReleaseNote_fr.md) | [Русский](docs/release/ReleaseNote_ru.md) | [Español](docs/release/ReleaseNote_es.md)
 

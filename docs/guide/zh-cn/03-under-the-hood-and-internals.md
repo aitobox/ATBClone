@@ -98,6 +98,7 @@ ATBClone 利用 `/usr/libexec/PlistBuddy` 对目标包进行身份突变（如�
 #### 1. 为什么传统的 `execv` 包装会失效？
 过去采用 Shell 脚本或独立 C 二进制启动器包装真实应用时，启动器调用 `execv` 切换到真实二进制（如 `WeChat.bin`），Darwin 内核会递增进程版本号 (`PIDVersion`)。
 macOS 的两大系统组件：
+
 * **`MenuBarAgent`**（负责顶部菜单栏图标与状态栏驻留 `NSStatusItem`）
 * **`usernoted`**（负责通知中心弹窗与权限绑定）
 
@@ -105,6 +106,7 @@ macOS 的两大系统组件：
 
 #### 2. 原生动态库无感注入 (`libatbclone_env.dylib`)
 为彻底解决此问题，ATBClone 研发了原生动态库注入架构：
+
 1. **保留原版可执行文件**：不重命名原版二进制，可执行文件保持为官方原生 Mach-O。
 2. **轻量动态库预置**：在 `Contents/Frameworks/` 下编译极简通用动态库 `libatbclone_env.dylib`。其内部通过 C 语言 `__attribute__((constructor))` 构造函数，在 dyld 装载镜像、进入主程序 `main()` 前完成 `HOME`、`TMPDIR`、网络代理等环境重定向。
 3. **Mach-O `LC_LOAD_DYLIB` 指令追加**：纯 Python 解析 Mach-O 结构，直接在 Load Commands 列表中安全追加 `@executable_path/../Frameworks/libatbclone_env.dylib`。
@@ -113,6 +115,7 @@ macOS 的两大系统组件：
 #### 3. 静态 Headroom 探测与优雅降级
 为防止在非标准编译器或紧凑打包的应用上强行追加指令损坏 Mach-O Section，引擎内置静态头部空间探测器：
 $$\text{Padding} = \text{first\_section\_offset} - (32 + \text{sizeofcmds})$$
+
 * **头部空间充足时**：自动启用原生动态库无感注入（如微信剩余 50KB+，安全注入）；
 * **头部空间不足或需启动参数时**：自动平滑降级为轻量编译的 **原生 Mach-O C 启动器包装**，彻底杜绝应用崩溃风险。
 
@@ -122,6 +125,7 @@ $$\text{Padding} = \text{first\_section\_offset} - (32 + \text{sizeofcmds})$$
 Mac App Store 版本的应用受到 `com.apple.security.app-sandbox` 强沙盒限制，强行限制只能写入 `~/Library/Containers/<原BundleID>`。
 
 当配置 `strip_sandbox: true` 时：
+
 1. 提取原始 Entitlements 授权文件。
 2. 使用 Python 正则剥离 `<key>com.apple.security.app-sandbox</key>` 限制节点。
 3. 对整个 Bundle 及其内部嵌套的所有 Frameworks、Dylibs、Helpers 执行深度 Ad-Hoc 签名：

@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -49,6 +49,15 @@ jobs:
         run: |
           cp docs/guide/root_index.html docs/guide/site/index.html
           if [ -f docs/guide/CNAME ]; then cp docs/guide/CNAME docs/guide/site/CNAME; fi
+          touch docs/guide/site/.nojekyll
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/guide/site
+          publish_branch: gh-pages
+          cname: clone.aitobox.com
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5

@@ -163,6 +163,9 @@ fi
 if [ -f "CNAME" ] && [ -d "site" ]; then
     cp CNAME site/CNAME
 fi
+if [ -d "site" ]; then
+    touch site/.nojekyll
+fi
 
 echo -e "${GREEN}==>${NC} ${BOLD}Build completed successfully!${NC}"
 

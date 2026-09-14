@@ -27,7 +27,7 @@
       
       
       <link rel="icon" href="../assets/images/logo.png">
-      <meta name="generator" content="zensical-0.0.51">
+      <meta name="generator" content="zensical-0.0.62">
     
     
       
@@ -38,12 +38,12 @@
       
         
       
-      <link rel="stylesheet" href="../assets/stylesheets/modern/main.62c9b9cc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.812a03bb.min.css">
       
       
 
@@ -129,7 +129,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Chapter 3: Under the Hood &amp; Advanced Parameters
+              Chapter 3: Under the Hood & Advanced Parameters
             
           </span>
         </div>
@@ -1081,10 +1081,10 @@
 <li>Generates an independent <code>Info.plist</code> with a custom bundle ID and icon.</li>
 <li>Places an executable launcher script in <code>Contents/MacOS/&lt;Executable&gt;</code> that directly invokes the primary application's Mach-O binary while passing dedicated data directory flags:
      <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="ch">#!/bin/bash</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">ORIGINAL_BIN</span><span class="o">=</span><span class="s2">&quot;/Applications/Google Chrome.app/Contents/MacOS/Google Chrome&quot;</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">USER_DATA</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/ATBClone/Data/Chrome2&quot;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">ORIGINAL_BIN</span><span class="o">=</span><span class="s2">"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">USER_DATA</span><span class="o">=</span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/ATBClone/Data/Chrome2"</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">exec</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ORIGINAL_BIN</span><span class="s2">&quot;</span><span class="w"> </span>--user-data-dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$USER_DATA</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">exec</span><span class="w"> </span><span class="s2">"</span><span class="nv">$ORIGINAL_BIN</span><span class="s2">"</span><span class="w"> </span>--user-data-dir<span class="o">=</span><span class="s2">"</span><span class="nv">$USER_DATA</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span><span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
 </span></code></pre></div></li>
 </ul>
 <hr />
@@ -1138,7 +1138,7 @@ $<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32
 <li>ATBClone extracts the code signing entitlements using <code>codesign -d --entitlements :-</code>.</li>
 <li>Removes the <code>&lt;key&gt;com.apple.security.app-sandbox&lt;/key&gt;</code> XML node.</li>
 <li>Re-injects the sanitized entitlements and performs deep ad-hoc code re-signing:
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>codesign<span class="w"> </span>--force<span class="w"> </span>--deep<span class="w"> </span>--sign<span class="w"> </span>-<span class="w"> </span>--entitlements<span class="w"> </span>/tmp/clean_entitlements.plist<span class="w"> </span><span class="s2">&quot;/Applications/WeChat2.app&quot;</span>
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>codesign<span class="w"> </span>--force<span class="w"> </span>--deep<span class="w"> </span>--sign<span class="w"> </span>-<span class="w"> </span>--entitlements<span class="w"> </span>/tmp/clean_entitlements.plist<span class="w"> </span><span class="s2">"/Applications/WeChat2.app"</span>
 </span></code></pre></div></li>
 </ol>
 <hr />
@@ -1177,10 +1177,10 @@ $<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32
 <li><strong>Description</strong>: Custom environment variables injected into the binary wrapper script before launching.</li>
 </ul>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">environment_injection</span><span class="p">:</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">HOME</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{ATB_DATA_DIR}}/Home&quot;</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">TMPDIR</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{ATB_DATA_DIR}}/Tmp&quot;</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">XDG_CONFIG_HOME</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{ATB_DATA_DIR}}/Config&quot;</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">ELECTRON_ENABLE_LOGGING</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">HOME</span><span class="p">:</span><span class="w"> </span><span class="s">"{{ATB_DATA_DIR}}/Home"</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">TMPDIR</span><span class="p">:</span><span class="w"> </span><span class="s">"{{ATB_DATA_DIR}}/Tmp"</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">XDG_CONFIG_HOME</span><span class="p">:</span><span class="w"> </span><span class="s">"{{ATB_DATA_DIR}}/Config"</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">ELECTRON_ENABLE_LOGGING</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
 </span></code></pre></div>
 <hr />
 <h3 id="3-launch_args-command-line-argument-injection">3. <code>launch_args</code> (Command-Line Argument Injection)<a class="headerlink" href="#3-launch_args-command-line-argument-injection" title="Permanent link">&para;</a></h3>
@@ -1189,8 +1189,8 @@ $<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32
 <li><strong>Description</strong>: Extra command-line arguments appended when launching the binary.</li>
 </ul>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">launch_args</span><span class="p">:</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;--user-data-dir={{ATB_DATA_DIR}}&quot;</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;--disable-features=Translate&quot;</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"--user-data-dir={{ATB_DATA_DIR}}"</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"--disable-features=Translate"</span>
 </span></code></pre></div>
 <hr />
 <h3 id="4-symlink_whitelist-system-path-bridging">4. <code>symlink_whitelist</code> (System Path Bridging)<a class="headerlink" href="#4-symlink_whitelist-system-path-bridging" title="Permanent link">&para;</a></h3>
@@ -1199,9 +1199,9 @@ $<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32
 <li><strong>Description</strong>: Paths inside the isolated pseudo-<code>$HOME</code> that should be automatically symlinked back to your real user home directory. This prevents loss of system keychain credentials, developer keys, or system fonts.</li>
 </ul>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">symlink_whitelist</span><span class="p">:</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Library/Keychains&quot;</span><span class="w">    </span><span class="c1"># Retain macOS Keychain access for persistent logins</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;.ssh&quot;</span><span class="w">                 </span><span class="c1"># Retain SSH keys for Git and terminal tools</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Library/Fonts&quot;</span><span class="w">        </span><span class="c1"># Retain access to custom installed system fonts</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"Library/Keychains"</span><span class="w">    </span><span class="c1"># Retain macOS Keychain access for persistent logins</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">".ssh"</span><span class="w">                 </span><span class="c1"># Retain SSH keys for Git and terminal tools</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"Library/Fonts"</span><span class="w">        </span><span class="c1"># Retain access to custom installed system fonts</span>
 </span></code></pre></div>
 <hr />
 <h3 id="5-dynamic-path-macros">5. Dynamic Path Macros<a class="headerlink" href="#5-dynamic-path-macros" title="Permanent link">&para;</a></h3>
@@ -1251,17 +1251,17 @@ $<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32
 </span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="nt">strip_sandbox</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
 </span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="nt">environment_injection</span><span class="p">:</span>
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">  </span><span class="nt">HOME</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{ATB_DATA_DIR}}/Home&quot;</span>
-</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">  </span><span class="nt">VSCODE_PORTABLE</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{ATB_DATA_DIR}}/UserData&quot;</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">  </span><span class="nt">HOME</span><span class="p">:</span><span class="w"> </span><span class="s">"{{ATB_DATA_DIR}}/Home"</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">  </span><span class="nt">VSCODE_PORTABLE</span><span class="p">:</span><span class="w"> </span><span class="s">"{{ATB_DATA_DIR}}/UserData"</span>
 </span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>
 </span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="nt">launch_args</span><span class="p">:</span>
-</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;--user-data-dir={{ATB_DATA_DIR}}/UserData&quot;</span>
-</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;--extensions-dir={{ATB_DATA_DIR}}/Extensions&quot;</span>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"--user-data-dir={{ATB_DATA_DIR}}/UserData"</span>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"--extensions-dir={{ATB_DATA_DIR}}/Extensions"</span>
 </span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>
 </span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="nt">symlink_whitelist</span><span class="p">:</span>
-</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Library/Keychains&quot;</span>
-</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;.ssh&quot;</span>
-</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;.gitconfig&quot;</span>
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"Library/Keychains"</span>
+</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">".ssh"</span>
+</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">".gitconfig"</span>
 </span><span id="__span-6-24"><a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>
 </span><span id="__span-6-25"><a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="nt">proxy</span><span class="p">:</span>
 </span><span id="__span-6-26"><a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
@@ -1337,10 +1337,14 @@ $<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"search":"../assets/javascripts/workers/search.b6b7e04f.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["navigation.top","search.highlight","content.code.copy"],"redirect":null,"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7f30b55.min.js"></script>
+      <script src="../assets/javascripts/bundle.8dcc8e9c.min.js"></script>
       
         <script src="../javascripts/language-detector.js"></script>
       

@@ -1,5 +1,9 @@
 # 📖 ATBClone User Guide & Manual (English)
 
+English Version | [簡體中文](../zh/) | [繁體中文](../zh-hant/) | [日本語](../ja/) | [한국어](../ko/) | [Deutsch](../de/) | [Français](../fr/) | [Español](../es/) | [Русский](../ru/)
+
+![ATBClone Interface Demo](assets/images/screenshot-20260821-110121.png)
+
 Welcome to the official **ATBClone User Manual**. This guide provides step-by-step instructions, practical workflows, architectural deep-dives, and troubleshooting tips to help you master application multi-instancing and sandbox isolation on macOS.
 
 ---

@@ -1,6 +1,8 @@
 # 📖 Guide d'utilisation ATBClone (Version française)
 
-[English Version](../en/) | [簡體中文](../zh/) | [繁體中文](../zh-hant/) | [日本語](../ja/) | [한국어](../ko/) | [Deutsch](../de/) | Version française
+[English Version](../en/) | [簡體中文](../zh/) | [繁體中文](../zh-hant/) | [日本語](../ja/) | [한국어](../ko/) | [Deutsch](../de/) | Version française | [Español](../es/) | [Русский](../ru/)
+
+![Démo de l'interface ATBClone](assets/images/screenshot-20260821-110121.png)
 
 Bienvenue dans le **Guide officiel d'utilisation d'ATBClone**. Ce manuel vous accompagne pas à pas dans la création d'instances multiples et l'isolation en bac à sable (sandbox) d'applications macOS — des opérations de base pour débutants aux analyses architecturales avancées et diagnostics système.
 

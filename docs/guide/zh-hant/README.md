@@ -1,6 +1,8 @@
 # 📖 ATBClone 使用者手冊（繁體中文版）
 
-[English Version (英文版)](../en/) | 繁體中文版
+[English Version](../en/) | [簡體中文](../zh/) | 繁體中文版 | [日本語](../ja/) | [한국어](../ko/) | [Deutsch](../de/) | [Français](../fr/) | [Español](../es/) | [Русский](../ru/)
+
+![ATBClone 介面演示](assets/images/screenshot-20260821-110121.png)
 
 歡迎查閱 **ATBClone（艾特智慧分身）官方使用手冊**。本手冊將手把手帶您熟悉 macOS 應用多開與沙盒隔離的各項功能，涵蓋從新手基礎操作、日常管理、冷門應用規則定製、底層隔離原理解析到系統體檢與故障反饋的完整內容。
 

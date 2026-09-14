@@ -1,6 +1,8 @@
 # 📖 Manual de Usuario de ATBClone (Versión en español)
 
-[English Version](../en/) | [簡體中文](../zh/) | [繁體中文](../zh-hant/) | [日本語](../ja/) | [한국어](../ko/) | [Deutsch](../de/) | [Français](../fr/) | Versión en español
+[English Version](../en/) | [簡體中文](../zh/) | [繁體中文](../zh-hant/) | [日本語](../ja/) | [한국어](../ko/) | [Deutsch](../de/) | [Français](../fr/) | Versión en español | [Русский](../ru/)
+
+![Demostración de la interfaz de ATBClone](assets/images/screenshot-20260821-110121.png)
 
 Bienvenido al **Manual Oficial de Usuario de ATBClone**. Esta guía le acompañará paso a paso en el dominio de las capacidades de ejecución multi-instancia y aislamiento en sandbox para aplicaciones de macOS, desde operaciones básicas hasta diagnósticos y arquitectura interna.
 

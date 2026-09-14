@@ -1,6 +1,8 @@
 # 📖 ATBClone Benutzerhandbuch (Deutsche Version)
 
-[English Version](../en/) | [簡體中文](../zh/) | [繁體中文](../zh-hant/) | [日本語](../ja/) | [한국어](../ko/) | Deutsche Version
+[English Version](../en/) | [簡體中文](../zh/) | [繁體中文](../zh-hant/) | [日本語](../ja/) | [한국어](../ko/) | Deutsche Version | [Français](../fr/) | [Español](../es/) | [Русский](../ru/)
+
+![ATBClone Benutzeroberfläche-Demo](assets/images/screenshot-20260821-110121.png)
 
 Willkommen beim offiziellen **ATBClone Benutzerhandbuch**. Dieses Handbuch führt Sie Schritt für Schritt durch alle Funktionen zur Multi-Instanz-Ausführung und Sandbox-Isolation von macOS-Anwendungen — von grundlegenden Workflows für Einsteiger über benutzerdefinierte Rezepte bis hin zu internen Architekturanalysen und Systemdiagnosen.
 

@@ -1,6 +1,8 @@
 # Chapter 1: Basic Operations & Clone Management
 
-This chapter walks you through creating your first cloned application step-by-step using the interactive 7-step wizard, followed by daily management workflows including launching, data inspection, updating after host upgrades, batch operations, and safe deletion.
+![ATBClone Interface Demo](assets/images/screenshot-20260821-110121.png)
+
+This chapter guides you step-by-step through creating your first isolated application clone using the 7-step wizard, followed by routine management techniques including instant launch, one-click data directory access, non-destructive updates when host apps update, batch table operations, and safe deletion.
 
 ---
 

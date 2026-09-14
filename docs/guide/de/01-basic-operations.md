@@ -1,5 +1,7 @@
 # Kapitel 1: Grundlegende Bedienung & Klon-Verwaltung
 
+![ATBClone Benutzeroberfläche-Demo](assets/images/screenshot-20260821-110121.png)
+
 In diesem Kapitel erfahren Sie, wie Sie mithilfe des 7-Schritte-Assistenten Ihre erste Klon-Anwendung erstellen und im Alltag verwalten (Starten, Datenordner öffnen, Updates synchronisieren und sicher löschen).
 
 ---

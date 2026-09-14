@@ -1,5 +1,7 @@
 # Capítulo 1: Operaciones básicas & Gestión de clones
 
+![Demostración de la interfaz de ATBClone](assets/images/screenshot-20260821-110121.png)
+
 Aprenda a crear su primer clon paso a paso con el asistente interactivo en 7 pasos y descubra las funciones de gestión cotidiana.
 
 ---

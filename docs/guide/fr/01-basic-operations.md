@@ -1,5 +1,7 @@
 # Chapitre 1 : Opérations de base & Gestion des clones
 
+![Démo de l'interface ATBClone](assets/images/screenshot-20260821-110121.png)
+
 Ce chapitre vous guide dans la création de votre premier clone à l'aide de l'assistant interactif en 7 étapes, puis détaille les opérations quotidiennes (lancement, accès aux données, synchronisation des mises à jour et suppression sécurisée).
 
 ---

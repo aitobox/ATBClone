@@ -76,6 +76,8 @@
     
       <link rel="stylesheet" href="./stylesheets/extra.css">
     
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
     <script>__md_scope=new URL(".",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
@@ -690,7 +692,7 @@
 <hr />
 <h2 id="atbclone_1">🌟 なぜ ATBClone を選ぶのか？<a class="headerlink" href="#atbclone_1" title="Permanent link">&para;</a></h2>
 <p>macOS 環境において、従来のアプリ多重起動手法（単純な <code>cp -R</code> による App コピーやターミナルでのシンボリックリンク作成など）は、クラッシュしたり動作しなくなったりすることが多発します。これは、現代の macOS アプリがユーザー環境設定、システムキーチェーン、ローカルデータベースを共有しているためです。</p>
-<p>ATBClone は独自開発のエンジン構造により、真の<strong>「4重分離（Quadruple Isolation）」</strong>を実現しています：</p>
+<p>ATBClone は独自開発のエンジン構造により、真の**「4重分離（Quadruple Isolation）」**を実現しています：</p>
 <pre class="mermaid"><code>graph TD
     A[ATBClone 分離エンジン] --&gt; B[1. データ＆キャッシュの完全分離]
     A --&gt; C[2. 視覚的アイデンティティとDockの独立]
@@ -807,6 +809,12 @@
         <script src="./javascripts/language-detector.js"></script>
       
         <script src="./javascripts/ascii-diagram.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+        <script src="./javascripts/katex.js"></script>
       
     
   </body>

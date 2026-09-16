@@ -76,6 +76,8 @@
     
       <link rel="stylesheet" href="./stylesheets/extra.css">
     
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
     <script>__md_scope=new URL(".",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
@@ -690,7 +692,7 @@
 <hr />
 <h2 id="atbclone_1">🌟 왜 ATBClone인가?<a class="headerlink" href="#atbclone_1" title="Permanent link">&para;</a></h2>
 <p>macOS 플랫폼에서 기존의 앱 다중 실행 방식(단순한 <code>cp -R</code> 앱 복사 또는 터미널 심볼릭 링크 생성 등)은 충돌하거나 실패하기 쉽습니다. 최신 macOS 애플리케이션은 사용자 환경설정, 키체인 및 데이터베이스를 시스템 전역에서 공유하기 때문입니다.</p>
-<p>ATBClone 은 독창적인 격리 엔진 구조를 통해 진정한 <strong>"4중 격리(Quadruple Isolation)"</strong>를 구현합니다:</p>
+<p>ATBClone 은 독창적인 격리 엔진 구조를 통해 진정한 **"4중 격리(Quadruple Isolation)"**를 구현합니다:</p>
 <pre class="mermaid"><code>graph TD
     A[ATBClone 격리 엔진] --&gt; B[1. 데이터 및 캐시 완전 격리]
     A --&gt; C[2. 시각적 아이덴티티 및 Dock 독립]
@@ -807,6 +809,12 @@
         <script src="./javascripts/language-detector.js"></script>
       
         <script src="./javascripts/ascii-diagram.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+        <script src="./javascripts/katex.js"></script>
       
     
   </body>

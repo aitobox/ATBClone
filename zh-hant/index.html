@@ -76,6 +76,8 @@
     
       <link rel="stylesheet" href="./stylesheets/extra.css">
     
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
     <script>__md_scope=new URL(".",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
@@ -690,7 +692,7 @@
 <hr />
 <h2 id="atbclone_1">🌟 為什麼選擇 ATBClone？<a class="headerlink" href="#atbclone_1" title="Permanent link">&para;</a></h2>
 <p>在 macOS 平臺上，傳統的應用多開方法（例如簡單的 <code>cp -R</code> 複製應用或簡單的終端符號連結 (Symlink)別名）極易崩潰或失效，因為絕大多數現代 macOS 應用程式共享使用者首選項、系統鑰匙圈及資料庫。</p>
-<p>ATBClone 通過獨創的引擎體系，實現了真正的<strong>“四重隔離”</strong>：</p>
+<p>ATBClone 通過獨創的引擎體系，實現了真正的**“四重隔離”**：</p>
 <pre class="mermaid"><code>graph TD
     A[ATBClone 隔离引擎] --&gt; B[1. 数据与缓存隔离]
     A --&gt; C[2. 视觉与交互隔离]
@@ -807,6 +809,12 @@
         <script src="./javascripts/language-detector.js"></script>
       
         <script src="./javascripts/ascii-diagram.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+        <script src="./javascripts/katex.js"></script>
       
     
   </body>

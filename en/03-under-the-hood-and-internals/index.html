@@ -78,6 +78,8 @@
     
       <link rel="stylesheet" href="../stylesheets/extra.css">
     
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
     <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
@@ -1166,8 +1168,10 @@ Core macOS system services:</p>
 <li><strong>Zero Process Substitution</strong>: The app runs as a single process throughout its lifecycle, matching LaunchServices and RunningBoard records 100%.</li>
 </ol>
 <h4 id="3-static-headroom-probing-graceful-fallback">3. Static Headroom Probing &amp; Graceful Fallback<a class="headerlink" href="#3-static-headroom-probing-graceful-fallback" title="Permanent link">&para;</a></h4>
-<p>To ensure that modifying Mach-O Load Commands never corrupts packed or non-standard binaries, the engine inspects available header padding:
-$<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32 + \text{sizeofcmds})\)</span>$</p>
+<p>To ensure that modifying Mach-O Load Commands never corrupts packed or non-standard binaries, the engine inspects available header padding:</p>
+<div class="arithmatex">\[
+\text{Padding} = \text{first\_section\_offset} - (32 + \text{sizeofcmds})
+\]</div>
 <ul>
 <li><strong>Sufficient Headroom</strong>: Automatically activates native in-process dylib injection (e.g., WeChat with 50KB+ free padding).</li>
 <li><strong>Insufficient Headroom or CLI Arguments Required</strong>: Gracefully falls back to a compiled <strong>Native Mach-O C Launcher</strong>, guaranteeing zero binary corruption.</li>
@@ -1391,6 +1395,12 @@ $<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32
         <script src="../javascripts/language-detector.js"></script>
       
         <script src="../javascripts/ascii-diagram.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+        <script src="../javascripts/katex.js"></script>
       
     
   </body>

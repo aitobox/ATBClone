@@ -78,6 +78,8 @@
     
       <link rel="stylesheet" href="../stylesheets/extra.css">
     
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
     <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
@@ -1165,8 +1167,10 @@ macOS 的两大系统组件：</p>
 <li><strong>零进程替换</strong>：整个生命周期保持单一原生进程，与 LaunchServices / RBS 100% 吻合。</li>
 </ol>
 <h4 id="3-headroom">3. 静态 Headroom 探测与优雅降级<a class="headerlink" href="#3-headroom" title="Permanent link">&para;</a></h4>
-<p>为防止在非标准编译器或紧凑打包的应用上强行追加指令损坏 Mach-O Section，引擎内置静态头部空间探测器：
-$<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32 + \text{sizeofcmds})\)</span>$</p>
+<p>为防止在非标准编译器或紧凑打包的应用上强行追加指令损坏 Mach-O Section，引擎内置静态头部空间探测器：</p>
+<div class="arithmatex">\[
+\text{Padding} = \text{first\_section\_offset} - (32 + \text{sizeofcmds})
+\]</div>
 <ul>
 <li><strong>头部空间充足时</strong>：自动启用原生动态库无感注入（如微信剩余 50KB+，安全注入）；</li>
 <li><strong>头部空间不足或需启动参数时</strong>：自动平滑降级为轻量编译的 <strong>原生 Mach-O C 启动器包装</strong>，彻底杜绝应用崩溃风险。</li>
@@ -1390,6 +1394,12 @@ $<span class="arithmatex">\(\text{Padding} = \text{first\_section\_offset} - (32
         <script src="../javascripts/language-detector.js"></script>
       
         <script src="../javascripts/ascii-diagram.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+        <script src="../javascripts/katex.js"></script>
       
     
   </body>

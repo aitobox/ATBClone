@@ -1030,6 +1030,12 @@
 <li><strong>界面语言 (UI Language)</strong>：为该分身指定独立的语言环境（例如母体保持中文，分身独立运行为英文或日文）。</li>
 <li><strong>应用图标</strong>：默认预览并保留原应用图标。点击 <strong>更换图标…</strong> 选择 <code>.icns</code> 文件，或点击 <strong>恢复原图标</strong> 撤销选择。</li>
 </ol>
+<p><strong>进程名称与 Clash 规则（硬分身）</strong>：分身代号同时用于真实主进程名称，例如 <code>WeWork</code>；应用包内的 Mach-O 辅助进程使用 <code>WeWork-</code> 前缀。显示名称仍只控制 Dock/访达中的标签。Clash Meta/Mihomo 开启进程识别后，可在兜底规则前添加：</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">find-process-mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">rules</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PROCESS-NAME-REGEX,^WeWork(-|$),🇸🇬 新加坡节点</span>
+</span></code></pre></div>
+<p>目标节点/策略组需已存在。软分身运行的是原应用，无法独立更改其真实进程名；需要进程规则隔离时请选择 <code>hard_clone</code>。已有分身需要退出后通过新版重新创建或更新；应用包外的系统服务不在重命名范围内。</p>
 <p>点击 <strong>"下一步 &gt;"</strong>。</p>
 <hr />
 <h3 id="4">步骤 4：选择安装目标目录<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
@@ -1131,15 +1137,15 @@
 <hr />
 <h3 id="vs">安全删除（保留数据 vs 彻底清理）<a class="headerlink" href="#vs" title="Permanent link">&para;</a></h3>
 <p>点击 <strong>"删除"</strong>（或执行批量删除）时，ATBClone 会弹出双重确认安全对话框：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>+-------------------------------------------------------------+
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>|  ⚠️ 删除分身应用确认                                         |
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>|                                                             |
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>|  您确定要删除分身 'WeChat2' 吗？                            |
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>|                                                             |
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>|  [X] 同时彻底删除数据存储目录 (~/ATBClone/Data/WeChat2)      |
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>|                                                             |
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>|  [ 取消 ]                           [ 确认删除 ]            |
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>+-------------------------------------------------------------+
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>|  ⚠️ 删除分身应用确认                                         |
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>|                                                             |
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>|  您确定要删除分身 'WeChat2' 吗？                            |
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>|                                                             |
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>|  [X] 同时彻底删除数据存储目录 (~/ATBClone/Data/WeChat2)      |
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>|                                                             |
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>|  [ 取消 ]                           [ 确认删除 ]            |
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>+-------------------------------------------------------------+
 </span></code></pre></div>
 <ul>
 <li><strong>保留数据（默认不勾选）</strong>：仅从 <code>~/ATBClone/Apps</code> 中移除 <code>.app</code> 应用程序包，聊天记录与数据库完整保存在 <code>~/ATBClone/Data/</code> 中。后续如需恢复，随时使用同名再次克隆即可瞬间找回所有记录。</li>

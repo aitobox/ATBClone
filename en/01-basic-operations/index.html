@@ -1030,6 +1030,12 @@
 <li><strong>UI Language</strong>: Set an independent language locale for this clone (e.g., keep your primary app in Chinese, but run the clone in English or Japanese).</li>
 <li><strong>App icon</strong>: The original app icon is previewed and kept by default. Click <strong>Change icon…</strong> to select an <code>.icns</code> file, or <strong>Restore original</strong> to undo the selection.</li>
 </ol>
+<p><strong>Process names and Clash rules (hard clones)</strong>: The clone name also names the real main process, e.g. <code>WeWork</code>. Mach-O helper executables inside the bundle receive a <code>WeWork-</code> prefix. Display Name still controls the Dock/Finder label. With process discovery enabled in Clash Meta/Mihomo, place this rule before catch-all rules:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">find-process-mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">rules</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PROCESS-NAME-REGEX,^WeWork(-|$),🇸🇬 新加坡节点</span>
+</span></code></pre></div>
+<p>The target proxy/group must already exist. Soft clones execute the original app and cannot independently rename its processes; use <code>hard_clone</code> for process-rule isolation. Quit existing clones and recreate or update them with the new version to apply naming. System services outside the bundle are not renamed.</p>
 <p>Click <strong>"Next Step &gt;"</strong>.</p>
 <hr />
 <h3 id="step-4-installation-destination">Step 4: Installation Destination<a class="headerlink" href="#step-4-installation-destination" title="Permanent link">&para;</a></h3>
@@ -1131,15 +1137,15 @@
 <hr />
 <h3 id="safe-deletion-keeping-vs-purging-data">Safe Deletion (Keeping vs. Purging Data)<a class="headerlink" href="#safe-deletion-keeping-vs-purging-data" title="Permanent link">&para;</a></h3>
 <p>When clicking <strong>"Delete"</strong> (or during batch deletion), ATBClone provides a safe two-tier confirmation dialog:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>+-------------------------------------------------------------+
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>|  ⚠️ Delete Cloned Application                                |
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>|                                                             |
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>|  Are you sure you want to remove 'WeChat2'?                 |
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>|                                                             |
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>|  [X] Also permanently delete data directory (~/ATBClone/...) |
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>|                                                             |
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>|  [ Cancel ]                         [ Confirm Delete ]      |
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>+-------------------------------------------------------------+
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>+-------------------------------------------------------------+
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>|  ⚠️ Delete Cloned Application                                |
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>|                                                             |
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>|  Are you sure you want to remove 'WeChat2'?                 |
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>|                                                             |
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>|  [X] Also permanently delete data directory (~/ATBClone/...) |
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>|                                                             |
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>|  [ Cancel ]                         [ Confirm Delete ]      |
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>+-------------------------------------------------------------+
 </span></code></pre></div>
 <ul>
 <li><strong>Keep Data (Unchecked - Default)</strong>: Removes the <code>.app</code> bundle from <code>~/ATBClone/Apps</code> while preserving your chats, preferences, and databases in <code>~/ATBClone/Data/WeChat2</code>. You can recreate the clone later and immediately resume where you left off.</li>

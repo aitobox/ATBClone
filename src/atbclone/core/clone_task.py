@@ -1,17 +1,21 @@
 """CloneTask dataclass — bundles all parameters for a single clone operation."""
 
+import shutil
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from atbclone.recipes.models import Recipe
-
-from .models import AppInfo
 from atbclone.validation import (
     validate_bundle_id,
     validate_clone_name,
     validate_display_name,
     validate_path_component,
 )
+
+from .models import AppInfo
 
 
 @dataclass
@@ -42,3 +46,16 @@ class CloneTask:
             validate_display_name(self.display_name)
         validate_path_component(str(self.dest_path), field="dest_path")
         validate_path_component(str(self.data_dir), field="data_dir")
+
+
+@contextmanager
+def preserve_clone_icon(dest_path: Path) -> Iterator[Path | None]:
+    """Keep the installed custom icon outside the bundle while an update rebuilds it."""
+    installed_icon = dest_path / "Contents/Resources/ATBCloneIcon.icns"
+    if not installed_icon.is_file():
+        yield None
+        return
+    with TemporaryDirectory(prefix="atbclone-icon-") as directory:
+        saved_icon = Path(directory) / "ATBCloneIcon.icns"
+        shutil.copyfile(installed_icon, saved_icon)
+        yield saved_icon

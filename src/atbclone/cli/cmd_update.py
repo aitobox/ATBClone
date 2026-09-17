@@ -9,7 +9,7 @@ import click
 from rich.console import Console
 
 from atbclone.core.app_inspector import AppInspector
-from atbclone.core.clone_task import CloneTask
+from atbclone.core.clone_task import CloneTask, preserve_clone_icon
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.i18n import t
 from atbclone.core.logger import get_logger
@@ -51,73 +51,75 @@ def update(clone_name: str) -> None:
     logger.info(f"Starting update for clone '{clone_name}' (source='{record.source_path}', strategy='{record.strategy}')")
     console.print(t("update_starting", clone_name=clone_name))
 
-    lines = [
-        "#!/bin/bash",
-        "set -e",
-        f"rm -rf {shlex.quote(str(dest_path))}",
-    ]
-    script = "\n".join(lines) + "\n"
+    with preserve_clone_icon(dest_path) as icon_path:
+        lines = [
+            "#!/bin/bash",
+            "set -e",
+            f"rm -rf {shlex.quote(str(dest_path))}",
+        ]
+        script = "\n".join(lines) + "\n"
 
-    try:
-        Runner.run(script, needs_admin)
-    except (CloneError, Exception) as e:
-        logger.error(f"Failed to clear old bundle for '{clone_name}': {e}")
-        console.print(f"[bold red]Error:[/bold red] {e}")
-        sys.exit(1)
+        try:
+            Runner.run(script, needs_admin)
+        except (CloneError, Exception) as e:
+            logger.error(f"Failed to clear old bundle for '{clone_name}': {e}")
+            console.print(f"[bold red]Error:[/bold red] {e}")
+            sys.exit(1)
 
-    try:
-        info = AppInspector.inspect(record.source_path)
-        recipe = RecipeLoader.match(info.bundle_id, app_path=record.source_path)
-        data_dir = Path(record.data_dir)
-        existing_records = sm.load()
-        existing_bundle_ids = {r.new_bundle_id for r in existing_records if r.new_bundle_id and r.clone_name != record.clone_name}
-        new_bundle_id = record.new_bundle_id or AppInspector.resolve_bundle_id(
-            record.bundle_id,
-            clone_name=record.clone_name,
-            existing_bundle_ids=existing_bundle_ids,
-        )
+        try:
+            info = AppInspector.inspect(record.source_path)
+            recipe = RecipeLoader.match(info.bundle_id, app_path=record.source_path)
+            data_dir = Path(record.data_dir)
+            existing_records = sm.load()
+            existing_bundle_ids = {r.new_bundle_id for r in existing_records if r.new_bundle_id and r.clone_name != record.clone_name}
+            new_bundle_id = record.new_bundle_id or AppInspector.resolve_bundle_id(
+                record.bundle_id,
+                clone_name=record.clone_name,
+                existing_bundle_ids=existing_bundle_ids,
+            )
 
-        task = CloneTask(
-            source=info,
-            dest_path=dest_path,
-            data_dir=data_dir,
-            recipe=recipe,
-            clone_name=record.clone_name,
-            new_bundle_id=new_bundle_id,
-            language=getattr(record, "language", "system"),
-            display_name=getattr(record, "display_name", None),
-        )
+            task = CloneTask(
+                source=info,
+                dest_path=dest_path,
+                data_dir=data_dir,
+                recipe=recipe,
+                clone_name=record.clone_name,
+                new_bundle_id=new_bundle_id,
+                language=getattr(record, "language", "system"),
+                display_name=getattr(record, "display_name", None),
+                icon_path=icon_path,
+            )
 
-        if record.proxy_enabled and record.proxy_summary:
-            parsed = urlparse(record.proxy_summary)
-            task.recipe.proxy.enabled = True
-            if parsed.scheme:
-                task.recipe.proxy.type = parsed.scheme  # type: ignore[assignment]
-            if parsed.hostname:
-                task.recipe.proxy.host = parsed.hostname
-            if parsed.port:
-                task.recipe.proxy.port = parsed.port
-            if parsed.username:
-                task.recipe.proxy.username = parsed.username
-            if parsed.password:
-                task.recipe.proxy.password = parsed.password
-            elif parsed.username:
-                from atbclone.core.keychain import get_clone_proxy_password
-                passw = get_clone_proxy_password(record.clone_name)
-                if passw:
-                    task.recipe.proxy.password = passw
+            if record.proxy_enabled and record.proxy_summary:
+                parsed = urlparse(record.proxy_summary)
+                task.recipe.proxy.enabled = True
+                if parsed.scheme:
+                    task.recipe.proxy.type = parsed.scheme  # type: ignore[assignment]
+                if parsed.hostname:
+                    task.recipe.proxy.host = parsed.hostname
+                if parsed.port:
+                    task.recipe.proxy.port = parsed.port
+                if parsed.username:
+                    task.recipe.proxy.username = parsed.username
+                if parsed.password:
+                    task.recipe.proxy.password = parsed.password
+                elif parsed.username:
+                    from atbclone.core.keychain import get_clone_proxy_password
+                    passw = get_clone_proxy_password(record.clone_name)
+                    if passw:
+                        task.recipe.proxy.password = passw
 
-        if record.strategy == "soft_clone":
-            SoftCloneEngine.execute(task, needs_admin)
-        else:
-            HardCloneEngine.execute(task, needs_admin)
+            if record.strategy == "soft_clone":
+                SoftCloneEngine.execute(task, needs_admin)
+            else:
+                HardCloneEngine.execute(task, needs_admin)
 
-        record.created_at = datetime.now(timezone.utc).isoformat()
-        sm.add(record)
+            record.created_at = datetime.now(timezone.utc).isoformat()
+            sm.add(record)
 
-        logger.info(f"Clone '{clone_name}' updated successfully")
-        console.print(t("update_success", clone_name=clone_name))
-    except (CloneError, Exception) as e:
-        logger.error(f"Failed to update clone '{clone_name}': {e}")
-        console.print(f"[bold red]Error:[/bold red] {e}")
-        sys.exit(1)
+            logger.info(f"Clone '{clone_name}' updated successfully")
+            console.print(t("update_success", clone_name=clone_name))
+        except (CloneError, Exception) as e:
+            logger.error(f"Failed to update clone '{clone_name}': {e}")
+            console.print(f"[bold red]Error:[/bold red] {e}")
+            sys.exit(1)

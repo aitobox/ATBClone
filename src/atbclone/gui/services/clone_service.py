@@ -7,7 +7,7 @@ import shlex
 from urllib.parse import urlparse
 
 from atbclone.core.app_inspector import AppInspector
-from atbclone.core.clone_task import CloneTask
+from atbclone.core.clone_task import CloneTask, preserve_clone_icon
 from atbclone.core.config import DEFAULT_DATA_DIR, DEFAULT_STATE_FILE
 from atbclone.core.engines import HardCloneEngine, SoftCloneEngine
 from atbclone.core.logger import get_logger
@@ -117,63 +117,65 @@ class CloneService:
                 # Guard the tamperable state file before any rm -rf.
                 validate_deletion_target(str(dest_path), expect_bundle=True, field="dest_path")
 
-                script = f"#!/bin/bash\nset -e\nrm -rf {shlex.quote(str(dest_path))}\n"
-                Runner.run(script, needs_admin)
+                with preserve_clone_icon(dest_path) as icon_path:
+                    script = f"#!/bin/bash\nset -e\nrm -rf {shlex.quote(str(dest_path))}\n"
+                    Runner.run(script, needs_admin)
 
-                info = AppInspector.inspect(record.source_path)
-                recipe = RecipeLoader.match(info.bundle_id, app_path=record.source_path)
-                data_dir = Path(record.data_dir)
-                existing_records = self.state_manager.load()
-                existing_bundle_ids = {r.new_bundle_id for r in existing_records if r.new_bundle_id and r.clone_name != clone_name}
-                new_bundle_id = record.new_bundle_id or AppInspector.resolve_bundle_id(
-                    record.bundle_id,
-                    clone_name=record.clone_name,
-                    existing_bundle_ids=existing_bundle_ids,
-                )
+                    info = AppInspector.inspect(record.source_path)
+                    recipe = RecipeLoader.match(info.bundle_id, app_path=record.source_path)
+                    data_dir = Path(record.data_dir)
+                    existing_records = self.state_manager.load()
+                    existing_bundle_ids = {r.new_bundle_id for r in existing_records if r.new_bundle_id and r.clone_name != clone_name}
+                    new_bundle_id = record.new_bundle_id or AppInspector.resolve_bundle_id(
+                        record.bundle_id,
+                        clone_name=record.clone_name,
+                        existing_bundle_ids=existing_bundle_ids,
+                    )
 
-                task = CloneTask(
-                    source=info,
-                    dest_path=dest_path,
-                    data_dir=data_dir,
-                    recipe=recipe,
-                    clone_name=record.clone_name,
-                    new_bundle_id=new_bundle_id,
-                    language=record.language,
-                    display_name=getattr(record, "display_name", None),
-                )
+                    task = CloneTask(
+                        source=info,
+                        dest_path=dest_path,
+                        data_dir=data_dir,
+                        recipe=recipe,
+                        clone_name=record.clone_name,
+                        new_bundle_id=new_bundle_id,
+                        language=record.language,
+                        display_name=getattr(record, "display_name", None),
+                        icon_path=icon_path,
+                    )
 
-                if record.proxy_enabled and record.proxy_summary:
-                    parsed = urlparse(record.proxy_summary)
-                    task.recipe.proxy.enabled = True
-                    if parsed.scheme:
-                        task.recipe.proxy.type = parsed.scheme  # type: ignore[assignment]
-                    if parsed.hostname:
-                        task.recipe.proxy.host = parsed.hostname
-                    if parsed.port:
-                        task.recipe.proxy.port = parsed.port
-                    if parsed.username:
-                        task.recipe.proxy.username = parsed.username
-                    if parsed.password:
-                        task.recipe.proxy.password = parsed.password
-                    elif parsed.username:
-                        from atbclone.core.keychain import get_clone_proxy_password
-                        passw = get_clone_proxy_password(record.clone_name)
-                        if passw:
-                            task.recipe.proxy.password = passw
+                    if record.proxy_enabled and record.proxy_summary:
+                        parsed = urlparse(record.proxy_summary)
+                        task.recipe.proxy.enabled = True
+                        if parsed.scheme:
+                            task.recipe.proxy.type = parsed.scheme  # type: ignore[assignment]
+                        if parsed.hostname:
+                            task.recipe.proxy.host = parsed.hostname
+                        if parsed.port:
+                            task.recipe.proxy.port = parsed.port
+                        if parsed.username:
+                            task.recipe.proxy.username = parsed.username
+                        if parsed.password:
+                            task.recipe.proxy.password = parsed.password
+                        elif parsed.username:
+                            from atbclone.core.keychain import get_clone_proxy_password
+                            passw = get_clone_proxy_password(record.clone_name)
+                            if passw:
+                                task.recipe.proxy.password = passw
 
-                try:
-                    if record.strategy == "soft_clone":
-                        SoftCloneEngine.execute(task, needs_admin)
-                    else:
-                        HardCloneEngine.execute(task, needs_admin)
+                    try:
+                        if record.strategy == "soft_clone":
+                            SoftCloneEngine.execute(task, needs_admin)
+                        else:
+                            HardCloneEngine.execute(task, needs_admin)
 
-                    record.created_at = datetime.now(timezone.utc).isoformat()
-                    self.state_manager.add(record)
-                    logger.info(f"Clone '{clone_name}' updated successfully")
-                    return record
-                except Exception as e:
-                    logger.error(f"Failed to update clone '{clone_name}': {e}")
-                    raise
+                        record.created_at = datetime.now(timezone.utc).isoformat()
+                        self.state_manager.add(record)
+                        logger.info(f"Clone '{clone_name}' updated successfully")
+                        return record
+                    except Exception as e:
+                        logger.error(f"Failed to update clone '{clone_name}': {e}")
+                        raise
 
             return await loop.run_in_executor(None, _execute)
         finally:

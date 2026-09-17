@@ -82,6 +82,16 @@ UI Language:   [ English (en)                  v ]  (Independent interface local
 3. **UI Language**: Set an independent language locale for this clone (e.g., keep your primary app in Chinese, but run the clone in English or Japanese).
 4. **App icon**: The original app icon is previewed and kept by default. Click **Change icon…** to select an `.icns` file, or **Restore original** to undo the selection.
 
+**Process names and Clash rules (hard clones)**: The clone name also names the real main process, e.g. `WeWork`. Mach-O helper executables inside the bundle receive a `WeWork-` prefix. Display Name still controls the Dock/Finder label. With process discovery enabled in Clash Meta/Mihomo, place this rule before catch-all rules:
+
+```yaml
+find-process-mode: always
+rules:
+  - PROCESS-NAME-REGEX,WeWork,🇸🇬 新加坡节点
+```
+
+The target proxy/group must already exist. Soft clones execute the original app and cannot independently rename its processes; use `hard_clone` for process-rule isolation. Quit existing clones and recreate or update them with the new version to apply naming. System services outside the bundle are not renamed.
+
 Click **"Next Step >"**.
 
 ---

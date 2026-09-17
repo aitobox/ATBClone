@@ -1166,6 +1166,92 @@ CHATGPT_HOOK_EOF
             fi
         """).strip() + "\n"
 
+    @staticmethod
+    def _build_process_name_cmd(task: CloneTask, main_binary: Path) -> str:
+        """Rename real Mach-O processes, retaining aliases for hardcoded helper paths."""
+        args = shlex.join([str(task.dest_path), task.clone_name, str(main_binary)])
+        return f"python3 - {args} << 'PROCESS_NAMES_PY'\n" + textwrap.dedent(r'''
+            import os
+            import plistlib
+            import struct
+            import sys
+            import tempfile
+            from pathlib import Path
+
+            app, name, main = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3])
+            root_plist = app / "Contents/Info.plist"
+            entry = app / "Contents/MacOS" / plistlib.loads(root_plist.read_bytes())["CFBundleExecutable"]
+
+            def is_executable(path):
+                with path.open("rb") as f:
+                    magic = f.read(4)
+                    if magic in (b"\xca\xfe\xba\xbe", b"\xca\xfe\xba\xbf"):
+                        # Universal binaries: inspect the first architecture's Mach-O header.
+                        f.seek(16)
+                        wide = magic == b"\xca\xfe\xba\xbf"
+                        offset = struct.unpack(">Q" if wide else ">I", f.read(8 if wide else 4))[0]
+                        f.seek(offset)
+                        magic = f.read(4)
+                    if magic in (b"\xcf\xfa\xed\xfe", b"\xce\xfa\xed\xfe"):
+                        endian = "<"
+                    elif magic in (b"\xfe\xed\xfa\xcf", b"\xfe\xed\xfa\xce"):
+                        endian = ">"
+                    else:
+                        return False
+                    header = f.read(12)
+                    return len(header) == 12 and struct.unpack(endian + "III", header)[2] == 2  # MH_EXECUTE
+
+            moves, plists = {}, []
+            for directory, _, files in os.walk(app / "Contents", followlinks=False):
+                for filename in files:
+                    path = Path(directory) / filename
+                    if path.is_symlink() or not path.is_file():
+                        continue
+                    if filename == "Info.plist":
+                        plists.append(path)
+                    if not os.access(path, os.X_OK) or not is_executable(path):
+                        continue
+                    new_name = name if path == main else name + ("-Launcher" if path == entry else "-" + filename)
+                    target = path.with_name(new_name)
+                    if path != target:
+                        moves[path] = target
+
+            # Validate all destinations before moving anything; never overwrite resources.
+            targets = set(moves.values())
+            if len(targets) != len(moves):
+                raise ValueError("Duplicate process names in cloned app")
+            for target in targets:
+                if os.path.lexists(target) and target not in moves:
+                    raise FileExistsError(f"Process name conflicts with existing file: {target}")
+
+            updates = []
+            for plist in plists:
+                data = plistlib.loads(plist.read_bytes())
+                executable = data.get("CFBundleExecutable")
+                if not isinstance(executable, str):
+                    continue
+                folder = plist.parent / "MacOS" if plist.parent.name == "Contents" else plist.parent
+                target = moves.get(folder / executable)
+                if target:
+                    data["CFBundleExecutable"] = target.name
+                    updates.append((plist, data))
+
+            # Stage moves so a clone named like the old launcher can take its filename.
+            staged = []
+            for old, target in moves.items():
+                fd, temporary = tempfile.mkstemp(prefix=".atb-process-", dir=old.parent)
+                os.close(fd)
+                old.rename(temporary)
+                staged.append((old, Path(temporary), target))
+            for old, temporary, target in staged:
+                temporary.rename(target)
+            for old, _, target in staged:
+                if old not in targets:
+                    old.symlink_to(target.name)
+            for plist, data in updates:
+                plist.write_bytes(plistlib.dumps(data))
+        ''') + "PROCESS_NAMES_PY\n"
+
     @classmethod
     def execute(cls, task: CloneTask, needs_admin: bool = False) -> None:
         """Execute hard clone script.
@@ -1413,6 +1499,9 @@ done
 """
 
         framework_prune_cmd = cls._build_framework_prune_cmd(task.dest_path)
+        process_name_cmd = cls._build_process_name_cmd(
+            task, task.dest_path / "Contents/MacOS" / (orig_bin_name if use_dylib else f"{orig_bin_name}.bin"),
+        )
 
         if task.recipe.strip_sandbox:
             codesign_cmds = (
@@ -1479,7 +1568,7 @@ chmod -R u+w {dst} 2>/dev/null || true
 {icon_cmd}{exec_prep_cmd}
 {pref_seeding}
 {symlink_snippet}
-{singleton_patch_cmd}{cef_patch_cmd}{lark_isolation_cmd}{chatgpt_isolation_cmd}{framework_prune_cmd}xattr -cr {dst} 2>/dev/null || true
+{singleton_patch_cmd}{cef_patch_cmd}{lark_isolation_cmd}{chatgpt_isolation_cmd}{framework_prune_cmd}{process_name_cmd}xattr -cr {dst} 2>/dev/null || true
 {codesign_cmds}codesign -vv --deep --strict {dst}
 {lsregister_cmd}
 """

@@ -87,7 +87,7 @@ UI Language:   [ English (en)                  v ]  (Independent interface local
 ```yaml
 find-process-mode: always
 rules:
-  - PROCESS-NAME-REGEX,WeWork,🇸🇬 新加坡节点
+  - PROCESS-NAME-REGEX,^WeWork(-|$),🇸🇬 新加坡节点
 ```
 
 The target proxy/group must already exist. Soft clones execute the original app and cannot independently rename its processes; use `hard_clone` for process-rule isolation. Quit existing clones and recreate or update them with the new version to apply naming. System services outside the bundle are not renamed.

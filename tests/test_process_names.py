@@ -15,6 +15,7 @@ from atbclone.recipes.models import Recipe
 
 @pytest.fixture
 def bundle(tmp_path):
+    """Build a minimal native app whose executable reports its kernel-resolved path."""
     app = tmp_path / "Original.app"
     macos = app / "Contents/MacOS"
     macos.mkdir(parents=True)
@@ -44,6 +45,7 @@ int main(void) {
 @pytest.mark.parametrize("launcher", [False, True])
 @pytest.mark.parametrize("name", ["WeWork", "Original", "微信 Work's $name"])
 def test_real_process_names_and_signatures(bundle, launcher, name):
+    """Verify process paths, compatibility aliases and signatures for supported names."""
     task, macos = bundle
     task.clone_name = name
     original = macos / "Original"
@@ -88,6 +90,7 @@ def test_real_process_names_and_signatures(bundle, launcher, name):
 
 
 def test_process_name_collision_fails_before_renaming(bundle):
+    """Preserve existing resources when the requested process filename is occupied."""
     task, macos = bundle
     (macos / "WeWork").write_text("existing resource")
     script = HardCloneEngine._build_process_name_cmd(task, macos / "Original")
@@ -99,6 +102,7 @@ def test_process_name_collision_fails_before_renaming(bundle):
 
 @pytest.mark.parametrize("strategy", ["dylib", "launcher"])
 def test_hard_clone_launches_with_custom_process_name(bundle, strategy):
+    """Run the full hard-clone pipeline and confirm both injection modes launch the renamed process."""
     task, _ = bundle
     task.dest_path = task.source.path.parent / "WeWork.app"
     task.injection_strategy = strategy
@@ -108,3 +112,28 @@ def test_hard_clone_launches_with_custom_process_name(bundle, strategy):
     result = subprocess.run([str(executable)], check=True, capture_output=True, text=True)
     assert Path(result.stdout.strip()).name == "WeWork"
     assert task.source.executable.is_file() and not task.source.executable.is_symlink()
+
+
+@pytest.mark.parametrize("launcher", [False, True])
+def test_helper_name_collision_preserves_original_paths(bundle, launcher):
+    """Reject a clone name that would turn an existing helper path into the main process."""
+    task, macos = bundle
+    task.clone_name = "Helper"
+    original = macos / "Original"
+    main = macos / "Original.bin" if launcher else original
+    if launcher:
+        shutil.copy2(original, main)
+    helper = macos / "Helper"
+    shutil.copy2(original, helper)
+    before = {path: path.read_bytes() for path in (original, main, helper)}
+    plist = task.dest_path / "Contents/Info.plist"
+    original_plist = plist.read_bytes()
+
+    script = HardCloneEngine._build_process_name_cmd(task, main)
+    result = subprocess.run(["/bin/bash", "-ec", script], capture_output=True, text=True, check=False)
+    assert result.returncode != 0
+    assert "Process name conflicts" in result.stderr
+    for path, data in before.items():
+        assert not path.is_symlink()
+        assert path.read_bytes() == data
+    assert plist.read_bytes() == original_plist

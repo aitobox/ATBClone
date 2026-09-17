@@ -87,7 +87,7 @@ ATBClone 会自动对所选应用进行智能探测：
 ```yaml
 find-process-mode: always
 rules:
-  - PROCESS-NAME-REGEX,WeWork,🇸🇬 新加坡节点
+  - PROCESS-NAME-REGEX,^WeWork(-|$),🇸🇬 新加坡节点
 ```
 
 目标节点/策略组需已存在。软分身运行的是原应用，无法独立更改其真实进程名；需要进程规则隔离时请选择 `hard_clone`。已有分身需要退出后通过新版重新创建或更新；应用包外的系统服务不在重命名范围内。

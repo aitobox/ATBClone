@@ -1183,6 +1183,7 @@ CHATGPT_HOOK_EOF
             entry = app / "Contents/MacOS" / plistlib.loads(root_plist.read_bytes())["CFBundleExecutable"]
 
             def is_executable(path):
+                """Identify thin or universal Mach-O executable files without loading their contents."""
                 with path.open("rb") as f:
                     magic = f.read(4)
                     if magic in (b"\xca\xfe\xba\xbe", b"\xca\xfe\xba\xbf"):
@@ -1220,8 +1221,9 @@ CHATGPT_HOOK_EOF
             targets = set(moves.values())
             if len(targets) != len(moves):
                 raise ValueError("Duplicate process names in cloned app")
-            for target in targets:
-                if os.path.lexists(target) and target not in moves:
+            for old, target in moves.items():
+                launcher_handoff = old == main and main != entry and target == entry and entry in moves
+                if os.path.lexists(target) and not launcher_handoff:
                     raise FileExistsError(f"Process name conflicts with existing file: {target}")
 
             updates = []

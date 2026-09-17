@@ -110,6 +110,14 @@ class WizardWindow(toga.Window):
             style=Pack(flex=1, font_size=12.0),
         )
 
+        self.icon_path: Path | None = None
+        self._icon_source_path: Path | None = None
+        self._original_icon: toga.Image | None = None
+        self.icon_preview = toga.ImageView(style=Pack(width=64, height=64, margin_right=12))
+        self.label_icon = WrappingLabel(t("win_wizard_icon_original"), style=Pack(font_size=12, margin_bottom=6))
+        self.btn_browse_icon = toga.Button(t("win_wizard_icon_choose"), on_press=self._on_browse_icon, style=Pack(font_size=13, margin_right=8))
+        self.btn_reset_icon = toga.Button(t("win_wizard_icon_reset"), on_press=self._on_reset_icon, enabled=False, style=Pack(font_size=13))
+
         # Step 4: Destination Directory
         self.input_dest_dir = toga.TextInput(value=str(DEFAULT_APPS_DIR), style=Pack(flex=1, margin_right=8, font_size=13.5))
         self.btn_browse_dest = toga.Button(t("btn_browse_dir"), on_press=self._on_browse_dest, style=Pack(height=30, font_size=13))
@@ -254,6 +262,18 @@ class WizardWindow(toga.Window):
             row_lang.add(toga.Label(t("win_wizard_step3_language"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
             row_lang.add(self.select_language)
             box.add(row_lang)
+
+            row_icon = toga.Box(style=Pack(direction=ROW, align_items=CENTER, margin_top=8))
+            row_icon.add(toga.Label(t("win_wizard_icon_label"), style=Pack(width=130, font_size=14, color=Theme.TEXT_PRIMARY)))
+            row_icon.add(self.icon_preview)
+            icon_controls = toga.Box(style=Pack(direction=COLUMN, flex=1))
+            icon_controls.add(self.label_icon)
+            buttons = toga.Box(style=Pack(direction=ROW))
+            buttons.add(self.btn_browse_icon)
+            buttons.add(self.btn_reset_icon)
+            icon_controls.add(buttons)
+            row_icon.add(icon_controls)
+            box.add(row_icon)
             self.step_container.add(box)
 
         elif self.current_step == 4:
@@ -328,6 +348,45 @@ class WizardWindow(toga.Window):
                 self.input_app_path.value = str(selected)
         except Exception:
             pass
+        finally:
+            configure_cocoa_window(self, floating=False)
+
+    def _load_original_icon(self):
+        """Use Finder's icon, including apps whose icon lives in an asset catalog."""
+        if self._icon_source_path == self.app_info.path:
+            return
+        self._icon_source_path = self.app_info.path
+        self._original_icon = None
+        try:
+            from rubicon.objc import ObjCClass
+            workspace = ObjCClass("NSWorkspace").sharedWorkspace
+            self._original_icon = toga.Image(workspace.iconForFile(str(self.app_info.path)))
+        except (ImportError, AttributeError, OSError, TypeError, ValueError, RuntimeError) as e:
+            logger.warning(f"Could not load app icon for '{self.app_info.path}': {e}")
+        self._on_reset_icon(None)
+
+    def _on_reset_icon(self, widget):
+        self.icon_path = None
+        self.icon_preview.image = self._original_icon
+        self.label_icon.text = t("win_wizard_icon_original")
+        self.btn_reset_icon.enabled = False
+
+    async def _on_browse_icon(self, widget):
+        try:
+            selected = await self.open_file_dialog(
+                title=t("win_wizard_icon_choose"), file_types=["icns"],
+            )
+            if selected:
+                path = Path(selected).expanduser().resolve()
+                if path.suffix.lower() != ".icns" or not path.is_file():
+                    raise ValueError(t("win_wizard_icon_invalid"))
+                image = toga.Image(path)
+                self.icon_preview.image = image
+                self.icon_path = path
+                self.label_icon.text = path.name
+                self.btn_reset_icon.enabled = True
+        except (OSError, ValueError, RuntimeError) as e:
+            await self.error_dialog(t("dialog_error_title"), str(e))
         finally:
             configure_cocoa_window(self, floating=False)
 
@@ -423,6 +482,7 @@ class WizardWindow(toga.Window):
         elif self.current_step == 2:
             self.recipe.strategy = str(self.select_recipe_strat.value)
             self.recipe.injection_strategy = str(self.select_injection_strat.value)
+            self._load_original_icon()
             out_dir = Path(self.input_dest_dir.value.strip() or str(DEFAULT_APPS_DIR))
             suggested_name, num = AppInspector.next_available_name(self.app_info.app_name, out_dir)
             self._display_name_customized = False
@@ -485,6 +545,7 @@ class WizardWindow(toga.Window):
             summary_text = (
                 f"{t('card_label_source', source_app=self.app_info.app_name)} ({self.app_info.bundle_id})\n"
                 f"{t('list_col_name')}: {clone_name}\n"
+                f"{t('win_wizard_icon_label')} {self.icon_path.name if self.icon_path else t('win_wizard_icon_original')}\n"
                 f"{t('list_col_strategy')}: {self.recipe.strategy}\n"
                 f"{t('detail_label_injection')}: {self.select_injection_strat.value}\n"
                 f"{t('list_col_destination')}: {self.input_dest_dir.value}/{clone_name}.app\n"
@@ -568,6 +629,7 @@ class WizardWindow(toga.Window):
                 clone_name=clone_name,
                 new_bundle_id=new_bundle_id,
                 display_name=display_name,
+                icon_path=self.icon_path,
                 language=lang,
                 injection_strategy=str(self.select_injection_strat.value),
             )

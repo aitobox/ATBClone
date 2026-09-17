@@ -115,7 +115,8 @@ def test_wizard_name_auto_sync_and_manual_override():
     assert wizard.input_display_name.value == "GoogleSijidege4"
 
 
-def test_wizard_execute_clone_bundle_id_resolution(tmp_path: Path):
+@pytest.mark.parametrize("custom_icon", [False, True])
+def test_wizard_execute_clone_bundle_id_resolution(tmp_path: Path, custom_icon):
     async def _test():
         clone_service = CloneService(state_file=tmp_path / "clones.yaml")
         wizard = WizardWindow(clone_service=clone_service)
@@ -128,6 +129,8 @@ def test_wizard_execute_clone_bundle_id_resolution(tmp_path: Path):
             has_sandbox=False,
         )
         wizard.recipe = Recipe(bundle_id="com.tencent.xinWeChat", app_name="WeChat", strategy="hard_clone")
+        wizard.icon_path = Path(__file__).parents[2] / "resource/images/logo.icns" if custom_icon else None
+        wizard.close = MagicMock()
         wizard.input_clone_name.value = "WeChat3"
         wizard.input_dest_dir.value = str(tmp_path / "Apps")
         wizard.input_data_dir.value = str(tmp_path / "Data" / "WeChat3")
@@ -144,6 +147,7 @@ def test_wizard_execute_clone_bundle_id_resolution(tmp_path: Path):
         await wizard._execute_clone()
         assert created_task is not None
         assert created_task.new_bundle_id == "com.tencent.xinWeChat.atbclone.3"
+        assert created_task.icon_path == wizard.icon_path
 
     asyncio.run(_test())
 
@@ -362,4 +366,67 @@ def test_wizard_step6_validation_error(tmp_path: Path):
     asyncio.run(_test())
 
 
+def test_wizard_icon_selection_reset_and_cancel(tmp_path):
+    async def _test():
+        import toga
+        wizard = WizardWindow()
+        original = toga.Image(Path(__file__).parents[2] / "resource/images/logo.png")
+        custom_path = Path(__file__).parents[2] / "resource/images/logo.icns"
+        wizard._original_icon = original
+        wizard._on_reset_icon(None)
+        assert wizard.icon_preview.image is original
+        assert wizard.icon_path is None
+        assert not wizard.btn_reset_icon.enabled
 
+        with patch.object(wizard, "open_file_dialog", AsyncMock(return_value=custom_path)):
+            await wizard._on_browse_icon(None)
+        assert wizard.icon_path == custom_path
+        assert wizard.icon_preview.image.path == custom_path
+        assert wizard.btn_reset_icon.enabled
+
+        wizard.current_step = 4
+        await wizard.go_prev()
+        assert wizard.icon_path == custom_path
+        with patch.object(wizard, "open_file_dialog", AsyncMock(return_value=None)):
+            await wizard._on_browse_icon(None)
+        assert wizard.icon_path == custom_path
+
+        corrupt = tmp_path / "corrupt.icns"
+        corrupt.write_bytes(b"not an icon")
+        for invalid in (tmp_path / "missing.icns", custom_path.with_suffix(".png"), corrupt):
+            wizard.error_dialog = AsyncMock()
+            with patch.object(wizard, "open_file_dialog", AsyncMock(return_value=invalid)):
+                await wizard._on_browse_icon(None)
+            wizard.error_dialog.assert_awaited_once()
+            assert wizard.icon_path == custom_path
+
+        wizard._on_reset_icon(None)
+        assert wizard.icon_path is None
+        assert wizard.icon_preview.image is original
+        assert not wizard.btn_reset_icon.enabled
+
+    asyncio.run(_test())
+
+
+def test_wizard_original_icon_and_source_change():
+    wizard = WizardWindow()
+    wizard.app_info = AppInfo(
+        path=Path("/System/Applications/Calculator.app"),
+        bundle_id="com.apple.calculator", app_name="Calculator",
+        executable=Path("/System/Applications/Calculator.app/Contents/MacOS/Calculator"),
+        has_sandbox=False,
+    )
+    wizard._load_original_icon()
+    assert wizard.icon_preview.image is not None
+    assert wizard.icon_preview.image.width > 0
+    original = wizard.icon_preview.image
+    wizard.icon_path = Path("/custom.icns")
+    wizard._load_original_icon()
+    assert wizard.icon_path == Path("/custom.icns")
+    assert wizard.icon_preview.image is original
+
+    wizard.app_info.path = Path("/System/Applications/TextEdit.app")
+    wizard._load_original_icon()
+    assert wizard.icon_path is None
+    assert wizard.icon_preview.image is not None
+    assert wizard.icon_preview.image is not original

@@ -1198,12 +1198,27 @@ class TestMachOInjectionHeadroomAndStrategy:
                     assert sample_task.actual_injection_strategy == "dylib"
 
 
+@pytest.mark.parametrize("icon_file", [None, "AppIcon", "AppIcon.icns"])
+def test_custom_icon_applied_to_bundle(sample_task, tmp_path, icon_file):
+    import plistlib
+    import subprocess
 
+    resources = tmp_path / "Clone App/Contents/Resources"
+    plist_path = resources.parent / "Info.plist"
+    resources.parent.mkdir(parents=True)
+    metadata = {"CFBundleIconName": "AppIcon"}
+    if icon_file:
+        metadata["CFBundleIconFile"] = icon_file
+    plist_path.write_bytes(plistlib.dumps(metadata))
+    sample_task.icon_path = tmp_path / "My Icon.icns"
+    sample_task.icon_path.write_bytes(b"custom icon content")
+    script = CloneEngine._build_icon_cmd(
+        sample_task, shlex.quote(str(resources)), shlex.quote(str(plist_path))
+    )
+    subprocess.run(["/bin/bash", "-ec", script], check=True)
+    metadata = plistlib.loads(plist_path.read_bytes())
+    assert (resources / metadata["CFBundleIconFile"]).read_bytes() == b"custom icon content"
+    assert "CFBundleIconName" not in metadata
 
-
-
-
-
-
-
-
+    sample_task.icon_path.unlink()
+    assert subprocess.run(["/bin/bash", "-ec", script], capture_output=True, check=False).returncode != 0

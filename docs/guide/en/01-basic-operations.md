@@ -80,6 +80,7 @@ UI Language:   [ English (en)                  v ]  (Independent interface local
 1. **Clone Name**: Alphanumeric identifier (e.g., `WeChat2`, `Telegram-Work`).
 2. **Display Name**: The friendly title shown in the macOS Dock, Spotlight search, and Finder window titles. By default, it syncs with the Clone Name until you customize it.
 3. **UI Language**: Set an independent language locale for this clone (e.g., keep your primary app in Chinese, but run the clone in English or Japanese).
+4. **App icon**: The original app icon is previewed and kept by default. Click **Change icon…** to select an `.icns` file, or **Restore original** to undo the selection.
 
 Click **"Next Step >"**.
 

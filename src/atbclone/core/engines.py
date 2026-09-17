@@ -115,18 +115,16 @@ class CloneEngine:
 
     @staticmethod
     def _build_icon_cmd(task: CloneTask, dst_resources: str, dst_plist: str) -> str:
-        """Return a shell snippet that applies icon customisation after Resources are in place.
-
-        When task.icon_path is set, the custom .icns is copied over the file named by
-        CFBundleIconFile in the destination plist.  Falls back silently if the plist key
-        is missing (uncommon but possible).  Returns empty string when icon_path is None.
-        """
+        """Install a standalone icon before signing, even for asset-catalog apps."""
         if task.icon_path is None:
             return ""
         custom_icon = shlex.quote(str(task.icon_path))
         return (
-            f"ICON_FILE=$(/usr/libexec/PlistBuddy -c \"Print :CFBundleIconFile\" {dst_plist} 2>/dev/null || true)\n"
-            f"[ -n \"$ICON_FILE\" ] && cp {custom_icon} {dst_resources}/\"$ICON_FILE\" || true\n"
+            f"mkdir -p {dst_resources}\n"
+            f"cp {custom_icon} {dst_resources}/ATBCloneIcon.icns\n"
+            f'/usr/libexec/PlistBuddy -c "Set :CFBundleIconFile ATBCloneIcon.icns" {dst_plist} 2>/dev/null || '
+            f'/usr/libexec/PlistBuddy -c "Add :CFBundleIconFile string ATBCloneIcon.icns" {dst_plist}\n'
+            f'/usr/libexec/PlistBuddy -c "Delete :CFBundleIconName" {dst_plist} 2>/dev/null || true\n'
         )
 
     @staticmethod

@@ -1,4 +1,9 @@
 <div class="atb-header-actions">
+  <a href="{{ config.extra.download_url if config.extra and config.extra.download_url else 'https://storage.aitobox.com/@s/bNAshV6G/ATBClone' }}" title="Download ATBClone" target="_blank" rel="noopener noreferrer" class="md-header__button atb-header-action">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7 7-7z"/></svg>
+    <span>Download</span>
+  </a>
+
   {% if config.extra and config.extra.contact_email %}
   <a href="mailto:{{ config.extra.contact_email }}" title="Contact Us" class="md-header__button atb-header-action">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>

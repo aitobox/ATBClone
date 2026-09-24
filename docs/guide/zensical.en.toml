@@ -57,6 +57,7 @@ alternate = [
   { name = "Español", link = "/es/", lang = "es" },
   { name = "Русский", link = "/ru/", lang = "ru" }
 ]
+download_url = "https://storage.aitobox.com/@s/bNAshV6G/ATBClone"
 forum_url = "https://github.com/aitobox/ATBClone/issues"
 footer_links = [
   { text = "GitHub Releases", url = "https://github.com/aitobox/ATBClone/releases" },

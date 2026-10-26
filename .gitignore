@@ -69,6 +69,8 @@ logs/
 # Agent and skill artifacts
 .claude/
 skills-lock.json
+.github-agent*
+软件著作权申请资料/
 
 # Zensical documentation build output
 site/

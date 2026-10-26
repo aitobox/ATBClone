@@ -9,7 +9,7 @@ description = "macOS App Cloning Engine"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 authors = [
-    { name = "Brain Zhang" }
+    { name = "AIToBox" }
 ]
 requires-python = ">=3.12"
 dependencies = [
@@ -17,6 +17,7 @@ dependencies = [
     "pydantic>=2.0",
     "rich>=13.0",
     "pyyaml>=6.0",
+    "briefcase"=="0.4.4",
 ]
 
 [project.scripts]
@@ -28,11 +29,11 @@ gui = ["toga>=0.4.0", "requests>=2.28"]
 
 [tool.briefcase]
 project_name = "ATBClone"
-bundle = "com.atbclone"
+bundle = "com.aitobox.atbclone"
 version = "2.3.1"
 url = "https://github.com/aitobox/ATBClone"
-author = "Brain Zhang"
-author_email = "brainzhang@example.com"
+author = "AIToBox"
+author_email = "clone@aitobox.com"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 

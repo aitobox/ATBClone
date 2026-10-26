@@ -83,8 +83,34 @@ def test_app_prober_electron_framework(tmp_path: Path):
     with patch.object(AppProber, "inspect_entitlements", return_value={}), \
          patch.object(AppProber, "detect_frameworks", return_value=["Electron Framework.framework"]):
         result = AppProber.analyze(app_dir, app_info=mock_info)
-        assert result.strategy == "soft_clone"
-        assert result.recipe.launch_args == ["--user-data-dir={{ATB_DATA_DIR}}"]
+        assert result.strategy == "hard_clone"
+        assert result.recipe.launch_args == []
+        assert result.recipe.environment_injection["HOME"] == "{{ATB_DATA_DIR}}/Home"
+        assert result.recipe.environment_injection["TMPDIR"] == "{{ATB_DATA_DIR}}/Tmp"
+
+
+def test_app_prober_workbuddy(tmp_path: Path):
+    app_dir = tmp_path / "WorkBuddy.app"
+    app_dir.mkdir()
+
+    mock_info = AppInfo(
+        path=app_dir,
+        bundle_id="com.tencent.workbuddy.mac",
+        app_name="WorkBuddy",
+        executable=app_dir / "Contents" / "MacOS" / "WorkBuddy",
+        has_sandbox=True,
+    )
+
+    with patch.object(AppProber, "inspect_entitlements", return_value={"com.apple.security.app-sandbox": True}), \
+         patch.object(AppProber, "detect_frameworks", return_value=["Electron Framework.framework"]):
+        result = AppProber.analyze(app_dir, app_info=mock_info)
+        assert result.strategy == "hard_clone"
+        assert result.recipe.strip_sandbox is True
+        assert result.recipe.launch_args == []
+        assert result.recipe.environment_injection["HOME"] == "{{ATB_DATA_DIR}}/Home"
+        assert result.recipe.environment_injection["TMPDIR"] == "{{ATB_DATA_DIR}}/Tmp"
+        assert result.recipe.environment_injection["WORKBUDDY_CONFIG_DIR"] == "{{ATB_DATA_DIR}}/Config"
+        assert result.recipe.environment_injection["WORKBUDDY_USER_DATA_DIR"] == "{{ATB_DATA_DIR}}/UserData"
 
 
 def test_app_prober_firefox(tmp_path: Path):

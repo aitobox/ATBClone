@@ -164,13 +164,33 @@ class AppProber:
             launch_args = []
             env_injection: dict[str, str] = {}
             reason = "iOS/iPadOS Wrapper application on Mac (not supported for cloning)."
-        # Chromium / Electron detection
-        elif app_type in ("chromium", "electron"):
+        # Chromium browser detection
+        elif app_type == "chromium":
             strategy = "soft_clone"
             strip_sandbox = False
             launch_args = ["--user-data-dir={{ATB_DATA_DIR}}"]
             env_injection = {}
-            reason = "Chromium/Electron framework detected; supports --user-data-dir parameter."
+            reason = "Chromium browser framework detected; supports --user-data-dir parameter."
+        # Electron application detection
+        elif app_type == "electron":
+            strategy = "hard_clone"
+            strip_sandbox = has_sandbox
+            launch_args = []
+            env_injection = {
+                "HOME": "{{ATB_DATA_DIR}}/Home",
+                "TMPDIR": "{{ATB_DATA_DIR}}/Tmp",
+            }
+            is_wb = (
+                app_info.bundle_id in ("com.tencent.workbuddy.mac", "com.workbuddy.workbuddy-ai")
+                or "workbuddy" in app_info.bundle_id.lower()
+                or "workbuddy" in (app_info.app_name or "").lower()
+            )
+            if is_wb:
+                env_injection["WORKBUDDY_CONFIG_DIR"] = "{{ATB_DATA_DIR}}/Config"
+                env_injection["WORKBUDDY_USER_DATA_DIR"] = "{{ATB_DATA_DIR}}/UserData"
+                reason = "Tencent WorkBuddy Electron app detected; requires hard clone with dedicated WORKBUDDY data and HOME isolation."
+            else:
+                reason = "Electron desktop framework detected; requires hard clone with HOME/TMPDIR environment isolation."
         elif app_type == "firefox":
             strategy = "soft_clone"
             strip_sandbox = False

@@ -2,6 +2,27 @@
 
 # Notes de publication d'ATBClone (Release Notes)
 
+## [v2.3.1] - 2026-10-26
+
+### 🛡️ Isolation multi-instance de WorkBuddy en Hard Clone et correction de singleton
+- **Résolution des conflits d'activation et de singleton (#37, #38)**:
+  - Correction d'un problème critique où les clones de WorkBuddy (`com.tencent.workbuddy.mac` et `com.workbuddy.workbuddy-ai`) ne pouvaient pas s'exécuter de façon indépendante ou réactivaient l'instance principale en raison du verrou singleton d'Electron.
+  - Nouvelles recettes intégrées pour WorkBuddy : préconfigurées avec la stratégie `hard_clone`, suppression du sandbox, isolation des schémas d'URL, liste blanche de trousseau d'accès et répertoires dédiés (`HOME`, `TMPDIR`, `WORKBUDDY_CONFIG_DIR`, `WORKBUDDY_USER_DATA_DIR`).
+  - Intégration d'une bibliothèque dylib de hook dédiée (`libatbclone_workbuddy_hook.dylib`) et d'un lanceur C pour intercepter les verrous de singleton.
+  - Amélioration d'`AppProber` : recommande par défaut `hard_clone` avec injection de `HOME` et `TMPDIR` pour toutes les applications Electron, et auto-configure l'environnement de WorkBuddy.
+  - Garantie d'injection systématique de `HOME` et `TMPDIR` dans `HardCloneEngine` pour toutes les applications Electron.
+
+### 🌐 Lien de téléchargement dans l'en-tête de la documentation en 9 langues
+- **Accès simplifié au client (#35)**:
+  - Ajout d'un lien de téléchargement direct dans la barre de navigation supérieure de l'ensemble des sites de documentation en 9 langues.
+
+### 🧪 Assurance qualité et suite de tests
+- **Tests unitaires dédiés**:
+  - Ajout de suites de tests pour les recettes WorkBuddy, la génération du hook dylib, la détection et l'injection des variables d'environnement (`test_workbuddy_isolation.py`).
+  - Suite de tests portée à **664 tests automatisés** avec un taux de réussite de 100%.
+
+---
+
 ## [v2.3.0] - 2026-09-23
 
 ### 🔄 Formatage monoligne des erreurs de mise à jour et stabilité de la barre latérale

@@ -2,6 +2,27 @@
 
 # ATBClone リリースノート (Release Notes)
 
+## [v2.3.1] - 2026-10-26
+
+### 🛡️ WorkBuddy ハードクローンの多重起動分離とシングルトン競合修正
+- **プロセスの横取りとシングルトン競合の完全解消 (#37, #38)**:
+  - WorkBuddy（`com.tencent.workbuddy.mac` および `com.workbuddy.workbuddy-ai`）のハードクローンにおいて、Electron のシングルトンロック機構により既存インスタンスが誤ってアクティブ化されたり、独立起動に失敗していた不具合を修正。
+  - WorkBuddy 組み込みレシピ（Builtin Recipes）を新設：`hard_clone` 物理分離戦略、サンドボックス解除、URL スキーム分離、キーチェーン共有、独立データディレクトリ（`HOME`, `TMPDIR`, `WORKBUDDY_CONFIG_DIR`, `WORKBUDDY_USER_DATA_DIR`）を標準搭載。
+  - 専用フックライブラリ（`libatbclone_workbuddy_hook.dylib`）と C ランチャーの連携により、シングルトンミューテックスの干渉を確実に遮断。
+  - `AppProber` を強化：すべての Electron アプリに対して `hard_clone` と `HOME`/`TMPDIR` 注入を既定で推奨し、WorkBuddy 検出時に専用環境変数を自動補完。
+  - `HardCloneEngine` において、任意の起動引数が設定されている場合でも、すべての Electron アプリに `HOME` と `TMPDIR` を確実に強制注入。
+
+### 🌐 ドキュメントサイト上部ナビゲーションのダウンロード導線強化
+- **全 9 言語のドキュメントで直接ダウンロード対応 (#35)**:
+  - ドキュメントサイトの全言語ヘッダーに、最新クライアントへの直接ダウンロードリンクを追加。
+
+### 🧪 包括的なテスト拡充と品質保証
+- **カバレッジの強化**:
+  - WorkBuddy レシピの読み込み、アプリ検出、フック生成、Electron 環境変数注入に関するテストスイートを追加（`test_workbuddy_isolation.py`）。
+  - 自動テストスイートを計 **664 件**（合格率 100%）に拡大。
+
+---
+
 ## [v2.3.0] - 2026-09-23
 
 ### 🔄 サイドバー更新確認エラー表示の単行化とレイアウト崩れ防止

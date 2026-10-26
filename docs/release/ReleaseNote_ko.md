@@ -2,6 +2,27 @@
 
 # ATBClone 릴리즈 노트 (Release Notes)
 
+## [v2.3.1] - 2026-10-26
+
+### 🛡️ WorkBuddy 하드 복제본 독립 실행 및 싱글톤 충돌 문제 해결
+- **자식 프로세스 선점 및 싱글톤 간섭 완벽 차단 (#37, #38)**:
+  - WorkBuddy(`com.tencent.workbuddy.mac` 및 `com.workbuddy.workbuddy-ai`)의 물리 복제(Hard Clone) 환경에서 Electron 싱글톤 인스턴스 락으로 인해 기존 프로세스가 잘못 활성화되거나 독립 실행이 불가능하던 문제를 수정했습니다.
+  - 전용 내장 레시피(Builtin Recipes) 추가: `hard_clone` 전략, 샌드박스 제거, URL 스킴 격리, 키체인 공유 화이트리스트, 독립 데이터 경로(`HOME`, `TMPDIR`, `WORKBUDDY_CONFIG_DIR`, `WORKBUDDY_USER_DATA_DIR`)를 사전 구성했습니다.
+  - 전용 격리 동적 라이브러리(`libatbclone_workbuddy_hook.dylib`)와 C 런처를 적용하여 싱글톤 뮤텍스 신호 전달을 원천 차단했습니다.
+  - `AppProber` 엔진 강화: 모든 Electron 앱에 대해 `hard_clone` 및 `HOME`/`TMPDIR` 주입을 기본 추천하며, WorkBuddy 감지 시 전용 환경 변수를 자동 설정합니다.
+  - `HardCloneEngine`에서 커스텀 실행 인자가 있더라도 모든 Electron 앱에 `HOME` 및 `TMPDIR` 환경 변수가 필수 주입되도록 방어 로직을 강화했습니다.
+
+### 🌐 9개 언어 문서 사이트 상단 다운로드 링크 지원
+- **클라이언트 접근성 개선 (#35)**:
+  - 다국어 문서 사이트 상단 글로벌 헤더에 최신 클라이언트 설치 파일 직접 다운로드 링크를 전 언어에 걸쳐 추가했습니다.
+
+### 🧪 자동화 테스트 스위트 확장 및 신뢰성 확보
+- **테스트 케이스 추가**:
+  - WorkBuddy 레시피 검증, 감지 엔진, 훅 스크립트 생성 및 Electron 환경 변수 주입 전용 단위 테스트를 구축했습니다(`test_workbuddy_isolation.py`).
+  - 전체 자동화 테스트 스위트를 **664개**(통과율 100%)로 확장했습니다.
+
+---
+
 ## [v2.3.0] - 2026-09-23
 
 ### 🔄 사이드바 업데이트 확인 오류 단일행 처리 및 레이아웃 안정화

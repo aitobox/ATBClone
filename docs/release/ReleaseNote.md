@@ -2,6 +2,27 @@
 
 # ATBClone Release Notes
 
+## [v2.3.1] - 2026-10-26
+
+### 🛡️ WorkBuddy Hard Clone Multi-Instance Isolation & Singleton Fix
+- **Resolved Process Activation & Singleton Collisions (#37, #38)**:
+  - Fixed a critical issue where WorkBuddy clones (`com.tencent.workbuddy.mac` and `com.workbuddy.workbuddy-ai`) failed to run independently or accidentally activated existing main instances due to Electron singleton lock mechanisms.
+  - Added dedicated builtin recipes for WorkBuddy: preconfigured with `hard_clone` strategy, sandbox stripping, URL scheme isolation, keychain whitelist, and dedicated directories (`HOME`, `TMPDIR`, `WORKBUDDY_CONFIG_DIR`, `WORKBUDDY_USER_DATA_DIR`).
+  - Implemented custom isolation hook dylib (`libatbclone_workbuddy_hook.dylib`) and C launcher integration to intercept singleton mutex handoffs.
+  - Enhanced `AppProber` to automatically recommend `hard_clone` with isolated `HOME` and `TMPDIR` for all Electron applications, with automated WorkBuddy environment injection.
+  - Guaranteed fallback injection of `HOME` and `TMPDIR` in `HardCloneEngine` for all Electron apps, even when custom launch arguments exist.
+
+### 🌐 Documentation Download Navigation Across 9 Languages
+- **Streamlined Client Access (#35)**:
+  - Added direct application download links to the top navigation header across all 9 language versions of the documentation site.
+
+### 🧪 Comprehensive Quality Assurance
+- **Expanded Test Suite**:
+  - Added specialized unit tests for WorkBuddy recipes, isolation dylib generation, app probing, and Electron environment injection (`test_workbuddy_isolation.py`).
+  - Automated test suite expanded to **664 tests** with a 100% pass rate.
+
+---
+
 ## [v2.3.0] - 2026-09-23
 
 ### 🔄 Sidebar Update Error Formatting & Zero-Shift Layout

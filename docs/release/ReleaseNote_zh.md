@@ -2,6 +2,27 @@
 
 # ATBClone 更新日志 (Release Notes)
 
+## [v2.3.1] - 2026-10-26
+
+### 🛡️ WorkBuddy 物理克隆分身独立运行及单例唤醒冲突修复
+- **彻底解决分身无法独立运行与单例抢占问题（#37、#38）**：
+  - 修复腾讯 WorkBuddy（支持 `com.tencent.workbuddy.mac` 与 `com.workbuddy.workbuddy-ai`）在物理克隆（Hard Clone）模式下，由于 Electron 实例锁机制导致分身被已有进程单例拦截抢占、误唤醒主程序或无法独立运行的缺陷。
+  - 新增内置 WorkBuddy 专属配方（Builtin Recipes）：预置 `hard_clone` 物理隔离策略、移除沙盒、剥离 URL Schemes，注入完全隔离的数据目录（`HOME`、`TMPDIR`、`WORKBUDDY_CONFIG_DIR`、`WORKBUDDY_USER_DATA_DIR`），并设置钥匙串共享白名单。
+  - 在底层注入专用隔离动态库（`libatbclone_workbuddy_hook.dylib`）并结合 C 语言 Launcher，彻底切断单例互斥信号传播。
+  - 强化探测引擎 `AppProber`：对 Electron 架构应用默认推荐物理克隆（`hard_clone`）并自动补齐 `HOME` 与 `TMPDIR` 注入；自动嗅探 WorkBuddy 架构特征并补齐专属环境变量。
+  - 在克隆引擎层强化兜底：所有 Electron 应用无论是否存在自定义启动参数，均强制注入 `HOME` 与 `TMPDIR`，防止配置泄漏。
+
+### 🌐 多语言文档站顶栏下载导航优化
+- **全语言客户端便捷获取（#35）**：
+  - 在官方文档站全局顶栏导航中增设客户端直接下载链接，统一导流至最新版本分发节点，覆盖全部 9 种语言。
+
+### 🧪 自动化测试套件扩充与质量保障
+- **测试覆盖更完备**：
+  - 新增针对 WorkBuddy 配方加载、探测引擎识别、Hook 脚本生成及 Electron 环境变量强制注入的专用测试套件（`test_workbuddy_isolation.py`）。
+  - 全量自动化测试用例扩充至 **664 项**，保持 100% 全部通过。
+
+---
+
 ## [v2.3.0] - 2026-09-23
 
 ### 🔄 侧边栏更新检查状态单行防抖与视觉布局加固

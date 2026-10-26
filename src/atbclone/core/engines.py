@@ -1050,6 +1050,40 @@ CHATGPT_HOOK_EOF
         """).strip() + "\n"
 
     @classmethod
+    def _build_workbuddy_isolation_cmd(cls, task: CloneTask) -> str:
+        """Return a shell snippet to compile libatbclone_workbuddy_hook.dylib and strip URL schemes for WorkBuddy."""
+        is_workbuddy = (
+            getattr(task.recipe, "patch_workbuddy_isolation", False)
+            or getattr(task.source, "bundle_id", "") in ("com.tencent.workbuddy.mac", "com.workbuddy.workbuddy-ai")
+            or getattr(task.recipe, "bundle_id", "") in ("com.tencent.workbuddy.mac", "com.workbuddy.workbuddy-ai")
+            or getattr(task, "new_bundle_id", "").startswith("com.tencent.workbuddy.mac")
+            or getattr(task, "new_bundle_id", "").startswith("com.workbuddy.workbuddy-ai")
+        )
+        if not is_workbuddy:
+            return ""
+
+        dst = shlex.quote(str(task.dest_path))
+        dst_frameworks = shlex.quote(str(task.dest_path / "Contents" / "Frameworks"))
+        rel_plist = getattr(task.source, "relative_plist_path", Path("Contents/Info.plist"))
+        dst_plist = shlex.quote(str(task.dest_path / rel_plist))
+
+        strip_schemes_cmd = ""
+        if getattr(task.recipe, "strip_url_schemes", False) or is_workbuddy:
+            strip_schemes_cmd = f'/usr/libexec/PlistBuddy -c "Delete :CFBundleURLTypes" {dst_plist} 2>/dev/null || true\n'
+
+        hook_m = cls._cocoa_hook_source()
+        clang_cmd = cls._resolve_clang_command()
+
+        return textwrap.dedent(f"""\
+            # WorkBuddy isolation: compile Cocoa/POSIX hook dylib and strip URL schemes
+            {strip_schemes_cmd}mkdir -p {dst_frameworks}
+            {clang_cmd} -dynamiclib -O2 -arch arm64 -arch x86_64 -framework Foundation -install_name @executable_path/../Frameworks/libatbclone_workbuddy_hook.dylib -o {dst_frameworks}/libatbclone_workbuddy_hook.dylib -x objective-c - << 'WORKBUDDY_HOOK_EOF'
+{hook_m}
+WORKBUDDY_HOOK_EOF
+            chmod +x {dst_frameworks}/libatbclone_workbuddy_hook.dylib
+        """).strip() + "\n"
+
+    @classmethod
     def _build_symlink_whitelist_snippet(cls, task: CloneTask) -> str:
         """Return a shell snippet that creates symlinks for items in symlink_whitelist."""
         return CloneEngine._build_symlink_whitelist_snippet(task)
@@ -1376,6 +1410,49 @@ CHATGPT_HOOK_EOF
             effective_env["HOME"] = "{{ATB_DATA_DIR}}/Home"
             effective_env["TMPDIR"] = "{{ATB_DATA_DIR}}/Tmp"
 
+        app_type = getattr(task.recipe, "app_type", None)
+        if not app_type and hasattr(task, "source") and task.source and getattr(task.source, "path", None):
+            from atbclone.core.app_prober import AppProber
+            app_type = AppProber.detect_app_type(
+                task.source.path,
+                bundle_id=getattr(task.source, "bundle_id", ""),
+            )
+        is_chromium = (app_type or "").lower() in ("chromium", "electron")
+        is_electron = (app_type or "").lower() == "electron"
+
+        # Electron applications on macOS always require HOME and TMPDIR isolation for process singletons & userData
+        if is_electron:
+            if "HOME" not in effective_env:
+                effective_env["HOME"] = "{{ATB_DATA_DIR}}/Home"
+            if "TMPDIR" not in effective_env:
+                effective_env["TMPDIR"] = "{{ATB_DATA_DIR}}/Tmp"
+
+        is_lark = (
+            getattr(task.recipe, "patch_lark_isolation", False)
+            or getattr(task.source, "bundle_id", "") == "com.electron.lark"
+            or getattr(task, "new_bundle_id", "").startswith("com.electron.lark")
+        )
+        is_chatgpt = (
+            getattr(task.recipe, "patch_chatgpt_isolation", False)
+            or getattr(task.source, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
+            or getattr(task.recipe, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
+            or getattr(task, "new_bundle_id", "").startswith("com.openai.codex")
+            or getattr(task, "new_bundle_id", "").startswith("com.openai.chat")
+        )
+        is_workbuddy = (
+            getattr(task.recipe, "patch_workbuddy_isolation", False)
+            or getattr(task.source, "bundle_id", "") in ("com.tencent.workbuddy.mac", "com.workbuddy.workbuddy-ai")
+            or getattr(task.recipe, "bundle_id", "") in ("com.tencent.workbuddy.mac", "com.workbuddy.workbuddy-ai")
+            or getattr(task, "new_bundle_id", "").startswith("com.tencent.workbuddy.mac")
+            or getattr(task, "new_bundle_id", "").startswith("com.workbuddy.workbuddy-ai")
+        )
+
+        if is_workbuddy:
+            if "WORKBUDDY_CONFIG_DIR" not in effective_env:
+                effective_env["WORKBUDDY_CONFIG_DIR"] = "{{ATB_DATA_DIR}}/Config"
+            if "WORKBUDDY_USER_DATA_DIR" not in effective_env:
+                effective_env["WORKBUDDY_USER_DATA_DIR"] = "{{ATB_DATA_DIR}}/UserData"
+
         env_vars = "\n".join([
             f"export {k}={shlex.quote(v.replace('{{ATB_DATA_DIR}}', str(task.data_dir)))}"
             for k, v in effective_env.items()
@@ -1394,35 +1471,13 @@ CHATGPT_HOOK_EOF
         symlink_snippet = cls._build_symlink_whitelist_snippet(task)
         pref_seeding = cls._build_preference_seeding_snippet(task)
 
-        app_type = getattr(task.recipe, "app_type", None)
-        if not app_type and hasattr(task, "source") and task.source and getattr(task.source, "path", None):
-            from atbclone.core.app_prober import AppProber
-            app_type = AppProber.detect_app_type(
-                task.source.path,
-                bundle_id=getattr(task.source, "bundle_id", ""),
-            )
-        is_chromium = (app_type or "").lower() in ("chromium", "electron")
-
         strategy_pref = getattr(task, "injection_strategy", None) or getattr(task.recipe, "injection_strategy", "auto")
         strategy_pref = strategy_pref.lower() if strategy_pref else "auto"
 
         use_dylib = False
         source_bin = getattr(task.source, "executable", None)
 
-        is_lark = (
-            getattr(task.recipe, "patch_lark_isolation", False)
-            or getattr(task.source, "bundle_id", "") == "com.electron.lark"
-            or getattr(task, "new_bundle_id", "").startswith("com.electron.lark")
-        )
-        is_chatgpt = (
-            getattr(task.recipe, "patch_chatgpt_isolation", False)
-            or getattr(task.source, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
-            or getattr(task.recipe, "bundle_id", "") in ("com.openai.codex", "com.openai.chat")
-            or getattr(task, "new_bundle_id", "").startswith("com.openai.codex")
-            or getattr(task, "new_bundle_id", "").startswith("com.openai.chat")
-        )
-
-        if is_lark or is_chatgpt:
+        if is_lark or is_chatgpt or is_workbuddy:
             use_dylib = False
         elif strategy_pref == "launcher":
             use_dylib = False
@@ -1488,6 +1543,8 @@ CHATGPT_HOOK_EOF
                 hook_dylib_rel_path = "../Frameworks/libatbclone_lark_hook.dylib"
             elif is_chatgpt:
                 hook_dylib_rel_path = "../Frameworks/libatbclone_chatgpt_hook.dylib"
+            elif is_workbuddy:
+                hook_dylib_rel_path = "../Frameworks/libatbclone_workbuddy_hook.dylib"
             else:
                 hook_dylib_rel_path = ""
 
@@ -1503,7 +1560,7 @@ CHATGPT_HOOK_EOF
             )
             exec_prep_cmd = f"mv {bin_orig} {bin_bak}\n{c_launcher_cmd}"
 
-        # Check if Feishu/Lark or ChatGPT isolation is active
+        # Check if Feishu/Lark, ChatGPT, or WorkBuddy isolation is active
         is_lark = (
             getattr(task.recipe, "patch_lark_isolation", False)
             or getattr(task.source, "bundle_id", "") == "com.electron.lark"
@@ -1516,13 +1573,21 @@ CHATGPT_HOOK_EOF
             or getattr(task, "new_bundle_id", "").startswith("com.openai.codex")
             or getattr(task, "new_bundle_id", "").startswith("com.openai.chat")
         )
+        is_workbuddy = (
+            getattr(task.recipe, "patch_workbuddy_isolation", False)
+            or getattr(task.source, "bundle_id", "") in ("com.tencent.workbuddy.mac", "com.workbuddy.workbuddy-ai")
+            or getattr(task.recipe, "bundle_id", "") in ("com.tencent.workbuddy.mac", "com.workbuddy.workbuddy-ai")
+            or getattr(task, "new_bundle_id", "").startswith("com.tencent.workbuddy.mac")
+            or getattr(task, "new_bundle_id", "").startswith("com.workbuddy.workbuddy-ai")
+        )
 
         # Build framework singleton patcher command ONLY when explicitly enabled by recipe
-        # and NOT for Feishu/Lark or ChatGPT which use dedicated Cocoa/POSIX hook isolation.
+        # and NOT for Feishu/Lark, ChatGPT, or WorkBuddy which use dedicated Cocoa/POSIX hook isolation.
         needs_singleton_patch = (
             getattr(task.recipe, "patch_framework_singleton", False)
             and not is_lark
             and not is_chatgpt
+            and not is_workbuddy
         )
         singleton_patch_cmd = (
             cls._build_singleton_patch_cmd(task.dest_path)
@@ -1549,6 +1614,13 @@ CHATGPT_HOOK_EOF
         chatgpt_isolation_cmd = (
             cls._build_chatgpt_isolation_cmd(task)
             if is_chatgpt
+            else ""
+        )
+
+        # Build WorkBuddy isolation command ONLY when cloning WorkBuddy
+        workbuddy_isolation_cmd = (
+            cls._build_workbuddy_isolation_cmd(task)
+            if is_workbuddy
             else ""
         )
 
@@ -1644,7 +1716,7 @@ chmod -R u+w {dst} 2>/dev/null || true
 {icon_cmd}{exec_prep_cmd}
 {pref_seeding}
 {symlink_snippet}
-{singleton_patch_cmd}{cef_patch_cmd}{lark_isolation_cmd}{chatgpt_isolation_cmd}{framework_prune_cmd}{process_name_cmd}xattr -cr {dst} 2>/dev/null || true
+{singleton_patch_cmd}{cef_patch_cmd}{lark_isolation_cmd}{chatgpt_isolation_cmd}{workbuddy_isolation_cmd}{framework_prune_cmd}{process_name_cmd}xattr -cr {dst} 2>/dev/null || true
 {codesign_cmds}codesign -vv --deep --strict {dst}
 {lsregister_cmd}
 """

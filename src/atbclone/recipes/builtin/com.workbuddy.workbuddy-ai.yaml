@@ -1,0 +1,16 @@
+bundle_id: com.workbuddy.workbuddy-ai
+app_name: WorkBuddy AI
+strategy: hard_clone
+app_type: electron
+strip_sandbox: true
+patch_framework_singleton: false
+patch_workbuddy_isolation: true
+strip_url_schemes: true
+launch_args: []
+environment_injection:
+  HOME: '{{ATB_DATA_DIR}}/Home'
+  TMPDIR: '{{ATB_DATA_DIR}}/Tmp'
+  WORKBUDDY_CONFIG_DIR: '{{ATB_DATA_DIR}}/Config'
+  WORKBUDDY_USER_DATA_DIR: '{{ATB_DATA_DIR}}/UserData'
+symlink_whitelist:
+- Library/Keychains

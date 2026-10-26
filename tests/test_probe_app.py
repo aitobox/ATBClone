@@ -64,12 +64,15 @@ def test_analyze_app_electron_framework(tmp_path):
         has_sandbox=False,
     )
 
-    with patch("scripts.probe_app.AppInspector.inspect", return_value=mock_info),          patch("scripts.probe_app.inspect_entitlements", return_value={}),          patch("scripts.probe_app.detect_frameworks", return_value=["Electron Framework.framework"]):
+    with patch("scripts.probe_app.AppInspector.inspect", return_value=mock_info), \
+         patch("scripts.probe_app.inspect_entitlements", return_value={}), \
+         patch("scripts.probe_app.detect_frameworks", return_value=["Electron Framework.framework"]):
         analysis = pa.analyze_app(app_dir)
         recipe = analysis["recipe"]
 
-        assert recipe["strategy"] == "soft_clone"
-        assert recipe["launch_args"] == ["--user-data-dir={{ATB_DATA_DIR}}"]
+        assert recipe["strategy"] == "hard_clone"
+        assert "launch_args" not in recipe
+        assert recipe["environment_injection"]["HOME"] == "{{ATB_DATA_DIR}}/Home"
 
 
 def test_analyze_app_firefox(tmp_path):

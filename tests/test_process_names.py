@@ -291,3 +291,58 @@ def test_electron_helpers_in_frameworks_preserved(bundle):
     assert plistlib.loads(nested_helper_plist.read_bytes())["CFBundleExecutable"] == "QQEXGuild Helper"
 
 
+def test_wechat_nested_appex_and_helpers_preserved(bundle):
+    """Ensure Cocoa apps embedding WeChatAppEx (WMPF/CEF) preserve nested sub-apps and helpers."""
+    task, macos = bundle
+    task.clone_name = "WeChatClone"
+    task.recipe.app_type = "cocoa"
+    original = macos / "Original"
+
+    # 1. Nested WeChatAppEx.app under Contents/MacOS/
+    appex = macos / "WeChatAppEx.app"
+    appex_macos = appex / "Contents/MacOS"
+    appex_macos.mkdir(parents=True)
+    shutil.copy2(original, appex_macos / "WeChatAppEx")
+    appex_plist = appex / "Contents/Info.plist"
+    appex_plist.write_bytes(plistlib.dumps({
+        "CFBundleIdentifier": "com.tencent.xinWeChat.WeChatAppEx",
+        "CFBundleExecutable": "WeChatAppEx",
+        "CFBundlePackageType": "APPL",
+    }))
+
+    # 2. Embedded WeChatAppEx Framework and its Helper app
+    framework = appex / "Contents/Frameworks/WeChatAppEx Framework.framework/Versions/C"
+    helper_macos = framework / "Helpers/WeChatAppEx Helper.app/Contents/MacOS"
+    helper_macos.mkdir(parents=True)
+    shutil.copy2(original, helper_macos / "WeChatAppEx Helper")
+    helper_plist = framework / "Helpers/WeChatAppEx Helper.app/Contents/Info.plist"
+    helper_plist.write_bytes(plistlib.dumps({
+        "CFBundleIdentifier": "com.tencent.xinWeChat.WeChatAppEx.helper",
+        "CFBundleExecutable": "WeChatAppEx Helper",
+        "CFBundlePackageType": "APPL",
+    }))
+
+    script = HardCloneEngine._build_process_name_cmd(task, original)
+    res = subprocess.run(["/bin/bash", "-ec", script], capture_output=True, text=True, check=False)
+    assert res.returncode == 0
+
+    # Main binary renamed
+    assert (macos / "WeChatClone").is_file()
+    assert (macos / "Original").is_symlink()
+
+    # WeChatAppEx sub-app binary and plist MUST NOT be renamed
+    assert (appex_macos / "WeChatAppEx").is_file()
+    assert not (appex_macos / "WeChatAppEx").is_symlink()
+    assert not (appex_macos / "WeChatClone-WeChatAppEx").exists()
+    appex_data = plistlib.loads(appex_plist.read_bytes())
+    assert appex_data["CFBundleExecutable"] == "WeChatAppEx"
+
+    # Embedded WeChatAppEx Helper binary and plist MUST NOT be renamed
+    assert (helper_macos / "WeChatAppEx Helper").is_file()
+    assert not (helper_macos / "WeChatAppEx Helper").is_symlink()
+    assert not (helper_macos / "WeChatClone-WeChatAppEx Helper").exists()
+    helper_data = plistlib.loads(helper_plist.read_bytes())
+    assert helper_data["CFBundleExecutable"] == "WeChatAppEx Helper"
+
+
+

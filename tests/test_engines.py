@@ -297,6 +297,9 @@ class TestHardCloneEngine:
             assert 'codesign -d --entitlements - --xml /Applications/TestApp.app > "$ent_plist" 2>/dev/null || true' in script
             assert 'if [ -s "$ent_plist" ]; then' in script
             assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true' in script
+            assert '/usr/libexec/PlistBuddy -c "Delete :com.apple.security.inherit" "$ent_plist" 2>/dev/null || true' in script
+            assert "'com.apple.security.inherit'" in script
+            assert "-depth \\( -name '*.framework' -o -name '*.appex' -o -name '*.app' \\)" in script
             assert 'codesign --force --deep --sign - --entitlements "$ent_plist" /Applications/TestApp2.app' in script
             assert "codesign --force --deep --sign - /Applications/TestApp2.app" in script
             assert "codesign -vv --deep --strict /Applications/TestApp2.app" in script

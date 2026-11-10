@@ -1215,6 +1215,9 @@ WORKBUDDY_HOOK_EOF
             or (task.dest_path / "Contents/Resources/electron.asar").exists()
             or (task.dest_path / "Contents/Resources/app/application.asar").exists()
             or bool(list(task.dest_path.glob("Contents/Frameworks/*Helper*.app")))
+            or bool(list(task.dest_path.glob("Contents/**/WeChatAppEx*.framework")))
+            or bool(list(task.dest_path.glob("Contents/**/WeChatAppEx.app")))
+            or bool(list(task.dest_path.glob("Contents/**/WMPF*.framework")))
         )
         args = shlex.join([
             str(task.dest_path),
@@ -1243,6 +1246,9 @@ WORKBUDDY_HOOK_EOF
                 or (app / "Contents/Resources/electron.asar").exists()
                 or (app / "Contents/Resources/app/application.asar").exists()
                 or bool(list(app.glob("Contents/Frameworks/*Helper*.app")))
+                or bool(list(app.glob("Contents/**/WeChatAppEx*.framework")))
+                or bool(list(app.glob("Contents/**/WeChatAppEx.app")))
+                or bool(list(app.glob("Contents/**/WMPF*.framework")))
             )
             root_plist = app / rel_plist_str
             if not root_plist.is_file():
@@ -1297,6 +1303,12 @@ WORKBUDDY_HOOK_EOF
                         continue
                     if any("Helper" in part for part in parts):
                         continue
+                    try:
+                        rel_parts = dir_path.relative_to(app).parts
+                        if any(part.endswith(".app") for part in rel_parts):
+                            continue
+                    except ValueError:
+                        pass
                 for filename in files:
                     path = dir_path / filename
                     if path.is_symlink() or not path.is_file():
@@ -1658,6 +1670,7 @@ done
                 f'codesign -d --entitlements - --xml {src} > "$ent_plist" 2>/dev/null || true\n'
                 f'if [ -s "$ent_plist" ]; then\n'
                 f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.security.app-sandbox" "$ent_plist" 2>/dev/null || true\n'
+                f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.security.inherit" "$ent_plist" 2>/dev/null || true\n'
                 f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.security.application-groups" "$ent_plist" 2>/dev/null || true\n'
                 f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.team-identifier" "$ent_plist" 2>/dev/null || true\n'
                 f'    /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.aps-environment" "$ent_plist" 2>/dev/null || true\n'
@@ -1671,7 +1684,7 @@ done
                 f'try:\n'
                 f'    with open(\'$ent_plist\', \'rb\') as fp:\n'
                 f'        pl = plistlib.load(fp)\n'
-                f'    restricted = (\'com.apple.developer.\', \'com.apple.application-identifier\', \'keychain-access-groups\', \'com.apple.security.application-groups\', \'com.apple.security.app-sandbox\')\n'
+                f'    restricted = (\'com.apple.developer.\', \'com.apple.application-identifier\', \'keychain-access-groups\', \'com.apple.security.application-groups\', \'com.apple.security.app-sandbox\', \'com.apple.security.inherit\')\n'
                 f'    filtered = {{k: v for k, v in pl.items() if not any(k.startswith(p) for p in restricted)}}\n'
                 f'    with open(\'$ent_plist\', \'wb\') as fp:\n'
                 f'        plistlib.dump(filtered, fp)\n'
@@ -1680,16 +1693,12 @@ done
                 f'" 2>/dev/null || true\n'
                 f'    find {dst} -type f \\( -name \'*.dylib\' -o -name \'*.so\' \\) -exec codesign --force --sign - {{}} + 2>/dev/null || true\n'
                 f'    find {dst}/Contents -type f -perm +111 | while read -r bin_file; do if file "$bin_file" 2>/dev/null | grep -q \'Mach-O\'; then codesign --force --sign - --entitlements "$ent_plist" "$bin_file" 2>/dev/null || true; fi; done\n'
-                f'    find {dst}/Contents -name \'*.framework\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
-                f'    find {dst}/Contents -name \'*.appex\' -type d -exec codesign --force --deep --sign - --entitlements "$ent_plist" {{}} + 2>/dev/null || true\n'
-                f'    find {dst}/Contents -name \'*.app\' -type d -exec codesign --force --deep --sign - --entitlements "$ent_plist" {{}} + 2>/dev/null || true\n'
+                f'    find {dst}/Contents -depth \\( -name \'*.framework\' -o -name \'*.appex\' -o -name \'*.app\' \\) -type d | while read -r sub_bundle; do if [[ "$sub_bundle" == *.framework ]]; then codesign --force --deep --sign - "$sub_bundle" 2>/dev/null || true; else codesign --force --deep --sign - --entitlements "$ent_plist" "$sub_bundle" 2>/dev/null || true; fi; done\n'
                 f'    codesign --force --deep --sign - --entitlements "$ent_plist" {dst}\n'
                 f'else\n'
                 f'    find {dst} -type f \\( -name \'*.dylib\' -o -name \'*.so\' \\) -exec codesign --force --sign - {{}} + 2>/dev/null || true\n'
                 f'    find {dst}/Contents -type f -perm +111 | while read -r bin_file; do if file "$bin_file" 2>/dev/null | grep -q \'Mach-O\'; then codesign --force --sign - "$bin_file" 2>/dev/null || true; fi; done\n'
-                f'    find {dst}/Contents -name \'*.framework\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
-                f'    find {dst}/Contents -name \'*.appex\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
-                f'    find {dst}/Contents -name \'*.app\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
+                f'    find {dst}/Contents -depth \\( -name \'*.framework\' -o -name \'*.appex\' -o -name \'*.app\' \\) -type d | while read -r sub_bundle; do codesign --force --deep --sign - "$sub_bundle" 2>/dev/null || true; done\n'
                 f'    codesign --force --deep --sign - {dst}\n'
                 f'fi\n'
                 f'rm -f "$ent_plist"\n'
@@ -1698,9 +1707,7 @@ done
             codesign_cmds = (
                 f'find {dst} -type f \\( -name \'*.dylib\' -o -name \'*.so\' \\) -exec codesign --force --sign - {{}} + 2>/dev/null || true\n'
                 f'find {dst}/Contents -type f -perm +111 | while read -r bin_file; do if file "$bin_file" 2>/dev/null | grep -q \'Mach-O\'; then codesign --force --sign - "$bin_file" 2>/dev/null || true; fi; done\n'
-                f'find {dst}/Contents -name \'*.framework\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
-                f'find {dst}/Contents -name \'*.appex\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
-                f'find {dst}/Contents -name \'*.app\' -type d -exec codesign --force --deep --sign - {{}} + 2>/dev/null || true\n'
+                f'find {dst}/Contents -depth \\( -name \'*.framework\' -o -name \'*.appex\' -o -name \'*.app\' \\) -type d | while read -r sub_bundle; do codesign --force --deep --sign - "$sub_bundle" 2>/dev/null || true; done\n'
                 f'codesign --force --deep --sign - {dst}\n'
             )
 

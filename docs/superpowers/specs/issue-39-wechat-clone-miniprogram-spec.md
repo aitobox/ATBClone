@@ -41,8 +41,8 @@ In `HardCloneEngine.execute`:
 
 ## 3. Implementation Task List
 
-- [ ] Task 1: Enhance `_build_process_name_cmd` in `src/atbclone/core/engines.py` to detect `WeChatAppEx` / embedded CEF frameworks and preserve nested sub-apps from renaming.
-- [ ] Task 2: Update codesigning logic in `HardCloneEngine.execute` to strip `com.apple.security.inherit` when `strip_sandbox: true`, and enforce inside-out reverse-depth signing.
-- [ ] Task 3: Add comprehensive regression tests in `tests/test_process_names.py` verifying preservation of WeChat mini program runtime (`WeChatAppEx.app`) and nested helpers.
-- [ ] Task 4: Run full project test suite (`PYTHONPATH=src conda run -n ATBClone python -m pytest tests/`) to ensure 100% pass with zero regressions.
-- [ ] Task 5: Perform stress-test audit via `grill-me` before transitioning to code review.
+- [x] Task 1: Enhance `_build_process_name_cmd` in `src/atbclone/core/engines.py` to detect `WeChatAppEx` / embedded CEF frameworks and preserve nested sub-apps from renaming.
+- [x] Task 2: Update codesigning logic in `HardCloneEngine.execute` to strip `com.apple.security.inherit` when `strip_sandbox: true`, and enforce inside-out reverse-depth signing.
+- [x] Task 3: Add comprehensive regression tests in `tests/test_process_names.py` verifying preservation of WeChat mini program runtime (`WeChatAppEx.app`) and nested helpers.
+- [x] Task 4: Run full project test suite (`PYTHONPATH=src conda run -n ATBClone python -m pytest tests/`) to ensure 100% pass with zero regressions.
+- [x] Task 5: Perform stress-test audit via `grill-me` before transitioning to code review.

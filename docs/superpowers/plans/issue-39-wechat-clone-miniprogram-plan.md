@@ -5,7 +5,7 @@ Fix WeChat physical cloning (`hard_clone`) so that mini programs (`WeChatAppEx.a
 
 ---
 
-### Task 1: Enhance `_build_process_name_cmd` in `src/atbclone/core/engines.py`
+### [x] Task 1: Enhance `_build_process_name_cmd` in `src/atbclone/core/engines.py`
 **File to modify**:
 - `src/atbclone/core/engines.py`
 
@@ -24,7 +24,7 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/test_process_names.p
 
 ---
 
-### Task 2: Enhance Codesigning in `HardCloneEngine.execute`
+### [x] Task 2: Enhance Codesigning in `HardCloneEngine.execute`
 **File to modify**:
 - `src/atbclone/core/engines.py`
 
@@ -41,7 +41,7 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/test_engines.py
 
 ---
 
-### Task 3: Add Regression Unit Tests
+### [x] Task 3: Add Regression Unit Tests
 **File to modify**:
 - `tests/test_process_names.py`
 - `tests/test_engines.py`
@@ -61,7 +61,7 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/test_process_names.p
 
 ---
 
-### Task 4: Run Full Project Test Suite
+### [x] Task 4: Run Full Project Test Suite
 **Command**:
 ```bash
 PYTHONPATH=src conda run -n ATBClone python -m pytest tests/
@@ -69,8 +69,9 @@ PYTHONPATH=src conda run -n ATBClone python -m pytest tests/
 
 ---
 
-### Task 5: Audit & Handoff via `grill-me`
+### [x] Task 5: Audit & Handoff via `grill-me`
 **Actions**:
 1. Run `grill-me` verification against all deliverables, test outputs, and acceptance criteria.
 2. Advance state to `reviewing` in `.github-agent-state.yml`.
 3. Hand off to `atb-github-code-reviewer`.
+

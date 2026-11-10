@@ -2,6 +2,27 @@
 
 # ATBClone Release Notes
 
+## [v2.3.2] - 2026-11-10
+
+### 💬 WeChat MiniProgram Support & WeChatAppEx Runtime Preservation
+- **Resolved MiniProgram Launch Failure in Cloned WeChat (#39, #41)**:
+  - Fixed an issue where MiniPrograms inside cloned WeChat instances failed to open or crashed due to process aliasing and sandbox inheritance constraints.
+  - Automatically detect WeChat MiniProgram runtime environments (`WeChatAppEx.app`, `WeChatAppEx*.framework`, and `WMPF*.framework`), strictly exempting all nested sub-apps from binary renaming and Info.plist modifications.
+  - Stripped `com.apple.security.inherit` alongside `com.apple.security.app-sandbox` during entitlements cleansing to ensure child processes launch smoothly outside the sandbox container.
+  - Enforced depth-first (`find -depth`) recursive code signing order for embedded frameworks, appex extensions, and nested `.app` bundles to maintain Apple signature integrity.
+
+### 📦 Build Toolchain & Dependency Pinning
+- **Deterministic Packaging Pipeline**:
+  - Pinned `briefcase==0.4.4` and locked CI Nuitka toolchain versions to guarantee reproducible builds across environments.
+  - Standardized project metadata and bundle identifiers (`com.aitobox.atbclone`).
+
+### 🧪 Comprehensive Quality Assurance
+- **Expanded Test Suite**:
+  - Added specialized unit tests for nested sub-app preservation, WeChatAppEx runtime heuristics, and depth-first re-signing (`test_process_names.py`, `test_engines.py`).
+  - Automated test suite expanded to **665 tests** with a 100% pass rate.
+
+---
+
 ## [v2.3.1] - 2026-10-26
 
 ### 🛡️ WorkBuddy Hard Clone Multi-Instance Isolation & Singleton Fix

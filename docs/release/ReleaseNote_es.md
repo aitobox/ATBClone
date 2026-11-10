@@ -2,6 +2,27 @@
 
 # Notas de la versión de ATBClone (Release Notes)
 
+## [v2.3.2] - 2026-11-10
+
+### 💬 Compatibilidad con MiniProgramas de WeChat y protección de WeChatAppEx
+- **Resolución de fallos al abrir MiniProgramas en clones de WeChat (#39, #41)**:
+  - Corregido un fallo por el cual los MiniProgramas de WeChat no se iniciaban o se cerraban inesperadamente en clones duros debido al renombrado de procesos y a restricciones de herencia de sandbox.
+  - Detección automática del entorno de MiniProgramas de WeChat (`WeChatAppEx.app`, `WeChatAppEx*.framework`, `WMPF*.framework`), excluyendo estrictamente todas las subaplicaciones anidadas del renombrado de binarios.
+  - Eliminación de la autorización `com.apple.security.inherit` al limpiar el sandbox para asegurar que los subprocesos se ejecuten sin bloqueos.
+  - Firma de código recursiva en orden de profundidad (`find -depth`) para frameworks y subaplicaciones embebidas, garantizando la validez de la firma Apple.
+
+### 📦 Fijación de dependencias y cadena de compilación
+- **Flujo de empaquetado determinista**:
+  - Fijadas las versiones de `briefcase==0.4.4` y Nuitka en CI para garantizar compilaciones reproducibles.
+  - Estandarización de metadatos y del identificador de bundle (`com.aitobox.atbclone`).
+
+### 🧪 Ampliación de la suite de pruebas y calidad
+- **Cobertura ampliada**:
+  - Incorporadas pruebas unitarias sobre protección de subaplicaciones anidadas, detección de WeChatAppEx y firmado en profundidad (`test_process_names.py`, `test_engines.py`).
+  - Conjunto de pruebas ampliado a **665 pruebas automáticas** con un 100% de aprobados.
+
+---
+
 ## [v2.3.1] - 2026-10-26
 
 ### 🛡️ Aislamiento multi-instancia de WorkBuddy en Hard Clone y corrección de singleton

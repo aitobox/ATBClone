@@ -2,6 +2,27 @@
 
 # Notes de publication d'ATBClone (Release Notes)
 
+## [v2.3.2] - 2026-11-10
+
+### 💬 Prise en charge des Mini-Programmes WeChat et préservation de WeChatAppEx
+- **Résolution des échecs de lancement des Mini-Programmes WeChat (#39, #41)**:
+  - Correction d'un dysfonctionnement empêchant le lancement des mini-programmes dans les clones WeChat (Hard Clone) en raison du renommage binaire et de l'héritage du bac à sable.
+  - Détection automatique de l'environnement d'exécution des mini-programmes (`WeChatAppEx.app`, `WeChatAppEx*.framework`, `WMPF*.framework`), exemptant strictement toutes les sous-applications imbriquées du renommage de processus.
+  - Suppression de l'autorisation `com.apple.security.inherit` lors du nettoyage du bac à sable pour permettre l'exécution normale des processus enfants.
+  - Signature de code récursive en profondeur d'abord (`find -depth`) pour l'ensemble des frameworks et sous-applications imbriqués afin de préserver l'intégrité de la signature Apple.
+
+### 📦 Verrouillage des dépendances et de la chaîne de compilation
+- **Pipeline de construction déterministe**:
+  - Verrouillage de `briefcase==0.4.4` et des versions de Nuitka en CI pour garantir des livrables reproductibles.
+  - Normalisation des métadonnées du projet et de l'identifiant de bundle (`com.aitobox.atbclone`).
+
+### 🧪 Assurance qualité et suite de tests
+- **Tests unitaires dédiés**:
+  - Ajout de suites de tests pour la préservation des sous-applications imbriquées, la détection de WeChatAppEx et la signature en profondeur (`test_process_names.py`, `test_engines.py`).
+  - Suite de tests portée à **665 tests automatisés** avec un taux de réussite de 100%.
+
+---
+
 ## [v2.3.1] - 2026-10-26
 
 ### 🛡️ Isolation multi-instance de WorkBuddy en Hard Clone et correction de singleton

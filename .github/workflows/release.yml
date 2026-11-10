@@ -24,7 +24,7 @@ concurrency:
 jobs:
   build-and-release:
     name: Build & Release macOS Packages (arm64)
-    runs-on: macos-14
+    runs-on: macos-latest
     timeout-minutes: 60
 
     steps:

@@ -283,7 +283,7 @@ def test_release_workflow_syntax_and_structure():
     assert "workflow_dispatch" in on_trigger
 
     job = data["jobs"]["build-and-release"]
-    assert job["runs-on"] == "macos-14"
+    assert job["runs-on"] == "macos-latest"
     assert data["permissions"]["contents"] == "write"
 
     workflow_text = workflow_path.read_text(encoding="utf-8")
